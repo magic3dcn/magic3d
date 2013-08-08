@@ -21,7 +21,7 @@ namespace MagicCore
 
     void ResourceManager::Init()
     {
-        //LoadResource("../../Media/MyGUIResource", "FileSystem", "MyGUIResource");
+        LoadResource("../../Media/MyGUIResource", "FileSystem", "MyGUIResource");
     }
 
     void ResourceManager::LoadResource(std::string path, std::string type, std::string groupName, bool recursive)

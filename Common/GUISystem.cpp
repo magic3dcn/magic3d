@@ -6,7 +6,8 @@ namespace MagicCore
     GUISystem* GUISystem::mpGUISys = NULL;
 
     GUISystem::GUISystem() :
-        mpRenderer(NULL)
+        mpGUI(NULL),
+        mpPlatform(NULL)
     {
 
     }
@@ -24,10 +25,11 @@ namespace MagicCore
     {
     }
 
-    void GUISystem::Init()
+    void GUISystem::Init(Ogre::RenderWindow* pWin, Ogre::SceneManager* pMgr, std::string resourceName)
     {
-        mpRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-      //  CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
-      //  CEGUI::System::getSingleton().setDefaultMouseCursor("TaharezLook", "MouseArrow");
+        mpPlatform = new MyGUI::OgrePlatform();
+        mpPlatform->initialise(pWin, pMgr, resourceName);
+        mpGUI = new MyGUI::Gui();
+        mpGUI->initialise();
     }
 }

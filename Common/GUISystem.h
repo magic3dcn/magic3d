@@ -1,6 +1,8 @@
 #pragma once
-#include "CEGUI\CEGUI.h"
-#include "CEGUI\RendererModules\Ogre\Renderer.h"
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
+#include "Ogre.h"
+#include <string>
 
 namespace MagicCore
 {
@@ -11,10 +13,11 @@ namespace MagicCore
         static GUISystem* mpGUISys;
     public:
         static GUISystem* GetSingleton();
-        void Init();
+        void Init(Ogre::RenderWindow* pWin, Ogre::SceneManager* pMgr, std::string resourceName);
         ~GUISystem();
 
     private:
-        CEGUI::OgreRenderer* mpRenderer;
+        MyGUI::Gui* mpGUI;
+        MyGUI::OgrePlatform* mpPlatform;
     };
 }

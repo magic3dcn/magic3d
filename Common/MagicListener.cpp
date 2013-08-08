@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "MagicListener.h"
 #include "AppManager.h"
+#include "MyGUI.h"
 
 namespace MagicCore
 {
@@ -12,11 +13,11 @@ namespace MagicCore
 
     MagicListener* MagicListener::GetSingleton()
     {
-	    if (mpListener == NULL)
-	    {
-		    mpListener = new MagicListener;
-	    }
-	    return mpListener;
+        if (mpListener == NULL)
+        {
+            mpListener = new MagicListener;
+        }
+        return mpListener;
     }
 
     bool MagicListener::frameStarted(const Ogre::FrameEvent& evt)
@@ -33,50 +34,33 @@ namespace MagicCore
 
     bool MagicListener::mouseMoved( const OIS::MouseEvent &arg )
     {
-        CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseMove(arg.state.X.rel, arg.state.Y.rel);
-		CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseWheelChange(arg.state.Z.rel / 120.0f);
+        MyGUI::InputManager::getInstance().injectMouseMove(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
         return AppManager::GetSingleton()->MouseMoved(arg);
     }
 
     bool MagicListener::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonDown(convertOISButtonToCegui(id));
+        MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
         return AppManager::GetSingleton()->MousePressed(arg, id);
     }
 
     bool MagicListener::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp(convertOISButtonToCegui(id));
+        MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
         return AppManager::GetSingleton()->MouseReleased(arg, id);
     }
 
     bool MagicListener::keyPressed( const OIS::KeyEvent &arg )
     {
-      //  CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyDown(arg.key);
+        MyGUI::InputManager::getInstance().injectKeyPress(MyGUI::KeyCode::Enum(arg.key));
         return AppManager::GetSingleton()->KeyPressed(arg);
     }
 
     bool MagicListener::keyReleased( const OIS::KeyEvent &arg )
     {
-      //  CEGUI::System::getSingleton().getDefaultGUIContext().injectKeyUp(arg.key);
+        MyGUI::InputManager::getInstance().injectKeyRelease(MyGUI::KeyCode::Enum(arg.key));
         return AppManager::GetSingleton()->KeyReleased(arg);
     }
-
-    CEGUI::MouseButton MagicListener::convertOISButtonToCegui(int buttonID)
-    {
-        switch (buttonID)
-        {
-        case OIS::MB_Left:
-            return CEGUI::LeftButton;
-        case OIS::MB_Right:
-            return CEGUI::RightButton;
-        case OIS::MB_Middle:
-            return CEGUI::MiddleButton;
-        default:
-            return CEGUI::LeftButton;
-        }
-    }
-
 
     MagicListener::~MagicListener()
     {

@@ -1,7 +1,6 @@
 #pragma once
 #include "OIS.h"
 #include "Ogre.h"
-#include "CEGUI\CEGUI.h"
 
 namespace MagicCore
 {
@@ -25,8 +24,5 @@ namespace MagicCore
         virtual bool keyReleased( const OIS::KeyEvent &arg );
 
         virtual ~MagicListener();
-
-    private:
-        CEGUI::MouseButton convertOISButtonToCegui(int buttonID);
     };
 }

@@ -25,7 +25,7 @@ namespace MagicCore
         MagicLog << "MagicFramework init" << std::endl;
         RenderSystem::GetSingleton()->Init();
         ResourceManager::GetSingleton()->Init();
-        GUISystem::GetSingleton()->Init();
+        GUISystem::GetSingleton()->Init(RenderSystem::GetSingleton()->GetRenderWindow(), RenderSystem::GetSingleton()->GetSceneManager(), "MyGUIResource");
         InputSystem::GetSingleton()->Init(RenderSystem::GetSingleton()->GetRenderWindow());
         AppManager::GetSingleton()->Init();
     }

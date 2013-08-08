@@ -2,6 +2,7 @@
 #include "Homepage.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
+#include "MyGUI.h"
 
 namespace MagicApp
 {
@@ -17,6 +18,7 @@ namespace MagicApp
     {
         MagicLog << "Enter Homepage" << std::endl;
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
+        MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
         return true;
     }
 
