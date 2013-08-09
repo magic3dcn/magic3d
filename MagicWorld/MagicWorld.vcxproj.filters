@@ -19,6 +19,9 @@
     <Filter Include="Application">
       <UniqueIdentifier>{bcd79a93-f933-423a-8919-83917e7dab48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DGP">
+      <UniqueIdentifier>{f25afe13-bfa0-4b11-95fe-6ea97621abf8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,38 +33,44 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\MagicFramework.h">
+    <ClInclude Include="..\Src\Common\MagicFramework.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\ToolKit.h">
+    <ClInclude Include="..\Src\Common\ToolKit.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\InputSystem.h">
+    <ClInclude Include="..\Src\Common\InputSystem.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\RenderSystem.h">
+    <ClInclude Include="..\Src\Common\RenderSystem.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\LogSystem.h">
+    <ClInclude Include="..\Src\Common\LogSystem.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\AppBase.h">
+    <ClInclude Include="..\Src\Common\AppBase.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\AppManager.h">
+    <ClInclude Include="..\Src\Common\AppManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\MagicListener.h">
+    <ClInclude Include="..\Src\Common\MagicListener.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\ResourceManager.h">
+    <ClInclude Include="..\Src\Common\ResourceManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Application\Homepage.h">
+    <ClInclude Include="..\Src\Application\Homepage.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\GUISystem.h">
+    <ClInclude Include="..\Src\Common\GUISystem.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\DGPDefines.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\Vector3.h">
+      <Filter>DGP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -71,38 +80,41 @@
     <ClCompile Include="MagicWorld.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\MagicFramework.cpp">
+    <ClCompile Include="..\Src\Common\MagicFramework.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\ToolKit.cpp">
+    <ClCompile Include="..\Src\Common\ToolKit.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\InputSystem.cpp">
+    <ClCompile Include="..\Src\Common\InputSystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\RenderSystem.cpp">
+    <ClCompile Include="..\Src\Common\RenderSystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\LogSystem.cpp">
+    <ClCompile Include="..\Src\Common\LogSystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\AppBase.cpp">
+    <ClCompile Include="..\Src\Common\AppBase.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\AppManager.cpp">
+    <ClCompile Include="..\Src\Common\AppManager.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\MagicListener.cpp">
+    <ClCompile Include="..\Src\Common\MagicListener.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\ResourceManager.cpp">
+    <ClCompile Include="..\Src\Common\ResourceManager.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Application\Homepage.cpp">
+    <ClCompile Include="..\Src\Application\Homepage.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\GUISystem.cpp">
+    <ClCompile Include="..\Src\Common\GUISystem.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Vector3.cpp">
+      <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

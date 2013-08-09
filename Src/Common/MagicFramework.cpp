@@ -12,7 +12,7 @@ namespace MagicCore
 {
     MagicFramework::MagicFramework() :
         mTimeAccumulate(0.f),
-        mRenderDeltaTime(0.1f)
+        mRenderDeltaTime(0.025f)
     {
     }
 

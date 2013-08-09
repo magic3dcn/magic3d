@@ -2,10 +2,10 @@
 #include <fstream>
 #include <iostream>
 
-#define MagicLog MagicCore::LogSystem::GetSingleton()->GetOFStream()
-
 namespace MagicCore
 {
+    #define MagicLog MagicCore::LogSystem::GetSingleton()->GetOFStream()
+
     class LogSystem
     {
     private:

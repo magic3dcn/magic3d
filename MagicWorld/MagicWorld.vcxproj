@@ -89,32 +89,35 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Application\Homepage.h" />
-    <ClInclude Include="..\Common\AppBase.h" />
-    <ClInclude Include="..\Common\AppManager.h" />
-    <ClInclude Include="..\Common\GUISystem.h" />
-    <ClInclude Include="..\Common\InputSystem.h" />
-    <ClInclude Include="..\Common\LogSystem.h" />
-    <ClInclude Include="..\Common\MagicFramework.h" />
-    <ClInclude Include="..\Common\MagicListener.h" />
-    <ClInclude Include="..\Common\RenderSystem.h" />
-    <ClInclude Include="..\Common\ResourceManager.h" />
-    <ClInclude Include="..\Common\ToolKit.h" />
+    <ClInclude Include="..\Src\Application\Homepage.h" />
+    <ClInclude Include="..\Src\Common\AppBase.h" />
+    <ClInclude Include="..\Src\Common\AppManager.h" />
+    <ClInclude Include="..\Src\Common\GUISystem.h" />
+    <ClInclude Include="..\Src\Common\InputSystem.h" />
+    <ClInclude Include="..\Src\Common\LogSystem.h" />
+    <ClInclude Include="..\Src\Common\MagicFramework.h" />
+    <ClInclude Include="..\Src\Common\MagicListener.h" />
+    <ClInclude Include="..\Src\Common\RenderSystem.h" />
+    <ClInclude Include="..\Src\Common\ResourceManager.h" />
+    <ClInclude Include="..\Src\Common\ToolKit.h" />
+    <ClInclude Include="..\Src\DGP\DGPDefines.h" />
+    <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Application\Homepage.cpp" />
-    <ClCompile Include="..\Common\AppBase.cpp" />
-    <ClCompile Include="..\Common\AppManager.cpp" />
-    <ClCompile Include="..\Common\GUISystem.cpp" />
-    <ClCompile Include="..\Common\InputSystem.cpp" />
-    <ClCompile Include="..\Common\LogSystem.cpp" />
-    <ClCompile Include="..\Common\MagicFramework.cpp" />
-    <ClCompile Include="..\Common\MagicListener.cpp" />
-    <ClCompile Include="..\Common\RenderSystem.cpp" />
-    <ClCompile Include="..\Common\ResourceManager.cpp" />
-    <ClCompile Include="..\Common\ToolKit.cpp" />
+    <ClCompile Include="..\Src\Application\Homepage.cpp" />
+    <ClCompile Include="..\Src\Common\AppBase.cpp" />
+    <ClCompile Include="..\Src\Common\AppManager.cpp" />
+    <ClCompile Include="..\Src\Common\GUISystem.cpp" />
+    <ClCompile Include="..\Src\Common\InputSystem.cpp" />
+    <ClCompile Include="..\Src\Common\LogSystem.cpp" />
+    <ClCompile Include="..\Src\Common\MagicFramework.cpp" />
+    <ClCompile Include="..\Src\Common\MagicListener.cpp" />
+    <ClCompile Include="..\Src\Common\RenderSystem.cpp" />
+    <ClCompile Include="..\Src\Common\ResourceManager.cpp" />
+    <ClCompile Include="..\Src\Common\ToolKit.cpp" />
+    <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
