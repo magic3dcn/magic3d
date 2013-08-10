@@ -1,5 +1,6 @@
 #pragma once
 #include "Ogre.h"
+#include "../DGP/PointCloud3D.h"
 #include <string>
 
 namespace MagicCore
@@ -20,7 +21,10 @@ namespace MagicCore
 
         virtual ~RenderSystem(void);
 
-        private:
+        void RenderPoint3DSet(MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName);
+        void HidePoint3DSet(std::string psName);
+
+    private:
         Ogre::Root*    mpRoot;
         Ogre::Camera*  mpMainCam;
         Ogre::RenderWindow* mpRenderWin;

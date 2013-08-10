@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\Application\Homepage.h" />
+    <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -101,12 +102,15 @@
     <ClInclude Include="..\Src\Common\ResourceManager.h" />
     <ClInclude Include="..\Src\Common\ToolKit.h" />
     <ClInclude Include="..\Src\DGP\DGPDefines.h" />
+    <ClInclude Include="..\Src\DGP\Parser.h" />
+    <ClInclude Include="..\Src\DGP\PointCloud3D.h" />
     <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\Application\Homepage.cpp" />
+    <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp" />
@@ -117,6 +121,8 @@
     <ClCompile Include="..\Src\Common\RenderSystem.cpp" />
     <ClCompile Include="..\Src\Common\ResourceManager.cpp" />
     <ClCompile Include="..\Src\Common\ToolKit.cpp" />
+    <ClCompile Include="..\Src\DGP\Parser.cpp" />
+    <ClCompile Include="..\Src\DGP\PointCloud3D.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">

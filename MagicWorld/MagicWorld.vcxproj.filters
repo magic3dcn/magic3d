@@ -72,6 +72,15 @@
     <ClInclude Include="..\Src\DGP\Vector3.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\PointCloud3D.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\Parser.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\PointSetViewer.h">
+      <Filter>Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -115,6 +124,15 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Vector3.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\PointCloud3D.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Parser.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PointSetViewer.cpp">
+      <Filter>Application</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

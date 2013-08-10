@@ -83,6 +83,39 @@ namespace MagicCore
         return mpMainCam;
     }
 
+    void RenderSystem::RenderPoint3DSet(MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName)
+    {
+        Ogre::ManualObject* pMObj = NULL;
+        if (mpSceneMgr->hasManualObject(psName))
+        {
+            pMObj = mpSceneMgr->getManualObject(psName);
+            pMObj->clear();
+        }
+        else
+        {
+            pMObj = mpSceneMgr->createManualObject(psName);
+        }
+        pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
+        std::map<int, MagicDGP::Point3D*> pointSet = pPS->GetPointSet();
+        for (std::map<int, MagicDGP::Point3D*>::iterator itr = pointSet.begin(); itr != pointSet.end(); ++itr)
+        {
+            MagicDGP::Vector3 pos = itr->second->GetPosition();
+            MagicDGP::Vector3 nor = itr->second->GetNormal();
+            pMObj->position(pos[0], pos[1], pos[2]);
+            pMObj->normal(nor[0], nor[1], nor[2]);
+        }
+        pMObj->end();
+        mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+    }
+
+    void RenderSystem::HidePoint3DSet(std::string psName)
+    {
+        if (mpSceneMgr->hasManualObject(psName))
+        {
+            mpSceneMgr->destroyManualObject(psName);
+        }
+    }
+
     RenderSystem::~RenderSystem(void)
     {
     }
