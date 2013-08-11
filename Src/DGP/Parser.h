@@ -10,5 +10,8 @@ namespace MagicDGP
         ~Parser();
 
         Point3DSet* ParsePointSet(std::string fileName);
+
+    private:
+        Point3DSet* ParsePointSetByOBJ(std::string fileName);
     };
 }

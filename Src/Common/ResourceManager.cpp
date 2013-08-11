@@ -21,6 +21,7 @@ namespace MagicCore
 
     void ResourceManager::Init()
     {
+        LoadResource("../../Media/CommonResource", "FileSystem", "CommonResource");
         LoadResource("../../Media/MyGUIResource", "FileSystem", "MyGUIResource");
     }
 

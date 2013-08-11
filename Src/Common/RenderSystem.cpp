@@ -41,7 +41,7 @@ namespace MagicCore
             mpMainCam->setNearClipDistance(0.05);
             // Create a viewport covering whole window
             Ogre::Viewport* vp = mpRenderWin->addViewport(mpMainCam);
-            vp->setBackgroundColour(Ogre::ColourValue(1.0, 0.0, 0.0));
+            vp->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
             // Update the camera aspect ratio to that of the viewport
             mpMainCam->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 

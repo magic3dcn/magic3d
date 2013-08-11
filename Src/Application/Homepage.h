@@ -14,6 +14,5 @@ namespace MagicApp
         virtual bool Exit(void);
         virtual bool Pause(void);
         virtual bool Resume(void);
-
     };
 }

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "../Common/MagicFramework.h"
+#include "../Src/Common/MagicFramework.h"
 
 
 int _tmain(int argc, _TCHAR* argv[])

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Common/AppBase.h"
+#include "../Tool/ViewTool.h"
 
 namespace MagicApp
 {
@@ -14,6 +15,13 @@ namespace MagicApp
         virtual bool Exit(void);
         virtual bool Pause(void);
         virtual bool Resume(void);
+        virtual bool MouseMoved( const OIS::MouseEvent &arg );
+        virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
+    private:
+        void SetupScene(void);
+        
+    private:
+        MagicTool::ViewTool mViewTool;
     };
 }

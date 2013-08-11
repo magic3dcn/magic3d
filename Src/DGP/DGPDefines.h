@@ -4,6 +4,6 @@
 namespace MagicDGP
 {
     typedef double Real;
-    Real Epsilon = 1.0e-14;
-    #define MAGICASSERT(b, m) if (!b) { MagicLog << "Error: " << m << std::endl; }
+    extern Real Epsilon;
+    #define MAGICASSERT(b, m) if (!(b)) { MagicLog << "Error: " << m << std::endl; }
 }

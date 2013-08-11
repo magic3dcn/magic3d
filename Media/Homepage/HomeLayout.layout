@@ -17,8 +17,8 @@
             <Property key="TextShadow" value="true"/>
             <Property key="TextShadowColour" value="0.274854 0.274854 0.274854"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position="950 355 60 30" name="Print3D">
-            <Property key="Caption" value="3D Print"/>
+        <Widget type="TextBox" skin="TextBox" position="930 355 90 30" name="PointViewer">
+            <Property key="Caption" value="Point Viewer"/>
             <Property key="TextColour" value="0.588235 0.784314 1"/>
             <Property key="TextShadow" value="true"/>
             <Property key="TextShadowColour" value="0.274854 0.274854 0.274854"/>

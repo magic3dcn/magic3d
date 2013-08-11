@@ -10,6 +10,7 @@ namespace MagicDGP
         Point3D();
         Point3D(const Vector3& pos);
         Point3D(const Vector3& pos, const Vector3& nor);
+        Point3D(const Vector3& pos, int id);
         Point3D(const Vector3& pos, const Vector3& nor, int id);
         ~Point3D();
 

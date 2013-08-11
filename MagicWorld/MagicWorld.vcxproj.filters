@@ -22,6 +22,9 @@
     <Filter Include="DGP">
       <UniqueIdentifier>{f25afe13-bfa0-4b11-95fe-6ea97621abf8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{7a772d04-45fc-4789-9a29-610901c77a1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -81,6 +84,9 @@
     <ClInclude Include="..\Src\Application\PointSetViewer.h">
       <Filter>Application</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Tool\ViewTool.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -133,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp">
       <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\DGPDefines.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tool\ViewTool.cpp">
+      <Filter>Tool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

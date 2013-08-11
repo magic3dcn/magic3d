@@ -3,17 +3,31 @@
 
 namespace MagicDGP
 {
-    Point3D::Point3D()
+    Point3D::Point3D() : 
+        mPosition(0, 0, 0),
+        mNormal(0, 0, 0),
+        mId(-1)
     {
     }
 
-    Point3D::Point3D(const Vector3& pos) : mPosition(pos)
+    Point3D::Point3D(const Vector3& pos) : 
+        mPosition(pos),
+        mNormal(0, 0, 0),
+        mId(-1)
     {
     }
 
     Point3D::Point3D(const Vector3& pos, const Vector3& nor) : 
         mPosition(pos),
-        mNormal(nor)
+        mNormal(nor),
+        mId(-1)
+    {
+    }
+
+    Point3D::Point3D(const Vector3& pos, int id) :
+        mPosition(pos),
+        mNormal(0, 0, 0),
+        mId(id)
     {
     }
 
@@ -28,32 +42,32 @@ namespace MagicDGP
     {
     }
 
-    inline void Point3D::SetPosition(const Vector3& pos)
+    void Point3D::SetPosition(const Vector3& pos)
     {
         mPosition = pos;
     }
 
-    inline Vector3 Point3D::GetPosition() const
+    Vector3 Point3D::GetPosition() const
     {
         return mPosition;
     }
 
-    inline void Point3D::SetNormal(const Vector3& nor)
+    void Point3D::SetNormal(const Vector3& nor)
     {
         mNormal = nor;
     }
 
-    inline Vector3 Point3D::GetNormal() const
+    Vector3 Point3D::GetNormal() const
     {
         return mNormal;
     }
 
-    inline void Point3D::SetId(int id)
+    void Point3D::SetId(int id)
     {
         mId = id;
     }
 
-    inline int Point3D::GetId() const
+    int Point3D::GetId() const
     {
         return mId;
     }
@@ -107,7 +121,7 @@ namespace MagicDGP
         }
         if (scaleMax > Epsilon)
         {
-            Real scaleV = size / scaleV;
+            Real scaleV = size / scaleMax;
             Vector3 centerPos = (posMin + posMax) / 2.0;
             for (std::map<int, Point3D*>::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
             {
