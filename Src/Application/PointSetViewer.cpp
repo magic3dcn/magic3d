@@ -9,19 +9,24 @@
 
 namespace MagicApp
 {
-    PointSetViewer::PointSetViewer()
+    PointSetViewer::PointSetViewer() :
+        mpPointSet(NULL)
     {
     }
 
     PointSetViewer::~PointSetViewer()
     {
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = NULL;
+        }
     }
 
     bool PointSetViewer::Enter()
     {
         MagicLog << "Enter PointSetViewer" << std::endl;
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Pointviewer", "FileSystem", "Pointviewer");
-        MyGUI::LayoutManager::getInstance().loadLayout("PointViewerLayout.layout");
+        mUI.Setup();
         SetupScene();
         return true;
     }
@@ -33,35 +38,28 @@ namespace MagicApp
 
     bool PointSetViewer::Exit()
     {
-        MagicCore::ResourceManager::GetSingleton()->UnloadResource("Homepage");
-        return true;
-    }
-
-    bool PointSetViewer::Pause()
-    {
-        return true;
-    }
-
-    bool PointSetViewer::Resume()
-    {
+        ShutdownScene();
+        mUI.Shutdown();
         return true;
     }
 
     void PointSetViewer::SetupScene()
     {
+        MagicLog << "PointSetViewer::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
-        Ogre::Light*  l0 = pSceneMgr->createLight("light0");
-        l0->setPosition(10, 10, 20);
-        l0->setDiffuseColour(0.8, 0.8, 0.8);
-        l0->setSpecularColour(0.5, 0.5, 0.5);
+        Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
+        sl->setPosition(10, 10, 20);
+        sl->setDiffuseColour(0.8, 0.8, 0.8);
+        sl->setSpecularColour(0.5, 0.5, 0.5);
+    }
 
-        std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Parser parser;
-        MagicDGP::Point3DSet* pPointSet = parser.ParsePointSet(fileName);
-        MagicLog << "Setup point cloud to scene node" << std::endl;
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "test", "SimplePoint");
+    void PointSetViewer::ShutdownScene()
+    {
+        MagicLog << "PointSetViewer::ShutdownScene" << std::endl;
+        Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+        pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
+        pSceneMgr->destroyLight("SimpleLight");
     }
 
     bool PointSetViewer::MouseMoved( const OIS::MouseEvent &arg )
@@ -74,5 +72,14 @@ namespace MagicApp
     {
         mViewTool.MousePressed(arg);
         return true;
+    }
+
+    void PointSetViewer::SetPointSet(MagicDGP::Point3DSet* pPointSet)
+    {
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+        }
+        mpPointSet = pPointSet;
     }
 }

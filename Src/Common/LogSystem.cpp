@@ -6,7 +6,7 @@ namespace MagicCore
     LogSystem* LogSystem::mpLogSystem = NULL;
 
     LogSystem::LogSystem(void)
-        : mOFStream("Magic3DLog.txt")
+        : mOFStream("Magic3D.log")
     {
     }
 

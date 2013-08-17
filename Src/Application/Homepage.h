@@ -1,5 +1,6 @@
 #pragma once
 #include "../Common/AppBase.h"
+#include "HomepageUI.h"
 
 namespace MagicApp
 {
@@ -12,7 +13,8 @@ namespace MagicApp
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
-        virtual bool Pause(void);
-        virtual bool Resume(void);
+
+    private:
+        HomepageUI mUI;
     };
 }

@@ -22,16 +22,6 @@ namespace MagicCore
         return true;
     }
 
-    bool AppBase::Pause()
-    {
-        return true;
-    }
-
-    bool AppBase::Resume()
-    {
-        return true;
-    }
-
     bool AppBase::FrameStarted(const FrameEvent& evt)
     {
         return true;

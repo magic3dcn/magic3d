@@ -17,8 +17,6 @@ namespace MagicCore
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
-        virtual bool Pause(void);
-        virtual bool Resume(void);
 
         virtual bool FrameStarted(const FrameEvent& evt);
         virtual bool FrameEnded(const FrameEvent& evt);

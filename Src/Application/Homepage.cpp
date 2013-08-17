@@ -17,8 +17,7 @@ namespace MagicApp
     bool Homepage::Enter()
     {
         MagicLog << "Enter Homepage" << std::endl;
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
-        MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
+        mUI.Setup();
         return true;
     }
 
@@ -29,17 +28,7 @@ namespace MagicApp
 
     bool Homepage::Exit()
     {
-        MagicCore::ResourceManager::GetSingleton()->UnloadResource("Homepage");
-        return true;
-    }
-
-    bool Homepage::Pause()
-    {
-        return true;
-    }
-
-    bool Homepage::Resume()
-    {
+        mUI.Shutdown();
         return true;
     }
 }

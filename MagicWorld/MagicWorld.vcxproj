@@ -90,7 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\Application\Homepage.h" />
+    <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
+    <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -111,7 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\Application\Homepage.cpp" />
+    <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
+    <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp" />

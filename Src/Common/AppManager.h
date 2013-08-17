@@ -1,6 +1,8 @@
 #pragma once
 #include "AppBase.h"
-#include <vector>
+#include <map>
+#include <algorithm>
+#include <string>
 
 namespace MagicCore
 {
@@ -14,8 +16,9 @@ namespace MagicCore
 
         void Init(void);
         void Update(float timeElapsed);
-        void PushApp(AppBase* pApp);
-        void PopApp(AppBase* pApp);
+        void EnterApp(AppBase* pApp, std::string name);
+        bool SwitchCurrentApp(std::string name);
+        AppBase* GetApp(std::string name);
 
         bool FrameStarted(const FrameEvent& evt);
         bool FrameEnded(const FrameEvent& evt);
@@ -27,8 +30,9 @@ namespace MagicCore
 
         virtual ~AppManager(void);
 
-	private:
-		std::vector<AppBase* > mAppList;
-	};
+    private:
+        std::map<std::string, AppBase* > mAppSet;
+        AppBase* mpCurrentApp;
+    };
 }
 

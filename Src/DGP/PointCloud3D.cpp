@@ -74,6 +74,15 @@ namespace MagicDGP
 
     Point3DSet::Point3DSet()
     {
+        for (std::map<int, Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); itr++)
+        {
+            if (itr->second != NULL)
+            {
+                delete itr->second;
+                itr->second = NULL;
+            }
+        }
+        mPointSet.clear();
     }
 
     Point3DSet::~Point3DSet()

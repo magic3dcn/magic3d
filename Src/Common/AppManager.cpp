@@ -9,7 +9,8 @@ namespace MagicCore
 {
     AppManager* AppManager::mpAppMgr = NULL;
 
-    AppManager::AppManager(void)
+    AppManager::AppManager(void) : 
+        mpCurrentApp(NULL)
     {
     }
 
@@ -24,84 +25,126 @@ namespace MagicCore
 
     void AppManager::Init()
     {
-        PushApp(new MagicApp::PointSetViewer);
+        EnterApp(new MagicApp::Homepage, "Homepage");
+        //EnterApp(new MagicApp::PointSetViewer, "PointSetViewer");
     }
 
     void AppManager::Update(float timeElapsed)
     {
-        //MagicLog << "    AppManager::Update: " << timeElapsed << std::endl;
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            mAppList.back()->Update(timeElapsed);
+            mpCurrentApp->Update(timeElapsed);
         }
     }
 
-    void AppManager::PushApp(AppBase *pApp)
+    void AppManager::EnterApp(AppBase* pApp, std::string name)
     {
-        if (!mAppList.empty())
+        std::map<std::string, AppBase* >::iterator itr = mAppSet.find(name);
+        if (itr == mAppSet.end())
         {
-            mAppList.back()->Pause();
+            mAppSet[name] = pApp;
         }
-        mAppList.push_back(pApp);
-        mAppList.back()->Enter();
+        else
+        {
+            delete pApp;
+        }
+        if (mpCurrentApp != NULL)
+        {
+            mpCurrentApp->Exit();
+        }
+        mpCurrentApp = mAppSet[name];
+        mpCurrentApp->Enter();
     }
 
-    void AppManager::PopApp(AppBase* pApp)
+    bool AppManager::SwitchCurrentApp(std::string name)
     {
-        if (!mAppList.empty())
+        std::map<std::string, AppBase* >::iterator itr = mAppSet.find(name);
+        if (itr != mAppSet.end())
         {
-            mAppList.back()->Exit();
-            mAppList.pop_back();
+            if (mpCurrentApp != NULL)
+            {
+                mpCurrentApp->Exit();
+            }
+            mpCurrentApp = itr->second;
+            return mpCurrentApp->Enter();
         }
-        if (!mAppList.empty())
+        else
         {
-            mAppList.back()->Resume();
+            return false;
+        }
+    }
+
+    AppBase* AppManager::GetApp(std::string name)
+    {
+        std::map<std::string, AppBase* >::iterator itr = mAppSet.find(name);
+        if (itr != mAppSet.end())
+        {
+            return itr->second;
+        }
+        else
+        {
+            return NULL;
         }
     }
 
     bool AppManager::FrameStarted(const FrameEvent& evt)
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->FrameStarted(evt);
+            return mpCurrentApp->FrameStarted(evt);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::FrameEnded(const FrameEvent& evt)
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->FrameEnded(evt);
+            return mpCurrentApp->FrameEnded(evt);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::MouseMoved( const OIS::MouseEvent &arg )
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->MouseMoved(arg);
+            return mpCurrentApp->MouseMoved(arg);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->MousePressed(arg, id);
+            return mpCurrentApp->MousePressed(arg, id);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->MouseReleased(arg, id);
+            return mpCurrentApp->MouseReleased(arg, id);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::KeyPressed( const OIS::KeyEvent &arg )
@@ -109,25 +152,42 @@ namespace MagicCore
         if (arg.key == OIS::KC_ESCAPE)
         {
             ToolKit::GetSingleton()->SetAppRunning(false);
+            return true;
         }
-        if (!mAppList.empty())
+
+        if (mpCurrentApp != NULL)
         {
-            return mAppList.back()->KeyPressed(arg);
+            return mpCurrentApp->KeyPressed(arg);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     bool AppManager::KeyReleased( const OIS::KeyEvent &arg )
     {
-        if (!mAppList.empty())
+        if (mpCurrentApp != NULL)
         {
-            mAppList.back()->KeyReleased(arg);
+            return mpCurrentApp->KeyReleased(arg);
         }
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     AppManager::~AppManager(void)
     {
+        for (std::map<std::string, AppBase* >::iterator itr = mAppSet.begin(); itr != mAppSet.end(); itr++)
+        {
+            if (itr->second != NULL)
+            {
+                delete itr->second;
+            }
+        }
+        mAppSet.clear();
+        mpCurrentApp = NULL;
     }
 }
 
