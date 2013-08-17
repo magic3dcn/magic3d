@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 80 768" layer="Back">
+        <Widget type="Button" skin="Button" position="15 15 60 30" name="But_OpenPointSet">
+            <Property key="Caption" value="Open"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="15 65 60 30" name="But_Back">
+            <Property key="Caption" value="Back"/>
+            <Property key="TextAlign" value="Center"/>
+        </Widget>
+    </Widget>
+</MyGUI>

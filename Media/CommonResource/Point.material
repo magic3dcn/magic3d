@@ -1,0 +1,10 @@
+material SimplePoint
+{
+    technique
+    {
+        pass
+        {
+            point_size 2
+        }
+    }
+}
