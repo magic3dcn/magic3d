@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 150 768" layer="Back" name="UIPanel">
+        <Widget type="Button" skin="Button" position="30 30 60 40" name="But_Scan">
+            <Property key="Caption" value="Scan"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="30 80 60 40" name="But_Back">
+            <Property key="Caption" value="Back"/>
+        </Widget>
+    </Widget>
+</MyGUI>

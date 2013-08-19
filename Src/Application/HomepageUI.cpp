@@ -4,6 +4,7 @@
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
 #include "PointSetViewer.h"
+#include "Scan3D.h"
 
 namespace MagicApp
 {
@@ -41,5 +42,6 @@ namespace MagicApp
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)
     {
         MagicLog << "EnterScan3D Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new Scan3D, "Scan3D");
     }
 }

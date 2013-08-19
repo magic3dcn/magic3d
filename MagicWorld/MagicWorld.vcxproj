@@ -93,6 +93,8 @@
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
+    <ClInclude Include="..\Src\Application\Scan3D.h" />
+    <ClInclude Include="..\Src\Application\Scan3DUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -116,6 +118,8 @@
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
+    <ClCompile Include="..\Src\Application\Scan3D.cpp" />
+    <ClCompile Include="..\Src\Application\Scan3DUI.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp" />
