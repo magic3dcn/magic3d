@@ -13,7 +13,9 @@ namespace MagicApp
         void Shutdown();
 
     private:
-        void Scan(MyGUI::Widget* pSender);
+        void Record(MyGUI::Widget* pSender);
+        void PlayScanner(MyGUI::Widget* pSender);
+        void PlayRecordScanner(MyGUI::Widget* pSender);
         void BackToHomepage(MyGUI::Widget* pSender);
 
     private:

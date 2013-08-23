@@ -25,6 +25,15 @@
     <Filter Include="Tool">
       <UniqueIdentifier>{7a772d04-45fc-4789-9a29-610901c77a1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Homepage">
+      <UniqueIdentifier>{b7f8674e-b833-4d1a-9fc4-fe675a0f6db2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\PointSetViewer">
+      <UniqueIdentifier>{cc4254f7-6be8-4419-8a8e-32d56179262e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Scan3D">
+      <UniqueIdentifier>{22ff8cf8-29f8-4bc5-8d40-ff5df025ab4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -63,9 +72,6 @@
     <ClInclude Include="..\Src\Common\ResourceManager.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Application\Homepage.h">
-      <Filter>Application</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Common\GUISystem.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -81,23 +87,29 @@
     <ClInclude Include="..\Src\DGP\Parser.h">
       <Filter>DGP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Application\PointSetViewer.h">
-      <Filter>Application</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Tool\ViewTool.h">
       <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\HomepageUI.h">
-      <Filter>Application</Filter>
+      <Filter>Application\Homepage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\Homepage.h">
+      <Filter>Application\Homepage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\PointSetViewer.h">
+      <Filter>Application\PointSetViewer</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h">
-      <Filter>Application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Application\Scan3D.h">
-      <Filter>Application</Filter>
+      <Filter>Application\PointSetViewer</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\Scan3DUI.h">
-      <Filter>Application</Filter>
+      <Filter>Application\Scan3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\Scan3D.h">
+      <Filter>Application\Scan3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\MediaStream.h">
+      <Filter>Application\Scan3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,9 +146,6 @@
     <ClCompile Include="..\Src\Common\ResourceManager.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Application\Homepage.cpp">
-      <Filter>Application</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Common\GUISystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -149,26 +158,32 @@
     <ClCompile Include="..\Src\DGP\Parser.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Application\PointSetViewer.cpp">
-      <Filter>Application</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\DGP\DGPDefines.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Tool\ViewTool.cpp">
       <Filter>Tool</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Application\Homepage.cpp">
+      <Filter>Application\Homepage</Filter>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\HomepageUI.cpp">
-      <Filter>Application</Filter>
+      <Filter>Application\Homepage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PointSetViewer.cpp">
+      <Filter>Application\PointSetViewer</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp">
-      <Filter>Application</Filter>
+      <Filter>Application\PointSetViewer</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\Scan3D.cpp">
-      <Filter>Application</Filter>
+      <Filter>Application\Scan3D</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\Scan3DUI.cpp">
-      <Filter>Application</Filter>
+      <Filter>Application\Scan3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\MediaStream.cpp">
+      <Filter>Application\Scan3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

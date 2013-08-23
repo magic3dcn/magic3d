@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="..\Src\Application\Homepage.h" />
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
+    <ClInclude Include="..\Src\Application\MediaStream.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
     <ClInclude Include="..\Src\Application\Scan3D.h" />
@@ -116,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="..\Src\Application\Homepage.cpp" />
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
+    <ClCompile Include="..\Src\Application\MediaStream.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
     <ClCompile Include="..\Src\Application\Scan3D.cpp" />
