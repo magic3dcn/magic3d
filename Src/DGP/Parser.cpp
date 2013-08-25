@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Parser.h"
 #include <fstream>
+#include <istream>
 #include <vector>
 #include "DGPDefines.h"
 
@@ -21,7 +22,7 @@ namespace MagicDGP
 
     Point3DSet* Parser::ParsePointSetByOBJ(std::string fileName)
     {
-        MagicLog << "file name: " << fileName.c_str() << std::endl;
+        MagicLog << "ParsePointSetByOBJ file name: " << fileName.c_str() << std::endl;
         std::ifstream fin(fileName);
         std::vector<Vector3> posList;
         std::vector<Vector3> norList;
@@ -76,5 +77,106 @@ namespace MagicDGP
             }
         }
         return pPSet;
+    }
+
+    Mesh3D* Parser::ParseMesh3D(std::string fileName)
+    {
+        return ParseMesh3DByOBJ(fileName);
+    }
+
+    Mesh3D* Parser::ParseMesh3DByOBJ(std::string fileName)
+    {
+        MagicLog << "ParseMesh3DByOBJ file name: " << fileName.c_str() << std::endl;
+        std::ifstream fin(fileName);
+        const int maxSize = 512;
+        char pLine[maxSize];
+        Mesh3D* pMesh = new Mesh3D;
+        std::vector<Vector3> normalList;
+        std::vector<Vector3> texcordList;
+        while (fin.getline(pLine, maxSize))
+        {
+            if (pLine[0] == 'v')
+            {
+                if (pLine[1] == ' ' )
+                {
+                    char* tok = strtok(pLine, " ");
+                    Vector3 pos;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tok = strtok(NULL, " ");
+                        pos[i] = (Real)atof(tok);
+                    }
+                    pMesh->InsertVertex(pos);
+                }
+                else if (pLine[1] == 'n')
+                {
+                    char* tok = strtok(pLine, " ");
+                    Vector3 nor;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tok = strtok(NULL, " ");
+                        nor[i] = (Real)atof(tok);
+                    }
+                    normalList.push_back(nor);
+                }
+                else if (pLine[1] == 't')
+                {
+                    char* tok = strtok(pLine, " ");
+                    Vector3 tex;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tok = strtok(NULL, " ");
+                        tex[i] = (Real)atof(tok);
+                    }
+                    texcordList.push_back(tex);
+                }
+            }
+            else if (pLine[0] == 'f' && pLine[1] == ' ')
+            {
+                std::vector<Vertex3D* > vertList;
+                char* tok = strtok(pLine, " ");
+                for (int i = 0; i < 3; i++)
+                {
+                    char temp[100];
+                    strcpy(temp, tok);
+                    temp[strcspn(temp, "/")] = 0;
+                    int id = (int)strtol(temp, NULL, 10) - 1;
+                    Vertex3D* pVert = pMesh->GetVertex(id);
+                    vertList.push_back(pVert);
+                }
+                if (vertList.size() == 3)
+                {
+                    pMesh->InsertFace(vertList);
+                }
+            }
+        }
+        bool hasNormal = (normalList.size() > 0);
+        bool hasTexcord = (texcordList.size() > 0);
+        if (hasNormal && hasTexcord)
+        {
+            fin.seekg(0);
+            while (fin.getline(pLine, maxSize))
+            {
+
+            }
+        }
+        else if (hasNormal)
+        {
+            fin.seekg(0);
+            while (fin.getline(pLine, maxSize))
+            {
+
+            }
+        }
+        else if (hasTexcord)
+        {
+            fin.seekg(0);
+            while (fin.getline(pLine, maxSize))
+            {
+
+            }
+        }
+
+        return pMesh;
     }
 }

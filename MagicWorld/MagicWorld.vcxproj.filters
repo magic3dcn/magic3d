@@ -111,6 +111,9 @@
     <ClInclude Include="..\Src\Application\MediaStream.h">
       <Filter>Application\Scan3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\Mesh3D.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -184,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\MediaStream.cpp">
       <Filter>Application\Scan3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Mesh3D.cpp">
+      <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
