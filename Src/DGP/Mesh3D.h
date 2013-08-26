@@ -11,9 +11,19 @@ namespace MagicDGP
         Vertex3D();
         ~Vertex3D();
 
+        Vector3 GetPosition();
+        void    SetPosition(const Vector3& pos);
+        Vector3 GetNormal();
+        void    SetNormal(const Vector3& nor);
+        Vector3 GetTexCord();
+        void    SetTexCord(const Vector3& tex);
+        Edge3D* GetEdge();
+        void    SetEdge(Edge3D* pEdge);
+
     private:
         Vector3 mPosition;
         Vector3 mNormal;
+        Vector3 mTexCord;
         Edge3D* mpEdge;
 
     };
@@ -25,14 +35,23 @@ namespace MagicDGP
         Edge3D();
         ~Edge3D();
 
+        Vertex3D* GetVertex();
+        void      SetVertex(Vertex3D* pVert);
+        Edge3D*   GetPair();
+        void      SetPair(Edge3D* pEdge);
+        Edge3D*   GetNext();
+        void      SetNext(Edge3D* pEdge);
+        Edge3D*   GetPre();
+        void      SetPre(Edge3D* pEdge);
+        Face3D*   GetFace();
+        void      SetFace(Face3D* pFace);
+
     private:
         Vertex3D* mpVertex;
         Edge3D*   mpPair;
         Edge3D*   mpNext;
         Edge3D*   mpPre;
         Face3D*   mpFace;
-        Vector3   mTexCord;
-        Vector3   mNormal;
     };
 
 
@@ -41,6 +60,12 @@ namespace MagicDGP
     public:
         Face3D();
         ~Face3D();
+
+        Edge3D* GetEdge();
+        void    SetEdge(Edge3D* pEdge);
+        Vector3 GetNormal();
+        void    SetNormal(const Vector3& nor);
+        Real    GetArea();
 
     private:
         Edge3D* mpEdge;

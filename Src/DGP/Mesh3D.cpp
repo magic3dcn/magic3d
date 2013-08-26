@@ -11,6 +11,46 @@ namespace MagicDGP
     {
     }
 
+    Vector3 Vertex3D::GetPosition()
+    {
+        return mPosition;
+    }
+
+    void Vertex3D::SetPosition(const Vector3& pos)
+    {
+        mPosition = pos;
+    }
+
+    Vector3 Vertex3D::GetNormal()
+    {
+        return mNormal;
+    }
+
+    void Vertex3D::SetNormal(const Vector3& nor)
+    {
+        mNormal = nor;
+    }
+
+    Vector3 Vertex3D::GetTexCord()
+    {
+        return mTexCord;
+    }
+
+    void Vertex3D::SetTexCord(const Vector3& tex)
+    {
+        mTexCord = tex;
+    }
+
+    Edge3D* Vertex3D::GetEdge()
+    {
+        return mpEdge;
+    }
+
+    void Vertex3D::SetEdge(Edge3D* pEdge)
+    {
+        mpEdge = pEdge;
+    }
+
     Edge3D::Edge3D()
     {
     }
@@ -19,12 +59,86 @@ namespace MagicDGP
     {
     }
 
+    Vertex3D* Edge3D::GetVertex()
+    {
+        return mpVertex;
+    }
+
+    void Edge3D::SetVertex(Vertex3D* pVert)
+    {
+        mpVertex = pVert;
+    }
+
+    Edge3D* Edge3D::GetPair()
+    {
+        return mpPair;
+    }
+
+    void Edge3D::SetPair(Edge3D* pEdge)
+    {
+        mpPair = pEdge;
+    }
+
+    Edge3D* Edge3D::GetNext()
+    {
+        return mpNext;
+    }
+
+    void Edge3D::SetNext(Edge3D* pEdge)
+    {
+        mpNext = pEdge;
+    }
+
+    Edge3D* Edge3D::GetPre()
+    {
+        return mpPre;
+    }
+
+    void Edge3D::SetPre(Edge3D* pEdge)
+    {
+        mpPre = pEdge;
+    }
+
+    Face3D* Edge3D::GetFace()
+    {
+        return mpFace;
+    }
+    void Edge3D::SetFace(Face3D* pFace)
+    {
+        mpFace = pFace;
+    }
+
     Face3D::Face3D()
     {
     }
 
     Face3D::~Face3D()
     {
+    }
+
+    Edge3D* Face3D::GetEdge()
+    {
+        return mpEdge;
+    }
+
+    void Face3D::SetEdge(Edge3D* pEdge)
+    {
+        mpEdge = pEdge;
+    }
+
+    Vector3 Face3D::GetNormal()
+    {
+        return mNormal;
+    }
+
+    void Face3D::SetNormal(const Vector3& nor)
+    {
+        mNormal = nor;
+    }
+
+    Real Face3D::GetArea()
+    {
+        return mArea;
     }
 
     Mesh3D::Mesh3D()

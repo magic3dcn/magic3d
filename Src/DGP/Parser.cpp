@@ -150,14 +150,24 @@ namespace MagicDGP
                 }
             }
         }
-        bool hasNormal = (normalList.size() > 0);
-        bool hasTexcord = (texcordList.size() > 0);
-        if (hasNormal && hasTexcord)
+        int vertNum = pMesh->GetVertexNumber();
+        if (texcordList.size() == vertNum && normalList.size() == vertNum)
+        {
+            for (int i = 0; i < vertNum; i++)
+            {
+                pMesh->GetVertex(i)->SetNormal(normalList.at(i));
+                pMesh->GetVertex(i)->SetTexCord(texcordList.at(i));
+            }
+        }
+  /*      if (hasNormal && hasTexcord)
         {
             fin.seekg(0);
             while (fin.getline(pLine, maxSize))
             {
+                if (pLine[0] == 'f' && pLine[1] == ' ')
+                {
 
+                }
             }
         }
         else if (hasNormal)
@@ -175,7 +185,7 @@ namespace MagicDGP
             {
 
             }
-        }
+        }*/
 
         return pMesh;
     }
