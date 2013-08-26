@@ -25,7 +25,11 @@ namespace MagicApp
         {
             MagicLog << "OpenNI initialize succeed" << std::endl;
         }
-    //    mRecorder.create("./RecorderData.oni");
+        rc  = mRecorder.create("./RecorderData.oni");
+        if (rc != openni::STATUS_OK)
+        {
+            MagicLog << "Recorder create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+        }
     }
 
     void MediaStream::StartScanner()
@@ -112,7 +116,7 @@ namespace MagicApp
                 mColorStream.destroy();
                 mDepthStream.destroy();
             }
-            openni::Status rc = mDevice.open("G:/Code/Magic3D/Code/bin/release/ScanData.oni");
+            openni::Status rc = mDevice.open("./ScanData.oni");
             if (rc != openni::STATUS_OK)
             {
                 MagicLog << "Devive open by file failed: " << openni::OpenNI::getExtendedError() << std::endl;
