@@ -35,48 +35,51 @@ namespace MagicApp
     void Scan3DUI::Record(MyGUI::Widget* pSender)
     {
         Scan3D* pScan = dynamic_cast<Scan3D* >(MagicCore::AppManager::GetSingleton()->GetApp("Scan3D"));
-        if (pScan->GetMediaStream().IsRecording())
+        pScan->Record();
+        /*if (pScan->GetMediaStream().IsRecording())
         {
             pScan->GetMediaStream().StopRecorder();
         }
         else
         {
             pScan->GetMediaStream().StartRecorder();
-        }
+        }*/
     }
 
     void Scan3DUI::PlayScanner(MyGUI::Widget* pSender)
     {
         Scan3D* pScan = dynamic_cast<Scan3D* >(MagicCore::AppManager::GetSingleton()->GetApp("Scan3D"));
-        if (pScan->IsScannerUpdate())
-        {
-            MagicLog << "Scan3DUI::PlayScanner StopScanner" << std::endl;
-            pScan->GetMediaStream().StopScanner();
-            pScan->StopUpdateScanner();
-        }
-        else
-        {
-            MagicLog << "Scan3DUI::PlayScanner StartScanner" << std::endl;
-            pScan->GetMediaStream().StartScanner();
-            pScan->StartUpdateScanner();
-        }
+        pScan->PlayScanner();
+        //if (pScan->IsScannerUpdate())
+        //{
+        //    MagicLog << "Scan3DUI::PlayScanner StopScanner" << std::endl;
+        //    pScan->GetMediaStream().StopScanner();
+        //    pScan->StopUpdateScanner();
+        //}
+        //else
+        //{
+        //    MagicLog << "Scan3DUI::PlayScanner StartScanner" << std::endl;
+        //    pScan->GetMediaStream().StartScanner();
+        //    pScan->StartUpdateScanner();
+        //}
     }
 
     void Scan3DUI::PlayRecordScanner(MyGUI::Widget* pSender)
     {
         Scan3D* pScan = dynamic_cast<Scan3D* >(MagicCore::AppManager::GetSingleton()->GetApp("Scan3D"));
-        if (pScan->IsScannerUpdate())
-        {
-            MagicLog << "Scan3DUI::PlayRecordScanner StopScanner" << std::endl;
-            pScan->GetMediaStream().StopRecordScanner();
-            pScan->StopUpdateScanner();
-        }
-        else
-        {
-            MagicLog << "Scan3DUI::PlayRecordScanner StartScanner" << std::endl;
-            pScan->GetMediaStream().StartRecordScanner();
-            pScan->StartUpdateScanner();
-        }
+        pScan->PlayRecordScanner();
+        //if (pScan->IsScannerUpdate())
+        //{
+        //    MagicLog << "Scan3DUI::PlayRecordScanner StopScanner" << std::endl;
+        //    pScan->GetMediaStream().StopRecordScanner();
+        //    pScan->StopUpdateScanner();
+        //}
+        //else
+        //{
+        //    MagicLog << "Scan3DUI::PlayRecordScanner StartScanner" << std::endl;
+        //    pScan->GetMediaStream().StartRecordScanner();
+        //    pScan->StartUpdateScanner();
+        //}
     }
 
     void Scan3DUI::BackToHomepage(MyGUI::Widget* pSender)

@@ -36,6 +36,12 @@ namespace MagicApp
     {
         if ((mScanMode == CLOSE) || (mScanMode == RECORDER))
         {
+            if (mScanMode == RECORDER)
+            {
+                mDevice.close();
+                mColorStream.destroy();
+                mDepthStream.destroy();
+            }
             MagicLog << "MediaStream::StartScanner open device" << std::endl;
             openni::Status rc = mDevice.open(openni::ANY_DEVICE);
             if (rc != openni::STATUS_OK)
@@ -56,7 +62,7 @@ namespace MagicApp
             //temp
             if (mRecorder.isValid())
             {
-                rc = mRecorder.attach(mColorStream);
+                rc = mRecorder.attach(mColorStream, true);
                 if (rc != openni::STATUS_OK)
                 {
                     MagicLog << "ColorStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
@@ -90,20 +96,13 @@ namespace MagicApp
 
     void MediaStream::StartRecorder()
     {
-        if (mIsRecording == false)
-        {
-            mRecorder.start();
-            mIsRecording = true;
-        }
+        mRecorder.start();
     }
 
     void MediaStream::StopRecorder()
     {
-        if (mIsRecording)
-        {
-            mRecorder.stop();
-            mIsRecording = true;
-        }
+        mRecorder.stop();
+        mRecorder.destroy();
     }
 
     void MediaStream::StartRecordScanner()
@@ -160,10 +159,5 @@ namespace MagicApp
             mDepthStream.readFrame(pDepthFrame);
         }
         delete []pStreams;
-    }
-
-    bool MediaStream::IsRecording()
-    {
-        return mIsRecording;
     }
 }

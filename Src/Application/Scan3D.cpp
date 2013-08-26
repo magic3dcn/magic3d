@@ -9,7 +9,9 @@ namespace MagicApp
 {
     Scan3D::Scan3D() :
         mHasInitilised(false),
-        mHasScanStart(false),
+        mIsScanning(false),
+        mIsRecording(false),
+        mIsRecordScanning(false),
         mpCanvasColor(NULL),
         mpCanvasDepth(NULL)
     {
@@ -17,26 +19,22 @@ namespace MagicApp
 
     Scan3D::~Scan3D()
     {
-        DestroyCanvas();
+        ClearApp();
     }
 
     bool Scan3D::Enter()
     {
         MagicLog << "Enter Scan3D" << std::endl;
+        Init();
         mUI.Setup();
-        if (!mHasInitilised)
-        {
-            Init();
-            mMediaStream.Init();
-            mHasInitilised = true;
-        }
         SetRenderEnvironment();
+        ResumeAppState();
         return true;
     }
 
     bool Scan3D::Update(float timeElapsed)
     {
-        if (mHasScanStart)
+        if (mIsScanning || mIsRecordScanning)
         {
             UpdateScanner();
         }
@@ -45,36 +43,73 @@ namespace MagicApp
 
     bool Scan3D::Exit()
     {
+        PauseAppState();
         mUI.Shutdown();
         DestroyRenderEnvironment();
         return true;
     }
 
-    MediaStream& Scan3D::GetMediaStream()
+    void Scan3D::PlayScanner()
     {
-        return mMediaStream;
+        if (mIsScanning == false)
+        {
+            if (mIsRecordScanning)
+            {
+                mMediaStream.StopRecordScanner();
+                mIsRecordScanning = false;
+            }
+            mMediaStream.StartScanner();
+            mIsScanning = true;
+
+        }
+        else
+        {
+            mMediaStream.StopScanner();
+            mIsScanning = false; 
+        }
     }
 
-    bool Scan3D::IsScannerUpdate()
+    void Scan3D::Record()
     {
-        return mHasScanStart;
+        if (mIsRecording == false)
+        {
+            mMediaStream.StartRecorder();
+            mIsRecording = true;
+        }
+        else
+        {
+            mMediaStream.StopRecorder();
+            mIsRecording = false;
+        }
     }
 
-    void Scan3D::StartUpdateScanner()
+    void Scan3D::PlayRecordScanner()
     {
-        mHasScanStart = true;
-    }
-
-    void Scan3D::StopUpdateScanner()
-    {
-        mHasScanStart = false;
+        if (mIsRecordScanning == false)
+        {
+            if (mIsScanning)
+            {
+                mMediaStream.StopScanner();
+                mIsScanning = false;
+            }
+            mMediaStream.StartRecordScanner();
+            mIsRecordScanning = true;
+        }
+        else
+        {
+            mMediaStream.StopRecordScanner();
+            mIsRecordScanning = false;
+        }
     }
 
     void Scan3D::Init()
     {
-        //mMediaStream.Init();
-        //InitCanvas(mMediaStream.GetResolutionX(), mMediaStream.GetResolutionY());
-        InitCanvas(640, 480);
+        if (mHasInitilised == false)
+        {
+            mMediaStream.Init();
+            InitCanvas(640, 480);
+            mHasInitilised = true;
+        }
     }
 
     void Scan3D::InitCanvas(int resolutionX, int resolutionY)
@@ -139,9 +174,6 @@ namespace MagicApp
             for(int x = 0; x < resolutionX; x++)  
             {  
                 pDepthBuffer[((y * resolutionX) + x) * 1 + 0 ] = unsigned short(32768);
-           //     pDepthBuffer[((y * resolutionX) + x) * 2 + 1 ] = unsigned char(128);
-           //     pDepthBuffer[((y * resolutionX) + x) * 4 + 2 ] = unsigned char(0);
-           //     pDepthBuffer[((y * resolutionX) + x) * 4 + 3 ] = 1;
             }
         }  
         // Unlock the pixel buffer   
@@ -156,14 +188,11 @@ namespace MagicApp
         mpCanvasDepth->setCorners(rightCX - w, rightCY + h, rightCX + w, rightCY - h);
       //  mpCanvasDepth->setBoundingBox(Ogre::AxisAlignedBox(-100000.0f * Ogre::Vector3::UNIT_SCALE, 100000.0f * Ogre::Vector3::UNIT_SCALE));
         mpCanvasDepth->setMaterial("Mat_Canvas_Depth");
-
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->attachObject(mpCanvasColor);
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->attachObject(mpCanvasDepth);
     }
 
-    void Scan3D::DestroyCanvas()
+    void Scan3D::ClearApp()
     {
-
+        //Not done. Since UI has not done finally.
     }
 
     void Scan3D::SetRenderEnvironment()
@@ -174,18 +203,25 @@ namespace MagicApp
         frontLight->setPosition(0, 0, 10);
         frontLight->setDiffuseColour(0.8, 0.8, 0.8);
         frontLight->setSpecularColour(0.5, 0.5, 0.5);
+        if (mpCanvasColor != NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->attachObject(mpCanvasColor);
+        }
+        if (mpCanvasDepth != NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->attachObject(mpCanvasDepth);
+        }
     }
 
     void Scan3D::DestroyRenderEnvironment()
     {
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->destroyLight("frontLight");
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->detachObject(mpCanvasColor);
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->detachObject(mpCanvasDepth);
     }
 
     void Scan3D::UpdateScanner()
     {
-      //  static int colorNum = 0;
-      //  static int depthNum = 0;
-        //MagicLog << "Start Scan3D::UpdateScanner" << std::endl;
         openni::VideoFrameRef colorFrame, depthFrame;
         mMediaStream.WaitStream(&colorFrame, &depthFrame);
         if (colorFrame.isValid())
@@ -209,7 +245,6 @@ namespace MagicApp
             }  
             // Unlock the pixel buffer   
             pPixelBufferColor->unlock();
-       //     colorNum++;
         }
         if (depthFrame.isValid())
         {
@@ -224,17 +259,43 @@ namespace MagicApp
                 for(int x = 0; x < resolutionX; x++)  
                 {
                     openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
-                    //pDepthBuffer[(y * resolutionX + x) * 4 + 0 ] = depth;  // B   
-                    //pDepthBuffer[(y * resolutionX + x) * 4 + 1 ] = depth;  // G   
-                    //pDepthBuffer[(y * resolutionX + x) * 4 + 2 ] = depth;  // R   
-                    //pDepthBuffer[(y * resolutionX + x) * 4 + 3 ] = 1;
                     pDepthBuffer[y * resolutionX + x] = depth << 5;
                 }
             }  
             // Unlock the pixel buffer   
             pPixelBufferDepth->unlock();
-        //    depthNum++;
         }
-       // MagicLog << "Update: color Num: " << colorNum << " depthNum: " << depthNum << std::endl;
+    }
+
+    void Scan3D::PauseAppState()
+    {
+        if (mIsScanning)
+        {
+            mMediaStream.StopScanner();
+        }
+        if (mIsRecording)
+        {
+            mMediaStream.StopRecorder();
+        }
+        if (mIsRecordScanning)
+        {
+            mMediaStream.StopRecordScanner();
+        }
+    }
+
+    void Scan3D::ResumeAppState()
+    {
+        if (mIsScanning)
+        {
+            mMediaStream.StartScanner();
+        }
+        if (mIsRecording)
+        {
+            mMediaStream.StartRecorder();
+        }
+        if (mIsRecordScanning)
+        {
+            mMediaStream.StartRecordScanner();
+        }
     }
 }

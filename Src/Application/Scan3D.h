@@ -17,22 +17,25 @@ namespace MagicApp
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
 
-        MediaStream& GetMediaStream();
-        bool IsScannerUpdate();
-        void StartUpdateScanner();
-        void StopUpdateScanner();
+        void PlayScanner();
+        void Record();
+        void PlayRecordScanner();
 
     private:
         void Init();
         void InitCanvas(int resolutionX, int resolutionY);
-        void DestroyCanvas();
         void SetRenderEnvironment();
         void DestroyRenderEnvironment();
         void UpdateScanner();
+        void PauseAppState();
+        void ResumeAppState();
+        void ClearApp();
 
     private:
         bool mHasInitilised;
-        bool mHasScanStart;
+        bool mIsScanning;
+        bool mIsRecording;
+        bool mIsRecordScanning;
         Scan3DUI mUI;
         MediaStream mMediaStream;
         Ogre::Rectangle2D* mpCanvasColor;

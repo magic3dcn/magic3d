@@ -28,7 +28,6 @@ namespace MagicApp
         int GetResolutionX();
         int GetResolutionY();
         void WaitStream(openni::VideoFrameRef* pColorFrame, openni::VideoFrameRef* pDepthFrame);
-        bool IsRecording();
 
     private:
         openni::Device mDevice;
