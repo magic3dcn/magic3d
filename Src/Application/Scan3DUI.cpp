@@ -22,6 +22,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_PlayScanner")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &Scan3DUI::PlayScanner);
         mRoot.at(0)->findWidget("But_Record")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &Scan3DUI::Record);
         mRoot.at(0)->findWidget("But_PlayRecordScanner")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &Scan3DUI::PlayRecordScanner);
+        mRoot.at(0)->findWidget("But_Capture")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &Scan3DUI::CapturePointSet);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &Scan3DUI::BackToHomepage);
     }
 
@@ -80,6 +81,12 @@ namespace MagicApp
         //    pScan->GetMediaStream().StartRecordScanner();
         //    pScan->StartUpdateScanner();
         //}
+    }
+
+    void Scan3DUI::CapturePointSet(MyGUI::Widget* pSender)
+    {
+        Scan3D* pScan = dynamic_cast<Scan3D* >(MagicCore::AppManager::GetSingleton()->GetApp("Scan3D"));
+        pScan->CapturePointSet();
     }
 
     void Scan3DUI::BackToHomepage(MyGUI::Widget* pSender)

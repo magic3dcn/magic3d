@@ -2,7 +2,7 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 605 1024 128" layer="Back" name="UIPanel">
         <Widget type="Button" skin="ButtonRightSkin" position="120 65 30 30" name="But_PlayScanner"/>
-        <Widget type="Button" skin="Button" position="660 60 50 30" name="But_Back">
+        <Widget type="Button" skin="Button" position="780 60 50 30" name="But_Back">
             <Property key="Caption" value="Back"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
@@ -19,6 +19,9 @@
         <Widget type="TextBox" skin="TextBox" position="460 40 90 20" name="Tex_PlayRecordScanner">
             <Property key="Caption" value="Play Record"/>
             <Property key="TextColour" value="1 1 1"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="610 60 65 30" name="But_Capture">
+            <Property key="Caption" value="Capture"/>
         </Widget>
     </Widget>
 </MyGUI>

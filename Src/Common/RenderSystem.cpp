@@ -94,6 +94,7 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(psName);
+            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
         }
         pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
         std::map<int, MagicDGP::Point3D*> pointSet = pPS->GetPointSet();
@@ -105,7 +106,6 @@ namespace MagicCore
             pMObj->normal(nor[0], nor[1], nor[2]);
         }
         pMObj->end();
-        mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
     }
 
     void RenderSystem::HidePoint3DSet(std::string psName)

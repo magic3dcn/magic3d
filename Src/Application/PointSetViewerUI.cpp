@@ -41,6 +41,7 @@ namespace MagicApp
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
         MagicDGP::Parser parser;
         MagicDGP::Point3DSet* pPointSet = parser.ParsePointSet(fileName);
+        pPointSet->UnifyPosition(2.0);
         PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
         if (pPSViewer != NULL)
         {

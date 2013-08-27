@@ -16,6 +16,7 @@ namespace MagicApp
         void Record(MyGUI::Widget* pSender);
         void PlayScanner(MyGUI::Widget* pSender);
         void PlayRecordScanner(MyGUI::Widget* pSender);
+        void CapturePointSet(MyGUI::Widget* pSender);
         void BackToHomepage(MyGUI::Widget* pSender);
 
     private:

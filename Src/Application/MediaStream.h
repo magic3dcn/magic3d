@@ -27,6 +27,8 @@ namespace MagicApp
 
         int GetResolutionX();
         int GetResolutionY();
+        openni::VideoStream& GetDepthStream();
+        openni::VideoStream& GetColorStream();
         void WaitStream(openni::VideoFrameRef* pColorFrame, openni::VideoFrameRef* pDepthFrame);
 
     private:

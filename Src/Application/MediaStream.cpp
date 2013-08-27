@@ -160,4 +160,14 @@ namespace MagicApp
         }
         delete []pStreams;
     }
+
+    openni::VideoStream& MediaStream::GetDepthStream()
+    {
+        return mDepthStream;
+    }
+
+    openni::VideoStream& MediaStream::GetColorStream()
+    {
+        return mColorStream;
+    }
 }

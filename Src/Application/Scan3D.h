@@ -20,6 +20,7 @@ namespace MagicApp
         void PlayScanner();
         void Record();
         void PlayRecordScanner();
+        void CapturePointSet();
 
     private:
         void Init();

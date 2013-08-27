@@ -4,6 +4,8 @@
 #include "../Common/RenderSystem.h"
 #include "OpenNI.h"
 #include <math.h>
+#include <fstream>
+#include "../DGP/Vector3.h"
 
 namespace MagicApp
 {
@@ -114,11 +116,11 @@ namespace MagicApp
 
     void Scan3D::InitCanvas(int resolutionX, int resolutionY)
     {
-        float w = 0.4f;
+        float w = 0.45f;
         float h = w * resolutionY * 1024.f / resolutionX / 768.f;
-        float leftCX = -0.45f;
+        float leftCX = -0.5f;
         float leftCY = 0.1f;
-        float rightCX = 0.45f;
+        float rightCX = 0.5f;
         float rightCY = 0.1f;
         mpTexColor = Ogre::TextureManager::getSingleton().createManual(  
                         "Tex_Canvas_Color",
@@ -264,6 +266,53 @@ namespace MagicApp
             }  
             // Unlock the pixel buffer   
             pPixelBufferDepth->unlock();
+        }
+    }
+
+    void Scan3D::CapturePointSet()
+    {
+        static int fileIndex = 0;
+        openni::VideoFrameRef colorFrame, depthFrame;
+        mMediaStream.WaitStream(&colorFrame, &depthFrame);
+        if (depthFrame.isValid())
+        {
+            const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
+            int resolutionX = mpTexDepth->getWidth();
+            int resolutionY = mpTexDepth->getHeight();
+            std::vector<MagicDGP::Vector3> posList;
+            for(int y = 0; y < resolutionY; y++)  
+            {  
+                for(int x = 0; x < resolutionX; x++)  
+                {
+                    openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
+                    float rx, ry, rz;
+                    openni::CoordinateConverter::convertDepthToWorld(mMediaStream.GetDepthStream(), 
+                        x, y, depth, &rx, &ry, &rz);
+                    MagicDGP::Vector3 pos(-rx, ry, rz);
+                    posList.push_back(pos);
+                }
+            }
+            char fileName[20];
+            sprintf(fileName, "Scene_%d.obj", fileIndex);
+            fileIndex++;
+            std::ofstream fout(fileName);
+            for (int j = 1; j < resolutionY - 1; j++)
+            {
+                for (int i = 1; i < resolutionX - 1; i++)
+                {
+                    MagicDGP::Vector3 dirX = posList.at(j * resolutionX + i + 1) - posList.at(j * resolutionX + i - 1);
+                    MagicDGP::Vector3 dirY = posList.at((j + 1) * resolutionX + i) - posList.at((j - 1) * resolutionX + i);
+                    MagicDGP::Vector3 nor = dirY.CrossProduct(dirX);
+                    MagicDGP::Real len = nor.Normalise();
+                    if (len > MagicDGP::Epsilon)
+                    {
+                        MagicDGP::Vector3 pos = posList.at(j * resolutionX + i);
+                        fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+                        fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+                    }
+                }
+            }
+            fout.close();
         }
     }
 
