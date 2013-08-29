@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "MediaStream.h"
+#include "../DGP/Vector3.h"
 #include "../Common/LogSystem.h"
+#include <vector>
 
 namespace MagicApp
 {
@@ -133,6 +135,7 @@ namespace MagicApp
             mScanMode = RECORDER;
         }
         mDepthStream.start();
+   //     ExportDepthFrameForTest();
         mColorStream.start();
     }
 
@@ -169,5 +172,68 @@ namespace MagicApp
     openni::VideoStream& MediaStream::GetColorStream()
     {
         return mColorStream;
+    }
+
+    void MediaStream::ExportDepthFrameForTest()
+    {
+        openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
+        int frameNum = pPC->getNumberOfFrames(mDepthStream);
+        pPC->seek(mDepthStream, 90);
+        for (int fi = frameNum / 2; fi < 2 * frameNum / 3; fi++)
+        {
+            MagicLog << "Export file(" << frameNum << "): " << fi << std::endl;
+            pPC->seek(mDepthStream, fi);
+            int changeIndex;
+            openni::VideoStream** pStreams = new openni::VideoStream*[1];
+            pStreams[0] = &mDepthStream;
+            openni::OpenNI::waitForAnyStream(pStreams, 1, &changeIndex);
+            if (changeIndex != 0)
+            {
+                MagicLog << "hangeIndex != 0" << std::endl;
+            }
+            delete []pStreams;
+            openni::VideoFrameRef depthFrame;
+            mDepthStream.readFrame(&depthFrame);
+            if (depthFrame.isValid())
+            {
+                MagicLog << "Valid" << std::endl;
+                const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
+                int resolutionX = depthFrame.getVideoMode().getResolutionX();
+                int resolutionY = depthFrame.getVideoMode().getResolutionY();
+                std::vector<MagicDGP::Vector3> posList;
+                for(int y = 0; y < resolutionY; y++)  
+                {  
+                    for(int x = 0; x < resolutionX; x++)  
+                    {
+                        openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
+                        float rx, ry, rz;
+                        openni::CoordinateConverter::convertDepthToWorld(mDepthStream, 
+                            x, y, depth, &rx, &ry, &rz);
+                        MagicDGP::Vector3 pos(-rx, ry, rz);
+                        posList.push_back(pos);
+                    }
+                }
+                char fileName[20];
+                sprintf(fileName, "Scene_%d.obj", fi);
+                std::ofstream fout(fileName);
+                for (int j = 1; j < resolutionY - 1; j++)
+                {
+                    for (int i = 1; i < resolutionX - 1; i++)
+                    {
+                        MagicDGP::Vector3 dirX = posList.at(j * resolutionX + i + 1) - posList.at(j * resolutionX + i - 1);
+                        MagicDGP::Vector3 dirY = posList.at((j + 1) * resolutionX + i) - posList.at((j - 1) * resolutionX + i);
+                        MagicDGP::Vector3 nor = dirY.CrossProduct(dirX);
+                        MagicDGP::Real len = nor.Normalise();
+                        if (len > MagicDGP::Epsilon)
+                        {
+                            MagicDGP::Vector3 pos = posList.at(j * resolutionX + i);
+                            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+                            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+                        }
+                    }
+                }
+                fout.close();
+            }
+        }
     }
 }

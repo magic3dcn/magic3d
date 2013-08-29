@@ -30,6 +30,7 @@ namespace MagicApp
         openni::VideoStream& GetDepthStream();
         openni::VideoStream& GetColorStream();
         void WaitStream(openni::VideoFrameRef* pColorFrame, openni::VideoFrameRef* pDepthFrame);
+        void ExportDepthFrameForTest();
 
     private:
         openni::Device mDevice;
@@ -38,6 +39,5 @@ namespace MagicApp
         openni::Recorder mRecorder;
         bool mIsRecording;
     };
-
 
 }
