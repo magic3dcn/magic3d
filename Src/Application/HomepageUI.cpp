@@ -5,6 +5,7 @@
 #include "../Common/LogSystem.h"
 #include "PointSetViewer.h"
 #include "Scan3D.h"
+#include "Reconstruction.h"
 
 namespace MagicApp
 {
@@ -23,6 +24,7 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
         mRoot.at(0)->findWidget("But_PointViewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
     }
 
     void HomepageUI::Shutdown()
@@ -43,5 +45,11 @@ namespace MagicApp
     {
         MagicLog << "EnterScan3D Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new Scan3D, "Scan3D");
+    }
+
+    void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
+    {
+        MagicLog << "EnterReconstruction Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new Reconstruction, "Reconstruction");
     }
 }

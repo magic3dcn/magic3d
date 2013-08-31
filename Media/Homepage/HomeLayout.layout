@@ -24,5 +24,13 @@
             <Property key="TextShadowColour" value="0.274854 0.274854 0.274854"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
+        <Widget type="Button" skin="ButtonDownSkin" position="498 680 28 24" name="But_Reconstruction"/>
+        <Widget type="TextBox" skin="TextBox" position="445 645 130 30" name="Tex_Reconstruction">
+            <Property key="Caption" value="Reconstruction"/>
+            <Property key="TextAlign" value="Center"/>
+            <Property key="TextColour" value="0.133544 0 0.461988"/>
+            <Property key="TextShadow" value="true"/>
+            <Property key="TextShadowColour" value="0.607843 0.784314 1"/>
+        </Widget>
     </Widget>
 </MyGUI>

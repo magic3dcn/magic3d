@@ -34,6 +34,9 @@
     <Filter Include="Application\Scan3D">
       <UniqueIdentifier>{22ff8cf8-29f8-4bc5-8d40-ff5df025ab4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Reconstruction">
+      <UniqueIdentifier>{03e02004-9479-4bcd-8106-cd14f254cb66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -114,6 +117,12 @@
     <ClInclude Include="..\Src\DGP\Mesh3D.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\Reconstruction.h">
+      <Filter>Application\Reconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\ReconstructionUI.h">
+      <Filter>Application\Reconstruction</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -190,6 +199,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\Reconstruction.cpp">
+      <Filter>Application\Reconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ReconstructionUI.cpp">
+      <Filter>Application\Reconstruction</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

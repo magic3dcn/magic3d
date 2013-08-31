@@ -38,6 +38,7 @@ namespace MagicDGP
         void SetPoint(Point3D* pPoint);
         void UnifyPosition(Real size);
         bool InsertPoint(Point3D* pPoint);
+        int  GetPointNumber();
 
     protected:
         std::map<int, Point3D* > mPointSet;

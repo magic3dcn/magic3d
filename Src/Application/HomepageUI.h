@@ -15,6 +15,7 @@ namespace MagicApp
     private:
         void EnterPointViewer(MyGUI::Widget* pSender);
         void EnterScan3D(MyGUI::Widget* pSender);
+        void EnterReconstruction(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

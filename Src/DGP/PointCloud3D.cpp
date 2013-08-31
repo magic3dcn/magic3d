@@ -154,4 +154,8 @@ namespace MagicDGP
         return ret.second;
     }
 
+    int Point3DSet::GetPointNumber()
+    {
+        return mPointSet.size();
+    }
 }

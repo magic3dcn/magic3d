@@ -94,6 +94,8 @@
     <ClInclude Include="..\Src\Application\MediaStream.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
+    <ClInclude Include="..\Src\Application\Reconstruction.h" />
+    <ClInclude Include="..\Src\Application\ReconstructionUI.h" />
     <ClInclude Include="..\Src\Application\Scan3D.h" />
     <ClInclude Include="..\Src\Application\Scan3DUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
@@ -121,6 +123,8 @@
     <ClCompile Include="..\Src\Application\MediaStream.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
+    <ClCompile Include="..\Src\Application\Reconstruction.cpp" />
+    <ClCompile Include="..\Src\Application\ReconstructionUI.cpp" />
     <ClCompile Include="..\Src\Application\Scan3D.cpp" />
     <ClCompile Include="..\Src\Application\Scan3DUI.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
