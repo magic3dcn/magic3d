@@ -3,6 +3,10 @@
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
 #include "../Common/AppManager.h"
+#include "../Common/ToolKit.h"
+#include "../DGP/Parser.h"
+#include "../Common/RenderSystem.h"
+#include "Reconstruction.h"
 
 namespace MagicApp
 {
@@ -37,11 +41,24 @@ namespace MagicApp
     void ReconstructionUI::OpenPointSet(MyGUI::Widget* pSender)
     {
         MagicLog << "ReconstructionUI::OpenPointSet" << std::endl;
+        std::string fileName;
+        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicDGP::Parser parser;
+        MagicDGP::Point3DSet* pPointSet = parser.ParsePointSet(fileName);
+       // pPointSet->UnifyPosition(2.0);
+        Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
+        if (pReconApp != NULL)
+        {
+            std::string pcName = pReconApp->AddPoint3DSet(pPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, pcName, "SimplePoint");
+        }
     }
 
     void ReconstructionUI::FilterPointSet(MyGUI::Widget* pSender)
     {
         MagicLog << "ReconstructionUI::FilterPointSet" << std::endl;
+        Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
+        pReconApp->FilterPointSet();
     }
 
     void ReconstructionUI::AlignPointSet(MyGUI::Widget* pSender)

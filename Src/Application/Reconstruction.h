@@ -3,6 +3,8 @@
 #include "../Tool/ViewTool.h"
 #include "../DGP/PointCloud3D.h"
 #include "ReconstructionUI.h"
+#include <map>
+#include <string>
 
 namespace MagicApp
 {
@@ -18,6 +20,10 @@ namespace MagicApp
         virtual bool MouseMoved( const OIS::MouseEvent &arg );
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
+        std::string AddPoint3DSet(MagicDGP::Point3DSet* pPS);
+        void FilterPointSet();
+        void Clear();
+
     private:
         void SetupScene(void);
         void ShutdownScene(void);
@@ -25,5 +31,6 @@ namespace MagicApp
     private:
         ReconstructionUI mUI;
         MagicTool::ViewTool mViewTool;
+        std::map<std::string, MagicDGP::Point3DSet* > mPCSet;
     };
 }
