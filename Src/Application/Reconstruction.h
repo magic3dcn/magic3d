@@ -22,6 +22,7 @@ namespace MagicApp
 
         std::string AddPoint3DSet(MagicDGP::Point3DSet* pPS);
         void FilterPointSet();
+        void AlignPointSet();
         void Clear();
 
     private:

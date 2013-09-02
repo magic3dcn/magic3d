@@ -3,6 +3,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../DGP/Filter.h"
+#include "../DGP/Registration.h"
 
 namespace MagicApp
 {
@@ -64,6 +65,19 @@ namespace MagicApp
         {
             MagicDGP::Filter::FilterDepthScanPointSet(itr->second);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->second, itr->first, "SimplePoint");
+        }
+    }
+
+    void Reconstruction::AlignPointSet()
+    {
+        if (mPCSet.size() > 1)
+        {
+            std::map<std::string, MagicDGP::Point3DSet* >::iterator itrRef = mPCSet.begin();
+            std::map<std::string, MagicDGP::Point3DSet* >::iterator itrPC  = ++(mPCSet.begin());
+            for ( ; itrPC != mPCSet.end(); itrPC++, itrRef++)
+            {
+                MagicDGP::Registration::ICPRegistrate(itrRef->second, itrPC->second);
+            }
         }
     }
 

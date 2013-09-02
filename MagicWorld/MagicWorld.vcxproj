@@ -113,6 +113,7 @@
     <ClInclude Include="..\Src\DGP\Mesh3D.h" />
     <ClInclude Include="..\Src\DGP\Parser.h" />
     <ClInclude Include="..\Src\DGP\PointCloud3D.h" />
+    <ClInclude Include="..\Src\DGP\Registration.h" />
     <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="..\Src\Tool\ViewTool.h" />
     <ClInclude Include="stdafx.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp" />
     <ClCompile Include="..\Src\DGP\Parser.cpp" />
     <ClCompile Include="..\Src\DGP\PointCloud3D.cpp" />
+    <ClCompile Include="..\Src\DGP\Registration.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="..\Src\Tool\ViewTool.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
