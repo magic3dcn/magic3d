@@ -97,11 +97,11 @@ namespace MagicCore
             mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
         }
         pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
-        std::map<int, MagicDGP::Point3D*> pointSet = pPS->GetPointSet();
-        for (std::map<int, MagicDGP::Point3D*>::iterator itr = pointSet.begin(); itr != pointSet.end(); ++itr)
+        std::vector<MagicDGP::Point3D* > pointSet = pPS->GetPointSet();
+        for (std::vector<MagicDGP::Point3D* >::iterator itr = pointSet.begin(); itr != pointSet.end(); ++itr)
         {
-            MagicDGP::Vector3 pos = itr->second->GetPosition();
-            MagicDGP::Vector3 nor = itr->second->GetNormal();
+            MagicDGP::Vector3 pos = (*itr)->GetPosition();
+            MagicDGP::Vector3 nor = (*itr)->GetNormal();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
         }

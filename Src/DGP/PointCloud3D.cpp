@@ -74,52 +74,53 @@ namespace MagicDGP
 
     Point3DSet::Point3DSet()
     {
-        for (std::map<int, Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); itr++)
-        {
-            if (itr->second != NULL)
-            {
-                delete itr->second;
-                itr->second = NULL;
-            }
-        }
-        mPointSet.clear();
     }
 
     Point3DSet::~Point3DSet()
     {
-        for (std::map<int, Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); itr++)
+        for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); itr++)
         {
-            if (itr->second != NULL)
+            if (*itr != NULL)
             {
-                delete itr->second;
-                itr->second = NULL;
+                delete *itr;
+                *itr = NULL;
             }
         }
         mPointSet.clear();
     }
 
-    std::map<int, Point3D*>& Point3DSet::GetPointSet()
+    std::vector<Point3D* >& Point3DSet::GetPointSet()
     {
         return mPointSet;
     }
 
     Point3D* Point3DSet::GetPoint(int index)
     {
-        return mPointSet[index];
+        return mPointSet.at(index);
+    }
+
+    const Point3D* Point3DSet::GetPoint(int index) const
+    {
+        return mPointSet.at(index);
     }
 
     void Point3DSet::SetPoint(Point3D* pPoint)
     {
-        mPointSet[pPoint->GetId()] = pPoint;
+        int index = pPoint->GetId();
+        if (mPointSet.at(index) != NULL)
+        {
+            delete mPointSet[index];
+        }
+        mPointSet[index] = pPoint;
     }
 
     void Point3DSet::UnifyPosition(Real size)
     {
         Vector3 posMin(10e10, 10e10, 10e10);
         Vector3 posMax(-10e10, -10e10, -10e10);
-        for (std::map<int, Point3D*>::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
+        for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
         {
-            Vector3 pos = itr->second->GetPosition();
+            Vector3 pos = (*itr)->GetPosition();
             posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
             posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
             posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
@@ -141,20 +142,20 @@ namespace MagicDGP
         {
             Real scaleV = size / scaleMax;
             Vector3 centerPos = (posMin + posMax) / 2.0;
-            for (std::map<int, Point3D*>::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
+            for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
             {
-                itr->second->SetPosition((itr->second->GetPosition() - centerPos) * scaleV);
+                (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
             }
         }
     }
 
-    bool Point3DSet::InsertPoint(Point3D* pPoint)
+    void Point3DSet::InsertPoint(Point3D* pPoint)
     {
-        std::pair<std::map<int, Point3D* >::iterator, bool> ret = mPointSet.insert(std::make_pair(pPoint->GetId(), pPoint));
-        return ret.second;
+        pPoint->SetId(mPointSet.size());
+        mPointSet.push_back(pPoint);
     }
 
-    int Point3DSet::GetPointNumber()
+    int Point3DSet::GetPointNumber() const
     {
         return mPointSet.size();
     }

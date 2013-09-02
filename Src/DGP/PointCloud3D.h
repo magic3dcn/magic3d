@@ -1,6 +1,6 @@
 #pragma once
 #include "Vector3.h"
-#include <map>
+#include <vector>
 
 namespace MagicDGP
 {
@@ -33,15 +33,16 @@ namespace MagicDGP
         Point3DSet();
         ~Point3DSet();
 
-        std::map<int, Point3D* >& GetPointSet();
+        std::vector<Point3D* >& GetPointSet();
         Point3D* GetPoint(int index);
+        const Point3D* GetPoint(int index) const;
         void SetPoint(Point3D* pPoint);
         void UnifyPosition(Real size);
-        bool InsertPoint(Point3D* pPoint);
-        int  GetPointNumber();
+        void InsertPoint(Point3D* pPoint);
+        int  GetPointNumber() const;
 
     protected:
-        std::map<int, Point3D* > mPointSet;
+        std::vector<Point3D* > mPointSet;
     };
 
 }
