@@ -21,6 +21,7 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
         std::string AddPoint3DSet(MagicDGP::Point3DSet* pPS);
+        void UpdatePCRendering();
         void FilterPointSet();
         void AlignPointSet();
         void Clear();

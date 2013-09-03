@@ -66,6 +66,7 @@ namespace MagicApp
         MagicLog << "ReconstructionUI::AlignPointSet" << std::endl;
         Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
         pReconApp->AlignPointSet();
+        pReconApp->UpdatePCRendering();
     }
 
     void ReconstructionUI::BackToHomepage(MyGUI::Widget* pSender)

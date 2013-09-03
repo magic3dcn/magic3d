@@ -135,7 +135,7 @@ namespace MagicApp
             mScanMode = RECORDER;
         }
         mDepthStream.start();
-   //     ExportDepthFrameForTest();
+      //  ExportDepthFrameForTest();
         mColorStream.start();
     }
 
@@ -178,8 +178,8 @@ namespace MagicApp
     {
         openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
         int frameNum = pPC->getNumberOfFrames(mDepthStream);
-        pPC->seek(mDepthStream, 90);
-        for (int fi = frameNum / 2; fi < 2 * frameNum / 3; fi++)
+       // pPC->seek(mDepthStream, 90);
+        for (int fi = 10; fi < frameNum - 10; fi++)
         {
             MagicLog << "Export file(" << frameNum << "): " << fi << std::endl;
             pPC->seek(mDepthStream, fi);

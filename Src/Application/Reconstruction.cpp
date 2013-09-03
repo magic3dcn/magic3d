@@ -59,6 +59,14 @@ namespace MagicApp
         return pcNameStr;
     }
 
+    void Reconstruction::UpdatePCRendering()
+    {
+        for (std::map<std::string, MagicDGP::Point3DSet* >::iterator itr = mPCSet.begin(); itr != mPCSet.end(); itr++)
+        {
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->second, itr->first, "SimplePoint");
+        }
+    }
+
     void Reconstruction::FilterPointSet()
     {
         for (std::map<std::string, MagicDGP::Point3DSet* >::iterator itr = mPCSet.begin(); itr != mPCSet.end(); itr++)
