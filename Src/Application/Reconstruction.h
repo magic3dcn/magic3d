@@ -24,6 +24,7 @@ namespace MagicApp
         void UpdatePCRendering();
         void FilterPointSet();
         void AlignPointSet();
+        void TSDFExtraction();
         void Clear();
 
     private:

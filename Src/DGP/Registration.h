@@ -12,6 +12,7 @@ namespace MagicDGP
 
     public:
         static void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pPC);
+        static void ICPRegistrate(const Point3DSet* pOrigin, Point3DSet* pTarget, float* pTransInit, float* pTransRes); 
 
     private:
         static void ICPSamplePoint(const Point3DSet* pPC, std::vector<int>& sampleIndex);

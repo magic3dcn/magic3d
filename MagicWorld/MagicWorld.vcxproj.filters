@@ -129,6 +129,12 @@
     <ClInclude Include="..\Src\DGP\Registration.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\MeshReconstruction.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -216,6 +222,12 @@
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Registration.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>

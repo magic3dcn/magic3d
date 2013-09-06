@@ -89,6 +89,11 @@ namespace MagicApp
         }
     }
 
+    void Reconstruction::TSDFExtraction()
+    {
+
+    }
+
     void Reconstruction::Clear()
     {
 

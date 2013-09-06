@@ -16,6 +16,7 @@ namespace MagicApp
         void OpenPointSet(MyGUI::Widget* pSender);
         void FilterPointSet(MyGUI::Widget* pSender);
         void AlignPointSet(MyGUI::Widget* pSender);
+        void TSDFExtration(MyGUI::Widget* pSender);
         void BackToHomepage(MyGUI::Widget* pSender);
 
     private:

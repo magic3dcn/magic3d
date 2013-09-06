@@ -28,6 +28,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionUI::OpenPointSet);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionUI::FilterPointSet);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionUI::AlignPointSet);
+        mRoot.at(0)->findWidget("But_TSDF")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionUI::TSDFExtration);
         mRoot.at(0)->findWidget("But_BackToHomepage")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionUI::BackToHomepage);
     }
 
@@ -67,6 +68,11 @@ namespace MagicApp
         Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
         pReconApp->AlignPointSet();
         pReconApp->UpdatePCRendering();
+    }
+
+    void ReconstructionUI::TSDFExtration(MyGUI::Widget* pSender)
+    {
+        MagicLog << "ReconstructionUI::TSDFExtration" << std::endl;
     }
 
     void ReconstructionUI::BackToHomepage(MyGUI::Widget* pSender)

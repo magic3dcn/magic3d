@@ -13,5 +13,8 @@
         <Widget type="Button" skin="Button" position="15 680 60 35" name="But_BackToHomepage">
             <Property key="Caption" value="Back"/>
         </Widget>
+        <Widget type="Button" skin="Button" position="15 185 60 35" name="But_TSDF">
+            <Property key="Caption" value="TSDF"/>
+        </Widget>
     </Widget>
 </MyGUI>
