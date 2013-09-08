@@ -227,8 +227,11 @@ namespace MagicApp
                         if (len > MagicDGP::Epsilon)
                         {
                             MagicDGP::Vector3 pos = posList.at(j * resolutionX + i);
-                            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
-                            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+                            if (pos.Length() > MagicDGP::Epsilon)
+                            {
+                                fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+                                fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+                            }
                         }
                     }
                 }

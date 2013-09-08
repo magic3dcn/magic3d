@@ -4,6 +4,8 @@
 #include "../Common/RenderSystem.h"
 #include "../DGP/Filter.h"
 #include "../DGP/Registration.h"
+#include "../DGP/SignedDistanceFunction.h"
+#include "../DGP/Parser.h"
 
 namespace MagicApp
 {
@@ -91,7 +93,12 @@ namespace MagicApp
 
     void Reconstruction::TSDFExtraction()
     {
-
+        MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
+        float tranform[12] = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f};
+        sdf.UpdateSDF(mPCSet["PC0"], tranform);
+        MagicDGP::Point3DSet* pPC = sdf.ExtractPointCloud();
+        MagicDGP::Parser::ExportPointSet("extract.obj", pPC);
+        //delete pPC;
     }
 
     void Reconstruction::Clear()

@@ -44,8 +44,7 @@ namespace MagicApp
         MagicLog << "ReconstructionUI::OpenPointSet" << std::endl;
         std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Parser parser;
-        MagicDGP::Point3DSet* pPointSet = parser.ParsePointSet(fileName);
+        MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
        // pPointSet->UnifyPosition(2.0);
         Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
         if (pReconApp != NULL)
@@ -73,6 +72,8 @@ namespace MagicApp
     void ReconstructionUI::TSDFExtration(MyGUI::Widget* pSender)
     {
         MagicLog << "ReconstructionUI::TSDFExtration" << std::endl;
+        Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
+        pReconApp->TSDFExtraction();
     }
 
     void ReconstructionUI::BackToHomepage(MyGUI::Widget* pSender)

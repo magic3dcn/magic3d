@@ -39,8 +39,7 @@ namespace MagicApp
     {
         std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Parser parser;
-        MagicDGP::Point3DSet* pPointSet = parser.ParsePointSet(fileName);
+        MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
         pPointSet->UnifyPosition(2.0);
         PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
         if (pPSViewer != NULL)
@@ -48,6 +47,8 @@ namespace MagicApp
             pPSViewer->SetPointSet(pPointSet);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "test", "SimplePoint");
         }
+        //just for a test in temp
+       // MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
     }
 
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)

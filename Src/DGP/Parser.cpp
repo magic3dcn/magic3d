@@ -2,6 +2,7 @@
 #include "Parser.h"
 #include <fstream>
 #include <istream>
+#include <ostream>
 #include <vector>
 #include "DGPDefines.h"
 
@@ -188,5 +189,42 @@ namespace MagicDGP
         }*/
 
         return pMesh;
+    }
+
+    void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
+    {
+        //ExportPointSetByPSR(fileName, pPC);
+        ExportPointSetByOBJ(fileName, pPC);
+    }
+
+    void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)
+    {
+        MagicLog << "Parser::ExportPointSetByPSR" << std::endl;
+        std::ofstream fout(fileName);
+        int pcNum = pPC->GetPointNumber();
+        for (int i = 0; i < pcNum; i++)
+        {
+            const Point3D* pPoint = pPC->GetPoint(i);
+            Vector3 pos = pPoint->GetPosition();
+            Vector3 nor = pPoint->GetNormal();
+            fout << pos[0] << " " << pos[1] << " " << pos[2] << " " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+        }
+        fout.close();
+    }
+
+    void Parser::ExportPointSetByOBJ(std::string fileName, const Point3DSet* pPC)
+    {
+        MagicLog << "Parser::ExportPointSetByOBJ" << std::endl;
+        std::ofstream fout(fileName);
+        int pcNum = pPC->GetPointNumber();
+        for (int i = 0; i < pcNum; i++)
+        {
+            const Point3D* pPoint = pPC->GetPoint(i);
+            Vector3 pos = pPoint->GetPosition();
+            Vector3 nor = pPoint->GetNormal();
+            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+        }
+        fout.close();
     }
 }

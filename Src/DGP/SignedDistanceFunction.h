@@ -1,6 +1,7 @@
 #pragma once
 #include "PointCloud3D.h"
 #include <vector>
+#include <set>
 
 namespace MagicDGP
 {
@@ -15,8 +16,12 @@ namespace MagicDGP
         Point3DSet* ExtractPointCloud();
 
     private:
+        Vector3 TransformPosition(const Vector3& pos, float* pTrans);
+
+    private:
         std::vector<float> mSDF;
         std::vector<float> mWeight;
+        std::set<int>      mPCIndex;
         int mResolutionX;
         int mResolutionY;
         int mResolutionZ;
