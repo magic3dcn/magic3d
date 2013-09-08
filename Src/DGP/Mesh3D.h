@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include <vector>
+#include <map>
 
 namespace MagicDGP
 {
@@ -9,15 +10,17 @@ namespace MagicDGP
     {
     public:
         Vertex3D();
+        Vertex3D(const Vector3& pos);
+        Vertex3D(const Vector3& pos, const Vector3& nor);
         ~Vertex3D();
 
-        Vector3 GetPosition();
+        Vector3 GetPosition() const;
         void    SetPosition(const Vector3& pos);
-        Vector3 GetNormal();
+        Vector3 GetNormal() const;
         void    SetNormal(const Vector3& nor);
-        Vector3 GetTexCord();
+        Vector3 GetTexCord() const;
         void    SetTexCord(const Vector3& tex);
-        Edge3D* GetEdge();
+        Edge3D* GetEdge() const;
         void    SetEdge(Edge3D* pEdge);
 
     private:
@@ -25,7 +28,6 @@ namespace MagicDGP
         Vector3 mNormal;
         Vector3 mTexCord;
         Edge3D* mpEdge;
-
     };
 
     class Face3D;
@@ -90,7 +92,7 @@ namespace MagicDGP
         int GetEdgeNumber() const;
         int GetFaceNumber() const;
         Vertex3D* InsertVertex(const Vector3& pos);
-        Edge3D*   InsertEdge(const Vertex3D* pVert1, const Vertex3D* pVert2);
+        Edge3D*   InsertEdge(Vertex3D* pVertStart, Vertex3D* pVertEnd);
         Face3D*   InsertFace(const std::vector<Vertex3D* >& vertList);
         void ClearData();
 
@@ -98,5 +100,6 @@ namespace MagicDGP
         std::vector<Vertex3D* > mVertexList;
         std::vector<Edge3D* >   mEdgeList;
         std::vector<Face3D* >   mFaceList;
+        std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap;
     };
 }

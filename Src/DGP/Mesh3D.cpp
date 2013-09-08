@@ -3,15 +3,31 @@
 
 namespace MagicDGP
 {
-    Vertex3D::Vertex3D()
+    Vertex3D::Vertex3D() : 
+        mpEdge(NULL)
     {
+    }
+
+    Vertex3D::Vertex3D(const Vector3& pos) :
+        mPosition(pos), 
+        mpEdge(NULL)
+    {
+
+    }
+
+    Vertex3D::Vertex3D(const Vector3& pos, const Vector3& nor) : 
+        mPosition(pos),
+        mNormal(nor),
+        mpEdge(NULL)
+    {
+
     }
 
     Vertex3D::~Vertex3D()
     {
     }
 
-    Vector3 Vertex3D::GetPosition()
+    Vector3 Vertex3D::GetPosition() const
     {
         return mPosition;
     }
@@ -21,7 +37,7 @@ namespace MagicDGP
         mPosition = pos;
     }
 
-    Vector3 Vertex3D::GetNormal()
+    Vector3 Vertex3D::GetNormal() const
     {
         return mNormal;
     }
@@ -31,7 +47,7 @@ namespace MagicDGP
         mNormal = nor;
     }
 
-    Vector3 Vertex3D::GetTexCord()
+    Vector3 Vertex3D::GetTexCord() const
     {
         return mTexCord;
     }
@@ -41,7 +57,7 @@ namespace MagicDGP
         mTexCord = tex;
     }
 
-    Edge3D* Vertex3D::GetEdge()
+    Edge3D* Vertex3D::GetEdge() const
     {
         return mpEdge;
     }
@@ -196,17 +212,56 @@ namespace MagicDGP
 
     Vertex3D* Mesh3D::InsertVertex(const Vector3& pos)
     {
-        return NULL;
+        Vertex3D* pVert = new Vertex3D(pos);
+        mVertexList.push_back(pVert);
+        return pVert;
     }
 
-    Edge3D* Mesh3D::InsertEdge(const Vertex3D* pVert1, const Vertex3D* pVert2)
+    Edge3D* Mesh3D::InsertEdge(Vertex3D* pVertStart, Vertex3D* pVertEnd)
     {
-        return NULL;
+        if (mEdgeMap[std::pair<Vertex3D*, Vertex3D* >(pVertStart, pVertEnd)] != NULL)
+        {
+            return mEdgeMap[std::pair<Vertex3D*, Vertex3D* >(pVertStart, pVertEnd)];
+        }
+        else
+        {
+            Edge3D* pEdge = new Edge3D;
+            pEdge->SetVertex(pVertEnd);
+            pVertStart->SetEdge(pEdge);
+            mEdgeMap[std::pair<Vertex3D*, Vertex3D* >(pVertStart, pVertEnd)] = pEdge;
+            mEdgeList.push_back(pEdge);
+            
+            return pEdge;
+        }
     }
 
     Face3D* Mesh3D::InsertFace(const std::vector<Vertex3D* >& vertList)
     {
-        return NULL;
+        //Trianglar mesh
+        if (vertList.size() != 3)
+        {
+            return NULL;
+        }
+        Face3D* pFace = new Face3D;
+        std::vector<Edge3D* > innerEdgeList;
+        for (int i = 0; i < 3; i++)
+        {
+            Edge3D* pEdge0 = InsertEdge(vertList.at(i), vertList.at((i + 1) % 3));
+            pEdge0->SetFace(pFace);
+            innerEdgeList.push_back(pEdge0);
+            Edge3D* pEdge1 = InsertEdge(vertList.at((i + 1) % 3), vertList.at(i));
+            pEdge0->SetPair(pEdge1);
+            pEdge1->SetPair(pEdge0);
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            innerEdgeList.at(i)->SetNext(innerEdgeList.at((i + 1) % 3));
+            innerEdgeList.at((i + 1) % 3)->SetPre(innerEdgeList.at(i));
+        }
+        mFaceList.push_back(pFace);
+
+        return pFace;
     }
 
     void Mesh3D::ClearData()
