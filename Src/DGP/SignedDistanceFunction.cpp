@@ -120,7 +120,7 @@ namespace MagicDGP
                 }
                 else
                 {
-                    MagicLog << "Normal Zero" << std::endl;
+                   // MagicLog << "Normal Zero" << std::endl;
                 }
                 continue;
             }

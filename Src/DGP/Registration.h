@@ -24,7 +24,7 @@ namespace MagicDGP
         static void ICPEnergyMinimization(const Point3DSet* pRef, Point3DSet* pOrigin, 
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex);
         static void ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
-            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransRes);
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta);
     };
 
 

@@ -24,11 +24,19 @@ namespace MagicDGP
 
     void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes)
     {
-        std::vector<int> sampleIndex;
-        ICPSamplePoint(pOrigin, sampleIndex);
-        std::vector<int> correspondIndex;
-        ICPFindCorrespondance(pRef, pOrigin, pTransInit, sampleIndex, correspondIndex);
-        ICPEnergyMinimization(pRef, pOrigin, pTransInit, sampleIndex, correspondIndex, pTransRes);
+        int iterNum = 5;
+        *pTransRes = *pTransInit;
+        for (int k = 0; k < iterNum; k++)
+        {
+            std::vector<int> sampleIndex;
+            ICPSamplePoint(pOrigin, sampleIndex);
+            std::vector<int> correspondIndex;
+            ICPFindCorrespondance(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex);
+            HomoMatrix4 transDelta;
+            ICPEnergyMinimization(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex, &transDelta);
+            //*pTransRes *= transDelta;
+            *pTransRes = transDelta * (*pTransRes);
+        }
     }
 
     void Registration::ICPSamplePoint(const Point3DSet* pPC, std::vector<int>& sampleIndex)
@@ -81,7 +89,7 @@ namespace MagicDGP
 
         //delete wrong correspondance
         float distThre = 100.f;
-        float norThre = 0.98f; //cos(11);
+        float norThre = 0.906307787f; //cos(25);
         std::vector<int> sampleIndexBak = sampleIndex;
         sampleIndex.clear();
         correspondIndex.clear();
@@ -214,50 +222,44 @@ namespace MagicDGP
     }
 
     void Registration::ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit, 
-            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransRes)
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta)
     {
-        //MagicLog << "Registration::ICPEnergyMinimization" << std::endl;
-        //int pcNum = sampleIndex.size();
-        //int iterNum = 3;
-        //*pTransRes = *pTransInit;
-        //for (int k = 0; k < iterNum; k++)
-        //{
-        //    Eigen::MatrixXd matA(pcNum, 6);
-        //    Eigen::VectorXd vecB(pcNum, 1);
-        //    for (int i = 0; i < pcNum; i++)
-        //    {
-        //        Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
-        //        Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
-        //        Vector3 posPC  = pOrigin->GetPoint(sampleIndex.at(i))->GetPosition();
-        //        vecB(i) = (posRef - posPC) * norRef;
-        //        Vector3 coffTemp = posPC.CrossProduct(norRef);
-        //        matA(i, 0) = coffTemp[0];
-        //        matA(i, 1) = coffTemp[1];
-        //        matA(i, 2) = coffTemp[2];
-        //        matA(i, 3) = norRef[0];
-        //        matA(i, 4) = norRef[1];
-        //        matA(i, 5) = norRef[2];
-        //    }
-        //    Eigen::MatrixXd matAT = matA.transpose();
-        //    Eigen::MatrixXd matCoefA = matAT * matA;
-        //    Eigen::MatrixXd vecCoefB = matAT * vecB;
-        //    Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
-        //    //print result
-        //    MagicLog << "MatA: " << std::endl;
-        //    MagicLog << 1 << " " << -res(2) << " " << res(1) << " " << res(3) << std::endl;
-        //    MagicLog << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
-        //    MagicLog << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;
-        //    //update pOrigin position
-        //    for (int i = 0; i < pcNum; i++)
-        //    {
-        //        Vector3 pos = pOrigin->GetPoint(i)->GetPosition();
-        //        Vector3 newPos;
-        //        newPos[0] = pos[0] - pos[1] * res[2] + pos[2] * res[1] + res[3];
-        //        newPos[1] = pos[0] * res[2] + pos[1] - pos[2] * res[0] + res[4];
-        //        newPos[2] = -pos[0] * res[1] + pos[1] * res[0] + pos[2] + res[5];
-        //        pOrigin->GetPoint(i)->SetPosition(newPos);
-        //    }
-        //}
-        
+        MagicLog << "Registration::ICPEnergyMinimization" << std::endl;
+        int pcNum = sampleIndex.size();
+        Eigen::MatrixXd matA(pcNum, 6);
+        Eigen::VectorXd vecB(pcNum, 1);
+        for (int i = 0; i < pcNum; i++)
+        {
+            Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
+            Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
+            Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            vecB(i) = (posRef - posPC) * norRef;
+            Vector3 coffTemp = posPC.CrossProduct(norRef);
+            matA(i, 0) = coffTemp[0];
+            matA(i, 1) = coffTemp[1];
+            matA(i, 2) = coffTemp[2];
+            matA(i, 3) = norRef[0];
+            matA(i, 4) = norRef[1];
+            matA(i, 5) = norRef[2];
+        }
+        Eigen::MatrixXd matAT = matA.transpose();
+        Eigen::MatrixXd matCoefA = matAT * matA;
+        Eigen::MatrixXd vecCoefB = matAT * vecB;
+        Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
+        pTransDelta->Unit();
+        pTransDelta->SetValue(0, 1, -res(2));
+        pTransDelta->SetValue(0, 2, res(1));
+        pTransDelta->SetValue(0, 3, res(3));
+        pTransDelta->SetValue(1, 0, res(2));
+        pTransDelta->SetValue(1, 2, -res(0));
+        pTransDelta->SetValue(1, 3, res(4));
+        pTransDelta->SetValue(2, 0, -res(1));
+        pTransDelta->SetValue(2, 1, res(0));
+        pTransDelta->SetValue(2, 3, res(5));
+        //print result
+        MagicLog << "MatA: " << std::endl;
+        MagicLog << 1 << " " << -res(2) << " " << res(1) << " " << res(3) << std::endl;
+        MagicLog << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
+        MagicLog << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;
     }
 }

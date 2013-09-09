@@ -16,5 +16,8 @@
         <Widget type="Button" skin="Button" position="15 185 60 35" name="But_TSDF">
             <Property key="Caption" value="TSDF"/>
         </Widget>
+        <Widget type="Button" skin="Button" position="15 240 60 35" name="But_Fusion">
+            <Property key="Caption" value="Fusion"/>
+        </Widget>
     </Widget>
 </MyGUI>

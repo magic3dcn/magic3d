@@ -107,25 +107,27 @@ namespace MagicApp
         MagicDGP::HomoMatrix4 lastTrans;
         char fileName[50] = "Scene_10.obj";
         MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
-        int pcNum = 100;
-        int fileBaseIndex = 11;
-        for (int i = 0; i < pcNum; i++)
+        int fileStartIndex = 11;
+        int fileEndIndex = 575;
+        for (int i = fileStartIndex; i <= fileEndIndex; i++)
         {
-            MagicLog << "Fusion Point Set: " << i << std::endl;
-            sprintf(fileName, "Scene_%d.obj", fileBaseIndex + i);
-            MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);
+            MagicLog << "Fusion Point Set: " << i << " -------------------------------"<< std::endl;
+            sprintf(fileName, "Scene_%d.obj", i);
+            MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);//
             MagicDGP::HomoMatrix4 newTrans;
             MagicLog << "Fusion: ICP Registration" << std::endl;
-            MagicDGP::Registration::ICPRegistrate(pNewPC, pRefPC, &lastTrans, &newTrans);
+            MagicDGP::Registration::ICPRegistrate(pRefPC, pNewPC, &lastTrans, &newTrans);//
             MagicLog << "Fusion: Update SDF" << std::endl;
-            sdf.UpdateSDF(pNewPC, &newTrans);
+            sdf.UpdateSDF(pNewPC, &newTrans);//
             lastTrans = newTrans;
             delete pRefPC;
+            delete pNewPC;
+            pNewPC = NULL;
             MagicLog << "Fusion: Extract Point Set" << std::endl;
-            pRefPC = sdf.ExtractPointCloud();
+            pRefPC = sdf.ExtractPointCloud();//
             char exportName[50];
-            sprintf(exportName, "Fusion_%d.obj", fileBaseIndex + i);
-            MagicDGP::Parser::ExportPointSet(exportName, pRefPC);
+            sprintf(exportName, "Fusion_%d.obj", i);
+            MagicDGP::Parser::ExportPointSet(exportName, pRefPC);//
         }
     }
 
