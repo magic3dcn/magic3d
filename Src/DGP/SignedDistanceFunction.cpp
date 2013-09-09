@@ -25,7 +25,7 @@ namespace MagicDGP
     {
     }
 
-    void SignedDistanceFunction::UpdateSDF(const Point3DSet* pPC, float* pTransform)
+    void SignedDistanceFunction::UpdateSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform)
     {
         MagicLog << "SignedDistanceFunction::UpdateSDF" << std::endl;
         int pcNum = pPC->GetPointNumber();
@@ -46,7 +46,7 @@ namespace MagicDGP
             int   yIndex = (pos[1] - mMinY) / deltaY;
             int   zIndex = (pos[2] - mMinZ) / deltaZ;
             Vector3 pixelPos(mMinX + xIndex * deltaX, mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
-            Vector3 pos_trans = TransformPosition(pos, pTransform);
+            Vector3 pos_trans = pTransform->TransformPoint(pos); //TransformPosition(pos, pTransform);
             int xZero = (pos_trans[0] - mMinX) / deltaX;
             int yZero = (pos_trans[1] - mMinY) / deltaY;
             int zZero = (pos_trans[2] - mMinZ) / deltaZ;
@@ -58,7 +58,7 @@ namespace MagicDGP
             for (int j = 1; j <= truncW; j++)
             {
                 Vector3 posPosit(pixelPos[0], pixelPos[1], pixelPos[2] + deltaZ * j);
-                Vector3 posPosit_trans = TransformPosition(posPosit, pTransform);
+                Vector3 posPosit_trans = pTransform->TransformPoint(posPosit);  //TransformPosition(posPosit, pTransform);
                 float distPosit = (posPosit_trans - pos_trans).Length();
                 int xPosit = (posPosit_trans[0] - mMinX) / deltaX;
                 int yPosit = (posPosit_trans[1] - mMinY) / deltaY;
@@ -71,7 +71,7 @@ namespace MagicDGP
                 mPCIndex.insert(indexPosit);
 
                 Vector3 posNegat(pixelPos[0], pixelPos[1], pixelPos[2] - deltaZ * j);
-                Vector3 posNegat_trans = TransformPosition(posNegat, pTransform);
+                Vector3 posNegat_trans = pTransform->TransformPoint(posNegat); //TransformPosition(posNegat, pTransform);
                 float distNegat = -1.f * (posNegat_trans - pos_trans).Length();
                 int xNegat = (posNegat_trans[0] - mMinX) / deltaX;
                 int yNegat = (posNegat_trans[1] - mMinY) / deltaY;
@@ -85,11 +85,6 @@ namespace MagicDGP
             }
         }
         MagicLog << "PC index: " << mPCIndex.size() << std::endl;
-    }
-
-    Point3DSet* SignedDistanceFunction::PointCloudPrediction(float* pTransform)
-    {
-        return NULL;
     }
 
     Point3DSet* SignedDistanceFunction::ExtractPointCloud()
@@ -270,13 +265,4 @@ namespace MagicDGP
         }
     }
 
-    Vector3 SignedDistanceFunction::TransformPosition(const Vector3& pos, float* pTrans)
-    {
-        Vector3 posTrans;
-        posTrans[0] = pos[0] * pTrans[0] + pos[1] * pTrans[1] + pos[2] * pTrans[2] + pTrans[9];
-        posTrans[1] = pos[0] * pTrans[3] + pos[1] * pTrans[4] + pos[2] * pTrans[5] + pTrans[10];
-        posTrans[2] = pos[0] * pTrans[6] + pos[1] * pTrans[7] + pos[2] * pTrans[8] + pTrans[11];
-        
-        return posTrans;
-    }
 }

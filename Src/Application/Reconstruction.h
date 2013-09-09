@@ -25,6 +25,7 @@ namespace MagicApp
         void FilterPointSet();
         void AlignPointSet();
         void TSDFExtraction();
+        void PointSetFusion();
         void Clear();
 
     private:

@@ -135,6 +135,9 @@
     <ClInclude Include="..\Src\DGP\MeshReconstruction.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\HomoMatrix4.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -228,6 +231,9 @@
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>

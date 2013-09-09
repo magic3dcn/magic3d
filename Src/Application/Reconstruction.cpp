@@ -94,11 +94,39 @@ namespace MagicApp
     void Reconstruction::TSDFExtraction()
     {
         MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
-        float tranform[12] = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f};
-        sdf.UpdateSDF(mPCSet["PC0"], tranform);
+        MagicDGP::HomoMatrix4 transform;
+        sdf.UpdateSDF(mPCSet["PC0"], &transform);
         MagicDGP::Point3DSet* pPC = sdf.ExtractPointCloud();
         MagicDGP::Parser::ExportPointSet("extract.obj", pPC);
         //delete pPC;
+    }
+
+    void Reconstruction::PointSetFusion()
+    {
+        MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
+        MagicDGP::HomoMatrix4 lastTrans;
+        char fileName[50] = "Scene_10.obj";
+        MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
+        int pcNum = 100;
+        int fileBaseIndex = 11;
+        for (int i = 0; i < pcNum; i++)
+        {
+            MagicLog << "Fusion Point Set: " << i << std::endl;
+            sprintf(fileName, "Scene_%d.obj", fileBaseIndex + i);
+            MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);
+            MagicDGP::HomoMatrix4 newTrans;
+            MagicLog << "Fusion: ICP Registration" << std::endl;
+            MagicDGP::Registration::ICPRegistrate(pNewPC, pRefPC, &lastTrans, &newTrans);
+            MagicLog << "Fusion: Update SDF" << std::endl;
+            sdf.UpdateSDF(pNewPC, &newTrans);
+            lastTrans = newTrans;
+            delete pRefPC;
+            MagicLog << "Fusion: Extract Point Set" << std::endl;
+            pRefPC = sdf.ExtractPointCloud();
+            char exportName[50];
+            sprintf(exportName, "Fusion_%d.obj", fileBaseIndex + i);
+            MagicDGP::Parser::ExportPointSet(exportName, pRefPC);
+        }
     }
 
     void Reconstruction::Clear()

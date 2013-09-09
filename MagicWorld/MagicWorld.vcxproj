@@ -110,6 +110,7 @@
     <ClInclude Include="..\Src\Common\ToolKit.h" />
     <ClInclude Include="..\Src\DGP\DGPDefines.h" />
     <ClInclude Include="..\Src\DGP\Filter.h" />
+    <ClInclude Include="..\Src\DGP\HomoMatrix4.h" />
     <ClInclude Include="..\Src\DGP\Mesh3D.h" />
     <ClInclude Include="..\Src\DGP\MeshReconstruction.h" />
     <ClInclude Include="..\Src\DGP\Parser.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\Src\Common\ToolKit.cpp" />
     <ClCompile Include="..\Src\DGP\DGPDefines.cpp" />
     <ClCompile Include="..\Src\DGP\Filter.cpp" />
+    <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp" />
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp" />
     <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp" />
     <ClCompile Include="..\Src\DGP\Parser.cpp" />
