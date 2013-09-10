@@ -83,7 +83,7 @@ namespace MagicCore
         return mpMainCam;
     }
 
-    void RenderSystem::RenderPoint3DSet(MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName)
+    void RenderSystem::RenderPoint3DSet(const MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName)
     {
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(psName))
@@ -97,13 +97,46 @@ namespace MagicCore
             mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
         }
         pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
-        std::vector<MagicDGP::Point3D* > pointSet = pPS->GetPointSet();
-        for (std::vector<MagicDGP::Point3D* >::iterator itr = pointSet.begin(); itr != pointSet.end(); ++itr)
+        int pointNum = pPS->GetPointNumber();
+        for (int i = 0; i < pointNum; i++)
         {
-            MagicDGP::Vector3 pos = (*itr)->GetPosition();
-            MagicDGP::Vector3 nor = (*itr)->GetNormal();
+            const MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            MagicDGP::Vector3 pos = pPoint->GetPosition();
+            MagicDGP::Vector3 nor = pPoint->GetNormal();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
+        }
+        pMObj->end();
+    }
+
+    void RenderSystem::RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName)
+    {
+        Ogre::ManualObject* pMObj = NULL;
+        if (mpSceneMgr->hasManualObject(meshName))
+        {
+            pMObj = mpSceneMgr->getManualObject(meshName);
+            pMObj->clear();
+        }
+        else
+        {
+            pMObj = mpSceneMgr->createManualObject(meshName);
+            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+        }
+        pMObj->begin(materialName, Ogre::RenderOperation::OT_TRIANGLE_LIST);
+        int vertNum = pMesh->GetVertexNumber();
+        for (int i = 0; i < vertNum; i++)
+        {
+            const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
+            MagicDGP::Vector3 pos = pVert->GetPosition();
+            MagicDGP::Vector3 nor = pVert->GetNormal();
+            pMObj->position(pos[0], pos[1], pos[2]);
+            pMObj->normal(nor[0], nor[1], nor[2]);
+        }
+        int faceNum = pMesh->GetFaceNumber();
+        for (int i = 0; i < faceNum; i++)
+        {
+            const MagicDGP::Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
+            pMObj->triangle(pEdge->GetVertex()->GetId(), pEdge->GetNext()->GetVertex()->GetId(), pEdge->GetPre()->GetVertex()->GetId());
         }
         pMObj->end();
     }

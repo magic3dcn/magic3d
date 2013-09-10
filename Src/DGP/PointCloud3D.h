@@ -18,12 +18,15 @@ namespace MagicDGP
         Vector3 GetPosition() const;
         void SetNormal(const Vector3& nor);
         Vector3 GetNormal() const;
+        void SetColor(const Vector3& color);
+        Vector3 GetColor() const;
         void SetId(int id);
         int GetId() const;
 
     protected:
         Vector3 mPosition;
         Vector3 mNormal;
+        Vector3 mColor;
         int mId;
     };
 

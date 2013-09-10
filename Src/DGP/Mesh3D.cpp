@@ -4,13 +4,17 @@
 namespace MagicDGP
 {
     Vertex3D::Vertex3D() : 
-        mpEdge(NULL)
+        mColor(1, 1, 1),
+        mpEdge(NULL),
+        mId(-1)
     {
     }
 
     Vertex3D::Vertex3D(const Vector3& pos) :
         mPosition(pos), 
-        mpEdge(NULL)
+        mColor(1, 1, 1),
+        mpEdge(NULL),
+        mId(-1)
     {
 
     }
@@ -18,7 +22,9 @@ namespace MagicDGP
     Vertex3D::Vertex3D(const Vector3& pos, const Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
-        mpEdge(NULL)
+        mColor(1, 1, 1),
+        mpEdge(NULL),
+        mId(-1)
     {
 
     }
@@ -57,7 +63,22 @@ namespace MagicDGP
         mTexCord = tex;
     }
 
-    Edge3D* Vertex3D::GetEdge() const
+    Vector3 Vertex3D::GetColor() const
+    {
+        return mColor;
+    }
+
+    void Vertex3D::SetColor(const Vector3& color)
+    {
+        mColor = color;
+    }
+
+    Edge3D* Vertex3D::GetEdge()
+    {
+        return mpEdge;
+    }
+
+    const Edge3D* Vertex3D::GetEdge() const
     {
         return mpEdge;
     }
@@ -67,7 +88,23 @@ namespace MagicDGP
         mpEdge = pEdge;
     }
 
-    Edge3D::Edge3D()
+    int Vertex3D::GetId() const
+    {
+        return mId;
+    }
+
+    void Vertex3D::SetId(int id)
+    {
+        mId = id;
+    }
+
+    Edge3D::Edge3D() :
+        mpVertex(NULL),
+        mpPair(NULL),
+        mpNext(NULL),
+        mpPre(NULL),
+        mpFace(NULL),
+        mId(-1)
     {
     }
 
@@ -76,6 +113,11 @@ namespace MagicDGP
     }
 
     Vertex3D* Edge3D::GetVertex()
+    {
+        return mpVertex;
+    }
+
+    const Vertex3D* Edge3D::GetVertex() const
     {
         return mpVertex;
     }
@@ -90,12 +132,22 @@ namespace MagicDGP
         return mpPair;
     }
 
+    const Edge3D* Edge3D::GetPair() const
+    {
+        return mpPair;
+    }
+
     void Edge3D::SetPair(Edge3D* pEdge)
     {
         mpPair = pEdge;
     }
 
     Edge3D* Edge3D::GetNext()
+    {
+        return mpNext;
+    }
+
+    const Edge3D* Edge3D::GetNext() const
     {
         return mpNext;
     }
@@ -110,6 +162,11 @@ namespace MagicDGP
         return mpPre;
     }
 
+    const Edge3D* Edge3D::GetPre() const
+    {
+        return mpPre;
+    }
+
     void Edge3D::SetPre(Edge3D* pEdge)
     {
         mpPre = pEdge;
@@ -119,12 +176,30 @@ namespace MagicDGP
     {
         return mpFace;
     }
+
+    const Face3D* Edge3D::GetFace() const
+    {
+        return mpFace;
+    }
+
     void Edge3D::SetFace(Face3D* pFace)
     {
         mpFace = pFace;
     }
 
-    Face3D::Face3D()
+    int Edge3D::GetId() const
+    {
+        return mId;
+    }
+
+    void Edge3D::SetId(int id)
+    {
+        mId = id;
+    }
+
+    Face3D::Face3D() : 
+        mpEdge(NULL),
+        mId(-1)
     {
     }
 
@@ -137,12 +212,17 @@ namespace MagicDGP
         return mpEdge;
     }
 
+    const Edge3D* Face3D::GetEdge() const
+    {
+        return mpEdge;
+    }
+
     void Face3D::SetEdge(Edge3D* pEdge)
     {
         mpEdge = pEdge;
     }
 
-    Vector3 Face3D::GetNormal()
+    Vector3 Face3D::GetNormal() const
     {
         return mNormal;
     }
@@ -152,9 +232,19 @@ namespace MagicDGP
         mNormal = nor;
     }
 
-    Real Face3D::GetArea()
+    Real Face3D::GetArea() const
     {
         return mArea;
+    }
+
+    int Face3D::GetId() const
+    {
+        return mId;
+    }
+
+    void Face3D::SetId(int id)
+    {
+        mId = id;
     }
 
     Mesh3D::Mesh3D()
@@ -185,12 +275,27 @@ namespace MagicDGP
         return mVertexList.at(index);
     }
 
+    const Vertex3D* Mesh3D::GetVertex(int index) const
+    {
+        return mVertexList.at(index);
+    }
+
     Edge3D* Mesh3D::GetEdge(int index)
     {
         return mEdgeList.at(index);
     }
 
+    const Edge3D* Mesh3D::GetEdge(int index) const
+    {
+        return mEdgeList.at(index);
+    }
+
     Face3D* Mesh3D::GetFace(int index)
+    {
+        return mFaceList.at(index);
+    }
+
+    const Face3D* Mesh3D::GetFace(int index) const
     {
         return mFaceList.at(index);
     }

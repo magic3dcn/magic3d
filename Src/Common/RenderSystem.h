@@ -1,6 +1,7 @@
 #pragma once
 #include "Ogre.h"
 #include "../DGP/PointCloud3D.h"
+#include "../DGP/Mesh3D.h"
 #include <string>
 
 namespace MagicCore
@@ -21,8 +22,9 @@ namespace MagicCore
 
         virtual ~RenderSystem(void);
 
-        void RenderPoint3DSet(MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName);
+        void RenderPoint3DSet(const MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName);
         void HidePoint3DSet(std::string psName);
+        void RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName);
 
     private:
         Ogre::Root*    mpRoot;
