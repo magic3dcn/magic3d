@@ -318,6 +318,7 @@ namespace MagicDGP
     Vertex3D* Mesh3D::InsertVertex(const Vector3& pos)
     {
         Vertex3D* pVert = new Vertex3D(pos);
+        pVert->SetId(mVertexList.size());
         mVertexList.push_back(pVert);
         return pVert;
     }
@@ -332,6 +333,7 @@ namespace MagicDGP
         {
             Edge3D* pEdge = new Edge3D;
             pEdge->SetVertex(pVertEnd);
+            pEdge->SetId(mEdgeList.size());
             pVertStart->SetEdge(pEdge);
             mEdgeMap[std::pair<Vertex3D*, Vertex3D* >(pVertStart, pVertEnd)] = pEdge;
             mEdgeList.push_back(pEdge);
@@ -364,12 +366,103 @@ namespace MagicDGP
             innerEdgeList.at(i)->SetNext(innerEdgeList.at((i + 1) % 3));
             innerEdgeList.at((i + 1) % 3)->SetPre(innerEdgeList.at(i));
         }
+        pFace->SetId(mFaceList.size());
+        pFace->SetEdge(innerEdgeList.at(0));
         mFaceList.push_back(pFace);
 
         return pFace;
     }
 
+    void Mesh3D::UnifyPosition(Real size)
+    {
+        MagicLog << "Mesh3D::UnifyPosition" << std::endl;
+        Vector3 posMin(10e10, 10e10, 10e10);
+        Vector3 posMax(-10e10, -10e10, -10e10);
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+        {
+            Vector3 pos = (*itr)->GetPosition();
+            posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
+            posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
+            posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
+            posMax[0] = posMax[0] > pos[0] ? posMax[0] : pos[0];
+            posMax[1] = posMax[1] > pos[1] ? posMax[1] : pos[1];
+            posMax[2] = posMax[2] > pos[2] ? posMax[2] : pos[2];
+        }
+        Vector3 scale3 = posMax - posMin;
+        Real scaleMax = scale3[0];
+        if (scaleMax < scale3[1])
+        {
+            scaleMax = scale3[1];
+        }
+        if (scaleMax < scale3[2])
+        {
+            scaleMax = scale3[2];
+        }
+        if (scaleMax > Epsilon)
+        {
+            Real scaleV = size / scaleMax;
+            Vector3 centerPos = (posMin + posMax) / 2.0;
+            for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+            {
+                (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
+            }
+        }
+    }
+
+    void Mesh3D::UpdateNormal()
+    {
+        MagicLog << "Update Mesh Normal" << std::endl;
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+        {
+            Vertex3D* pVert = *itr;
+            Edge3D* pEdge = pVert->GetEdge();
+            Vector3 nor(0, 0, 0);
+            do
+            {
+                if (pEdge->GetFace() != NULL)
+                {
+                    Vertex3D* pOrigin = pEdge->GetPre()->GetVertex();
+                    Vertex3D* pNext = pEdge->GetVertex();
+                    Vertex3D* pPre = pEdge->GetNext()->GetVertex();
+                    //nor += (pPre->GetPosition() - pOrigin->GetPosition()).CrossProduct(pNext->GetPosition() - pOrigin->GetPosition());
+                    nor += (pNext->GetPosition() - pOrigin->GetPosition()).CrossProduct(pPre->GetPosition() - pOrigin->GetPosition());
+                }
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != NULL && pEdge != pVert->GetEdge());
+            nor.Normalise();
+            pVert->SetNormal(nor);
+        }
+    }
+
     void Mesh3D::ClearData()
     {
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+        {
+            if (*itr != NULL)
+            {
+                delete *itr;
+                *itr = NULL;
+            }
+        }
+        mVertexList.clear();
+        for (std::vector<Edge3D* >::iterator itr = mEdgeList.begin(); itr != mEdgeList.end(); ++itr)
+        {
+            if (*itr != NULL)
+            {
+                delete *itr;
+                *itr = NULL;
+            }
+        }
+        mEdgeList.clear();
+        for (std::vector<Face3D* >::iterator itr = mFaceList.begin(); itr != mFaceList.end(); ++itr)
+        {
+            if (*itr != NULL)
+            {
+                delete *itr;
+                *itr = NULL;
+            }
+        }
+        mFaceList.clear();
+        mEdgeMap.clear();
     }
 }

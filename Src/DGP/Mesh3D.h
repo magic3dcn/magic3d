@@ -116,6 +116,8 @@ namespace MagicDGP
         Vertex3D* InsertVertex(const Vector3& pos);
         Edge3D*   InsertEdge(Vertex3D* pVertStart, Vertex3D* pVertEnd);
         Face3D*   InsertFace(const std::vector<Vertex3D* >& vertList);
+        void UnifyPosition(Real size);
+        void UpdateNormal();
         void ClearData();
 
     private:

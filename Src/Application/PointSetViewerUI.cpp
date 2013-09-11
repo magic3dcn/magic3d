@@ -26,6 +26,7 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointViewerLayout.layout");
         mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenPointSet);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::BackToHomepage);
+        mRoot.at(0)->findWidget("But_OpenMesh3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenMesh3D);
     }
 
     void PointSetViewerUI::Shutdown()
@@ -45,7 +46,7 @@ namespace MagicApp
         if (pPSViewer != NULL)
         {
             pPSViewer->SetPointSet(pPointSet);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "test", "SimplePoint");
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "testPointSet", "SimplePoint");
         }
         //just for a test in temp
        // MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
@@ -54,5 +55,15 @@ namespace MagicApp
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)
     {
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+    }
+
+    void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
+    {
+        std::string fileName;
+        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
+        pMesh->UpdateNormal();
+        pMesh->UnifyPosition(2.0);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");
     }
 }

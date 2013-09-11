@@ -5,6 +5,10 @@
             <Property key="Caption" value="Open"/>
             <Property key="TextAlign" value="Center"/>
         </Widget>
+	<Widget type="Button" skin="Button" position="15 115 60 30" name="But_OpenMesh3D">
+	    <Property key="Caption" value="Mesh"/>
+	    <Property key="TextAlign" value="Center"/>
+	</Widget>
         <Widget type="Button" skin="Button" position="15 65 60 30" name="But_Back">
             <Property key="Caption" value="Back"/>
             <Property key="TextAlign" value="Center"/>

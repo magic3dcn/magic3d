@@ -15,6 +15,7 @@ namespace MagicApp
     private:
         void OpenPointSet(MyGUI::Widget* pSender);
         void BackToHomepage(MyGUI::Widget* pSender);
+        void OpenMesh3D(MyGUI::Widget* pSender); //just for test
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

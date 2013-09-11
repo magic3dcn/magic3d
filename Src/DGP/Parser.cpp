@@ -138,6 +138,7 @@ namespace MagicDGP
                 char* tok = strtok(pLine, " ");
                 for (int i = 0; i < 3; i++)
                 {
+                    tok = strtok(NULL, " ");
                     char temp[100];
                     strcpy(temp, tok);
                     temp[strcspn(temp, "/")] = 0;
@@ -152,41 +153,21 @@ namespace MagicDGP
             }
         }
         int vertNum = pMesh->GetVertexNumber();
-        if (texcordList.size() == vertNum && normalList.size() == vertNum)
+        MagicLog << "Import Vertex Number: " << vertNum << " Normal Number: " << normalList.size() << " Texture Number: " << texcordList.size() << std::endl;
+        if (texcordList.size() == vertNum)
+        {
+            for (int i = 0; i < vertNum; i++)
+            {
+                pMesh->GetVertex(i)->SetTexCord(texcordList.at(i));
+            }
+        }
+        if (normalList.size() == vertNum)
         {
             for (int i = 0; i < vertNum; i++)
             {
                 pMesh->GetVertex(i)->SetNormal(normalList.at(i));
-                pMesh->GetVertex(i)->SetTexCord(texcordList.at(i));
             }
         }
-  /*      if (hasNormal && hasTexcord)
-        {
-            fin.seekg(0);
-            while (fin.getline(pLine, maxSize))
-            {
-                if (pLine[0] == 'f' && pLine[1] == ' ')
-                {
-
-                }
-            }
-        }
-        else if (hasNormal)
-        {
-            fin.seekg(0);
-            while (fin.getline(pLine, maxSize))
-            {
-
-            }
-        }
-        else if (hasTexcord)
-        {
-            fin.seekg(0);
-            while (fin.getline(pLine, maxSize))
-            {
-
-            }
-        }*/
 
         return pMesh;
     }
