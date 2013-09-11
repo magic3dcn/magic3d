@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../DGP/Vector3.h"
 
 namespace MagicCore
 {
@@ -15,6 +16,7 @@ namespace MagicCore
         bool FileSaveDlg(std::string& selectFileName);
         bool IsAppRunning(void);
         void SetAppRunning(bool bRunning);
+        MagicDGP::Vector3 ColorCoding(float f);
 
         virtual ~ToolKit(void);
 

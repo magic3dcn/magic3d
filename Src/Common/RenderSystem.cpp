@@ -109,6 +109,31 @@ namespace MagicCore
         pMObj->end();
     }
 
+    void RenderSystem::RenderLineSegments(const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos, std::string lsName, std::string materialName)
+    {
+        Ogre::ManualObject* pMObj = NULL;
+        if (mpSceneMgr->hasManualObject(lsName))
+        {
+            pMObj = mpSceneMgr->getManualObject(lsName);
+            pMObj->clear();
+        }
+        else
+        {
+            pMObj = mpSceneMgr->createManualObject(lsName);
+            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+        }
+        pMObj->begin(materialName, Ogre::RenderOperation::OT_LINE_LIST);
+        int lineNum = startPos.size();
+        for (int i = 0; i < lineNum; i++)
+        {
+            MagicDGP::Vector3 start = startPos.at(i);
+            MagicDGP::Vector3 end = endPos.at(i);
+            pMObj->position(start[0], start[1], start[2]);
+            pMObj->position(end[0], end[1], end[2]);
+        }
+        pMObj->end();
+    }
+
     void RenderSystem::RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName)
     {
         Ogre::ManualObject* pMObj = NULL;
@@ -141,7 +166,7 @@ namespace MagicCore
         pMObj->end();
     }
 
-    void RenderSystem::HidePoint3DSet(std::string psName)
+    void RenderSystem::HideRenderingObject(std::string psName)
     {
         if (mpSceneMgr->hasManualObject(psName))
         {

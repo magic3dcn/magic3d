@@ -23,8 +23,9 @@ namespace MagicCore
         virtual ~RenderSystem(void);
 
         void RenderPoint3DSet(const MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName);
-        void HidePoint3DSet(std::string psName);
+        void RenderLineSegments(const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos, std::string lsName, std::string materialName);
         void RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName);
+        void HideRenderingObject(std::string psName);
 
     private:
         Ogre::Root*    mpRoot;
