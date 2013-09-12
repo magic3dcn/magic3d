@@ -1,13 +1,22 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PoissonReconstruction.h"
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
 #include <Psapi.h>
 
+#include "TimePoisson.h"
+#include "MarchingCubes.h"
+#include "Octree.h"
+#include "SparseMatrix.h"
+#include "CmdLineParser.h"
+#include "PPolynomial.h"
+#include "Ply.h"
+#include "MemoryUsage.h"
+
 #include "omp.h"
 #include <stdarg.h>
-
+#include "MultiGridOctreeData.h"
 
 namespace MagicDependence
 {
@@ -230,123 +239,123 @@ namespace MagicDependence
 
     MagicDGP::Mesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], const MagicDGP::Mesh3D* pMesh)
     {
-        cmdLineString In( "in" ) , Out( "out" );
-        cmdLineInt Smooth( "smooth" , 5 );
-        cmdLineFloat Trim( "trim" ) , IslandAreaRatio( "aRatio" , 0.001f );
-        cmdLineFloatArray< 2 > ColorRange( "color" );
-        cmdLineReadable PolygonMesh( "polygonMesh" );
+        //cmdLineString In( "in" ) , Out( "out" );
+        //cmdLineInt Smooth( "smooth" , 5 );
+        //cmdLineFloat Trim( "trim" ) , IslandAreaRatio( "aRatio" , 0.001f );
+        //cmdLineFloatArray< 2 > ColorRange( "color" );
+        //cmdLineReadable PolygonMesh( "polygonMesh" );
 
-        cmdLineReadable* params[] =
-        {
-            &In , &Out , &Trim , &PolygonMesh , &ColorRange , &Smooth , &IslandAreaRatio
-        };
+        //cmdLineReadable* params[] =
+        //{
+        //    &In , &Out , &Trim , &PolygonMesh , &ColorRange , &Smooth , &IslandAreaRatio
+        //};
 
-        int paramNum = sizeof(params)/sizeof(cmdLineReadable*);
-        cmdLineParse( argc-1 , &argv[1] , paramNum , params , 0 );
+        //int paramNum = sizeof(params)/sizeof(cmdLineReadable*);
+        //cmdLineParse( argc-1 , &argv[1] , paramNum , params , 0 );
 
-        float min , max;
-        std::vector< PlyValueVertex< float > > vertices;
-        std::vector< std::vector< int > > polygons;
+        //float min , max;
+        //std::vector< PlyValueVertex< float > > vertices;
+        //std::vector< std::vector< int > > polygons;
 
-        int ft , commentNum = paramNum+2;
-        char** comments;
-        bool readFlags[ PlyValueVertex< float >::Components ];
-        PlyReadPolygons( In.value , vertices , polygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , &comments , &commentNum , readFlags );
-        //if( !readFlags[3] ){ fprintf( stderr , "[ERROR] vertices do not have value flag\n" ) ; return EXIT_FAILURE; }
+        //int ft , commentNum = paramNum+2;
+        //char** comments;
+        //bool readFlags[ PlyValueVertex< float >::Components ];
+        //PlyReadPolygons( In.value , vertices , polygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , &comments , &commentNum , readFlags );
+        ////if( !readFlags[3] ){ fprintf( stderr , "[ERROR] vertices do not have value flag\n" ) ; return EXIT_FAILURE; }
 
-        for( int i=0 ; i<Smooth.value ; i++ ) SmoothValues( vertices , polygons );
+        //for( int i=0 ; i<Smooth.value ; i++ ) SmoothValues( vertices , polygons );
 
-        min = max = vertices[0].value;
-        for( size_t i=0 ; i<vertices.size() ; i++ ) min = std::min< float >( min , vertices[i].value ) , max = std::max< float >( max , vertices[i].value );
-        printf( "Value Range: [%f,%f]\n" , min , max );
+        //min = max = vertices[0].value;
+        //for( size_t i=0 ; i<vertices.size() ; i++ ) min = std::min< float >( min , vertices[i].value ) , max = std::max< float >( max , vertices[i].value );
+        //printf( "Value Range: [%f,%f]\n" , min , max );
 
 
-        if( Trim.set )
-        {
-            hash_map< long long , int > vertexTable;
-            std::vector< std::vector< int > > ltPolygons , gtPolygons;
-            std::vector< bool > ltFlags , gtFlags;
+        //if( Trim.set )
+        //{
+        //    hash_map< long long , int > vertexTable;
+        //    std::vector< std::vector< int > > ltPolygons , gtPolygons;
+        //    std::vector< bool > ltFlags , gtFlags;
 
-            for( int i=0 ; i<paramNum+2 ; i++ ) comments[i+commentNum]=new char[1024];
-            sprintf( comments[commentNum++] , "Running Surface Trimmer (V5)" );
-            if(              In.set ) sprintf(comments[commentNum++],"\t--%s %s" , In.name , In.value );
-            if(             Out.set ) sprintf(comments[commentNum++],"\t--%s %s" , Out.name , Out.value );
-            if(            Trim.set ) sprintf(comments[commentNum++],"\t--%s %f" , Trim.name , Trim.value );
-            if(          Smooth.set ) sprintf(comments[commentNum++],"\t--%s %d" , Smooth.name , Smooth.value );
-            if( IslandAreaRatio.set ) sprintf(comments[commentNum++],"\t--%s %f" , IslandAreaRatio.name , IslandAreaRatio.value );
-            if(     PolygonMesh.set ) sprintf(comments[commentNum++],"\t--%s" , PolygonMesh.name );
+        //    for( int i=0 ; i<paramNum+2 ; i++ ) comments[i+commentNum]=new char[1024];
+        //    sprintf( comments[commentNum++] , "Running Surface Trimmer (V5)" );
+        //    if(              In.set ) sprintf(comments[commentNum++],"\t--%s %s" , In.name , In.value );
+        //    if(             Out.set ) sprintf(comments[commentNum++],"\t--%s %s" , Out.name , Out.value );
+        //    if(            Trim.set ) sprintf(comments[commentNum++],"\t--%s %f" , Trim.name , Trim.value );
+        //    if(          Smooth.set ) sprintf(comments[commentNum++],"\t--%s %d" , Smooth.name , Smooth.value );
+        //    if( IslandAreaRatio.set ) sprintf(comments[commentNum++],"\t--%s %f" , IslandAreaRatio.name , IslandAreaRatio.value );
+        //    if(     PolygonMesh.set ) sprintf(comments[commentNum++],"\t--%s" , PolygonMesh.name );
 
-            double t=Time();
-            for( size_t i=0 ; i<polygons.size() ; i++ ) SplitPolygon( polygons[i] , vertices , &ltPolygons , &gtPolygons , &ltFlags , &gtFlags , vertexTable , Trim.value );
-            if( IslandAreaRatio.value>0 )
-            {
-                std::vector< std::vector< int > > _ltPolygons , _gtPolygons;
-                std::vector< std::vector< int > > ltComponents , gtComponents;
-                SetConnectedComponents( ltPolygons , ltComponents );
-                SetConnectedComponents( gtPolygons , gtComponents );
-                std::vector< double > ltAreas( ltComponents.size() , 0. ) , gtAreas( gtComponents.size() , 0. );
-                std::vector< bool > ltComponentFlags( ltComponents.size() , false ) , gtComponentFlags( gtComponents.size() , false );
-                double area = 0.;
-                for( size_t i=0 ; i<ltComponents.size() ; i++ )
-                {
-                    for( size_t j=0 ; j<ltComponents[i].size() ; j++ )
-                    {
-                        ltAreas[i] += PolygonArea( vertices , ltPolygons[ ltComponents[i][j] ] );
-                        ltComponentFlags[i] = ( ltComponentFlags[i] || ltFlags[ ltComponents[i][j] ] );
-                    }
-                    area += ltAreas[i];
-                }
-                for( size_t i=0 ; i<gtComponents.size() ; i++ )
-                {
-                    for( size_t j=0 ; j<gtComponents[i].size() ; j++ )
-                    {
-                        gtAreas[i] += PolygonArea( vertices , gtPolygons[ gtComponents[i][j] ] );
-                        gtComponentFlags[i] = ( gtComponentFlags[i] || gtFlags[ gtComponents[i][j] ] );
-                    }
-                    area += gtAreas[i];
-                }
-                for( size_t i=0 ; i<ltComponents.size() ; i++ )
-                {
-                    if( ltAreas[i]<area*IslandAreaRatio.value && ltComponentFlags[i] ) for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _gtPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
-                    else                                                               for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _ltPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
-                }
-                for( size_t i=0 ; i<gtComponents.size() ; i++ )
-                {
-                    if( gtAreas[i]<area*IslandAreaRatio.value && gtComponentFlags[i] ) for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _ltPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
-                    else                                                               for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _gtPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
-                }
-                ltPolygons = _ltPolygons , gtPolygons = _gtPolygons;
-            }
-            if( !PolygonMesh.set )
-            {
-                {
-                    std::vector< std::vector< int > > polys = ltPolygons;
-                    Triangulate( vertices , ltPolygons , polys ) , ltPolygons = polys;
-                }
-                {
-                    std::vector< std::vector< int > > polys = gtPolygons;
-                    Triangulate( vertices , gtPolygons , polys ) , gtPolygons = polys;
-                }
-            }
+        //    double t=Time();
+        //    for( size_t i=0 ; i<polygons.size() ; i++ ) SplitPolygon( polygons[i] , vertices , &ltPolygons , &gtPolygons , &ltFlags , &gtFlags , vertexTable , Trim.value );
+        //    if( IslandAreaRatio.value>0 )
+        //    {
+        //        std::vector< std::vector< int > > _ltPolygons , _gtPolygons;
+        //        std::vector< std::vector< int > > ltComponents , gtComponents;
+        //        SetConnectedComponents( ltPolygons , ltComponents );
+        //        SetConnectedComponents( gtPolygons , gtComponents );
+        //        std::vector< double > ltAreas( ltComponents.size() , 0. ) , gtAreas( gtComponents.size() , 0. );
+        //        std::vector< bool > ltComponentFlags( ltComponents.size() , false ) , gtComponentFlags( gtComponents.size() , false );
+        //        double area = 0.;
+        //        for( size_t i=0 ; i<ltComponents.size() ; i++ )
+        //        {
+        //            for( size_t j=0 ; j<ltComponents[i].size() ; j++ )
+        //            {
+        //                ltAreas[i] += PolygonArea( vertices , ltPolygons[ ltComponents[i][j] ] );
+        //                ltComponentFlags[i] = ( ltComponentFlags[i] || ltFlags[ ltComponents[i][j] ] );
+        //            }
+        //            area += ltAreas[i];
+        //        }
+        //        for( size_t i=0 ; i<gtComponents.size() ; i++ )
+        //        {
+        //            for( size_t j=0 ; j<gtComponents[i].size() ; j++ )
+        //            {
+        //                gtAreas[i] += PolygonArea( vertices , gtPolygons[ gtComponents[i][j] ] );
+        //                gtComponentFlags[i] = ( gtComponentFlags[i] || gtFlags[ gtComponents[i][j] ] );
+        //            }
+        //            area += gtAreas[i];
+        //        }
+        //        for( size_t i=0 ; i<ltComponents.size() ; i++ )
+        //        {
+        //            if( ltAreas[i]<area*IslandAreaRatio.value && ltComponentFlags[i] ) for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _gtPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+        //            else                                                               for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _ltPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+        //        }
+        //        for( size_t i=0 ; i<gtComponents.size() ; i++ )
+        //        {
+        //            if( gtAreas[i]<area*IslandAreaRatio.value && gtComponentFlags[i] ) for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _ltPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+        //            else                                                               for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _gtPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+        //        }
+        //        ltPolygons = _ltPolygons , gtPolygons = _gtPolygons;
+        //    }
+        //    if( !PolygonMesh.set )
+        //    {
+        //        {
+        //            std::vector< std::vector< int > > polys = ltPolygons;
+        //            Triangulate( vertices , ltPolygons , polys ) , ltPolygons = polys;
+        //        }
+        //        {
+        //            std::vector< std::vector< int > > polys = gtPolygons;
+        //            Triangulate( vertices , gtPolygons , polys ) , gtPolygons = polys;
+        //        }
+        //    }
 
-            RemoveHangingVertices( vertices , gtPolygons );
-            sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
-            if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
-        }
-        else
-        {
-            if( ColorRange.set ) min = ColorRange.values[0] , max = ColorRange.values[1];
-            std::vector< PlyColorVertex< float > > outVertices;
-            ColorVertices( vertices , outVertices , min , max );
-            if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , ft , comments , commentNum );
-        }
+        //    RemoveHangingVertices( vertices , gtPolygons );
+        //    sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
+        //    if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
+        //}
+        //else
+        //{
+        //    if( ColorRange.set ) min = ColorRange.values[0] , max = ColorRange.values[1];
+        //    std::vector< PlyColorVertex< float > > outVertices;
+        //    ColorVertices( vertices , outVertices , min , max );
+        //    if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , ft , comments , commentNum );
+        //}
 
         return NULL;
     }
 
-    void PoissonReconstruction::SetConnectedComponents( const std::vector< std::vector< int > >& polygons , std::vector< std::vector< int > >& components )
-    {
+    //void PoissonReconstruction::SetConnectedComponents( const std::vector< std::vector< int > >& polygons , std::vector< std::vector< int > >& components )
+    //{
 
-    }
+    //}
 
 }

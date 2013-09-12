@@ -1,16 +1,14 @@
 #pragma once
 #include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
-#include "TimePoisson.h"
-#include "MarchingCubes.h"
-#include "Octree.h"
-#include "SparseMatrix.h"
-#include "CmdLineParser.h"
-#include "PPolynomial.h"
-#include "Ply.h"
-#include "MemoryUsage.h"
-#include "MultiGridOctreeData.h"
+//#include "Hash.h"
 
+//template< class Real >
+//class PlyValueVertex;
+//template< class Real >
+//struct Point3D;
+//template< class Real >
+//class PlyColorVertex;
 namespace MagicDependence
 {
     class PoissonReconstruction
@@ -22,7 +20,7 @@ namespace MagicDependence
         ~PoissonReconstruction();
 
     private:
-        template< class Real >
+        /*template< class Real >
         static void SmoothValues( std::vector< PlyValueVertex< Real > >& vertices , const std::vector< std::vector< int > >& polygons )
         {
         }
@@ -62,7 +60,7 @@ namespace MagicDependence
         template< class Real >
         static void ColorVertices( const std::vector< PlyValueVertex< Real > >& inVertices , std::vector< PlyColorVertex< Real > >& outVertices , float min , float max )
         {
-        }
+        }*/
     };
 
 }

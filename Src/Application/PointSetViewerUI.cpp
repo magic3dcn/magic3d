@@ -7,6 +7,7 @@
 #include "../Common/AppManager.h"
 #include "../Common/RenderSystem.h"
 #include "PointSetViewer.h"
+#include "../DGP/MeshReconstruction.h"//test
 
 namespace MagicApp
 {
@@ -59,11 +60,14 @@ namespace MagicApp
 
     void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
     {
-        std::string fileName;
+        /*std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
         MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
         pMesh->UpdateNormal();
         pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");*/
+        //test
+        MagicDGP::MeshReconstruction meshRecon;
+        meshRecon.ScreenPoissonReconstruction(NULL);
     }
 }
