@@ -27,7 +27,7 @@ DAMAGE.
 */
 
 #include "Octree.h"
-#include "time.h"
+#include "TimePoisson.h"
 #include "MemoryUsage.h"
 #include "PointStream.h"
 #include "MAT.h"
@@ -41,7 +41,25 @@ const Real MATRIX_ENTRY_EPSILON = Real(0);
 const Real EPSILON=Real(1e-6);
 const Real ROUND_EPS=Real(1e-5);
 
-
+void DumpOutput( const char* format , ... )
+{
+	//if( outputFile )
+	//{
+	//	FILE* fp = fopen( outputFile , "a" );
+	//	va_list args;
+	//	va_start( args , format );
+	//	vfprintf( fp , format , args );
+	//	fclose( fp );
+	//	va_end( args );
+	//}
+	//if( echoStdout )
+	//{
+	//	va_list args;
+	//	va_start( args , format );
+	//	vprintf( format , args );
+	//	va_end( args );
+	//}
+}
 
 /////////////////////
 // SortedTreeNodes //

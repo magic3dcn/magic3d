@@ -37,9 +37,18 @@
     <Filter Include="Application\Reconstruction">
       <UniqueIdentifier>{03e02004-9479-4bcd-8106-cd14f254cb66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependence">
+      <UniqueIdentifier>{5fdd45a4-5b04-4543-8226-83725c7f2b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependence\PoissonReconstruction">
+      <UniqueIdentifier>{a5f1fc3b-c8c8-4bfa-9a54-872eb1db66cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="..\Dependencies\PoissonRecon\license.txt">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -137,6 +146,75 @@
     </ClInclude>
     <ClInclude Include="..\Src\DGP\HomoMatrix4.h">
       <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Array.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\BinaryNode.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\BSplineData.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\CmdLineParser.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Factor.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\FunctionData.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Geometry.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Hash.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\MarchingCubes.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\MAT.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\MemoryUsage.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\MultiGridOctreeData.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Octree.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Ply.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\PlyFile.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\PointStream.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Polynomial.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\PPolynomial.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\SparseMatrix.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\TimePoisson.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\PoissonRecon\Vector.h">
+      <Filter>Dependence\PoissonReconstruction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,5 +314,67 @@
     <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\Factor.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\Geometry.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\MarchingCubes.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\PlyFile.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\PoissonRecon\TimePoisson.cpp">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Dependencies\PoissonRecon\Array.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\BSplineData.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\CmdLineParser.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\FunctionData.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\Geometry.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\MAT.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\MultiGridOctreeData.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\Octree.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\PointStream.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\Polynomial.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\PPolynomial.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\SparseMatrix.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\PoissonRecon\Vector.inl">
+      <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
   </ItemGroup>
 </Project>

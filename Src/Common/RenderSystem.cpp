@@ -28,7 +28,17 @@ namespace MagicCore
     {
         MagicLog << "RenderSystem init...." << std::endl;
         mpRoot = new Ogre::Root();
-        if (mpRoot->showConfigDialog())
+        bool hasConfig = false;
+        if (mpRoot->restoreConfig())
+        {
+            hasConfig = true;
+        }
+        else if (mpRoot->showConfigDialog())
+        {
+            hasConfig = true;
+        }
+
+        if (hasConfig)
         {
             // initialise system according to user options.
             mpRenderWin = mpRoot->initialise(true, "Magic3D");
@@ -57,7 +67,7 @@ namespace MagicCore
         }
         else
         {
-
+            //Exist
         }
 
     }
