@@ -429,7 +429,12 @@ namespace MagicDGP
                 }
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != NULL && pEdge != pVert->GetEdge());
-            nor.Normalise();
+            Real norLen = nor.Normalise();
+            if (norLen < Epsilon)
+            {
+                MagicLog << "normal lenth too small" << std::endl;
+                nor[0] = 1.0;
+            }
             pVert->SetNormal(nor);
         }
     }

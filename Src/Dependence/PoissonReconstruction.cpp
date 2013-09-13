@@ -17,6 +17,7 @@
 #include "omp.h"
 #include <stdarg.h>
 #include "MultiGridOctreeData.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDependence
 {
@@ -28,7 +29,17 @@ namespace MagicDependence
     {
     }
 
-    MagicDGP::Mesh3D* PoissonReconstruction::PoissonRecon(int argc , char* argv[], const MagicDGP::Point3DSet* pPC)
+    MagicDGP::Mesh3D* PoissonReconstruction::ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC)
+    {
+        std::vector< PlyValueVertex< float > > vertices;
+        std::vector< std::vector< int > > polygons;
+        char* argv1[] = {"--in", "pc.psr", "--out", "pc.ply", "--depth", "10", "--density"};
+        PoissonRecon(7, argv1, pPC, vertices, polygons);
+        char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "7", "--aRatio", "0"};
+        return SurfaceTrimmer(8, argv2, vertices, polygons);
+    }
+
+    void PoissonReconstruction::PoissonRecon(int argc , char* argv[], const MagicDGP::Point3DSet* pPC, std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)
     {
         cmdLineString
             In( "in" ) ,
@@ -77,7 +88,7 @@ namespace MagicDependence
             &Density
         };
 
-        cmdLineParse( argc-1 , &argv[1] , sizeof(params)/sizeof(cmdLineReadable*) , params , 1 );
+        cmdLineParse( argc , argv , sizeof(params)/sizeof(cmdLineReadable*) , params , 1 );
         /*if( Density.set ) 
             return Execute< 2 , PlyValueVertex< Real > , true  >(argc , argv, pPC);
         else       
@@ -156,10 +167,24 @@ namespace MagicDependence
         //    fprintf( stderr,"[ERROR] %s can't be greater than %s: %d <= %d\n" , KernelDepth.name , Depth.name , KernelDepth.value , Depth.value );
         //    return EXIT_FAILURE;
         //}
-
+        //
+        int pointNumber = pPC->GetPointNumber();
+        std::vector<float> posList(pointNumber * 3);
+        std::vector<float> norList(pointNumber * 3);
+        for (int pIndex = 0; pIndex < pointNumber; pIndex++)
+        {
+            posList.at(3 * pIndex + 0) = pPC->GetPoint(pIndex)->GetPosition()[0];
+            posList.at(3 * pIndex + 1) = pPC->GetPoint(pIndex)->GetPosition()[1];
+            posList.at(3 * pIndex + 2) = pPC->GetPoint(pIndex)->GetPosition()[2];
+            norList.at(3 * pIndex + 0) = pPC->GetPoint(pIndex)->GetNormal()[0];
+            norList.at(3 * pIndex + 1) = pPC->GetPoint(pIndex)->GetNormal()[1];
+            norList.at(3 * pIndex + 2) = pPC->GetPoint(pIndex)->GetNormal()[2];
+        }
+        //
         double maxMemoryUsage;
         t=Time() , tree.maxMemoryUsage=0;
-        int pointCount = tree.setTree( In.value , Depth.value , MinDepth.value , kernelDepth , Real(SamplesPerNode.value) , Scale.value , Confidence.set , PointWeight.value , AdaptiveExponent.value , xForm );
+        //int pointCount = tree.setTree( In.value , Depth.value , MinDepth.value , kernelDepth , Real(SamplesPerNode.value) , Scale.value , Confidence.set , PointWeight.value , AdaptiveExponent.value , xForm );
+        int pointCount = tree.setTree( posList, norList, Depth.value , MinDepth.value , kernelDepth , Real(SamplesPerNode.value) , Scale.value , Confidence.set , PointWeight.value , AdaptiveExponent.value , xForm );
         tree.ClipTree();
         tree.finalize( IsoDivide.value );
 
@@ -222,38 +247,98 @@ namespace MagicDependence
             maxMemoryUsage = std::max< double >( maxMemoryUsage , tree.maxMemoryUsage );
             //DumpOutput2( comments[commentNum++],"#             Total Solve: %9.1f (s), %9.1f (MB)\n" , Time()-tt , maxMemoryUsage );
 
-            if( NoComments.set )
+            //if( NoComments.set )
+            //{
+            //    if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , NULL , 0 , iXForm );
+            //    else            PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , NULL , 0 , iXForm );
+            //}
+            //else
+            //{
+            //    if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , comments , commentNum , iXForm );
+            //    else            PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , comments , commentNum , iXForm );
+            //}
+            vertices.clear();
+            polygons.clear();
+            int incorePointNum = int( mesh.inCorePoints.size() );
+            int outofcorePointNum = mesh.outOfCorePointCount();
+            MagicLog << "incorePointNum: " << incorePointNum << std::endl;
+            MagicLog << "outofcorePointNum: " << outofcorePointNum << std::endl;
+            mesh.resetIterator();
+            for(int pIndex = 0 ; pIndex < incorePointNum ; pIndex++ )
             {
-                if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , NULL , 0 , iXForm );
-                else            PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , NULL , 0 , iXForm );
+                PlyValueVertex< Real > vertex = iXForm * mesh.inCorePoints[pIndex];
+                vertices.push_back(vertex);
+                //ply_put_element(ply, (void *) &vertex);
             }
-            else
+            for(int pIndex = 0; pIndex < outofcorePointNum; pIndex++ )
             {
-                if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , comments , commentNum , iXForm );
-                else            PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , comments , commentNum , iXForm );
+                PlyValueVertex< Real > vertex;
+                mesh.nextOutOfCorePoint( vertex );
+                vertex = iXForm * ( vertex );
+                vertices.push_back(vertex);
+                //ply_put_element(ply, (void *) &vertex);
             }
+            int polyNum = mesh.polygonCount();
+            MagicLog << "polyNum: " << polyNum << std::endl;
+            for (int pIndex = 0; pIndex < polyNum; pIndex++)
+            {
+                std::vector< CoredVertexIndex > coreIndex;
+                mesh.nextPolygon(coreIndex);
+                std::vector< int > pureIndex;
+                for (int ii = 0; ii < coreIndex.size(); ii++)
+                {
+                    if (coreIndex.at(ii).inCore)
+                    {
+                        pureIndex.push_back(coreIndex.at(ii).idx);
+                    }
+                    else
+                    {
+                        pureIndex.push_back(coreIndex.at(ii).idx + incorePointNum);
+                    }
+                }
+                if (coreIndex.size() != 3)
+                {
+                    MagicLog << "Error: coreIndex.size: " << coreIndex.size() << std::endl;
+                }
+                polygons.push_back(pureIndex);
+            }
+            //just for test
+            MagicLog << "Export inter object" << std::endl;
+            std::ofstream fout("pc_inter.obj");
+            for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
+            {
+                PlyValueVertex< float > vert = vertices.at(pIndex);
+                fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
+            }
+            for (int pIndex = 0; pIndex < polygons.size(); pIndex++)
+            {
+                if (polygons.at(pIndex).at(0) == 0 || polygons.at(pIndex).at(1) == 0 || polygons.at(pIndex).at(2) == 0)
+                {
+                    MagicLog << "Error: face index == 0" << std::endl;
+                }
+                fout << "f " << polygons.at(pIndex).at(0) + 1 << " " << polygons.at(pIndex).at(1) + 1 << " " << polygons.at(pIndex).at(2) + 1 << std::endl;
+            }
+            fout.close();
         }
-
-        return NULL;
     }
 
-    MagicDGP::Mesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], const MagicDGP::Mesh3D* pMesh)
+    MagicDGP::Mesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)
     {
-        //cmdLineString In( "in" ) , Out( "out" );
-        //cmdLineInt Smooth( "smooth" , 5 );
-        //cmdLineFloat Trim( "trim" ) , IslandAreaRatio( "aRatio" , 0.001f );
-        //cmdLineFloatArray< 2 > ColorRange( "color" );
-        //cmdLineReadable PolygonMesh( "polygonMesh" );
+        cmdLineString In( "in" ) , Out( "out" );
+        cmdLineInt Smooth( "smooth" , 5 );
+        cmdLineFloat Trim( "trim" ) , IslandAreaRatio( "aRatio" , 0.001f );
+        cmdLineFloatArray< 2 > ColorRange( "color" );
+        cmdLineReadable PolygonMesh( "polygonMesh" );
 
-        //cmdLineReadable* params[] =
-        //{
-        //    &In , &Out , &Trim , &PolygonMesh , &ColorRange , &Smooth , &IslandAreaRatio
-        //};
+        cmdLineReadable* params[] =
+        {
+            &In , &Out , &Trim , &PolygonMesh , &ColorRange , &Smooth , &IslandAreaRatio
+        };
 
-        //int paramNum = sizeof(params)/sizeof(cmdLineReadable*);
-        //cmdLineParse( argc-1 , &argv[1] , paramNum , params , 0 );
+        int paramNum = sizeof(params)/sizeof(cmdLineReadable*);
+        cmdLineParse( argc , argv, paramNum , params , 0 );
 
-        //float min , max;
+        float min , max;
         //std::vector< PlyValueVertex< float > > vertices;
         //std::vector< std::vector< int > > polygons;
 
@@ -261,101 +346,163 @@ namespace MagicDependence
         //char** comments;
         //bool readFlags[ PlyValueVertex< float >::Components ];
         //PlyReadPolygons( In.value , vertices , polygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , &comments , &commentNum , readFlags );
-        ////if( !readFlags[3] ){ fprintf( stderr , "[ERROR] vertices do not have value flag\n" ) ; return EXIT_FAILURE; }
+        //if( !readFlags[3] ){ fprintf( stderr , "[ERROR] vertices do not have value flag\n" ) ; return EXIT_FAILURE; }
 
-        //for( int i=0 ; i<Smooth.value ; i++ ) SmoothValues( vertices , polygons );
+        for( int i=0 ; i<Smooth.value ; i++ ) SmoothValues( vertices , polygons );
 
-        //min = max = vertices[0].value;
-        //for( size_t i=0 ; i<vertices.size() ; i++ ) min = std::min< float >( min , vertices[i].value ) , max = std::max< float >( max , vertices[i].value );
-        //printf( "Value Range: [%f,%f]\n" , min , max );
+        min = max = vertices[0].value;
+        for( size_t i=0 ; i<vertices.size() ; i++ ) min = std::min< float >( min , vertices[i].value ) , max = std::max< float >( max , vertices[i].value );
+        printf( "Value Range: [%f,%f]\n" , min , max );
 
 
-        //if( Trim.set )
-        //{
-        //    hash_map< long long , int > vertexTable;
-        //    std::vector< std::vector< int > > ltPolygons , gtPolygons;
-        //    std::vector< bool > ltFlags , gtFlags;
+        if( Trim.set )
+        {
+            hash_map< long long , int > vertexTable;
+            std::vector< std::vector< int > > ltPolygons , gtPolygons;
+            std::vector< bool > ltFlags , gtFlags;
 
-        //    for( int i=0 ; i<paramNum+2 ; i++ ) comments[i+commentNum]=new char[1024];
-        //    sprintf( comments[commentNum++] , "Running Surface Trimmer (V5)" );
-        //    if(              In.set ) sprintf(comments[commentNum++],"\t--%s %s" , In.name , In.value );
-        //    if(             Out.set ) sprintf(comments[commentNum++],"\t--%s %s" , Out.name , Out.value );
-        //    if(            Trim.set ) sprintf(comments[commentNum++],"\t--%s %f" , Trim.name , Trim.value );
-        //    if(          Smooth.set ) sprintf(comments[commentNum++],"\t--%s %d" , Smooth.name , Smooth.value );
-        //    if( IslandAreaRatio.set ) sprintf(comments[commentNum++],"\t--%s %f" , IslandAreaRatio.name , IslandAreaRatio.value );
-        //    if(     PolygonMesh.set ) sprintf(comments[commentNum++],"\t--%s" , PolygonMesh.name );
+            /*for( int i=0 ; i<paramNum+2 ; i++ ) comments[i+commentNum]=new char[1024];
+            sprintf( comments[commentNum++] , "Running Surface Trimmer (V5)" );
+            if(              In.set ) sprintf(comments[commentNum++],"\t--%s %s" , In.name , In.value );
+            if(             Out.set ) sprintf(comments[commentNum++],"\t--%s %s" , Out.name , Out.value );
+            if(            Trim.set ) sprintf(comments[commentNum++],"\t--%s %f" , Trim.name , Trim.value );
+            if(          Smooth.set ) sprintf(comments[commentNum++],"\t--%s %d" , Smooth.name , Smooth.value );
+            if( IslandAreaRatio.set ) sprintf(comments[commentNum++],"\t--%s %f" , IslandAreaRatio.name , IslandAreaRatio.value );
+            if(     PolygonMesh.set ) sprintf(comments[commentNum++],"\t--%s" , PolygonMesh.name );*/
 
-        //    double t=Time();
-        //    for( size_t i=0 ; i<polygons.size() ; i++ ) SplitPolygon( polygons[i] , vertices , &ltPolygons , &gtPolygons , &ltFlags , &gtFlags , vertexTable , Trim.value );
-        //    if( IslandAreaRatio.value>0 )
-        //    {
-        //        std::vector< std::vector< int > > _ltPolygons , _gtPolygons;
-        //        std::vector< std::vector< int > > ltComponents , gtComponents;
-        //        SetConnectedComponents( ltPolygons , ltComponents );
-        //        SetConnectedComponents( gtPolygons , gtComponents );
-        //        std::vector< double > ltAreas( ltComponents.size() , 0. ) , gtAreas( gtComponents.size() , 0. );
-        //        std::vector< bool > ltComponentFlags( ltComponents.size() , false ) , gtComponentFlags( gtComponents.size() , false );
-        //        double area = 0.;
-        //        for( size_t i=0 ; i<ltComponents.size() ; i++ )
-        //        {
-        //            for( size_t j=0 ; j<ltComponents[i].size() ; j++ )
-        //            {
-        //                ltAreas[i] += PolygonArea( vertices , ltPolygons[ ltComponents[i][j] ] );
-        //                ltComponentFlags[i] = ( ltComponentFlags[i] || ltFlags[ ltComponents[i][j] ] );
-        //            }
-        //            area += ltAreas[i];
-        //        }
-        //        for( size_t i=0 ; i<gtComponents.size() ; i++ )
-        //        {
-        //            for( size_t j=0 ; j<gtComponents[i].size() ; j++ )
-        //            {
-        //                gtAreas[i] += PolygonArea( vertices , gtPolygons[ gtComponents[i][j] ] );
-        //                gtComponentFlags[i] = ( gtComponentFlags[i] || gtFlags[ gtComponents[i][j] ] );
-        //            }
-        //            area += gtAreas[i];
-        //        }
-        //        for( size_t i=0 ; i<ltComponents.size() ; i++ )
-        //        {
-        //            if( ltAreas[i]<area*IslandAreaRatio.value && ltComponentFlags[i] ) for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _gtPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
-        //            else                                                               for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _ltPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
-        //        }
-        //        for( size_t i=0 ; i<gtComponents.size() ; i++ )
-        //        {
-        //            if( gtAreas[i]<area*IslandAreaRatio.value && gtComponentFlags[i] ) for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _ltPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
-        //            else                                                               for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _gtPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
-        //        }
-        //        ltPolygons = _ltPolygons , gtPolygons = _gtPolygons;
-        //    }
-        //    if( !PolygonMesh.set )
-        //    {
-        //        {
-        //            std::vector< std::vector< int > > polys = ltPolygons;
-        //            Triangulate( vertices , ltPolygons , polys ) , ltPolygons = polys;
-        //        }
-        //        {
-        //            std::vector< std::vector< int > > polys = gtPolygons;
-        //            Triangulate( vertices , gtPolygons , polys ) , gtPolygons = polys;
-        //        }
-        //    }
+            double t=Time();
+            for( size_t i=0 ; i<polygons.size() ; i++ ) SplitPolygon( polygons[i] , vertices , &ltPolygons , &gtPolygons , &ltFlags , &gtFlags , vertexTable , Trim.value );
+            if( IslandAreaRatio.value>0 )
+            {
+                std::vector< std::vector< int > > _ltPolygons , _gtPolygons;
+                std::vector< std::vector< int > > ltComponents , gtComponents;
+                SetConnectedComponents( ltPolygons , ltComponents );
+                SetConnectedComponents( gtPolygons , gtComponents );
+                std::vector< double > ltAreas( ltComponents.size() , 0. ) , gtAreas( gtComponents.size() , 0. );
+                std::vector< bool > ltComponentFlags( ltComponents.size() , false ) , gtComponentFlags( gtComponents.size() , false );
+                double area = 0.;
+                for( size_t i=0 ; i<ltComponents.size() ; i++ )
+                {
+                    for( size_t j=0 ; j<ltComponents[i].size() ; j++ )
+                    {
+                        ltAreas[i] += PolygonArea( vertices , ltPolygons[ ltComponents[i][j] ] );
+                        ltComponentFlags[i] = ( ltComponentFlags[i] || ltFlags[ ltComponents[i][j] ] );
+                    }
+                    area += ltAreas[i];
+                }
+                for( size_t i=0 ; i<gtComponents.size() ; i++ )
+                {
+                    for( size_t j=0 ; j<gtComponents[i].size() ; j++ )
+                    {
+                        gtAreas[i] += PolygonArea( vertices , gtPolygons[ gtComponents[i][j] ] );
+                        gtComponentFlags[i] = ( gtComponentFlags[i] || gtFlags[ gtComponents[i][j] ] );
+                    }
+                    area += gtAreas[i];
+                }
+                for( size_t i=0 ; i<ltComponents.size() ; i++ )
+                {
+                    if( ltAreas[i]<area*IslandAreaRatio.value && ltComponentFlags[i] ) for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _gtPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+                    else                                                               for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _ltPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+                }
+                for( size_t i=0 ; i<gtComponents.size() ; i++ )
+                {
+                    if( gtAreas[i]<area*IslandAreaRatio.value && gtComponentFlags[i] ) for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _ltPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+                    else                                                               for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _gtPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+                }
+                ltPolygons = _ltPolygons , gtPolygons = _gtPolygons;
+            }
+            if( !PolygonMesh.set )
+            {
+                {
+                    std::vector< std::vector< int > > polys = ltPolygons;
+                    Triangulate( vertices , ltPolygons , polys ) , ltPolygons = polys;
+                }
+                {
+                    std::vector< std::vector< int > > polys = gtPolygons;
+                    Triangulate( vertices , gtPolygons , polys ) , gtPolygons = polys;
+                }
+            }
 
-        //    RemoveHangingVertices( vertices , gtPolygons );
-        //    sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
-        //    if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
-        //}
-        //else
-        //{
-        //    if( ColorRange.set ) min = ColorRange.values[0] , max = ColorRange.values[1];
-        //    std::vector< PlyColorVertex< float > > outVertices;
-        //    ColorVertices( vertices , outVertices , min , max );
-        //    if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , ft , comments , commentNum );
-        //}
+            RemoveHangingVertices( vertices , gtPolygons );
+            //sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
+            //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
+            //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , 1 , NULL , 0 );
+            std::ofstream fout("pc.obj");
+            for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
+            {
+                PlyValueVertex< float > vert = vertices.at(pIndex);
+                fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
+            }
+            for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
+            {
+                fout << "f " << gtPolygons.at(pIndex).at(0) + 1 << " " << gtPolygons.at(pIndex).at(1) + 1 << " " << gtPolygons.at(pIndex).at(2) + 1 << std::endl;
+            }
+            fout.close();
+        }
+        else
+        {
+            //if( ColorRange.set ) min = ColorRange.values[0] , max = ColorRange.values[1];
+            //std::vector< PlyColorVertex< float > > outVertices;
+            //ColorVertices( vertices , outVertices , min , max );
+            ////if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , ft , comments , commentNum );
+            //if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , 1 , NULL , 0 );
+        }
 
         return NULL;
     }
 
-    //void PoissonReconstruction::SetConnectedComponents( const std::vector< std::vector< int > >& polygons , std::vector< std::vector< int > >& components )
-    //{
+    void PoissonReconstruction::SetConnectedComponents( const std::vector< std::vector< int > >& polygons , std::vector< std::vector< int > >& components )
+    {
+        std::vector< int > polygonRoots( polygons.size() );
+        for( size_t i=0 ; i<polygons.size() ; i++ ) polygonRoots[i] = int(i);
+        hash_map< long long , int > edgeTable;
+        for( size_t i=0 ; i<polygons.size() ; i++ )
+        {
+            int sz = int( polygons[i].size() );
+            for( int j=0 ; j<sz ; j++ )
+            {
+                int j1 = j , j2 = (j+1)%sz;
+                int v1 = polygons[i][j1] , v2 = polygons[i][j2];
+                long long eKey = EdgeKey( v1 , v2 );
+                hash_map< long long , int >::iterator iter = edgeTable.find( eKey );
+                if( iter==edgeTable.end() ) edgeTable[ eKey ] = int(i);
+                else
+                {
+                    int p = iter->second;
+                    while( polygonRoots[p]!=p )
+                    {
+                        int temp = polygonRoots[p];
+                        polygonRoots[p] = int(i);
+                        p = temp;
+                    }
+                    polygonRoots[p] = int(i);
+                }
+            }
+        }
+        for( size_t i=0 ; i<polygonRoots.size() ; i++ )
+        {
+            int p = int(i);
+            while( polygonRoots[p]!=p ) p = polygonRoots[p];
+            int root = p;
+            p = int(i);
+            while( polygonRoots[p]!=p )
+            {
+                int temp = polygonRoots[p];
+                polygonRoots[p] = root;
+                p = temp;
+            }
+        }
+        int cCount = 0;
+        hash_map< int , int > vMap;
+        for( int i= 0 ; i<int(polygonRoots.size()) ; i++ ) if( polygonRoots[i]==i ) vMap[i] = cCount++;
+        components.resize( cCount );
+        for( int i=0 ; i<int(polygonRoots.size()) ; i++ ) components[ vMap[ polygonRoots[i] ] ].push_back(i);
+    }
 
-    //}
+    long long PoissonReconstruction::EdgeKey( int key1 , int key2 )
+    {
+        if( key1<key2 ) return ( ( (long long)key1 )<<32 ) | ( (long long)key2 );
+        else            return ( ( (long long)key2 )<<32 ) | ( (long long)key1 );
+    }
 
 }

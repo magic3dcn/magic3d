@@ -50,7 +50,9 @@ namespace MagicApp
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "testPointSet", "SimplePoint");
         }
         //just for a test in temp
-       // MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
+        //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
+        MagicDGP::MeshReconstruction meshRecon;
+        meshRecon.ScreenPoissonReconstruction(pPointSet);
     }
 
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)
@@ -60,14 +62,11 @@ namespace MagicApp
 
     void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
     {
-        /*std::string fileName;
+        std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
         MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
         pMesh->UpdateNormal();
         pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");*/
-        //test
-        MagicDGP::MeshReconstruction meshRecon;
-        meshRecon.ScreenPoissonReconstruction(NULL);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");
     }
 }

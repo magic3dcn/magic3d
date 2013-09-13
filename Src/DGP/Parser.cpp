@@ -174,8 +174,8 @@ namespace MagicDGP
 
     void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
     {
-        //ExportPointSetByPSR(fileName, pPC);
-        ExportPointSetByOBJ(fileName, pPC);
+        ExportPointSetByPSR(fileName, pPC);
+        //ExportPointSetByOBJ(fileName, pPC);
     }
 
     void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)

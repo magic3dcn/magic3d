@@ -147,9 +147,6 @@
     <ClInclude Include="..\Src\DGP\HomoMatrix4.h">
       <Filter>DGP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h">
-      <Filter>Dependence\PoissonReconstruction</Filter>
-    </ClInclude>
     <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h">
       <Filter>Dependence\PoissonReconstruction</Filter>
     </ClInclude>
@@ -215,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\PoissonRecon\Vector.h">
       <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h">
+      <Filter>Dependence</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -314,9 +314,6 @@
     <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
-      <Filter>Dependence\PoissonReconstruction</Filter>
-    </ClCompile>
     <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
       <Filter>Dependence\PoissonReconstruction</Filter>
     </ClCompile>
@@ -334,6 +331,9 @@
     </ClCompile>
     <ClCompile Include="..\Dependencies\PoissonRecon\TimePoisson.cpp">
       <Filter>Dependence\PoissonReconstruction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
+      <Filter>Dependence</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

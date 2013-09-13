@@ -146,6 +146,7 @@ namespace MagicCore
 
     void RenderSystem::RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName)
     {
+        MagicLog << "RenderSystem::RenderMesh3D" << std::endl;
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(meshName))
         {
