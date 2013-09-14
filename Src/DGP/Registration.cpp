@@ -2,6 +2,7 @@
 #include "Registration.h"
 #include "flann/flann.h"
 #include "Eigen/Dense"
+#include "../Common/RenderSystem.h"
 
 namespace MagicDGP
 {
@@ -26,6 +27,8 @@ namespace MagicDGP
     {
         int iterNum = 5;
         *pTransRes = *pTransInit;
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
+        MagicCore::RenderSystem::GetSingleton()->Update();
         for (int k = 0; k < iterNum; k++)
         {
             std::vector<int> sampleIndex;
@@ -36,6 +39,8 @@ namespace MagicDGP
             ICPEnergyMinimization(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex, &transDelta);
             //*pTransRes *= transDelta;
             *pTransRes = transDelta * (*pTransRes);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
+            MagicCore::RenderSystem::GetSingleton()->Update();
         }
     }
 

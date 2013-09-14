@@ -8,3 +8,39 @@ material SimplePoint
         }
     }
 }
+
+material SimplePoint_Red
+{
+    technique
+    {
+        pass
+        {
+            diffuse 1 0 0
+            point_size 2
+        }
+    }
+}
+
+material SimplePoint_Green
+{
+    technique
+    {
+        pass
+        {
+            diffuse 0 1 0
+            point_size 2
+        }
+    }
+}
+
+material SimplePoint_Blue
+{
+    technique
+    {
+        pass
+        {
+            diffuse 0 0 1
+            point_size 2
+        }
+    }
+}

@@ -6,7 +6,7 @@ namespace MagicDGP
     Point3D::Point3D() : 
         mPosition(0, 0, 0),
         mNormal(0, 0, 0),
-        mColor(1, 1, 1),
+        mColor(1, 1, 0),
         mId(-1)
     {
     }
@@ -14,7 +14,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos) : 
         mPosition(pos),
         mNormal(0, 0, 0),
-        mColor(1, 1, 1),
+        mColor(1, 1, 0),
         mId(-1)
     {
     }
@@ -22,7 +22,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, const Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
-        mColor(1, 1, 1),
+        mColor(1, 1, 0),
         mId(-1)
     {
     }
@@ -30,7 +30,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, int id) :
         mPosition(pos),
         mNormal(0, 0, 0),
-        mColor(1, 1, 1),
+        mColor(1, 1, 0),
         mId(id)
     {
     }
@@ -38,7 +38,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, const Vector3& nor, int id) : 
         mPosition(pos),
         mNormal(nor),
-        mColor(1, 1, 1),
+        mColor(1, 1, 0),
         mId(id)
     {
     }
@@ -173,5 +173,13 @@ namespace MagicDGP
     int Point3DSet::GetPointNumber() const
     {
         return mPointSet.size();
+    }
+
+    void Point3DSet::SetColor(Vector3 color)
+    {
+        for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
+        {
+            (*itr)->SetColor(color);
+        }
     }
 }

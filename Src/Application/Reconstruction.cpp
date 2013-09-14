@@ -4,12 +4,13 @@
 #include "../Common/RenderSystem.h"
 #include "../DGP/Filter.h"
 #include "../DGP/Registration.h"
-#include "../DGP/SignedDistanceFunction.h"
 #include "../DGP/Parser.h"
+#include "../Common/ToolKit.h"
 
 namespace MagicApp
 {
-    Reconstruction::Reconstruction()
+    Reconstruction::Reconstruction() :
+        mSdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f)
     {
 
     }
@@ -58,6 +59,7 @@ namespace MagicApp
         sprintf(pcName, "PC%d", psNum);
         std::string pcNameStr(pcName);
         mPCSet[pcNameStr] = pPS;
+
         return pcNameStr;
     }
 
@@ -65,7 +67,7 @@ namespace MagicApp
     {
         for (std::map<std::string, MagicDGP::Point3DSet* >::iterator itr = mPCSet.begin(); itr != mPCSet.end(); itr++)
         {
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->second, itr->first, "SimplePoint");
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->first, "SimplePoint", itr->second);
         }
     }
 
@@ -74,7 +76,7 @@ namespace MagicApp
         for (std::map<std::string, MagicDGP::Point3DSet* >::iterator itr = mPCSet.begin(); itr != mPCSet.end(); itr++)
         {
             MagicDGP::Filter::FilterDepthScanPointSet(itr->second);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->second, itr->first, "SimplePoint");
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(itr->first, "SimplePoint", itr->second);
         }
     }
 
@@ -103,31 +105,63 @@ namespace MagicApp
 
     void Reconstruction::PointSetFusion()
     {
-        MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
+        //MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
         MagicDGP::HomoMatrix4 lastTrans;
-        char fileName[50] = "Scene_10.obj";
+        //Init lastTrans from file
+        std::ifstream fin("../../Media/Model/Transform_10.txt");
+        for (int rowIdx = 0; rowIdx < 4; rowIdx++)
+        {
+            for (int colIdx = 0; colIdx < 4; colIdx++)
+            {
+                float t;
+                fin >> t;
+                lastTrans.SetValue(rowIdx, colIdx, t);
+            }
+        }
+        //
+        char fileName[50] = "../../Media/Model/Fusion_10.obj";
         MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
+        MagicLog << "Update refPC" << std::endl;
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
+        MagicCore::RenderSystem::GetSingleton()->Update();
         int fileStartIndex = 11;
         int fileEndIndex = 575;
         for (int i = fileStartIndex; i <= fileEndIndex; i++)
         {
             MagicLog << "Fusion Point Set: " << i << " -------------------------------"<< std::endl;
-            sprintf(fileName, "Scene_%d.obj", i);
+            sprintf(fileName, "../../Media/Model/Scene_%d.obj", i);
             MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);//
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pNewPC);
+            MagicCore::RenderSystem::GetSingleton()->Update();
             MagicDGP::HomoMatrix4 newTrans;
             MagicLog << "Fusion: ICP Registration" << std::endl;
             MagicDGP::Registration::ICPRegistrate(pRefPC, pNewPC, &lastTrans, &newTrans);//
             MagicLog << "Fusion: Update SDF" << std::endl;
-            sdf.UpdateSDF(pNewPC, &newTrans);//
+            mSdf.UpdateSDF(pNewPC, &newTrans);//
             lastTrans = newTrans;
             delete pRefPC;
             delete pNewPC;
             pNewPC = NULL;
             MagicLog << "Fusion: Extract Point Set" << std::endl;
-            pRefPC = sdf.ExtractPointCloud();//
+            pRefPC = mSdf.ExtractPointCloud();//
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
+            MagicCore::RenderSystem::GetSingleton()->Update();
             char exportName[50];
-            sprintf(exportName, "Fusion_%d.obj", i);
+            sprintf(exportName, "../../Media/Model/Fusion_%d.obj", i);
             MagicDGP::Parser::ExportPointSet(exportName, pRefPC);//
+            //export transform
+            sprintf(exportName, "../../Media/Model/Transform_%d.txt", i);
+            std::ofstream fout(exportName);
+            for (int rowIdx = 0; rowIdx < 4; rowIdx++)
+            {
+                for (int colIdx = 0; colIdx < 4; colIdx++)
+                {
+                    fout << lastTrans.GetValue(rowIdx, colIdx) << " ";
+                }
+                fout << std::endl;
+            }
+            fout.close();
+            //
         }
     }
 

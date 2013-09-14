@@ -5,6 +5,7 @@
 #include "ReconstructionUI.h"
 #include <map>
 #include <string>
+#include "../DGP/SignedDistanceFunction.h"
 
 namespace MagicApp
 {
@@ -36,5 +37,6 @@ namespace MagicApp
         ReconstructionUI mUI;
         MagicTool::ViewTool mViewTool;
         std::map<std::string, MagicDGP::Point3DSet* > mPCSet;
+        MagicDGP::SignedDistanceFunction mSdf;
     };
 }

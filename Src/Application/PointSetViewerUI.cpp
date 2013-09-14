@@ -47,7 +47,7 @@ namespace MagicApp
         if (pPSViewer != NULL)
         {
             pPSViewer->SetPointSet(pPointSet);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, "testPointSet", "SimplePoint");
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
         }
         //just for a test in temp
         //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
@@ -67,6 +67,6 @@ namespace MagicApp
         MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
         pMesh->UpdateNormal();
         pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D(pMesh, "testMesh", "SimpleMesh");
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "SimpleMesh", pMesh);
     }
 }

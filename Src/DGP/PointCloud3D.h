@@ -43,6 +43,7 @@ namespace MagicDGP
         void UnifyPosition(Real size);
         void InsertPoint(Point3D* pPoint);
         int  GetPointNumber() const;
+        void SetColor(Vector3 color);
 
     protected:
         std::vector<Point3D* > mPointSet;

@@ -93,7 +93,7 @@ namespace MagicCore
         return mpMainCam;
     }
 
-    void RenderSystem::RenderPoint3DSet(const MagicDGP::Point3DSet* pPS, std::string psName, std::string psMaterialName)
+    void RenderSystem::RenderPoint3DSet(std::string psName, std::string psMaterialName, const MagicDGP::Point3DSet* pPS)
     {
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(psName))
@@ -113,13 +113,43 @@ namespace MagicCore
             const MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
             MagicDGP::Vector3 pos = pPoint->GetPosition();
             MagicDGP::Vector3 nor = pPoint->GetNormal();
+            MagicDGP::Vector3 color = pPoint->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
+            pMObj->colour(color[0], color[1], color[2]);
         }
         pMObj->end();
     }
 
-    void RenderSystem::RenderLineSegments(const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos, std::string lsName, std::string materialName)
+    void RenderSystem::RenderPoint3DSet(std::string psName, std::string psMaterialName, const MagicDGP::Point3DSet* pPS, const MagicDGP::HomoMatrix4& transform)
+    {
+        Ogre::ManualObject* pMObj = NULL;
+        if (mpSceneMgr->hasManualObject(psName))
+        {
+            pMObj = mpSceneMgr->getManualObject(psName);
+            pMObj->clear();
+        }
+        else
+        {
+            pMObj = mpSceneMgr->createManualObject(psName);
+            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+        }
+        pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
+        int pointNum = pPS->GetPointNumber();
+        for (int i = 0; i < pointNum; i++)
+        {
+            const MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            MagicDGP::Vector3 pos = transform.TransformPoint( pPoint->GetPosition() );
+            MagicDGP::Vector3 nor = transform.RotateVector( pPoint->GetNormal() );
+            MagicDGP::Vector3 color = pPoint->GetColor();
+            pMObj->position(pos[0], pos[1], pos[2]);
+            pMObj->normal(nor[0], nor[1], nor[2]);
+            pMObj->colour(color[0], color[1], color[2]);
+        }
+        pMObj->end();
+    }
+
+    void RenderSystem::RenderLineSegments(std::string lsName, std::string materialName, const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos)
     {
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(lsName))
@@ -144,7 +174,7 @@ namespace MagicCore
         pMObj->end();
     }
 
-    void RenderSystem::RenderMesh3D(const MagicDGP::Mesh3D* pMesh, std::string meshName, std::string materialName)
+    void RenderSystem::RenderMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh)
     {
         MagicLog << "RenderSystem::RenderMesh3D" << std::endl;
         Ogre::ManualObject* pMObj = NULL;
@@ -165,8 +195,10 @@ namespace MagicCore
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
             MagicDGP::Vector3 pos = pVert->GetPosition();
             MagicDGP::Vector3 nor = pVert->GetNormal();
+            MagicDGP::Vector3 color = pVert->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
+            pMObj->colour(color[0], color[1], color[2]);
         }
         int faceNum = pMesh->GetFaceNumber();
         for (int i = 0; i < faceNum; i++)

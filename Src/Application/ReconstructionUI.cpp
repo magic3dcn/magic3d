@@ -42,6 +42,7 @@ namespace MagicApp
 
     void ReconstructionUI::OpenPointSet(MyGUI::Widget* pSender)
     {
+        static int pcIndex = 0;
         MagicLog << "ReconstructionUI::OpenPointSet" << std::endl;
         std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
@@ -51,7 +52,16 @@ namespace MagicApp
         if (pReconApp != NULL)
         {
             std::string pcName = pReconApp->AddPoint3DSet(pPointSet);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet(pPointSet, pcName, "SimplePoint");
+            
+            if (pcIndex == 0)
+            {
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pPointSet);
+                pcIndex++;
+            }
+            else
+            {
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pPointSet);
+            }
         }
     }
 
