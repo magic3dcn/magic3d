@@ -312,10 +312,6 @@ namespace MagicDependence
             }
             for (int pIndex = 0; pIndex < polygons.size(); pIndex++)
             {
-                if (polygons.at(pIndex).at(0) == 0 || polygons.at(pIndex).at(1) == 0 || polygons.at(pIndex).at(2) == 0)
-                {
-                    MagicLog << "Error: face index == 0" << std::endl;
-                }
                 fout << "f " << polygons.at(pIndex).at(0) + 1 << " " << polygons.at(pIndex).at(1) + 1 << " " << polygons.at(pIndex).at(2) + 1 << std::endl;
             }
             fout.close();

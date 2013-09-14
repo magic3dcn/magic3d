@@ -1279,8 +1279,9 @@ int Octree< Degree , OutputDensity >::setTree( char* fileName , int maxDepth , i
 }
 
 template< int Degree , bool OutputDensity >
-int Octree< Degree , OutputDensity >::setTree( std::vector<float>& posList, std::vector<float>& norList , int maxDepth , int minDepth , int kernelDepth , Real samplesPerNode ,
-        Real scaleFactor , int useConfidence , Real constraintWeight , int adaptiveExponent , XForm4x4< Real > xForm )
+int Octree< Degree , OutputDensity >::setTree( std::vector<float>& posList, std::vector<float>& norList , 
+        int maxDepth , int minDepth , int splatDepth , Real samplesPerNode , Real scaleFactor ,
+        int useConfidence , Real constraintWeight , int adaptiveExponent , XForm4x4< Real > xForm  )
 {
     if( splatDepth<0 ) splatDepth = 0;
 	this->samplesPerNode = samplesPerNode;
@@ -1345,8 +1346,8 @@ int Octree< Degree , OutputDensity >::setTree( std::vector<float>& posList, std:
 		cnt = 0;
 		//pointStream->reset();
 		Point3D< Real > p , n;
+        //while( pointStream->nextPoint( p , n ) )
         for (int pIndex = 0; pIndex < pointNumber; pIndex++)
-		//while( pointStream->nextPoint( p , n ) )
 		{
             p[0] = posList.at(3 * pIndex + 0);
             p[1] = posList.at(3 * pIndex + 1);
@@ -1388,8 +1389,8 @@ int Octree< Degree , OutputDensity >::setTree( std::vector<float>& posList, std:
 	cnt = 0;
 	//pointStream->reset();
 	Point3D< Real > p , n;
+    //while( pointStream->nextPoint( p , n ) )
     for (int pIndex = 0; pIndex < pointNumber; pIndex++)
-	//while( pointStream->nextPoint( p , n ) )
 	{
         p[0] = posList.at(3 * pIndex + 0);
         p[1] = posList.at(3 * pIndex + 1);
