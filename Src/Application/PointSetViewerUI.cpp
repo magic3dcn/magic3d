@@ -51,8 +51,8 @@ namespace MagicApp
         }
         //just for a test in temp
         //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
-        MagicDGP::MeshReconstruction meshRecon;
-        meshRecon.ScreenPoissonReconstruction(pPointSet);
+        //MagicDGP::MeshReconstruction meshRecon;
+        //meshRecon.ScreenPoissonReconstruction(pPointSet);
     }
 
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)

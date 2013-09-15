@@ -16,19 +16,27 @@ namespace MagicDGP
 
     void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin)
     {
+        static int processFlag = 0;
         std::vector<int> sampleIndex;
         ICPSamplePoint(pOrigin, sampleIndex);
         std::vector<int> correspondIndex;
         ICPFindCorrespondance(pRef, pOrigin, sampleIndex, correspondIndex);
         ICPEnergyMinimization(pRef, pOrigin, sampleIndex, correspondIndex);
+        std::vector<MagicDGP::Vector3> startPos, endPos;
+        for (int i = 0; i < sampleIndex.size(); i++)
+        {
+            startPos.push_back( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            endPos.push_back( pRef->GetPoint(correspondIndex.at(i))->GetPosition() );
+        }
+        MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("ICPLine", "SimpleLine", startPos, endPos);
     }
 
     void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes)
     {
-        int iterNum = 5;
+        int iterNum = 10;
         *pTransRes = *pTransInit;
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
-        MagicCore::RenderSystem::GetSingleton()->Update();
+        //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
+        //MagicCore::RenderSystem::GetSingleton()->Update();
         for (int k = 0; k < iterNum; k++)
         {
             std::vector<int> sampleIndex;
@@ -41,6 +49,22 @@ namespace MagicDGP
             *pTransRes = transDelta * (*pTransRes);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
             MagicCore::RenderSystem::GetSingleton()->Update();
+            //determine if stop
+            if (k > 4 && 
+                fabs(transDelta.GetValue(0, 3)) < 1.f && 
+                fabs(transDelta.GetValue(1, 3)) < 1.f && 
+                fabs(transDelta.GetValue(2, 3)) < 1.f)
+            {
+                MagicLog << "ICP iterator number: " << k + 1 << std::endl;
+                break;
+            }
+            if (fabs(transDelta.GetValue(0, 3)) < 0.1f && 
+                fabs(transDelta.GetValue(1, 3)) < 0.1f && 
+                fabs(transDelta.GetValue(2, 3)) < 0.1f)
+            {
+                MagicLog << "ICP iterator number: " << k + 1 << std::endl;
+                break;
+            }
         }
     }
 
@@ -48,10 +72,14 @@ namespace MagicDGP
     {
         MagicLog << "egistration::ICPSamplePoint" << std::endl;
         int pcNum = pPC->GetPointNumber();
-        for (int i = 0; i < pcNum; i += 1)
+        static int startIndex = 0;
+        for (int i = startIndex; i < pcNum; i += 10)
         {
             sampleIndex.push_back(i);
+        
         }
+        startIndex++;
+        startIndex = startIndex % 10;
     }
 
     void Registration::ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex)
@@ -93,8 +121,8 @@ namespace MagicDGP
         delete []searchSet;
 
         //delete wrong correspondance
-        float distThre = 100.f;
-        float norThre = 0.906307787f; //cos(25);
+        float distThre = 500.f;
+        float norThre = 0.1f; //cos(85);
         std::vector<int> sampleIndexBak = sampleIndex;
         sampleIndex.clear();
         correspondIndex.clear();
@@ -159,8 +187,8 @@ namespace MagicDGP
         delete []searchSet;
 
         //delete wrong correspondance
-        float distThre = 100.f;
-        float norThre = 0.98f; //cos(11);
+        float distThre = 500.f;
+        float norThre = 0.1f; //cos(85);
         std::vector<int> sampleIndexBak = sampleIndex;
         sampleIndex.clear();
         correspondIndex.clear();
@@ -188,10 +216,10 @@ namespace MagicDGP
     void Registration::ICPEnergyMinimization(const Point3DSet* pRef, Point3DSet* pOrigin, std::vector<int>& sampleIndex, std::vector<int>& correspondIndex)
     {
         MagicLog << "Registration::ICPEnergyMinimization" << std::endl;
-        int pcNum = sampleIndex.size();
-        Eigen::MatrixXd matA(pcNum, 6);
-        Eigen::VectorXd vecB(pcNum, 1);
-        for (int i = 0; i < pcNum; i++)
+        int sampleNum = sampleIndex.size();
+        Eigen::MatrixXd matA(sampleNum, 6);
+        Eigen::VectorXd vecB(sampleNum, 1);
+        for (int i = 0; i < sampleNum; i++)
         {
             Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
             Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
@@ -215,6 +243,7 @@ namespace MagicDGP
         MagicLog << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
         MagicLog << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;
         //update pOrigin position
+        int pcNum = pOrigin->GetPointNumber();
         for (int i = 0; i < pcNum; i++)
         {
             Vector3 pos = pOrigin->GetPoint(i)->GetPosition();
@@ -223,6 +252,13 @@ namespace MagicDGP
             newPos[1] = pos[0] * res[2] + pos[1] - pos[2] * res[0] + res[4];
             newPos[2] = -pos[0] * res[1] + pos[1] * res[0] + pos[2] + res[5];
             pOrigin->GetPoint(i)->SetPosition(newPos);
+            Vector3 nor = pOrigin->GetPoint(i)->GetNormal();
+            Vector3 newNor;
+            newNor[0] = nor[0] - nor[1] * res[2] + nor[2] * res[1];
+            newNor[1] = nor[0] * res[2] + nor[1] - nor[2] * res[0];
+            newNor[2] = -nor[0] * res[1] + nor[1] * res[0] + nor[2];
+            newNor.Normalise();
+            pOrigin->GetPoint(i)->SetNormal(newNor);
         }
     }
 

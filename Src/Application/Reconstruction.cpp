@@ -86,10 +86,10 @@ namespace MagicApp
         {
             std::map<std::string, MagicDGP::Point3DSet* >::iterator itrRef = mPCSet.begin();
             std::map<std::string, MagicDGP::Point3DSet* >::iterator itrPC  = ++(mPCSet.begin());
-            for ( ; itrPC != mPCSet.end(); itrPC++, itrRef++)
-            {
-                MagicDGP::Registration::ICPRegistrate(itrRef->second, itrPC->second);
-            }
+            MagicDGP::Registration::ICPRegistrate(itrRef->second, itrPC->second);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", itrRef->second);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", itrPC->second);
+            MagicCore::RenderSystem::GetSingleton()->Update();
         }
     }
 

@@ -6,8 +6,8 @@
 namespace MagicDGP
 {
     SignedDistanceFunction::SignedDistanceFunction(int resX, int resY, int resZ, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) :
-        mSDF(resX * resY * resZ, 0.f),
-        mWeight(resX * resY * resZ, 0.f),
+        mSDF((resX + 1) * (resY + 1) * (resZ + 1), 0.f),
+        mWeight((resX + 1) * (resY + 1) * (resZ + 1), 0.f),
         mResolutionX(resX),
         mResolutionY(resY),
         mResolutionZ(resZ),
@@ -33,6 +33,7 @@ namespace MagicDGP
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
         int truncW = 3;
+        int maxIndex = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
         for (int i = 0; i < pcNum; i++)
         {
             Vector3 pos = pPC->GetPoint(i)->GetPosition();
@@ -50,38 +51,69 @@ namespace MagicDGP
             int xZero = (pos_trans[0] - mMinX) / deltaX;
             int yZero = (pos_trans[1] - mMinY) / deltaY;
             int zZero = (pos_trans[2] - mMinZ) / deltaZ;
+            if (xZero < 0 || yZero < 0 || zZero < 0)
+            {
+                continue;
+            }
             int indexZero = xZero * mResolutionY * mResolutionZ + yZero * mResolutionZ + zZero;
+            if (indexZero > maxIndex)
+            {
+                continue;
+            }
             mSDF.at(indexZero) = mSDF.at(indexZero) * mWeight.at(indexZero) / (mWeight.at(indexZero) + 1.f);
             mWeight.at(indexZero) += 1.f;
             mPCIndex.insert(indexZero);
             //
             for (int j = 1; j <= truncW; j++)
             {
-                Vector3 posPosit(pixelPos[0], pixelPos[1], pixelPos[2] + deltaZ * j);
+                //Vector3 posPosit(pixelPos[0], pixelPos[1], pixelPos[2] + deltaZ * j);
+                Vector3 posPosit(pos[0], pos[1], pos[2] + deltaZ * j);
                 Vector3 posPosit_trans = pTransform->TransformPoint(posPosit);  //TransformPosition(posPosit, pTransform);
-                float distPosit = (posPosit_trans - pos_trans).Length();
+                //float distPosit = (posPosit_trans - pos_trans).Length();
                 int xPosit = (posPosit_trans[0] - mMinX) / deltaX;
                 int yPosit = (posPosit_trans[1] - mMinY) / deltaY;
                 int zPosit = (posPosit_trans[2] - mMinZ) / deltaZ;
-                //need to judge the range
-                int indexPosit = xPosit * mResolutionY * mResolutionZ + yPosit * mResolutionZ + zPosit;
-                mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) + distPosit)
-                    / (mWeight.at(indexPosit) + 1.f);
-                mWeight.at(indexPosit) += 1.f;
-                mPCIndex.insert(indexPosit);
+                if (xPosit > 0 && yPosit > 0 && zPosit > 0)
+                {
+                    Vector3 deltaPosit((xPosit - xZero) * deltaX, (yPosit - yZero) * deltaY, (zPosit - zZero) * deltaZ);
+                    float distPosit = deltaPosit.Length();
+                    if (distPosit > Epsilon)
+                    {
+                        //need to judge the range
+                        int indexPosit = xPosit * mResolutionY * mResolutionZ + yPosit * mResolutionZ + zPosit;
+                        if (indexPosit < maxIndex)
+                        {
+                            mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) + distPosit)
+                                                / (mWeight.at(indexPosit) + 1.f);
+                            mWeight.at(indexPosit) += 1.f;
+                            mPCIndex.insert(indexPosit);
+                        }
+                    }
+                }
 
-                Vector3 posNegat(pixelPos[0], pixelPos[1], pixelPos[2] - deltaZ * j);
+                Vector3 posNegat(pos[0], pos[1], pos[2] - deltaZ * j);
                 Vector3 posNegat_trans = pTransform->TransformPoint(posNegat); //TransformPosition(posNegat, pTransform);
-                float distNegat = -1.f * (posNegat_trans - pos_trans).Length();
+                //float distNegat = -1.f * (posNegat_trans - pos_trans).Length();
                 int xNegat = (posNegat_trans[0] - mMinX) / deltaX;
                 int yNegat = (posNegat_trans[1] - mMinY) / deltaY;
                 int zNegat = (posNegat_trans[2] - mMinZ) / deltaZ;
-                //need to judge the range
-                int indexNegat = xNegat * mResolutionY * mResolutionZ + yNegat * mResolutionZ + zNegat;
-                mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) + distNegat)
-                    / (mWeight.at(indexNegat) + 1.f);
-                mWeight.at(indexNegat) += 1.f;
-                mPCIndex.insert(indexNegat);
+                if (xNegat > 0 && yNegat > 0 && zNegat > 0)
+                {
+                    Vector3 deltaNegat((xNegat - xZero) * deltaX, (yNegat - yZero) * deltaY, (zNegat - zZero) * deltaZ);
+                    float distNegat = deltaNegat.Length();
+                    if (distNegat > Epsilon)
+                    {
+                        //need to judge the range
+                        int indexNegat = xNegat * mResolutionY * mResolutionZ + yNegat * mResolutionZ + zNegat;
+                        if (indexNegat < maxIndex)
+                        {
+                            mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) - distNegat)
+                                                / (mWeight.at(indexNegat) + 1.f);
+                            mWeight.at(indexNegat) += 1.f;
+                            mPCIndex.insert(indexNegat);
+                        }
+                    }
+                }
             }
         }
         MagicLog << "PC index: " << mPCIndex.size() << std::endl;
@@ -96,12 +128,16 @@ namespace MagicDGP
         std::vector<Vector3> posList;
         std::vector<Vector3> norList;
         int xGridNum = mResolutionY * mResolutionZ;
-        int gridMaxNum = mResolutionX * mResolutionY * mResolutionZ;
+        int gridMaxNum = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
         for (std::set<int>::iterator itr = mPCIndex.begin(); itr != mPCIndex.end(); itr++)
         {
             int xIndex = *itr / xGridNum;
             int yIndex = (*itr - xIndex * xGridNum) / mResolutionZ;
             int zIndex = *itr - xIndex * xGridNum - yIndex * mResolutionZ;
+            if (xIndex < 0 || xIndex > mResolutionX || yIndex < 0 || yIndex > mResolutionY || zIndex < 0 || zIndex > mResolutionZ)
+            {
+                continue;
+            }
             float sdfOrigin = mSDF.at(*itr);
             //if it is a zero
             if (fabs(sdfOrigin) < Epsilon)
@@ -109,6 +145,12 @@ namespace MagicDGP
                 Vector3 posZero(mMinX + xIndex * deltaX, mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
                 Vector3 norZero;
                 //need to judge range
+                if ((*itr - xGridNum) < 0 || (*itr + xGridNum) > gridMaxNum ||
+                    (*itr - mResolutionZ) < 0 || (*itr + mResolutionZ) > gridMaxNum ||
+                    (*itr - 1) < 0 || (*itr + 1) > gridMaxNum)
+                {
+                    continue;
+                }
                 norZero[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr + xGridNum);
                 norZero[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr + mResolutionZ);
                 norZero[2] = mSDF.at(*itr - 1) - mSDF.at(*itr + 1);
@@ -120,7 +162,10 @@ namespace MagicDGP
                 }
                 else
                 {
-                   // MagicLog << "Normal Zero" << std::endl;
+                   // MagicLog << "Normal Zero: Zero" << std::endl;
+                    //norZero[2] = -1.f;
+                    //posList.push_back(posZero);
+                    //norList.push_back(norZero);
                 }
                 continue;
             }
@@ -161,7 +206,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog << "Normal Zero" << std::endl;
+                        MagicLog << "Normal Zero: X Direction" << std::endl;
                     }
                 }
             }
@@ -173,7 +218,7 @@ namespace MagicDGP
                 if (sdfY * sdfOrigin < 0.f)
                 {
                     //Extract a point at the middle
-                    Vector3 posY(mMinY + xIndex * deltaX,
+                    Vector3 posY(mMinX + xIndex * deltaX,
                         mMinY + (yIndex * 2.f + 1.f) * deltaY / 2.f, mMinZ + zIndex * deltaZ);
                     Vector3 norY;
                     if (*itr + xGridNum < gridMaxNum)
@@ -201,7 +246,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog << "Normal Zero" << std::endl;
+                        MagicLog << "Normal Zero: Y direction" << std::endl;
                     }
                 }
             }
@@ -241,7 +286,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog << "Normal Zero" << std::endl;
+                        MagicLog << "Normal Zero: Z Direction" << std::endl;
                     }
                 }
             }

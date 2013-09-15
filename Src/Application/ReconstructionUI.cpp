@@ -76,8 +76,11 @@ namespace MagicApp
     {
         MagicLog << "ReconstructionUI::AlignPointSet" << std::endl;
         Reconstruction* pReconApp = dynamic_cast<Reconstruction* >(MagicCore::AppManager::GetSingleton()->GetApp("Reconstruction"));
-        pReconApp->AlignPointSet();
-        pReconApp->UpdatePCRendering();
+        for (int i = 0; i < 10; i++)
+        {
+            pReconApp->AlignPointSet();
+        }
+        //pReconApp->UpdatePCRendering();
     }
 
     void ReconstructionUI::TSDFExtration(MyGUI::Widget* pSender)
