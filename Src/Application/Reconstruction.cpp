@@ -10,7 +10,7 @@
 namespace MagicApp
 {
     Reconstruction::Reconstruction() :
-        mSdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f)
+        mSdf(512, 512, 512, -500.f, 500.f, -500.f, 500.f, 500.f, 1500.f)
     {
 
     }
@@ -108,7 +108,7 @@ namespace MagicApp
         //MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
         MagicDGP::HomoMatrix4 lastTrans;
         //Init lastTrans from file
-        std::ifstream fin("../../Media/Model/Transform_10.txt");
+        std::ifstream fin("../../Media/Model/HumanTransform_67.txt");
         for (int rowIdx = 0; rowIdx < 4; rowIdx++)
         {
             for (int colIdx = 0; colIdx < 4; colIdx++)
@@ -119,17 +119,17 @@ namespace MagicApp
             }
         }
         //
-        char fileName[50] = "../../Media/Model/Fusion_10.obj";
+        char fileName[50] = "../../Media/Model/HumanFusion_67.obj";
         MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
         MagicLog << "Update refPC" << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
         MagicCore::RenderSystem::GetSingleton()->Update();
-        int fileStartIndex = 11;
-        int fileEndIndex = 575;
+        int fileStartIndex = 68;
+        int fileEndIndex = 168;
         for (int i = fileStartIndex; i <= fileEndIndex; i++)
         {
             MagicLog << "Fusion Point Set: " << i << " -------------------------------"<< std::endl;
-            sprintf(fileName, "../../Media/Model/Scene_%d.obj", i);
+            sprintf(fileName, "../../Media/Model/Human_%d.obj", i);
             MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);//
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pNewPC);
             MagicCore::RenderSystem::GetSingleton()->Update();
@@ -147,10 +147,10 @@ namespace MagicApp
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
             MagicCore::RenderSystem::GetSingleton()->Update();
             char exportName[50];
-            sprintf(exportName, "../../Media/Model/Fusion_%d.obj", i);
+            sprintf(exportName, "../../Media/Model/HumanFusion_%d.obj", i);
             MagicDGP::Parser::ExportPointSet(exportName, pRefPC);//
             //export transform
-            sprintf(exportName, "../../Media/Model/Transform_%d.txt", i);
+            sprintf(exportName, "../../Media/Model/HumanTransform_%d.txt", i);
             std::ofstream fout(exportName);
             for (int rowIdx = 0; rowIdx < 4; rowIdx++)
             {

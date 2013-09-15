@@ -135,7 +135,7 @@ namespace MagicApp
             mScanMode = RECORDER;
         }
         mDepthStream.start();
-      //  ExportDepthFrameForTest();
+        ExportDepthFrameForTest();
         mColorStream.start();
     }
 
@@ -178,8 +178,10 @@ namespace MagicApp
     {
         openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
         int frameNum = pPC->getNumberOfFrames(mDepthStream);
+        int startFrame = frameNum / 4;
+        int endFrame = 5 * frameNum / 8;
        // pPC->seek(mDepthStream, 90);
-        for (int fi = 10; fi < frameNum - 10; fi++)
+        for (int fi = startFrame; fi < endFrame; fi++)
         {
             MagicLog << "Export file(" << frameNum << "): " << fi << std::endl;
             pPC->seek(mDepthStream, fi);
@@ -214,12 +216,16 @@ namespace MagicApp
                     }
                 }
                 char fileName[20];
-                sprintf(fileName, "Scene_%d.obj", fi);
+                sprintf(fileName, "Human_%d.obj", fi);
                 std::ofstream fout(fileName);
                 for (int j = 1; j < resolutionY - 1; j++)
                 {
                     for (int i = 1; i < resolutionX - 1; i++)
                     {
+                        if (posList.at(j * resolutionX + i)[2] > 1000)
+                        {
+                            continue;
+                        }
                         MagicDGP::Vector3 dirX = posList.at(j * resolutionX + i + 1) - posList.at(j * resolutionX + i - 1);
                         MagicDGP::Vector3 dirY = posList.at((j + 1) * resolutionX + i) - posList.at((j - 1) * resolutionX + i);
                         MagicDGP::Vector3 nor = dirY.CrossProduct(dirX);
