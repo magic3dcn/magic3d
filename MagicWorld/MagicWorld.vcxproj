@@ -123,6 +123,8 @@
     <ClInclude Include="..\Src\Application\ReconstructionUI.h" />
     <ClInclude Include="..\Src\Application\Scan3D.h" />
     <ClInclude Include="..\Src\Application\Scan3DUI.h" />
+    <ClInclude Include="..\Src\Application\ScanningApp.h" />
+    <ClInclude Include="..\Src\Application\ScanningAppUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -182,6 +184,12 @@
     <ClCompile Include="..\Src\Application\ReconstructionUI.cpp" />
     <ClCompile Include="..\Src\Application\Scan3D.cpp" />
     <ClCompile Include="..\Src\Application\Scan3DUI.cpp" />
+    <ClCompile Include="..\Src\Application\ScanningApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ScanningAppUI.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp" />

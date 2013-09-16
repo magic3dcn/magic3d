@@ -43,6 +43,9 @@
     <Filter Include="Dependence\PoissonReconstruction">
       <UniqueIdentifier>{a5f1fc3b-c8c8-4bfa-9a54-872eb1db66cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\Scanning">
+      <UniqueIdentifier>{babddef3-9485-4dad-8e66-88136239c9b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -216,6 +219,12 @@
     <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h">
       <Filter>Dependence</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\ScanningApp.h">
+      <Filter>Application\Scanning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\ScanningAppUI.h">
+      <Filter>Application\Scanning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -334,6 +343,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
       <Filter>Dependence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ScanningApp.cpp">
+      <Filter>Application\Scanning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ScanningAppUI.cpp">
+      <Filter>Application\Scanning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
