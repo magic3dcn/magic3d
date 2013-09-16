@@ -135,7 +135,7 @@ namespace MagicApp
             mScanMode = RECORDER;
         }
         mDepthStream.start();
-        ExportDepthFrameForTest();
+        //ExportDepthFrameForTest();
         mColorStream.start();
     }
 

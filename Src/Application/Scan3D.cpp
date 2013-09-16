@@ -109,7 +109,7 @@ namespace MagicApp
         if (mHasInitilised == false)
         {
             mMediaStream.Init();
-            InitCanvas(640, 480);
+            //InitCanvas(640, 480);
             mHasInitilised = true;
         }
     }
@@ -202,7 +202,8 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light* frontLight = pSceneMgr->createLight("frontLight");
-        frontLight->setPosition(0, 0, 10);
+        //frontLight->setPosition(0, 0, 10);
+        frontLight->setPosition(10, 10, 20);
         frontLight->setDiffuseColour(0.8, 0.8, 0.8);
         frontLight->setSpecularColour(0.5, 0.5, 0.5);
         if (mpCanvasColor != NULL)
@@ -226,46 +227,118 @@ namespace MagicApp
     {
         openni::VideoFrameRef colorFrame, depthFrame;
         mMediaStream.WaitStream(&colorFrame, &depthFrame);
-        if (colorFrame.isValid())
-        {
-           // MagicLog << "Update color frame: " << colorFrame.getWidth() << " " << colorFrame.getHeight() << std::endl;
-            const openni::RGB888Pixel* pPixel = (const openni::RGB888Pixel*)colorFrame.getData();
-            Ogre::HardwarePixelBufferSharedPtr pPixelBufferColor = mpTexColor->getBuffer();
-            int resolutionX = mpTexColor->getWidth();
-            int resolutionY = mpTexColor->getHeight();
-            unsigned char* pColorBuffer = static_cast<unsigned char*>(pPixelBufferColor->lock(0, resolutionX * resolutionY * 4, Ogre::HardwareBuffer::HBL_DISCARD));
-            for(int y = 0; y < resolutionY; y++)  
-            {  
-                for(int x = 0; x < resolutionX; x++)  
-                {
-                    openni::RGB888Pixel pixel = pPixel[y * resolutionX + x];
-                    pColorBuffer[(y * resolutionX + x) * 4 + 0 ] = pixel.b;  // B   
-                    pColorBuffer[(y * resolutionX + x) * 4 + 1 ] = pixel.g;  // G   
-                    pColorBuffer[(y * resolutionX + x) * 4 + 2 ] = pixel.r;  // R   
-                    pColorBuffer[(y * resolutionX + x) * 4 + 3 ] = 1;
-                }
-            }  
-            // Unlock the pixel buffer   
-            pPixelBufferColor->unlock();
-        }
+        //if (colorFrame.isValid())
+        //{
+        //   // MagicLog << "Update color frame: " << colorFrame.getWidth() << " " << colorFrame.getHeight() << std::endl;
+        //    const openni::RGB888Pixel* pPixel = (const openni::RGB888Pixel*)colorFrame.getData();
+        //    Ogre::HardwarePixelBufferSharedPtr pPixelBufferColor = mpTexColor->getBuffer();
+        //    int resolutionX = mpTexColor->getWidth();
+        //    int resolutionY = mpTexColor->getHeight();
+        //    unsigned char* pColorBuffer = static_cast<unsigned char*>(pPixelBufferColor->lock(0, resolutionX * resolutionY * 4, Ogre::HardwareBuffer::HBL_DISCARD));
+        //    for(int y = 0; y < resolutionY; y++)  
+        //    {  
+        //        for(int x = 0; x < resolutionX; x++)  
+        //        {
+        //            openni::RGB888Pixel pixel = pPixel[y * resolutionX + x];
+        //            pColorBuffer[(y * resolutionX + x) * 4 + 0 ] = pixel.b;  // B   
+        //            pColorBuffer[(y * resolutionX + x) * 4 + 1 ] = pixel.g;  // G   
+        //            pColorBuffer[(y * resolutionX + x) * 4 + 2 ] = pixel.r;  // R   
+        //            pColorBuffer[(y * resolutionX + x) * 4 + 3 ] = 1;
+        //        }
+        //    }  
+        //    // Unlock the pixel buffer   
+        //    pPixelBufferColor->unlock();
+        //}
+        //if (depthFrame.isValid())
+        //{
+        //   // MagicLog << "Update depth frame: " << depthFrame.getWidth() << " " << depthFrame.getHeight() << std::endl;
+        //    const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
+        //    Ogre::HardwarePixelBufferSharedPtr pPixelBufferDepth = mpTexDepth->getBuffer();
+        //    int resolutionX = mpTexDepth->getWidth();
+        //    int resolutionY = mpTexDepth->getHeight();
+        //    unsigned short* pDepthBuffer = static_cast<unsigned short*>(pPixelBufferDepth->lock(0, resolutionX * resolutionY * 2, Ogre::HardwareBuffer::HBL_DISCARD));
+        //    for(int y = 0; y < resolutionY; y++)  
+        //    {  
+        //        for(int x = 0; x < resolutionX; x++)  
+        //        {
+        //            openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
+        //            pDepthBuffer[y * resolutionX + x] = depth << 5;
+        //        }
+        //    }  
+        //    // Unlock the pixel buffer   
+        //    pPixelBufferDepth->unlock();
+        //}
         if (depthFrame.isValid())
         {
-           // MagicLog << "Update depth frame: " << depthFrame.getWidth() << " " << depthFrame.getHeight() << std::endl;
             const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
-            Ogre::HardwarePixelBufferSharedPtr pPixelBufferDepth = mpTexDepth->getBuffer();
-            int resolutionX = mpTexDepth->getWidth();
-            int resolutionY = mpTexDepth->getHeight();
-            unsigned short* pDepthBuffer = static_cast<unsigned short*>(pPixelBufferDepth->lock(0, resolutionX * resolutionY * 2, Ogre::HardwareBuffer::HBL_DISCARD));
+            int resolutionX = depthFrame.getVideoMode().getResolutionX();
+            int resolutionY = depthFrame.getVideoMode().getResolutionY();
+            std::vector<MagicDGP::Vector3> posList;
             for(int y = 0; y < resolutionY; y++)  
             {  
                 for(int x = 0; x < resolutionX; x++)  
                 {
                     openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
-                    pDepthBuffer[y * resolutionX + x] = depth << 5;
+                    float rx, ry, rz;
+                    openni::CoordinateConverter::convertDepthToWorld(mMediaStream.GetDepthStream(), 
+                        x, y, depth, &rx, &ry, &rz);
+                    MagicDGP::Vector3 pos(rx / 500.f, ry / 500.f, -rz / 500.f);
+                    posList.push_back(pos);
                 }
-            }  
-            // Unlock the pixel buffer   
-            pPixelBufferDepth->unlock();
+            }
+            std::vector<MagicDGP::Vector3> norList;
+            for (int y = 0; y < resolutionY; y++)
+            {
+                for (int x = 0; x < resolutionX; x++)
+                {
+                    if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        continue;
+                    }
+                    if (posList.at(y * resolutionX + x)[2] > MagicDGP::Epsilon * (-1.f))
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        continue;
+                    }
+                    MagicDGP::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
+                    MagicDGP::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
+                    MagicDGP::Vector3 nor = dirY.CrossProduct(dirX);
+                    MagicDGP::Real len = nor.Normalise();
+                    if (len > MagicDGP::Epsilon)
+                    {
+                        norList.push_back(nor);
+                    }
+                    else
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                    }
+                }
+            }
+            //Rendering Point Set
+            Ogre::ManualObject* pMObj = NULL;
+            Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+            char psName[20] = "ScannerDepth";
+            if (pSceneMgr->hasManualObject(psName))
+            {
+                pMObj = pSceneMgr->getManualObject(psName);
+                pMObj->clear();
+            }
+            else
+            {
+                pMObj = pSceneMgr->createManualObject(psName);
+                pSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            }
+            pMObj->begin("SimplePoint", Ogre::RenderOperation::OT_POINT_LIST);
+            int pointNum = posList.size();
+            for (int i = 0; i < pointNum; i++)
+            {
+                MagicDGP::Vector3 pos = posList.at(i);
+                MagicDGP::Vector3 nor = norList.at(i);
+                pMObj->position(pos[0], pos[1], pos[2]);
+                pMObj->normal(nor[0], nor[1], nor[2]);
+            }
+            pMObj->end();
         }
     }
 
