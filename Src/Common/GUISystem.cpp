@@ -31,5 +31,6 @@ namespace MagicCore
         mpPlatform->initialise(pWin, pMgr, resourceName);
         mpGUI = new MyGUI::Gui();
         mpGUI->initialise();
+        MyGUI::PointerManager::getInstance().setVisible(false);
     }
 }

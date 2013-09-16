@@ -2,6 +2,9 @@
 #include "MagicListener.h"
 #include "AppManager.h"
 #include "MyGUI.h"
+#include "ToolKit.h"
+#include "RenderSystem.h"
+#include "InputSystem.h"
 
 namespace MagicCore
 {
@@ -60,6 +63,19 @@ namespace MagicCore
     {
         MyGUI::InputManager::getInstance().injectKeyRelease(MyGUI::KeyCode::Enum(arg.key));
         return AppManager::GetSingleton()->KeyReleased(arg);
+    }
+
+    void MagicListener::windowResized(Ogre::RenderWindow* rw)
+    {
+        rw->windowMovedOrResized();
+        RenderSystem::GetSingleton()->GetMainCamera()->setAspectRatio((Ogre::Real)rw->getWidth() / (Ogre::Real)rw->getHeight());
+        InputSystem::GetSingleton()->UpdateMouseState(rw->getWidth(), rw->getHeight());
+    }
+
+    bool MagicListener::windowClosing(Ogre::RenderWindow* rw)
+    {
+        ToolKit::GetSingleton()->SetAppRunning(false);
+        return true;
     }
 
     MagicListener::~MagicListener()

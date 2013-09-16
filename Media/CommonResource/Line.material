@@ -1,0 +1,10 @@
+material SimpleLine
+{
+	technique
+	{
+		pass
+		{
+		  lighting off
+		}
+	}
+}

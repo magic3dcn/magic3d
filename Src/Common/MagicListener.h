@@ -23,6 +23,9 @@ namespace MagicCore
         virtual bool keyPressed( const OIS::KeyEvent &arg );
         virtual bool keyReleased( const OIS::KeyEvent &arg );
 
+        virtual void windowResized(Ogre::RenderWindow* rw);
+        virtual bool windowClosing(Ogre::RenderWindow* rw);
+
         virtual ~MagicListener();
     };
 }
