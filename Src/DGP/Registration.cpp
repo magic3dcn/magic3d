@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "Registration.h"
 #include "flann/flann.h"
 #include "Eigen/Dense"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "MagicFramework.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"

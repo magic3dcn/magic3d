@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "Filter.h"
 #include "flann/flann.h"
 #include "../Common/LogSystem.h"

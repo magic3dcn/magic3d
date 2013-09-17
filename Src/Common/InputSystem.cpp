@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+////#include "StdAfx.h"
 #include "InputSystem.h"
 #include "LogSystem.h"
 #include "MagicListener.h"

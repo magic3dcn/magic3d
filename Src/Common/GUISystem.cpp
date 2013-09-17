@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "GUISystem.h"
 
 namespace MagicCore

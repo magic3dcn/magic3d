@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+////#include "StdAfx.h"
 #include "HomepageUI.h"
 #include "../Common/AppManager.h"
 #include "../Common/ResourceManager.h"

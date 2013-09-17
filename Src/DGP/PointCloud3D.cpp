@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "PointCloud3D.h"
 
 namespace MagicDGP

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+////#include "StdAfx.h"
 #include "PointSetViewer.h"
 #include "MyGUI.h"
 #include "../Common/LogSystem.h"

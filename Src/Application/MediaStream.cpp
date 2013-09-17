@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "MediaStream.h"
 #include "../DGP/Vector3.h"
 #include "../Common/LogSystem.h"

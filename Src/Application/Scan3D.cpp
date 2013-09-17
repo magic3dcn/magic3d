@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+////#include "StdAfx.h"
 #include "Scan3D.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"

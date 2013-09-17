@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "ResourceManager.h"
 #include "OgreResourceGroupManager.h"
 

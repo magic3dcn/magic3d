@@ -1,8 +1,9 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "PoissonReconstruction.h"
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <windows.h>
 #include <Psapi.h>
 
 #include "TimePoisson.h"

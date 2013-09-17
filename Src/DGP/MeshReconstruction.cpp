@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "MeshReconstruction.h"
 #include "../Dependence/PoissonReconstruction.h"
 

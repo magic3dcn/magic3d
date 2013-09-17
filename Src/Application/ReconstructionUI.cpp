@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "ReconstructionUI.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "AppManager.h"
 #include "ToolKit.h"
 #include "LogSystem.h"

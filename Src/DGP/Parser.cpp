@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "Parser.h"
 #include <fstream>
 #include <istream>

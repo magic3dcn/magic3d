@@ -1,5 +1,6 @@
-#include "StdAfx.h"
+//#include "StdAfx.h"
 #include "ToolKit.h"
+#include <windows.h>
 
 namespace MagicCore
 {
