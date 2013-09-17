@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Resource" version="1.1">
+    <Resource type="ResourceSkin" name="But_Scan" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="35 30 86 87"/>
+            <State name="normal" offset="35 30 86 87"/>
+            <State name="highlighted" offset="302 30 86 87"/>
+            <State name="pushed" offset="35 30 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Reconstruction" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="168 30 86 87"/>
+            <State name="normal" offset="168 30 86 87"/>
+            <State name="highlighted" offset="440 30 86 87"/>
+            <State name="pushed" offset="168 30 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="Image_Title" size="345 85" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 345 85" align="Stretch">
+            <State name="normal" offset="40 176 345 85"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Viewer" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="561 30 86 87"/>
+            <State name="normal" offset="561 30 86 87"/>
+            <State name="highlighted" offset="682 30 86 87"/>
+            <State name="pushed" offset="561 30 86 87"/>
+        </BasisSkin>
+    </Resource>
+</MyGUI>

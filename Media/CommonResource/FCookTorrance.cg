@@ -1,0 +1,44 @@
+void main_f(float3 position : TEXCOORD0,
+						float3 normal : TEXCOORD1,
+						float4 incolor : TEXCOORD2, 
+						out float4 color : COLOR,
+						uniform float3 globalAmbient,
+						uniform float3 lightColor,
+						uniform float3 lightPosition,
+						uniform float3 eyePosition,
+						uniform float3 Ka,
+						uniform float3 Kd,
+						uniform float3 Ks,
+						uniform float f,
+						uniform float m)
+{
+	float3 P = position.xyz;
+	float3 N = normalize(normal);
+	float3 ambient = Ka * globalAmbient; // 计算环境光分量
+	float3 L = normalize(lightPosition - P);
+	float nl = max(dot(L, N), 0);
+//	float3 diffuse = Kd * lightColor * nl; // 计算漫反射光分量
+	float3 diffuse = incolor.xyz * lightColor * nl;
+	float3 V = normalize(eyePosition - P);
+	float3 H = normalize(L + V);
+	float3 specular = float3(0.0,0.0,0.0);
+	float nv = dot(N,V);
+	bool back = (nv>0) && (nl>0);
+	if(back)
+	{
+	float nh = dot(N,H);
+	float temp = (nh*nh-1)/(m*m*nh*nh);
+	float roughness = (exp(temp))/(pow(m,2)*pow(nh,4.0)); //粗糙度，根据beckmann 函数
+	float vh = dot(V,H);
+	float a = (2*nh*nv)/vh;
+	float b = (2*nh*nl)/vh;
+	float geometric = min(a,b);
+	geometric = min(1,geometric); //几何衰减系数
+	float fresnelCoe=f+(1-f)*pow(1-vh,5.0); //fresnel 反射系数
+	float rs = (fresnelCoe*geometric*roughness)/(nv*nl);
+	specular = rs * lightColor * nl*Ks; // 计算镜面反射光分量（这是重点）
+	}
+	color.xyz = ambient + diffuse + specular;
+	//color.w = 1;
+	color.w = incolor.w;
+}

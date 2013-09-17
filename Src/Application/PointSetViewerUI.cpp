@@ -67,6 +67,6 @@ namespace MagicApp
         MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
         pMesh->UpdateNormal();
         pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "SimpleMesh", pMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "MyCookTorrance", pMesh);
     }
 }

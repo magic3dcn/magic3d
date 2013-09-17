@@ -1,0 +1,30 @@
+material MyCookTorrance
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref VCookTorrance
+            {
+                param_named_auto worldViewProj    worldviewproj_matrix
+                param_named_auto worldMatrix      world_matrix
+                param_named_auto worldMatrix_IT   inverse_transpose_world_matrix
+            }
+            
+            fragment_program_ref FCookTorrance
+            {
+                param_named_auto    globalAmbient  ambient_light_colour
+                param_named_auto    eyePosition    camera_position
+                param_named_auto    lightPosition  light_position 0
+                param_named_auto    lightColor     light_diffuse_colour 0
+                param_named         Ka             float3    0.3 0.3 0.3 
+                param_named         Kd             float3    0.72 0.86 0.48
+                param_named         Ks             float3    0.4 0.4 0.4
+                param_named         f              float     0.5
+                param_named         m              float     0.03
+            }
+            
+
+        }
+    }
+}

@@ -22,7 +22,7 @@ namespace MagicApp
     {
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
-        mRoot.at(0)->findWidget("But_PointViewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
+        mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
     }

@@ -1,36 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" align="Center" layer="Back" name="BackImage">
-        <Property key="ImageTexture" value="HomeBackground.png"/>
-        <Widget type="Button" skin="ButtonLeftSkin" position_real="0.0244141 0.507813 0.0234375 0.0364583" name="But_Scan3D">
-            <Property key="FontHeight" value="40"/>
-            <Property key="TextColour" value="0.752941 0.866667 1"/>
-            <Property key="Caption" value=" "/>
-        </Widget>
-        <Widget type="Button" skin="ButtonRightSkin" position_real="0.951172 0.507813 0.0234375 0.0351563" align="Left Top" name="But_PointViewer">
-            <Property key="TextColour" value="0.752941 0.866667 1"/>
-        </Widget>
-        <Widget type="TextBox" skin="TextBox" position_real="0.00976563 0.46224 0.0585938 0.0390625" name="Tex_Scan3D">
-            <Property key="Caption" value="3D Scan"/>
-            <Property key="TextAlign" value="Center"/>
-            <Property key="TextColour" value="0.588235 0.784314 1"/>
-            <Property key="TextShadow" value="true"/>
-            <Property key="TextShadowColour" value="0.274854 0.274854 0.274854"/>
-        </Widget>
-        <Widget type="TextBox" skin="TextBox" position_real="0.908203 0.46224 0.0878906 0.0390625" name="Tex_PointViewer">
-            <Property key="Caption" value="Point Viewer"/>
-            <Property key="TextColour" value="0.588235 0.784314 1"/>
-            <Property key="TextShadow" value="true"/>
-            <Property key="TextShadowColour" value="0.274854 0.274854 0.274854"/>
-            <Property key="TextAlign" value="Center"/>
-        </Widget>
-        <Widget type="Button" skin="ButtonDownSkin" position_real="0.486328 0.885417 0.0273438 0.03125" name="But_Reconstruction"/>
-        <Widget type="TextBox" skin="TextBox" position_real="0.43457 0.839844 0.126953 0.0390625" name="Tex_Reconstruction">
-            <Property key="Caption" value="Reconstruction"/>
-            <Property key="TextAlign" value="Center"/>
-            <Property key="TextColour" value="0.133544 0 0.461988"/>
-            <Property key="TextShadow" value="true"/>
-            <Property key="TextShadowColour" value="0.607843 0.784314 1"/>
-        </Widget>
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 1024 768" align="Center" layer="Back">
+        <Widget type="Button" skin="But_Scan" position="191 400 86 87" align="Center" name="But_Scan3D"/>
+        <Widget type="Button" skin="But_Reconstruction" position="469 400 86 87" align="Center" name="But_Reconstruction"/>
+        <Widget type="ImageBox" skin="Image_Title" position_real="0.331055 0.201823 0.335938 0.109375" name="Title"/>
+        <Widget type="Button" skin="But_Viewer" position="747 400 86 87" align="Center" name="But_Viewer"/>
     </Widget>
 </MyGUI>

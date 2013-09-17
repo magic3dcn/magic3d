@@ -7,4 +7,5 @@
 	<List file="MyGUI_Pointers.xml"/>
 	<List file="MyGUI_Layers.xml"/>
 	<List file="MyGUI_Settings.xml"/>
+        <List file="MagicSkin.xml"/>
 </MyGUI>
