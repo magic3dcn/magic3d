@@ -118,6 +118,7 @@ namespace MagicDGP
         Face3D*   InsertFace(const std::vector<Vertex3D* >& vertList);
         void UnifyPosition(Real size);
         void UpdateNormal();
+        void ReverseNormal();
         void ClearData();
 
     private:

@@ -234,6 +234,12 @@
     <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h">
       <Filter>Application\PrimitiveDetection</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Dependence\RansacPrimitiveShapes.h">
+      <Filter>Dependence</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\PrimitiveDetection.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -364,6 +370,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp">
       <Filter>Application\PrimitiveDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dependence\RansacPrimitiveShapes.cpp">
+      <Filter>Dependence</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\PrimitiveDetection.cpp">
+      <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

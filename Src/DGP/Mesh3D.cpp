@@ -439,6 +439,14 @@ namespace MagicDGP
         }
     }
 
+    void Mesh3D::ReverseNormal()
+    {
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); itr++)
+        {
+            (*itr)->SetNormal( (*itr)->GetNormal() * (-1.f) );
+        }
+    }
+
     void Mesh3D::ClearData()
     {
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)

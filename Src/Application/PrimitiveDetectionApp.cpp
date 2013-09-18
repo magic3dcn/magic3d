@@ -2,6 +2,8 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/RenderSystem.h"
+#include "../DGP/PrimitiveDetection.h"
+#include "../Common/ToolKit.h"
 
 namespace MagicApp
 {
@@ -51,6 +53,18 @@ namespace MagicApp
         return true;
     }
 
+    bool PrimitiveDetectionApp::KeyPressed( const OIS::KeyEvent &arg )
+    {
+        if (arg.key == OIS::KC_R && mpMesh !=NULL)
+        {
+            MagicLog << "Reverse Mesh Normal" << std::endl;
+            mpMesh->ReverseNormal();
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", mpMesh);
+        }
+
+        return true;
+    }
+
     void PrimitiveDetectionApp::SetupScene(void)
     {
         MagicLog << "PrimitiveDetectionApp::SetupScene" << std::endl;
@@ -60,6 +74,11 @@ namespace MagicApp
         sl->setPosition(10, 10, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
+        Ogre::Light*  sb = pSceneMgr->createLight("SimpleLightBack");
+        sb->setPosition(10, 10, -20);
+        sb->setDiffuseColour(0.8, 0.8, 0.8);
+        sb->setSpecularColour(0.5, 0.5, 0.5);
+
     }
      
     void PrimitiveDetectionApp::ShutdownScene(void)
@@ -68,6 +87,7 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
+        pSceneMgr->destroyLight("SimpleLightBack");
     }
 
     void PrimitiveDetectionApp::SetMesh3D(MagicDGP::Mesh3D* pMesh)
@@ -77,5 +97,19 @@ namespace MagicApp
             delete mpMesh;
         }
         mpMesh = pMesh;
+    }
+
+    void PrimitiveDetectionApp::RansacPrimitiveDetection()
+    {
+        std::vector<int> res;
+        MagicDGP::PrimitiveDetection::Primitive2DDetection(mpMesh, res);
+        int vertNum = mpMesh->GetVertexNumber();
+        for (int i = 0; i < vertNum; i++)
+        {
+            float cv = res.at(i) * 0.2f;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+            mpMesh->GetVertex(i)->SetColor(color);
+        }
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", mpMesh);
     }
 }
