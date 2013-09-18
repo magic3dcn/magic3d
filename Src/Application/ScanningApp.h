@@ -1,8 +1,9 @@
 #pragma once
+#include "../Common/AppBase.h"
 
 namespace MagicApp
 {
-    class ScanningApp
+    class ScanningApp : public MagicCore::AppBase
     {
     public:
         ScanningApp();

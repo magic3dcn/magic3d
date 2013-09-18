@@ -44,12 +44,19 @@ namespace MagicApp
     bool PrimitiveDetectionApp::MouseMoved( const OIS::MouseEvent &arg )
     {
         mViewTool.MouseMoved(arg);
+
         return true;
     }
 
     bool PrimitiveDetectionApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
         mViewTool.MousePressed(arg);
+
+        return true;
+    }
+
+    bool PrimitiveDetectionApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+    {
         return true;
     }
 
@@ -60,6 +67,18 @@ namespace MagicApp
             MagicLog << "Reverse Mesh Normal" << std::endl;
             mpMesh->ReverseNormal();
             MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", mpMesh);
+        }
+        if (arg.key == OIS::KC_V && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
+        }
+        if (arg.key == OIS::KC_E && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_WIREFRAME);
+        }
+        if (arg.key == OIS::KC_F && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
         }
 
         return true;
