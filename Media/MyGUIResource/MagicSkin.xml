@@ -29,4 +29,19 @@
             <State name="pushed" offset="561 30 86 87"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_RecordDepth" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="790 28 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Save" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="900 28 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Home" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="900 152 86 87"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

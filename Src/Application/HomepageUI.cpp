@@ -6,6 +6,7 @@
 #include "PointSetViewer.h"
 #include "Scan3D.h"
 #include "Reconstruction.h"
+#include "ScanningApp.h"
 
 namespace MagicApp
 {
@@ -22,9 +23,13 @@ namespace MagicApp
     {
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
+        mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(345, 85);
         mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
+        mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
+        mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
     void HomepageUI::Shutdown()
@@ -44,7 +49,7 @@ namespace MagicApp
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)
     {
         MagicLog << "EnterScan3D Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new Scan3D, "Scan3D");
+        MagicCore::AppManager::GetSingleton()->EnterApp(new ScanningApp, "ScanningApp");
     }
 
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)

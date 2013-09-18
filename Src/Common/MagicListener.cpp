@@ -5,6 +5,7 @@
 #include "ToolKit.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"
+#include "GUISystem.h"
 
 namespace MagicCore
 {
@@ -67,7 +68,7 @@ namespace MagicCore
 
     void MagicListener::windowResized(Ogre::RenderWindow* rw)
     {
-        rw->windowMovedOrResized();
+        //rw->windowMovedOrResized();
         RenderSystem::GetSingleton()->GetMainCamera()->setAspectRatio((Ogre::Real)rw->getWidth() / (Ogre::Real)rw->getHeight());
         InputSystem::GetSingleton()->UpdateMouseState(rw->getWidth(), rw->getHeight());
     }

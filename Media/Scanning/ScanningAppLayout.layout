@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0.794271 1 0.15625" align="HStretch Bottom" layer="Back">
+        <Widget type="Button" skin="But_RecordDepth" position_real="0.0195313 0.166667 0.0839844 0.725" align="Left Top" name="But_Record"/>
+        <Widget type="Button" skin="But_Home" position_real="0.898438 0.166667 0.0839844 0.716667" align="Right Bottom" name="But_Home"/>
+    </Widget>
+</MyGUI>

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Common/AppBase.h"
+#include "ScanningAppUI.h"
 
 namespace MagicApp
 {
@@ -9,7 +10,11 @@ namespace MagicApp
         ScanningApp();
         ~ScanningApp();
 
-    private:
+        virtual bool Enter(void);
+        virtual bool Update(float timeElapsed);
+        virtual bool Exit(void);
 
+    private:
+        ScanningAppUI mUI;
     };
 }

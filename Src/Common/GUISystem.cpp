@@ -33,4 +33,5 @@ namespace MagicCore
         mpGUI->initialise();
         MyGUI::PointerManager::getInstance().setVisible(false);
     }
+
 }
