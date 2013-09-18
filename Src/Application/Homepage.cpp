@@ -3,6 +3,8 @@
 #include "MyGUI.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
+#include "PrimitiveDetectionApp.h"
+#include "../Common/AppManager.h"
 
 namespace MagicApp
 {
@@ -29,6 +31,15 @@ namespace MagicApp
     bool Homepage::Exit()
     {
         mUI.Shutdown();
+        return true;
+    }
+
+    bool Homepage::KeyPressed( const OIS::KeyEvent &arg )
+    {
+        if (arg.key == OIS::KC_P)
+        {
+            MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
+        } 
         return true;
     }
 }

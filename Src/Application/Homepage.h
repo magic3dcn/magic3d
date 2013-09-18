@@ -14,6 +14,8 @@ namespace MagicApp
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
 
+        virtual bool KeyPressed( const OIS::KeyEvent &arg );
+
     private:
         HomepageUI mUI;
     };

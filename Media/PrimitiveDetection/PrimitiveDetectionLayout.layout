@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 100 768" layer="Back">
+        <Widget type="Button" skin="Button" position="15 15 60 40" align="Left Top" name="But_Open">
+            <Property key="Caption" value="Open"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="15 70 60 40" align="Left Top" name="But_Ransac">
+            <Property key="Caption" value="RANSAC"/>
+        </Widget>
+    </Widget>
+</MyGUI>

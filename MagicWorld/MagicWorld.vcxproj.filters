@@ -46,6 +46,9 @@
     <Filter Include="Application\Scanning">
       <UniqueIdentifier>{babddef3-9485-4dad-8e66-88136239c9b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\PrimitiveDetection">
+      <UniqueIdentifier>{380de826-900c-4cb2-9b50-71edd78f25ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -225,6 +228,12 @@
     <ClInclude Include="..\Src\Application\ScanningAppUI.h">
       <Filter>Application\Scanning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h">
+      <Filter>Application\PrimitiveDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h">
+      <Filter>Application\PrimitiveDetection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -349,6 +358,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\ScanningAppUI.cpp">
       <Filter>Application\Scanning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp">
+      <Filter>Application\PrimitiveDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp">
+      <Filter>Application\PrimitiveDetection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
