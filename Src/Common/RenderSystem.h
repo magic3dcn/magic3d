@@ -20,6 +20,7 @@ namespace MagicCore
         Ogre::RenderWindow* GetRenderWindow(void);
         Ogre::SceneManager* GetSceneManager(void);
         Ogre::Camera*       GetMainCamera(void);
+        void SetupCameraDefaultParameter();
 
         virtual ~RenderSystem(void);
 

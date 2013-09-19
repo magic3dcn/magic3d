@@ -137,6 +137,7 @@ namespace MagicApp
         mDepthStream.start();
         //ExportDepthFrameForTest();
         mColorStream.start();
+        MagicLog << "MediaStream::StartRecordScanner" << std::endl; 
     }
 
     void MediaStream::StopRecordScanner()

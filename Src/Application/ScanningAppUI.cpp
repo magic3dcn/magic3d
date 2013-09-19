@@ -1,4 +1,5 @@
 #include "ScanningAppUI.h"
+#include "ScanningApp.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
 #include "../Common/AppManager.h"
@@ -39,12 +40,16 @@ namespace MagicApp
             mRoot.at(0)->findWidget("But_Record")->castType<MyGUI::Button>()->changeWidgetSkin("But_Save");
             mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(false);
             mIsRecording = true;
+            ScanningApp* pSA = dynamic_cast<ScanningApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ScanningApp"));
+            pSA->StartRecord();
         }
         else
         {
             mRoot.at(0)->findWidget("But_Record")->castType<MyGUI::Button>()->changeWidgetSkin("But_RecordDepth");
             mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(true);
             mIsRecording = false;
+            ScanningApp* pSA = dynamic_cast<ScanningApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ScanningApp"));
+            pSA->StopRecord();
         }
     }
 

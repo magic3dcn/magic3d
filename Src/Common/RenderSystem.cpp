@@ -46,11 +46,10 @@ namespace MagicCore
             mpSceneMgr = mpRoot->createSceneManager(Ogre::ST_GENERIC, "MainSceneManager");
             // Create and initialise the camera
             mpMainCam = mpSceneMgr->createCamera("MainCamera");
-            mpMainCam->setPosition(Ogre::Vector3(0,0,4));
-            mpMainCam->lookAt(Ogre::Vector3(0,0,0));
-            mpMainCam->setNearClipDistance(0.05);
+            SetupCameraDefaultParameter();
             // Create a viewport covering whole window
             Ogre::Viewport* vp = mpRenderWin->addViewport(mpMainCam);
+            //vp->setBackgroundColour(Ogre::ColourValue(0, 0.8627450980392157, 0.8627450980392157));
             vp->setBackgroundColour(Ogre::ColourValue(0.8627450980392157, 0.8627450980392157, 0.8627450980392157));
             // Update the camera aspect ratio to that of the viewport
             mpMainCam->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
@@ -70,6 +69,13 @@ namespace MagicCore
             //Exist
         }
 
+    }
+
+    void RenderSystem::SetupCameraDefaultParameter()
+    {
+        mpMainCam->setPosition(Ogre::Vector3(0,0,4));
+        mpMainCam->lookAt(Ogre::Vector3(0,0,0));
+        mpMainCam->setNearClipDistance(0.05);
     }
 
     void RenderSystem::Update()

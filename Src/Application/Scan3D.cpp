@@ -229,7 +229,7 @@ namespace MagicApp
         mMediaStream.WaitStream(&colorFrame, &depthFrame);
         if (colorFrame.isValid())
         {
-           // MagicLog << "Update color frame: " << colorFrame.getWidth() << " " << colorFrame.getHeight() << std::endl;
+          //  MagicLog << "Update color frame: " << colorFrame.getWidth() << " " << colorFrame.getHeight() << std::endl;
             const openni::RGB888Pixel* pPixel = (const openni::RGB888Pixel*)colorFrame.getData();
             Ogre::HardwarePixelBufferSharedPtr pPixelBufferColor = mpTexColor->getBuffer();
             int resolutionX = mpTexColor->getWidth();
@@ -251,7 +251,7 @@ namespace MagicApp
         }
         if (depthFrame.isValid())
         {
-           // MagicLog << "Update depth frame: " << depthFrame.getWidth() << " " << depthFrame.getHeight() << std::endl;
+          //  MagicLog << "Update depth frame: " << depthFrame.getWidth() << " " << depthFrame.getHeight() << std::endl;
             const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
             Ogre::HardwarePixelBufferSharedPtr pPixelBufferDepth = mpTexDepth->getBuffer();
             int resolutionX = mpTexDepth->getWidth();

@@ -50,6 +50,7 @@ namespace MagicApp
     {
         MagicLog << "EnterScan3D Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ScanningApp, "ScanningApp");
+       // MagicCore::AppManager::GetSingleton()->EnterApp(new Scan3D, "Scan3D");
     }
 
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
