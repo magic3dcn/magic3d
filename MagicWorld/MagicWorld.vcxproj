@@ -122,6 +122,8 @@
     <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h" />
     <ClInclude Include="..\Src\Application\Reconstruction.h" />
+    <ClInclude Include="..\Src\Application\ReconstructionApp.h" />
+    <ClInclude Include="..\Src\Application\ReconstructionAppUI.h" />
     <ClInclude Include="..\Src\Application\ReconstructionUI.h" />
     <ClInclude Include="..\Src\Application\Scan3D.h" />
     <ClInclude Include="..\Src\Application\Scan3DUI.h" />
@@ -187,6 +189,8 @@
     <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\Reconstruction.cpp" />
+    <ClCompile Include="..\Src\Application\ReconstructionApp.cpp" />
+    <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionUI.cpp" />
     <ClCompile Include="..\Src\Application\Scan3D.cpp" />
     <ClCompile Include="..\Src\Application\Scan3DUI.cpp" />

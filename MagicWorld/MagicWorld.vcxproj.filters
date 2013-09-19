@@ -49,6 +49,9 @@
     <Filter Include="Application\PrimitiveDetection">
       <UniqueIdentifier>{380de826-900c-4cb2-9b50-71edd78f25ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\ReconstructionApp">
+      <UniqueIdentifier>{65115103-34b5-40ec-bd23-85fd4715309d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -240,6 +243,12 @@
     <ClInclude Include="..\Src\DGP\PrimitiveDetection.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\ReconstructionApp.h">
+      <Filter>Application\ReconstructionApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\ReconstructionAppUI.h">
+      <Filter>Application\ReconstructionApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -376,6 +385,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\PrimitiveDetection.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ReconstructionApp.cpp">
+      <Filter>Application\ReconstructionApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp">
+      <Filter>Application\ReconstructionApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

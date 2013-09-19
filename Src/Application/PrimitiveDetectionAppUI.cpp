@@ -53,4 +53,5 @@ namespace MagicApp
         PrimitiveDetectionApp* pPD = dynamic_cast<PrimitiveDetectionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PrimitiveDetectionApp"));
         pPD->RansacPrimitiveDetection();
     }
+
 }

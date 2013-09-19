@@ -44,4 +44,49 @@
             <State name="normal" offset="900 152 86 87"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_Left" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="35 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Right" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="171 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Top" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="302 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Down" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="440 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Front" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="575 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Back" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="696 314 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Start" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="682 152 86 87"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Stop" size="86 86" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="normal" offset="814 315 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Open" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="790 152 86 87"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>
