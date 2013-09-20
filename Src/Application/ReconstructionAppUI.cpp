@@ -19,10 +19,10 @@ namespace MagicApp
         MagicLog << "ReconstructionUI::Setup" << std::endl;
         //MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
         //mRoot = MyGUI::LayoutManager::getInstance().loadLayout("RecordPlayback.layout");
-        //SetupRecordPlayback();
+        SetupRecordPlayback();
         //SetupReconstructProgress();
         //SetupReconstructing();
-        SetupMeshProcessing();
+        //SetupMeshProcessing();
     }
 
     void ReconstructionAppUI::Shutdown()

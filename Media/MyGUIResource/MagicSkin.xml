@@ -36,7 +36,10 @@
     </Resource>
     <Resource type="ResourceSkin" name="But_Save" size="86 87" texture="MagicUI.png">
         <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="900 28 86 87"/>
             <State name="normal" offset="900 28 86 87"/>
+            <State name="highlighted" offset="900 28 86 87"/>
+            <State name="pushed" offset="561 152 86 87"/>
         </BasisSkin>
     </Resource>
     <Resource type="ResourceSkin" name="But_Home" size="86 87" texture="MagicUI.png">
@@ -86,12 +89,18 @@
     </Resource>
     <Resource type="ResourceSkin" name="But_Open" size="86 87" texture="MagicUI.png">
         <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="790 152 86 87"/>
             <State name="normal" offset="790 152 86 87"/>
+            <State name="highlighted" offset="790 152 86 87"/>
+            <State name="pushed" offset="440 150 86 87"/>
         </BasisSkin>
     </Resource>
     <Resource type="ResourceSkin" name="But_Smooth" size="86 87" texture="MagicUI.png">
         <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="919 439 86 87"/>
             <State name="normal" offset="919 439 86 87"/>
+            <State name="highlighted" offset="919 439 86 87"/>
+            <State name="pushed" offset="919 314 86 87"/>
         </BasisSkin>
     </Resource>
 </MyGUI>
