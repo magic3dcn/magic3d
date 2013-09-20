@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0.911458 1 0.078125" align="Stretch" layer="Back">
+        <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0585938 0.166667 0.878906 0.666667" align="HCenter Bottom" name="Progress_Resgistrate">
+            <Property key="AutoTrack" value="false"/>
+            <Property key="FlowDirection" value="LeftToRight"/>
+        </Widget>
+    </Widget>
+</MyGUI>

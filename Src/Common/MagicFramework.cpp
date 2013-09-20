@@ -33,7 +33,7 @@ namespace MagicCore
     void MagicFramework::Run()
     {
         MagicLog << "MagicFramework run" << std::endl;
-        float timeLastFrame = 0.f;
+        float timeLastFrame = ToolKit::GetSingleton()->GetTime();
         while (Running())
         {
             float timeCurrentFrame = ToolKit::GetSingleton()->GetTime();

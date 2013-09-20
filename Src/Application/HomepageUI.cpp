@@ -7,6 +7,7 @@
 #include "Scan3D.h"
 #include "Reconstruction.h"
 #include "ScanningApp.h"
+#include "ReconstructionApp.h"
 
 namespace MagicApp
 {
@@ -56,6 +57,7 @@ namespace MagicApp
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
     {
         MagicLog << "EnterReconstruction Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new Reconstruction, "Reconstruction");
+        //MagicCore::AppManager::GetSingleton()->EnterApp(new Reconstruction, "Reconstruction");
+        MagicCore::AppManager::GetSingleton()->EnterApp(new ReconstructionApp, "ReconstructionApp");
     }
 }

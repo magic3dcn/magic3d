@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.117188 1" align="Left VStretch" layer="Back">
+        <Widget type="Button" skin="But_Save" position_real="0.125 0.0195313 0.716667 0.110677" align="Left Top" name="But_Save"/>
+        <Widget type="Button" skin="But_Reconstruction" position_real="0.125 0.15625 0.716667 0.110677" align="Left Top" name="But_ReconAndSmooth"/>
+        <Widget type="Button" skin="But_Home" position_real="0.125 0.863281 0.716667 0.110677" align="Right Bottom" name="But_BackHome">
+            <Property key="Visible" value="false"/>
+        </Widget>
+    </Widget>
+</MyGUI>

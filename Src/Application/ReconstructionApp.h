@@ -13,6 +13,10 @@ namespace MagicApp
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
+       
+    private:
+        void SetupRenderScene();
+        void ReleaseRenderScene(void);
 
     private:
         ReconstructionAppUI mUI;
