@@ -16,12 +16,15 @@ namespace MagicCore
         bool FileSaveDlg(std::string& selectFileName);
         bool IsAppRunning(void);
         void SetAppRunning(bool bRunning);
+        bool IsONIInitialized(void);
+        void SetONIInitialized(bool bInitialized);
         MagicDGP::Vector3 ColorCoding(float f);
 
         virtual ~ToolKit(void);
 
     private:
         bool mAppRunning;
+        bool mIsONIInitialized;
 	};
 }
 

@@ -5,8 +5,7 @@
 
 namespace MagicApp
 {
-    ScanningApp::ScanningApp() :
-        mIsDeviceInitialized(false)
+    ScanningApp::ScanningApp()
     {
     }
 
@@ -44,7 +43,7 @@ namespace MagicApp
 
     bool ScanningApp::SetupDevice()
     {
-        if (!mIsDeviceInitialized)
+        if (MagicCore::ToolKit::GetSingleton()->IsONIInitialized() == false)
         {
             openni::Status rc = openni::OpenNI::initialize();
             if (rc != openni::STATUS_OK)
@@ -55,7 +54,7 @@ namespace MagicApp
             else
             {
                 MagicLog << "OpenNI initialize succeed" << std::endl;
-                mIsDeviceInitialized = true;
+                MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }
 
@@ -90,6 +89,7 @@ namespace MagicApp
             return false;
         }
 
+        return true;
     }
 
     void ScanningApp::SetupRenderScene()

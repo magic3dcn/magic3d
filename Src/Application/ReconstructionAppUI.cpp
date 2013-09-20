@@ -3,10 +3,12 @@
 #include "../Common/LogSystem.h"
 #include "../Common/AppManager.h"
 #include "../Common/ToolKit.h"
+#include "ReconstructionApp.h"
 
 namespace MagicApp
 {
-    ReconstructionAppUI::ReconstructionAppUI()
+    ReconstructionAppUI::ReconstructionAppUI() :
+        mIsTimeRangeStart(true)
     {
     }
 
@@ -17,8 +19,6 @@ namespace MagicApp
     void ReconstructionAppUI::Setup()
     {
         MagicLog << "ReconstructionUI::Setup" << std::endl;
-        //MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        //mRoot = MyGUI::LayoutManager::getInstance().loadLayout("RecordPlayback.layout");
         SetupRecordPlayback();
         //SetupReconstructProgress();
         //SetupReconstructing();
@@ -43,17 +43,17 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SetTimeRange);
         mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetDownRange);
+        mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeDownRange);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetTopRange);
+        mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeTopRange);
         mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetLeftRange);
+        mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeLeftRange);
         mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetRightRange);
+        mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeRightRange);
         mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetFrontRange);
+        mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeFrontRange);
         mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::SetBackRange);
+        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeBackRange);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
@@ -101,68 +101,119 @@ namespace MagicApp
         mRoot.at(0)->findWidget("Progress_Resgistrate")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
     }
 
+    void ReconstructionAppUI::StartPostProcess()
+    {
+        Shutdown();
+        SetupReconstructing();
+    }
+
     void ReconstructionAppUI::OpenScanRecord(MyGUI::Widget* pSender)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        if (pRA->OpenSceneRecord())
+        {
+            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setVisible(true);
+        }
     }
 
     void ReconstructionAppUI::BackHome(MyGUI::Widget* pSender)
     {
-
+        MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
     }
 
     void ReconstructionAppUI::SetTimeRange(MyGUI::Widget* pSender)
     {
-
+        if (mIsTimeRangeStart)
+        {
+            ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+            pRA->SetTimeStart();
+            mIsTimeRangeStart = false;
+            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->changeWidgetSkin("But_Stop");
+        }
+        else
+        {
+            ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+            pRA->SetTimeEnd();
+            mIsTimeRangeStart = true;
+            Shutdown();
+            SetupReconstructProgress();
+            pRA->StartRegistration();
+        }
     }
 
-    void ReconstructionAppUI::SetLeftRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeLeftRange(rel);
     }
 
-    void ReconstructionAppUI::SetRightRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeRightRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeRightRange(rel);
     }
 
-    void ReconstructionAppUI::SetTopRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeTopRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeTopRange(rel);
     }
 
-    void ReconstructionAppUI::SetDownRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeDownRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeDownRange(rel);
     }
 
-    void ReconstructionAppUI::SetFrontRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeFrontRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeFrontRange(rel);
     }
 
-    void ReconstructionAppUI::SetBackRange(MyGUI::Widget* pSender, int rel)
+    void ReconstructionAppUI::ChangeBackRange(MyGUI::Widget* pSender, int rel)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ChangeBackRange(rel);
     }
 
     void ReconstructionAppUI::SavePointSet(MyGUI::Widget* pSender)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        if (pRA->SavePointSet())
+        {
+            mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
+        }
     }
 
     void ReconstructionAppUI::Reconstruction(MyGUI::Widget* pSender)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        if (pRA->ReconstructPointSet())
+        {
+            Shutdown();
+            SetupMeshProcessing();
+        }
     }
 
     void ReconstructionAppUI::SaveMesh3D(MyGUI::Widget* pSender)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        if (pRA->SaveMesh3D())
+        {
+            mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
+        }
     }
 
     void ReconstructionAppUI::SmoothMesh3D(MyGUI::Widget* pSender)
     {
-
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->SmoothMesh3D();
     }
 }

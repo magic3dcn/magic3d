@@ -6,7 +6,9 @@ namespace MagicCore
 {
     ToolKit* ToolKit::mpToolKit = NULL;
 
-    ToolKit::ToolKit(void) : mAppRunning(true)
+    ToolKit::ToolKit(void) : 
+        mAppRunning(true), 
+        mIsONIInitialized(false)
     {
     }
 
@@ -88,6 +90,16 @@ namespace MagicCore
     void ToolKit::SetAppRunning(bool bRunning)
     {
         mAppRunning = bRunning;
+    }
+
+    bool ToolKit::IsONIInitialized(void)
+    {
+        return mIsONIInitialized;
+    }
+
+    void ToolKit::SetONIInitialized(bool bInitialized)
+    {
+        mIsONIInitialized = bInitialized;
     }
 
     MagicDGP::Vector3 ToolKit::ColorCoding(float f)

@@ -1,6 +1,9 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "ReconstructionAppUI.h"
+#include "OpenNI.h"
+#include "../DGP/PointCloud3D.h"
+#include "../DGP/Mesh3D.h"
 
 namespace MagicApp
 {
@@ -13,13 +16,37 @@ namespace MagicApp
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
+
+    public:
+        bool OpenSceneRecord();
+        void SetTimeStart();
+        void SetTimeEnd();
+        void ChangeLeftRange(int rel);
+        void ChangeRightRange(int rel);
+        void ChangeTopRange(int rel);
+        void ChangeDownRange(int rel);
+        void ChangeFrontRange(int rel);
+        void ChangeBackRange(int rel);
+        void StartRegistration();
+        bool SavePointSet();
+        bool ReconstructPointSet();
+        bool SaveMesh3D();
+        void SmoothMesh3D();
        
     private:
         void SetupRenderScene();
         void ReleaseRenderScene(void);
+        bool SetupDevice();
+        void ReleaseDevice();
+        void UpdateScannerDisplay();
 
     private:
         ReconstructionAppUI mUI;
+        openni::Device mDevice;
+        openni::VideoStream mDepthStream;
+        bool mIsDeviceOpen;
+        MagicDGP::Point3DSet* mpPointSet;
+        MagicDGP::Mesh3D* mpMesh;
     };
 
 }

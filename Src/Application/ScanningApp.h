@@ -30,6 +30,5 @@ namespace MagicApp
         openni::Device mDevice;
         openni::VideoStream mDepthStream, mColorStream;
         openni::Recorder mRecorder;
-        bool mIsDeviceInitialized;
     };
 }
