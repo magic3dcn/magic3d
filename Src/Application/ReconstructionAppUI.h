@@ -24,6 +24,7 @@ namespace MagicApp
         void OpenScanRecord(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void SetTimeRange(MyGUI::Widget* pSender);
+        void PointSetAlign(MyGUI::Widget* pSender);
         void ChangeLeftRange(MyGUI::Widget* pSender, int rel);
         void ChangeRightRange(MyGUI::Widget* pSender, int rel);
         void ChangeTopRange(MyGUI::Widget* pSender, int rel);

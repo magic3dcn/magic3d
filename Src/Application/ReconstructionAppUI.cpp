@@ -43,18 +43,20 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SetTimeRange);
         mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::PointSetAlign);
+        mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeDownRange);
-        mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeTopRange);
-        mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeLeftRange);
-        mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeRightRange);
-        mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeFrontRange);
-        mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeBackRange);
-        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setSize(50, 50);
     }
 
     void ReconstructionAppUI::SetupReconstructProgress()
@@ -113,6 +115,7 @@ namespace MagicApp
         if (pRA->OpenSceneRecord())
         {
             mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setVisible(true);
@@ -141,10 +144,16 @@ namespace MagicApp
             ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
             pRA->SetTimeEnd();
             mIsTimeRangeStart = true;
-            Shutdown();
-            SetupReconstructProgress();
-            pRA->StartRegistration();
+            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->changeWidgetSkin("But_Start");
         }
+    }
+
+    void ReconstructionAppUI::PointSetAlign(MyGUI::Widget* pSender)
+    {
+        Shutdown();
+        SetupReconstructProgress();
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->StartRegistration();
     }
 
     void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)

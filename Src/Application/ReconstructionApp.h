@@ -39,14 +39,19 @@ namespace MagicApp
         bool SetupDevice();
         void ReleaseDevice();
         void UpdateScannerDisplay();
+        void CoarseRangeLimitCalculation(const std::vector<MagicDGP::Vector3>& posList);
 
     private:
         ReconstructionAppUI mUI;
         openni::Device mDevice;
         openni::VideoStream mDepthStream;
-        bool mIsDeviceOpen;
+        bool mIsScannerDisplaying;
         MagicDGP::Point3DSet* mpPointSet;
         MagicDGP::Mesh3D* mpMesh;
+        float mLeftLimit, mRightLimit, mTopLimit, mDownLimit, mFrontLimit, mBackLimit;
+        int mFrameStartIndex, mFrameEndIndex, mFrameCurrent;
+        bool mIsSetFrameStart, mIsSetFrameEnd;
+        bool mIsNeedRangeLimitCaculation;
     };
 
 }

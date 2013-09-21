@@ -103,4 +103,9 @@
             <State name="pushed" offset="919 314 86 87"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_Align" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="normal" offset="575 439 86 87"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

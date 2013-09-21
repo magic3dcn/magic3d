@@ -1,27 +1,30 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
-        <Widget type="Button" skin="But_Open" position_real="0.0136719 0.859375 0.0839844 0.109375" align="Left Bottom" name="But_OpenRecord"/>
-        <Widget type="Button" skin="But_Home" position_real="0.898438 0.859375 0.0839844 0.109375" align="Right Bottom" name="But_Home"/>
-        <Widget type="Button" skin="But_Start" position_real="0.121094 0.859375 0.0839844 0.109375" align="Left Bottom" name="But_SetRange">
+        <Widget type="Button" skin="But_Open" position_real="0.0136719 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_OpenRecord"/>
+        <Widget type="Button" skin="But_Home" position_real="0.902344 0.872396 0.0839844 0.109375" align="Right Bottom" name="But_Home"/>
+        <Widget type="Button" skin="But_Start" position_real="0.121094 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_SetRange">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Down" position_real="0.458008 0.859375 0.0839844 0.109375" align="HCenter Bottom" name="But_Down">
+        <Widget type="Button" skin="But_Down" position_real="0.475586 0.917969 0.0478516 0.0651042" align="HCenter Bottom" name="But_Down">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Left" position_real="0.0136719 0.4375 0.0839844 0.109375" align="Left VCenter" name="But_Left">
+        <Widget type="Button" skin="But_Left" position_real="0.0136719 0.445313 0.0478516 0.0651042" align="Left VCenter" name="But_Left">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Right" position_real="0.902344 0.4375 0.0839844 0.109375" align="Right VCenter" name="But_Right">
+        <Widget type="Button" skin="But_Right" position_real="0.9375 0.445313 0.0478516 0.0651042" align="Right VCenter" name="But_Right">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Top" position_real="0.458008 0.0260417 0.0839844 0.109375" align="HCenter Top" name="But_Top">
+        <Widget type="Button" skin="But_Top" position_real="0.475586 0.0117188 0.0478516 0.0651042" align="HCenter Top" name="But_Top">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Front" position_real="0.292969 0.0260417 0.0839844 0.109375" align="Left Top" name="But_Front">
+        <Widget type="Button" skin="But_Front" position_real="0.3125 0.0117188 0.0478516 0.0651042" align="Left Top" name="But_Front">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Back" position_real="0.619141 0.0260417 0.0839844 0.109375" align="Right Top" name="But_Back">
+        <Widget type="Button" skin="But_Back" position_real="0.638672 0.0117188 0.0478516 0.0651042" align="Right Top" name="But_Back">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="But_Align" position_real="0.228516 0.869792 0.0839844 0.110677" align="Left Bottom" name="But_Align">
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>
