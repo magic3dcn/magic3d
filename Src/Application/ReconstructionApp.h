@@ -27,7 +27,7 @@ namespace MagicApp
         void ChangeDownRange(int rel);
         void ChangeFrontRange(int rel);
         void ChangeBackRange(int rel);
-        void StartRegistration();
+        void PointSetRegistration();
         bool SavePointSet();
         bool ReconstructPointSet();
         bool SaveMesh3D();

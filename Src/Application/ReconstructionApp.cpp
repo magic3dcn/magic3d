@@ -2,6 +2,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+#include "../DGP/Registration.h"
 
 namespace MagicApp
 {
@@ -356,11 +357,19 @@ namespace MagicApp
         }
     }
 
-    void ReconstructionApp::StartRegistration()
+    void ReconstructionApp::PointSetRegistration()
     {
         mIsScannerDisplaying = false;
         //
         // Do Registration
+        //
+        //initialize
+        MagicDGP::HomoMatrix4 lastTrans;
+        lastTrans.Unit();
+        for (int frameInde = mFrameStartIndex; frameInde <= mFrameEndIndex; frameInde++)
+        {
+
+        }
         //
         mUI.StartPostProcess();
     }

@@ -22,13 +22,14 @@ namespace MagicDependence
         RansacShapeDetector::Options ransacOptions;
         float bbxScale = 2.f;
         //ransacOptions.m_epsilon = .01f * pc.getScale(); // set distance threshold to .01f of bounding box width
-        ransacOptions.m_epsilon = .01f * bbxScale;
+        ransacOptions.m_epsilon = .007f * bbxScale;
         // NOTE: Internally the distance threshold is taken as 3 * ransacOptions.m_epsilon!!!
         //ransacOptions.m_bitmapEpsilon = .02f * pc.getScale(); // set bitmap resolution to .02f of bounding box width
         ransacOptions.m_bitmapEpsilon = .02f * bbxScale;
         // NOTE: This threshold is NOT multiplied internally!
-        ransacOptions.m_normalThresh = .9f; // this is the cos of the maximal normal deviation
-        ransacOptions.m_minSupport = 500; // this is the minimal numer of points required for a primitive
+        //ransacOptions.m_normalThresh = .9f; // this is the cos of the maximal normal deviation
+        ransacOptions.m_normalThresh = .9848f; //cos(10 degree)
+        ransacOptions.m_minSupport = 200; // this is the minimal numer of points required for a primitive
         ransacOptions.m_probability = .001f; // this is the "probability" with which a primitive is overlooked
 
         RansacShapeDetector detector(ransacOptions); // the detector object
@@ -38,7 +39,7 @@ namespace MagicDependence
         detector.Add(new SpherePrimitiveShapeConstructor());
         detector.Add(new CylinderPrimitiveShapeConstructor());
         detector.Add(new ConePrimitiveShapeConstructor());
-        detector.Add(new TorusPrimitiveShapeConstructor());
+        //detector.Add(new TorusPrimitiveShapeConstructor());
 
         PointCloud pc;
         int vertNum = pMesh->GetVertexNumber();

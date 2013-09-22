@@ -40,6 +40,12 @@ namespace MagicApp
         MagicDGP::Mesh3D* pMesh3D = MagicDGP::Parser::ParseMesh3D(fileName);
         pMesh3D->UpdateNormal();
         pMesh3D->UnifyPosition(2.f);
+        /*int index = 10;
+        MagicDGP::Vector3 pos = pMesh3D->GetVertex(index)->GetPosition();
+        MagicDGP::Vector3 nor = pMesh3D->GetVertex(index)->GetNormal();
+        MagicDGP::Vector3 newPos = pos + nor * 0.01 * 2 * 0.1;
+        pMesh3D->GetVertex(index)->SetPosition(newPos);
+        pMesh3D->GetVertex(index)->SetColor(MagicDGP::Vector3(1, 0, 0));*/
         PrimitiveDetectionApp* pPD = dynamic_cast<PrimitiveDetectionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PrimitiveDetectionApp"));
         if (pPD != NULL)
         {
