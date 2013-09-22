@@ -3,6 +3,7 @@
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Registration.h"
+#include "../DGP/SignedDistanceFunction.h"
 
 namespace MagicApp
 {
@@ -364,14 +365,122 @@ namespace MagicApp
         // Do Registration
         //
         //initialize
+        mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
+        MagicDGP::SignedDistanceFunction sdf(512, 512, 512, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
-        for (int frameInde = mFrameStartIndex; frameInde <= mFrameEndIndex; frameInde++)
+        //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
+        mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->Update();
+        for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
-
+            mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
+            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
+            MagicDGP::HomoMatrix4 newTrans;
+            MagicLog << "Fusion: ICP Registration" << std::endl;
+            MagicDGP::Registration::ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
+            MagicLog << "Fusion: Update SDF" << std::endl;
+            sdf.UpdateSDF(pNewPC, &newTrans);
+            lastTrans = newTrans;
+            delete mpPointSet;
+            delete pNewPC;
+            pNewPC = NULL;
+            MagicLog << "Fusion: Extract Point Set" << std::endl;
+            mpPointSet = sdf.ExtractPointCloud();
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->Update();
         }
         //
         mUI.StartPostProcess();
+    }
+
+    MagicDGP::Point3DSet* ReconstructionApp::GetPointSetFromRecord(int frameId)
+    {
+        openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
+        pPC->seek(mDepthStream, frameId);
+        openni::VideoFrameRef depthFrame;
+        int changeIndex;
+        openni::VideoStream** pStreams = new openni::VideoStream*[1];
+        pStreams[0] = &mDepthStream;
+        openni::OpenNI::waitForAnyStream(pStreams, 1, &changeIndex);
+        if (changeIndex == 0)
+        {
+            mDepthStream.readFrame(&depthFrame);
+        }
+        delete []pStreams;
+
+        if (depthFrame.isValid())
+        {
+            const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
+            int resolutionX = depthFrame.getVideoMode().getResolutionX();
+            int resolutionY = depthFrame.getVideoMode().getResolutionY();
+            std::vector<MagicDGP::Vector3> posList;
+            for(int y = 0; y < resolutionY; y++)  
+            {  
+                for(int x = 0; x < resolutionX; x++)  
+                {
+                    openni::DepthPixel depth = pDepth[y * resolutionX + x]; 
+                    float rx, ry, rz;
+                    openni::CoordinateConverter::convertDepthToWorld(mDepthStream, 
+                        x, y, depth, &rx, &ry, &rz);
+                    MagicDGP::Vector3 pos(-rx, ry, -rz);
+                    posList.push_back(pos);
+                }
+            }
+            std::vector<MagicDGP::Vector3> norList;
+            for (int y = 0; y < resolutionY; y++)
+            {
+                for (int x = 0; x < resolutionX; x++)
+                {
+                    if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        continue;
+                    }
+                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
+                        pos[1] < mDownLimit || pos[1] > mTopLimit ||
+                        pos[2] > mFrontLimit || pos[2] < mBackLimit)
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        continue;
+                    }
+                    MagicDGP::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
+                    MagicDGP::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
+                    MagicDGP::Vector3 nor = dirX.CrossProduct(dirY);
+                    MagicDGP::Real len = nor.Normalise();
+                    if (len > MagicDGP::Epsilon)
+                    {
+                        norList.push_back(nor);
+                    }
+                    else
+                    {
+                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                    }
+                }
+            }
+            MagicDGP::Point3DSet* pPS = new MagicDGP::Point3DSet;
+            int pointNum = posList.size();
+            for (int i = 0; i < pointNum; i++)
+            {
+                MagicDGP::Vector3 pos = posList.at(i);
+                if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
+                    pos[1] < mDownLimit || pos[1] > mTopLimit ||
+                    pos[2] > mFrontLimit || pos[2] < mBackLimit)
+                {
+                    continue;
+                }
+                MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pos, norList.at(i));
+                pPS->InsertPoint(pNewPoint);
+            }
+            return pPS;
+        }
+        else
+        {
+            return NULL;
+        }
     }
 
     bool ReconstructionApp::SavePointSet()
