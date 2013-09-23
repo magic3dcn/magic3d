@@ -408,7 +408,8 @@ namespace MagicApp
             MagicLog << "Fusion: ICP Registration" << std::endl;
             MagicDGP::Registration::ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
             MagicLog << "Fusion: Update SDF" << std::endl;
-            sdf.UpdateSDF(pNewPC, &newTrans);
+            //sdf.UpdateSDF(pNewPC, &newTrans);
+            sdf.UpdateFineSDF(pNewPC, &newTrans);
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;

@@ -13,6 +13,7 @@ namespace MagicDGP
         ~SignedDistanceFunction();
 
         void UpdateSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform);
+        void UpdateFineSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform);
         Point3DSet* ExtractPointCloud();
         Point3DSet* ExtractFinePointCloud();
 

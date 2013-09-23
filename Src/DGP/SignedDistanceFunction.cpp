@@ -123,6 +123,108 @@ namespace MagicDGP
         MagicLog << "PC index: " << mPCIndex.size() << std::endl;
     }
 
+    void SignedDistanceFunction::UpdateFineSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform)
+    {
+        MagicLog << "SignedDistanceFunction::UpdateFineSDF" << std::endl;
+        int pcNum = pPC->GetPointNumber();
+        float deltaX = (mMaxX - mMinX) / mResolutionX;
+        float deltaY = (mMaxY - mMinY) / mResolutionY;
+        float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
+        int truncW = 3;
+        int maxIndex = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
+        for (int i = 0; i < pcNum; i++)
+        {
+            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            if (pos[0] < mMinX || pos[0] > mMaxX 
+                || pos[1] < mMinY || pos[1] > mMaxY 
+                || pos[2] < mMinZ || pos[2] > mMaxZ)
+            {
+                continue;
+            }
+            //int   xIndex = (pos[0] - mMinX) / deltaX;
+            //int   yIndex = (pos[1] - mMinY) / deltaY;
+            //int   zIndex = (pos[2] - mMinZ) / deltaZ;///////////
+            //Vector3 pixelPos(mMinX + xIndex * deltaX, mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
+            Vector3 pos_trans = pTransform->TransformPoint(pos); //TransformPosition(pos, pTransform);
+            int xZero = (pos_trans[0] - mMinX) / deltaX;
+            int yZero = (pos_trans[1] - mMinY) / deltaY;
+            int zZero = (pos_trans[2] - mMinZ) / deltaZ;
+            if (xZero < 0 || yZero < 0 || zZero < 0)
+            {
+                continue;
+            }
+            int indexZero = xZero * mResolutionY * mResolutionZ + yZero * mResolutionZ + zZero;
+            if (indexZero > maxIndex)
+            {
+                continue;
+            }
+            mSDF.at(indexZero) = mSDF.at(indexZero) * mWeight.at(indexZero) / (mWeight.at(indexZero) + 1.f);
+            mWeight.at(indexZero) += 1.f;
+            mPCIndex.insert(indexZero);
+            //
+            for (int j = 1; j <= truncW; j++)
+            {
+                //Vector3 posPosit(pixelPos[0], pixelPos[1], pixelPos[2] + deltaZ * j);
+                Vector3 posPosit(pos[0], pos[1], pos[2] + deltaZ * j);
+                Vector3 posPosit_trans = pTransform->TransformPoint(posPosit);  //TransformPosition(posPosit, pTransform);
+                //float distPosit = (posPosit_trans - pos_trans).Length();
+                int xPosit = (posPosit_trans[0] - mMinX) / deltaX;
+                int yPosit = (posPosit_trans[1] - mMinY) / deltaY;
+                int zPosit = (posPosit_trans[2] - mMinZ) / deltaZ;
+                if (xPosit > 0 && yPosit > 0 && zPosit > 0)
+                {
+                    Vector3 deltaPosit((xPosit - xZero) * deltaX, (yPosit - yZero) * deltaY, (zPosit - zZero) * deltaZ);
+                    Vector3 pixelPosPosit(mMinX + deltaX * xPosit, mMinY + deltaY * yPosit, mMinZ + deltaZ * zPosit);
+                    Vector3 distDeltaPosit = pixelPosPosit - pos_trans;
+                    float distPosit = deltaPosit.Length();
+                    if (distPosit > Epsilon)
+                    {
+                        //need to judge the range
+                        int indexPosit = xPosit * mResolutionY * mResolutionZ + yPosit * mResolutionZ + zPosit;
+                        if (indexPosit < maxIndex)
+                        {
+                            mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) + distDeltaPosit.Length())
+                                                / (mWeight.at(indexPosit) + 1.f);
+                            //mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) - distPosit)
+                            //                    / (mWeight.at(indexPosit) + 1.f);
+                            mWeight.at(indexPosit) += 1.f;
+                            mPCIndex.insert(indexPosit);
+                        }
+                    }
+                }
+
+                Vector3 posNegat(pos[0], pos[1], pos[2] - deltaZ * j);
+                Vector3 posNegat_trans = pTransform->TransformPoint(posNegat); //TransformPosition(posNegat, pTransform);
+                //float distNegat = -1.f * (posNegat_trans - pos_trans).Length();
+                int xNegat = (posNegat_trans[0] - mMinX) / deltaX;
+                int yNegat = (posNegat_trans[1] - mMinY) / deltaY;
+                int zNegat = (posNegat_trans[2] - mMinZ) / deltaZ;
+                if (xNegat > 0 && yNegat > 0 && zNegat > 0)
+                {
+                    Vector3 deltaNegat((xNegat - xZero) * deltaX, (yNegat - yZero) * deltaY, (zNegat - zZero) * deltaZ);
+                    Vector3 pixelPosNeget(mMinX + deltaX * xNegat, mMinY + deltaY * yNegat, mMinZ + deltaZ * zNegat);
+                    Vector3 distDeltaNeget = pixelPosNeget - pos_trans;
+                    float distNegat = deltaNegat.Length();
+                    if (distNegat > Epsilon)
+                    {
+                        //need to judge the range
+                        int indexNegat = xNegat * mResolutionY * mResolutionZ + yNegat * mResolutionZ + zNegat;
+                        if (indexNegat < maxIndex)
+                        {
+                            mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) - distDeltaNeget.Length())
+                                                / (mWeight.at(indexNegat) + 1.f);
+                            //mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) + distNegat)
+                            //                    / (mWeight.at(indexNegat) + 1.f);
+                            mWeight.at(indexNegat) += 1.f;
+                            mPCIndex.insert(indexNegat);
+                        }
+                    }
+                }
+            }
+        }
+        MagicLog << "PC index: " << mPCIndex.size() << std::endl;
+    }
+
     Point3DSet* SignedDistanceFunction::ExtractPointCloud()
     {
         MagicLog << "SignedDistanceFunction::PointCloudPrediction" << std::endl;
