@@ -414,7 +414,8 @@ namespace MagicApp
             delete pNewPC;
             pNewPC = NULL;
             MagicLog << "Fusion: Extract Point Set" << std::endl;
-            mpPointSet = sdf.ExtractPointCloud();
+            //mpPointSet = sdf.ExtractPointCloud();
+            mpPointSet = sdf.ExtractFinePointCloud();
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
         }

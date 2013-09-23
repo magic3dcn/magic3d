@@ -334,4 +334,218 @@ namespace MagicDGP
         }
     }
 
+    Point3DSet* SignedDistanceFunction::ExtractFinePointCloud()
+    {
+        MagicLog << "SignedDistanceFunction::ExtractFinePointCloud" << std::endl;
+        float deltaX = (mMaxX - mMinX) / mResolutionX;
+        float deltaY = (mMaxY - mMinY) / mResolutionY;
+        float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
+        std::vector<Vector3> posList;
+        std::vector<Vector3> norList;
+        int xGridNum = mResolutionY * mResolutionZ;
+        int gridMaxNum = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
+        for (std::set<int>::iterator itr = mPCIndex.begin(); itr != mPCIndex.end(); itr++)
+        {
+            int xIndex = *itr / xGridNum;
+            int yIndex = (*itr - xIndex * xGridNum) / mResolutionZ;
+            int zIndex = *itr - xIndex * xGridNum - yIndex * mResolutionZ;
+            if (xIndex < 0 || xIndex > mResolutionX || yIndex < 0 || yIndex > mResolutionY || zIndex < 0 || zIndex > mResolutionZ)
+            {
+                continue;
+            }
+            float sdfOrigin = mSDF.at(*itr);
+            //if it is a zero
+            if (fabs(sdfOrigin) < Epsilon)
+            {
+                Vector3 posZero(mMinX + xIndex * deltaX, mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
+                Vector3 norZero;
+                //need to judge range
+                if ((*itr - xGridNum) < 0 || (*itr + xGridNum) > gridMaxNum ||
+                    (*itr - mResolutionZ) < 0 || (*itr + mResolutionZ) > gridMaxNum ||
+                    (*itr - 1) < 0 || (*itr + 1) > gridMaxNum)
+                {
+                    continue;
+                }
+                //norZero[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr + xGridNum);
+                norZero[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr - xGridNum);
+                //norZero[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr + mResolutionZ);
+                norZero[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr - mResolutionZ);
+                //norZero[2] = mSDF.at(*itr - 1) - mSDF.at(*itr + 1);
+                norZero[2] = mSDF.at(*itr + 1) - mSDF.at(*itr - 1);
+                float norLen = norZero.Normalise();
+                if (norLen > Epsilon)
+                {
+                    posList.push_back(posZero);
+                    norList.push_back(norZero);
+                }
+                else
+                {
+                   // MagicLog << "Normal Zero: Zero" << std::endl;
+                    //norZero[2] = -1.f;
+                    //posList.push_back(posZero);
+                    //norList.push_back(norZero);
+                }
+                continue;
+            }
+            //
+            //x direction
+            int xDirIndex = *itr + xGridNum;
+            if (xDirIndex < gridMaxNum)
+            {
+                float sdfX = mSDF.at(xDirIndex);
+                if (sdfX * sdfOrigin < 0.f)
+                {
+                    //Extract a point at the middle
+                    float wr = fabs(sdfOrigin / (sdfOrigin - sdfX));
+                    Vector3 posX(mMinX + (xIndex + wr) * deltaX,
+                        mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
+                    Vector3 norX;
+                    //norX[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                    norX[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
+                    if (*itr + mResolutionZ < gridMaxNum)
+                    {
+                        //norX[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        norX[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norX[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        norX[1] = mSDF.at(*itr) - mSDF.at(*itr - mResolutionZ);
+                    }
+                    if (*itr + 1 < gridMaxNum)
+                    {
+                        //norX[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        norX[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norX[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        norX[2] = mSDF.at(*itr) - mSDF.at(*itr - 1);
+                    }
+                    float norLen = norX.Normalise();
+                    if (norLen > Epsilon)
+                    {
+                        posList.push_back(posX);
+                        norList.push_back(norX);
+                    }
+                    else
+                    {
+                        MagicLog << "Normal Zero: X Direction" << std::endl;
+                    }
+                }
+            }
+            //y direction
+            int yDirIndex = *itr + mResolutionZ;
+            if (yDirIndex < gridMaxNum)
+            {
+                float sdfY = mSDF.at(yDirIndex);
+                if (sdfY * sdfOrigin < 0.f)
+                {
+                    //Extract a point at the middle
+                    float wr = fabs(sdfOrigin / (sdfOrigin - sdfY));
+                    Vector3 posY(mMinX + xIndex * deltaX,
+                        mMinY + (yIndex + wr) * deltaY, mMinZ + zIndex * deltaZ);
+                    Vector3 norY;
+                    if (*itr + xGridNum < gridMaxNum)
+                    {
+                        //norY[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        norY[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norY[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        norY[0] = mSDF.at(*itr) - mSDF.at(*itr - xGridNum);
+                    }
+                    //norY[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                    norY[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
+                    if (*itr + 1 < gridMaxNum)
+                    {
+                        //norY[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        norY[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norY[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        norY[2] = mSDF.at(*itr) - mSDF.at(*itr - 1);
+                    }
+                    float norLen = norY.Normalise();
+                    if (norLen > Epsilon)
+                    {
+                        posList.push_back(posY);
+                        norList.push_back(norY);
+                    }
+                    else
+                    {
+                        MagicLog << "Normal Zero: Y direction" << std::endl;
+                    }
+                }
+            }
+            //z direction
+            int zDirIndex = *itr + 1;
+            if (zDirIndex < gridMaxNum)
+            {
+                float sdfZ = mSDF.at(zDirIndex);
+                if (sdfZ * sdfOrigin < 0.f)
+                {
+                    //Extract a point at the middle
+                    float wr = fabs(sdfOrigin / (sdfOrigin - sdfZ));
+                    Vector3 posZ(mMinX + xIndex * deltaX,
+                        mMinY + yIndex * deltaY, mMinZ + (zIndex + wr) * deltaZ);
+                    Vector3 norZ;
+                    if (*itr + xGridNum < gridMaxNum)
+                    {
+                        //norZ[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        norZ[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norZ[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        norZ[0] = mSDF.at(*itr) - mSDF.at(*itr - xGridNum);
+                    }
+                    if (*itr + mResolutionZ < gridMaxNum)
+                    {
+                        //norZ[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        norZ[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
+                    }
+                    else
+                    {
+                        //norZ[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        norZ[1] = mSDF.at(*itr) - mSDF.at(*itr - mResolutionZ);
+                    }
+                    //norZ[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                    norZ[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
+
+                    float norLen = norZ.Normalise();
+                    if (norLen > Epsilon)
+                    {
+                        posList.push_back(posZ);
+                        norList.push_back(norZ);
+                    }
+                    else
+                    {
+                        MagicLog << "Normal Zero: Z Direction" << std::endl;
+                    }
+                }
+            }
+        }
+
+        int posNum = posList.size();
+        MagicLog << "Export point size: " << posNum << std::endl;
+        if (posNum > 0)
+        {
+            Point3DSet* pPC = new Point3DSet;
+            for (int i = 0; i < posNum; i++)
+            {
+                Point3D* point = new Point3D(posList.at(i), norList.at(i));
+                pPC->InsertPoint(point);
+            }
+            //MagicDGP::Parser::ExportPointSet("interPointset.obj", pPC);//
+            return pPC;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
 }
