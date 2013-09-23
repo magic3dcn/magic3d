@@ -24,7 +24,10 @@
         <Widget type="Button" skin="But_Back" position_real="0.638672 0.0117188 0.0478516 0.0651042" align="Right Top" name="But_Back">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Align" position_real="0.228516 0.869792 0.0839844 0.110677" align="Left Bottom" name="But_Align">
+        <Widget type="Button" skin="But_Align" position_real="0.228516 0.869792 0.0839844 0.109375" align="Left Bottom" name="But_Align">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0976563 0.908854 0.804688 0.0625" align="HStretch Bottom" name="Progress_Registrate">
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>

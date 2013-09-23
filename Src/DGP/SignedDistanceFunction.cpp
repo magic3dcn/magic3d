@@ -45,7 +45,7 @@ namespace MagicDGP
             }
             int   xIndex = (pos[0] - mMinX) / deltaX;
             int   yIndex = (pos[1] - mMinY) / deltaY;
-            int   zIndex = (pos[2] - mMinZ) / deltaZ;
+            int   zIndex = (pos[2] - mMinZ) / deltaZ;///////////
             Vector3 pixelPos(mMinX + xIndex * deltaX, mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
             Vector3 pos_trans = pTransform->TransformPoint(pos); //TransformPosition(pos, pTransform);
             int xZero = (pos_trans[0] - mMinX) / deltaX;
@@ -85,6 +85,8 @@ namespace MagicDGP
                         {
                             mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) + distPosit)
                                                 / (mWeight.at(indexPosit) + 1.f);
+                            //mSDF.at(indexPosit) = (mSDF.at(indexPosit) * mWeight.at(indexPosit) - distPosit)
+                            //                    / (mWeight.at(indexPosit) + 1.f);
                             mWeight.at(indexPosit) += 1.f;
                             mPCIndex.insert(indexPosit);
                         }
@@ -107,8 +109,10 @@ namespace MagicDGP
                         int indexNegat = xNegat * mResolutionY * mResolutionZ + yNegat * mResolutionZ + zNegat;
                         if (indexNegat < maxIndex)
                         {
-                            mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) - distNegat)
+                             mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) - distNegat)
                                                 / (mWeight.at(indexNegat) + 1.f);
+                            //mSDF.at(indexNegat) = (mSDF.at(indexNegat) * mWeight.at(indexNegat) + distNegat)
+                            //                    / (mWeight.at(indexNegat) + 1.f);
                             mWeight.at(indexNegat) += 1.f;
                             mPCIndex.insert(indexNegat);
                         }
@@ -151,9 +155,12 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                norZero[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr + xGridNum);
-                norZero[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr + mResolutionZ);
-                norZero[2] = mSDF.at(*itr - 1) - mSDF.at(*itr + 1);
+                //norZero[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr + xGridNum);
+                norZero[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr - xGridNum);
+                //norZero[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr + mResolutionZ);
+                norZero[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr - mResolutionZ);
+                //norZero[2] = mSDF.at(*itr - 1) - mSDF.at(*itr + 1);
+                norZero[2] = mSDF.at(*itr + 1) - mSDF.at(*itr - 1);
                 float norLen = norZero.Normalise();
                 if (norLen > Epsilon)
                 {
@@ -181,22 +188,27 @@ namespace MagicDGP
                     Vector3 posX(mMinX + (xIndex * 2.f + 1.f) * deltaX / 2.f,
                         mMinY + yIndex * deltaY, mMinZ + zIndex * deltaZ);
                     Vector3 norX;
-                    norX[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                    //norX[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                    norX[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
                     if (*itr + mResolutionZ < gridMaxNum)
                     {
-                        norX[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        //norX[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        norX[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norX[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        //norX[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        norX[1] = mSDF.at(*itr) - mSDF.at(*itr - mResolutionZ);
                     }
                     if (*itr + 1 < gridMaxNum)
                     {
-                        norX[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        //norX[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        norX[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norX[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        //norX[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        norX[2] = mSDF.at(*itr) - mSDF.at(*itr - 1);
                     }
                     float norLen = norX.Normalise();
                     if (norLen > Epsilon)
@@ -223,20 +235,25 @@ namespace MagicDGP
                     Vector3 norY;
                     if (*itr + xGridNum < gridMaxNum)
                     {
-                        norY[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        //norY[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        norY[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norY[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        //norY[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        norY[0] = mSDF.at(*itr) - mSDF.at(*itr - xGridNum);
                     }
-                    norY[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                    //norY[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                    norY[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
                     if (*itr + 1 < gridMaxNum)
                     {
-                        norY[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        //norY[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                        norY[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norY[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        //norY[2] = mSDF.at(*itr - 1) - mSDF.at(*itr);
+                        norY[2] = mSDF.at(*itr) - mSDF.at(*itr - 1);
                     }
                     float norLen = norY.Normalise();
                     if (norLen > Epsilon)
@@ -263,21 +280,27 @@ namespace MagicDGP
                     Vector3 norZ;
                     if (*itr + xGridNum < gridMaxNum)
                     {
-                        norZ[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        //norZ[0] = mSDF.at(*itr) - mSDF.at(*itr + xGridNum);
+                        norZ[0] = mSDF.at(*itr + xGridNum) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norZ[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        //norZ[0] = mSDF.at(*itr - xGridNum) - mSDF.at(*itr);
+                        norZ[0] = mSDF.at(*itr) - mSDF.at(*itr - xGridNum);
                     }
                     if (*itr + mResolutionZ < gridMaxNum)
                     {
-                        norZ[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        //norZ[1] = mSDF.at(*itr) - mSDF.at(*itr + mResolutionZ);
+                        norZ[1] = mSDF.at(*itr + mResolutionZ) - mSDF.at(*itr);
                     }
                     else
                     {
-                        norZ[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        //norZ[1] = mSDF.at(*itr - mResolutionZ) - mSDF.at(*itr);
+                        norZ[1] = mSDF.at(*itr) - mSDF.at(*itr - mResolutionZ);
                     }
-                    norZ[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                    //norZ[2] = mSDF.at(*itr) - mSDF.at(*itr + 1);
+                    norZ[2] = mSDF.at(*itr + 1) - mSDF.at(*itr);
+
                     float norLen = norZ.Normalise();
                     if (norLen > Epsilon)
                     {
@@ -302,6 +325,7 @@ namespace MagicDGP
                 Point3D* point = new Point3D(posList.at(i), norList.at(i));
                 pPC->InsertPoint(point);
             }
+            //MagicDGP::Parser::ExportPointSet("interPointset.obj", pPC);//
             return pPC;
         }
         else

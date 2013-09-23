@@ -80,7 +80,6 @@ namespace MagicCore
 
     void RenderSystem::Update()
     {
-        //MagicLog << "    RenderSystem::Update" << std::endl;
         mpRoot->renderOneFrame();
     }
 

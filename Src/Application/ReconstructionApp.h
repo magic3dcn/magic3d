@@ -4,6 +4,7 @@
 #include "OpenNI.h"
 #include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
+#include "../Tool/ViewTool.h"
 
 namespace MagicApp
 {
@@ -16,6 +17,8 @@ namespace MagicApp
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);
         virtual bool Exit(void);
+        virtual bool MouseMoved( const OIS::MouseEvent &arg );
+        virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
     public:
         bool OpenSceneRecord();
@@ -28,6 +31,7 @@ namespace MagicApp
         void ChangeFrontRange(int rel);
         void ChangeBackRange(int rel);
         void PointSetRegistration();
+        void SetupPointSetProcessing();
         bool SavePointSet();
         bool ReconstructPointSet();
         bool SaveMesh3D();
@@ -44,6 +48,8 @@ namespace MagicApp
 
     private:
         ReconstructionAppUI mUI;
+        MagicTool::ViewTool mViewTool;
+        bool mUsingViewTool;
         openni::Device mDevice;
         openni::VideoStream mDepthStream;
         bool mIsScannerDisplaying;

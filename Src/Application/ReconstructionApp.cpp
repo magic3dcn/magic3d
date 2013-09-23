@@ -4,10 +4,13 @@
 #include "../Common/ToolKit.h"
 #include "../DGP/Registration.h"
 #include "../DGP/SignedDistanceFunction.h"
+#include "../DGP/Parser.h"
+#include "../DGP/MeshReconstruction.h"
 
 namespace MagicApp
 {
     ReconstructionApp::ReconstructionApp() :
+        mUsingViewTool(false),
         mIsScannerDisplaying(false),
         mpPointSet(NULL),
         mpMesh(NULL), 
@@ -52,6 +55,26 @@ namespace MagicApp
         ReleaseRenderScene();
         mUI.Shutdown();
 
+        return true;
+    }
+
+    bool ReconstructionApp::MouseMoved( const OIS::MouseEvent &arg )
+    {
+        if (mUsingViewTool)
+        {
+            mViewTool.MouseMoved(arg);
+        }
+        
+        return true;
+    }
+
+    bool ReconstructionApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+    {
+        if (mUsingViewTool)
+        {
+            mViewTool.MousePressed(arg);
+        }
+        
         return true;
     }
 
@@ -300,8 +323,6 @@ namespace MagicApp
     void ReconstructionApp::SetTimeEnd()
     {
         mIsSetFrameEnd = true;
-        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
-             " " << mFrontLimit << " " << mBackLimit << std::endl;
     }
 
     void ReconstructionApp::ChangeLeftRange(int rel)
@@ -360,16 +381,21 @@ namespace MagicApp
 
     void ReconstructionApp::PointSetRegistration()
     {
+        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+             " " << mFrontLimit << " " << mBackLimit << std::endl;
         mIsScannerDisplaying = false;
         //
         // Do Registration
         //
         //initialize
         mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicDGP::SignedDistanceFunction sdf(512, 512, 512, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
+        MagicLog << "Create SignedDistanceFunction" << std::endl;
+        MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
+        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
         //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
+        MagicLog << "Get Ref Point Set" << std::endl;
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
@@ -394,10 +420,23 @@ namespace MagicApp
         }
         //
         mUI.StartPostProcess();
+        MagicLog << "ReconstructionApp::PointSetRegistration: End" << std::endl;
+    }
+
+    void ReconstructionApp::SetupPointSetProcessing()
+    {
+        if (mpPointSet != NULL)
+        {
+            mpPointSet->UnifyPosition(2.f);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+            mUsingViewTool = true;
+        }
     }
 
     MagicDGP::Point3DSet* ReconstructionApp::GetPointSetFromRecord(int frameId)
     {
+        MagicLog << "ReconstructionApp::GetPointSetFromRecord " << frameId << std::endl;
         openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
         pPC->seek(mDepthStream, frameId);
         openni::VideoFrameRef depthFrame;
@@ -485,16 +524,32 @@ namespace MagicApp
 
     bool ReconstructionApp::SavePointSet()
     {
+        std::string fileName;
+        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
+
         return true;
     }
 
     bool ReconstructionApp::ReconstructPointSet()
     {
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = NULL;
+        }
+        mpMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
+
         return true;
     }
 
     bool ReconstructionApp::SaveMesh3D()
     {
+        std::string fileName;
+        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
+
         return true;
     }
 

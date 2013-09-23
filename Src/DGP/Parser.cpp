@@ -208,4 +208,28 @@ namespace MagicDGP
         }
         fout.close();
     }
+
+    void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)
+    {
+        ExportMesh3DByOBJ(fileName, pMesh);
+    }
+
+    void Parser::ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh)
+    {
+        MagicLog << "Parser::ExportMesh3DByOBJ" << std::endl;
+        std::ofstream fout(fileName);
+        int vertNum = pMesh->GetVertexNumber();
+        for (int i = 0; i < vertNum; i++)
+        {
+            Vector3 pos = pMesh->GetVertex(i)->GetPosition();
+            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+        }
+        int faceNum = pMesh->GetFaceNumber();
+        for (int i = 0; i < faceNum; i++)
+        {
+            const Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
+            fout << "f " << pEdge->GetVertex()->GetId() + 1 << " " << pEdge->GetNext()->GetVertex()->GetId() + 1 << " " << pEdge->GetPre()->GetVertex()->GetId() + 1 << std::endl; 
+        }
+        fout.close();
+    }
 }

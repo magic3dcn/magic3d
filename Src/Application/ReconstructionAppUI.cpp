@@ -4,6 +4,7 @@
 #include "../Common/AppManager.h"
 #include "../Common/ToolKit.h"
 #include "ReconstructionApp.h"
+#include "../Common/RenderSystem.h"
 
 namespace MagicApp
 {
@@ -62,8 +63,19 @@ namespace MagicApp
     void ReconstructionAppUI::SetupReconstructProgress()
     {
         MagicLog << "ReconstructionUI::SetupReconstructProgress" << std::endl;
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructProgress.layout");
+        //MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
+        //mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructProgress.layout");
+        mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setVisible(true);
     }
 
     void ReconstructionAppUI::SetupReconstructing()
@@ -77,6 +89,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setSize(86, 87);
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->SetupPointSetProcessing();
     }
 
     void ReconstructionAppUI::SetupMeshProcessing()
@@ -95,12 +109,12 @@ namespace MagicApp
 
     void ReconstructionAppUI::SetProgressBarPosition(int pos)
     {
-        mRoot.at(0)->findWidget("Progress_Resgistrate")->castType<MyGUI::ProgressBar>()->setProgressPosition(pos);
+        mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setProgressPosition(pos);
     }
 
     void ReconstructionAppUI::SetProgressBarRange(int range)
     {
-        mRoot.at(0)->findWidget("Progress_Resgistrate")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
+        mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
     }
 
     void ReconstructionAppUI::StartPostProcess()
@@ -150,7 +164,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::PointSetAlign(MyGUI::Widget* pSender)
     {
-        Shutdown();
+        MagicLog << "ReconstructionAppUI::PointSetAlign" << std::endl;
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         pRA->PointSetRegistration();

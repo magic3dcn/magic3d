@@ -304,7 +304,7 @@ namespace MagicDependence
                 polygons.push_back(pureIndex);
             }
             //just for test
-            MagicLog << "Export inter object" << std::endl;
+            /*MagicLog << "Export inter object" << std::endl;
             std::ofstream fout("pc_inter.obj");
             for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
             {
@@ -315,7 +315,7 @@ namespace MagicDependence
             {
                 fout << "f " << polygons.at(pIndex).at(0) + 1 << " " << polygons.at(pIndex).at(1) + 1 << " " << polygons.at(pIndex).at(2) + 1 << std::endl;
             }
-            fout.close();
+            fout.close();*/
         }
     }
 
@@ -424,17 +424,37 @@ namespace MagicDependence
             //sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
             //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
             //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , 1 , NULL , 0 );
-            std::ofstream fout("pc.obj");
+            //std::ofstream fout("pc.obj");
+            //for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
+            //{
+            //    PlyValueVertex< float > vert = vertices.at(pIndex);
+            //    fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
+            //}
+            //for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
+            //{
+            //    fout << "f " << gtPolygons.at(pIndex).at(0) + 1 << " " << gtPolygons.at(pIndex).at(1) + 1 << " " << gtPolygons.at(pIndex).at(2) + 1 << std::endl;
+            //}
+            //fout.close();
+            MagicDGP::Mesh3D* pExportMesh = new MagicDGP::Mesh3D;
             for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
             {
                 PlyValueVertex< float > vert = vertices.at(pIndex);
-                fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
+                MagicDGP::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
+                pExportMesh->InsertVertex(vertPos);
             }
             for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
             {
-                fout << "f " << gtPolygons.at(pIndex).at(0) + 1 << " " << gtPolygons.at(pIndex).at(1) + 1 << " " << gtPolygons.at(pIndex).at(2) + 1 << std::endl;
+                std::vector<MagicDGP::Vertex3D* > vertList;
+                for (int k = 0; k < 3; k++)
+                {
+                    MagicDGP::Vertex3D* pVert = pExportMesh->GetVertex(gtPolygons.at(pIndex).at(k));
+                    vertList.push_back(pVert);
+                }
+                pExportMesh->InsertFace(vertList);
             }
-            fout.close();
+            pExportMesh->UpdateNormal();
+            
+            return pExportMesh;
         }
         else
         {
