@@ -73,13 +73,18 @@ namespace MagicDGP
         MagicLog << "egistration::ICPSamplePoint" << std::endl;
         int pcNum = pPC->GetPointNumber();
         static int startIndex = 0;
-        for (int i = startIndex; i < pcNum; i += 1)
+        int sampleNum = 1000;
+        int deltaSize = pcNum / sampleNum;
+        if (deltaSize < 1)
+        {
+            deltaSize = 1;
+        }
+        for (int i = startIndex; i < pcNum; i += deltaSize)
         {
             sampleIndex.push_back(i);
-        
         }
-        //startIndex++;
-        //startIndex = startIndex % 5;
+        startIndex++;
+        startIndex = startIndex % deltaSize;
     }
 
     void Registration::ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex)
