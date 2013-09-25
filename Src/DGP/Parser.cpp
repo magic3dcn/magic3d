@@ -175,8 +175,8 @@ namespace MagicDGP
     void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
     {
         //ExportPointSetByPSR(fileName, pPC);
-        //ExportPointSetByOBJ(fileName, pPC);
-        ExportPointSetByPLY(fileName, pPC);
+        ExportPointSetByOBJ(fileName, pPC);
+        //ExportPointSetByPLY(fileName, pPC);
     }
 
     void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)
@@ -236,6 +236,26 @@ namespace MagicDGP
     void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)
     {
         ExportMesh3DByOBJ(fileName, pMesh);
+    }
+
+    void Parser::ExportPointSetFromMesh(std::string fileName, const Mesh3D* pMesh)
+    {
+        ExportPointSetFromMeshByOBJ(fileName, pMesh);
+    }
+
+    void Parser::ExportPointSetFromMeshByOBJ(std::string fileName, const Mesh3D* pMesh)
+    {
+        MagicLog << "Parser::ExportPointSetByOBJFromMesh" << std::endl;
+        std::ofstream fout(fileName);
+        int vertNum = pMesh->GetVertexNumber();
+        for (int i = 0; i < vertNum; i++)
+        {
+            Vector3 pos = pMesh->GetVertex(i)->GetPosition();
+            Vector3 nor = pMesh->GetVertex(i)->GetNormal();
+            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+        }
+        fout.close();
     }
 
     void Parser::ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh)

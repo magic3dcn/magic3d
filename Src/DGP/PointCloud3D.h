@@ -44,9 +44,12 @@ namespace MagicDGP
         void InsertPoint(Point3D* pPoint);
         int  GetPointNumber() const;
         void SetColor(Vector3 color);
+        Real GetBBSize() const;
+        void CalculateBBSize();
 
     protected:
         std::vector<Point3D* > mPointSet;
+        Real mBBSize;
     };
 
 }

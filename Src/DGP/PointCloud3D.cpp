@@ -87,7 +87,8 @@ namespace MagicDGP
         return mId;
     }
 
-    Point3DSet::Point3DSet()
+    Point3DSet::Point3DSet() : 
+        mBBSize(-1)
     {
     }
 
@@ -162,6 +163,7 @@ namespace MagicDGP
                 (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
             }
         }
+        mBBSize = size;
     }
 
     void Point3DSet::InsertPoint(Point3D* pPoint)
@@ -181,5 +183,15 @@ namespace MagicDGP
         {
             (*itr)->SetColor(color);
         }
+    }
+
+    Real Point3DSet::GetBBSize() const
+    {
+        return mBBSize;
+    }
+
+    void Point3DSet::CalculateBBSize()
+    {
+
     }
 }

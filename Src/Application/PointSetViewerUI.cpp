@@ -8,6 +8,7 @@
 #include "../Common/RenderSystem.h"
 #include "PointSetViewer.h"
 #include "../DGP/MeshReconstruction.h"//test
+#include "../DGP/Sampling.h"
 
 namespace MagicApp
 {
@@ -49,7 +50,9 @@ namespace MagicApp
             pPSViewer->SetPointSet(pPointSet);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
             //test
-            MagicDGP::Parser::ExportPointSet("test.ply", pPointSet);
+            //MagicDGP::Parser::ExportPointSet("test.ply", pPointSet);
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Sampling::WLOPSampling(pPointSet, 5000);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pNewPS);
         }
         //just for a test in temp
         //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
@@ -70,5 +73,7 @@ namespace MagicApp
         pMesh->UpdateNormal();
         pMesh->UnifyPosition(2.0);
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "MyCookTorrance", pMesh);
+        //test
+        MagicDGP::Parser::ExportPointSetFromMesh("huahua_point.obj", pMesh);
     }
 }

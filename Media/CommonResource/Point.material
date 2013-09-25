@@ -4,7 +4,7 @@ material SimplePoint
     {
         pass
         {
-            point_size 1
+            point_size 2
             diffuse 0.86 0.86 0.86
         }
     }
