@@ -150,6 +150,7 @@
     <ClInclude Include="..\Src\DGP\PointCloud3D.h" />
     <ClInclude Include="..\Src\DGP\PrimitiveDetection.h" />
     <ClInclude Include="..\Src\DGP\Registration.h" />
+    <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="..\Src\Tool\ViewTool.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="..\Src\DGP\PointCloud3D.cpp" />
     <ClCompile Include="..\Src\DGP\PrimitiveDetection.cpp" />
     <ClCompile Include="..\Src\DGP\Registration.cpp" />
+    <ClCompile Include="..\Src\DGP\Sampling.cpp" />
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="..\Src\Tool\ViewTool.cpp" />

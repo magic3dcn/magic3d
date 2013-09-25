@@ -48,6 +48,8 @@ namespace MagicApp
         {
             pPSViewer->SetPointSet(pPointSet);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
+            //test
+            MagicDGP::Parser::ExportPointSet("test.ply", pPointSet);
         }
         //just for a test in temp
         //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);

@@ -249,6 +249,9 @@
     <ClInclude Include="..\Src\Application\ReconstructionAppUI.h">
       <Filter>Application\ReconstructionApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\Sampling.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -391,6 +394,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp">
       <Filter>Application\ReconstructionApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Sampling.cpp">
+      <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

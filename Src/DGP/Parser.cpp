@@ -175,7 +175,8 @@ namespace MagicDGP
     void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
     {
         //ExportPointSetByPSR(fileName, pPC);
-        ExportPointSetByOBJ(fileName, pPC);
+        //ExportPointSetByOBJ(fileName, pPC);
+        ExportPointSetByPLY(fileName, pPC);
     }
 
     void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)
@@ -205,6 +206,29 @@ namespace MagicDGP
             Vector3 nor = pPoint->GetNormal();
             fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
             fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+        }
+        fout.close();
+    }
+
+    void Parser::ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC)
+    {
+        MagicLog << "Parser::ExportPointSetByPLY" << std::endl;
+        std::ofstream fout(fileName);
+        int pcNum = pPC->GetPointNumber();
+        fout << "ply" << std::endl;
+        fout << "format ascii 1.0 " << std::endl;
+        fout << "comment just for a test" << std::endl;
+        fout << "element vertex " << pcNum << std::endl;
+        fout << "property float x" << std::endl;
+        fout << "property float y" << std::endl;
+        fout << "property float z" << std::endl;
+        fout << "element face " << 0 << std::endl;
+        fout << "property list uchar int vertex_indices" << std::endl;
+        fout << "end_header" << std::endl;
+        for (int i = 0; i < pcNum; i++)
+        {
+            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            fout << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
         }
         fout.close();
     }
