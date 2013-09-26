@@ -59,7 +59,7 @@ namespace MagicDGP
     {
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         MagicLog << "Begin Sampling::WLOPIteration" << std::endl;
-        int iterNum = 3;
+        int iterNum = 5;
         int iNum = samplePosList.size();
         int jNum = pPS->GetPointNumber();
         Vector3 bboxMin, bboxMax;
@@ -67,7 +67,7 @@ namespace MagicDGP
         Real smallValue = 1.0e-10;
         Real mu = 0.45;
         Real thetaScale = -1000;
-        Real supportSize = 0.05f;
+        Real supportSize = 0.1f;
         Vector3 deltaBBox = bboxMax - bboxMin;
         int resolutionX = int(deltaBBox[0] / supportSize) + 1;
         int resolutionY = int(deltaBBox[1] / supportSize) + 1;
@@ -204,7 +204,7 @@ namespace MagicDGP
             searchSet[dim * i + 1] = pos[1];
             searchSet[dim * i + 2] = pos[2];
         }
-        int nn = 9;
+        int nn = 20;
         int* pIndex = new int[searchNum * nn];
         float* pDist = new float[searchNum * nn];
         FLANNParameters searchPara;
@@ -226,7 +226,7 @@ namespace MagicDGP
         for (int i = 0; i < samplePosList.size(); i++)
         {
             Vector3 pos = samplePosList.at(i);
-            Vector3 deltaPos[9]; //nn
+            Vector3 deltaPos[20]; //nn
             int baseIndex = i * nn;
             for (int j = 0; j < nn; j++)
             {
@@ -240,7 +240,7 @@ namespace MagicDGP
                     Real v = 0;
                     for (int kk = 0; kk < nn; kk++)
                     {
-                        v += deltaPos[xx][kk] * deltaPos[yy][kk];
+                        v += deltaPos[kk][xx] * deltaPos[kk][yy];
                     }
                     mat(xx, yy) = v;
                 }
@@ -248,7 +248,11 @@ namespace MagicDGP
             es.compute(mat);
             Eigen::Vector3d norvec = es.eigenvectors().col(0);
             Vector3 nor(norvec(0), norvec(1), norvec(2));
-            nor.Normalise();
+            Real norLen = nor.Normalise();
+            if (norLen < Epsilon)
+            {
+                MagicLog << "Error: small normal length" << std::endl;
+            }
             if (nor[2] < 0)
             {
                 nor *= -1;

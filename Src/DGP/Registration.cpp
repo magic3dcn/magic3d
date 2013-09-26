@@ -33,7 +33,7 @@ namespace MagicDGP
 
     void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes)
     {
-        int iterNum = 15;
+        int iterNum = 10;
         *pTransRes = *pTransInit;
         //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
         //MagicCore::RenderSystem::GetSingleton()->Update();
@@ -73,7 +73,7 @@ namespace MagicDGP
         MagicLog << "egistration::ICPSamplePoint" << std::endl;
         int pcNum = pPC->GetPointNumber();
         static int startIndex = 0;
-        int sampleNum = 1000;
+        int sampleNum = 500;
         int deltaSize = pcNum / sampleNum;
         if (deltaSize < 1)
         {
