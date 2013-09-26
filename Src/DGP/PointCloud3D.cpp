@@ -87,8 +87,7 @@ namespace MagicDGP
         return mId;
     }
 
-    Point3DSet::Point3DSet() : 
-        mBBSize(-1)
+    Point3DSet::Point3DSet()
     {
     }
 
@@ -163,7 +162,8 @@ namespace MagicDGP
                 (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
             }
         }
-        mBBSize = size;
+        mBBoxMin = Vector3(-size, -size, -size);
+        mBBoxMax = Vector3(size, size, size);
     }
 
     void Point3DSet::InsertPoint(Point3D* pPoint)
@@ -185,13 +185,13 @@ namespace MagicDGP
         }
     }
 
-    Real Point3DSet::GetBBSize() const
+    void Point3DSet::CalculateBBox()
     {
-        return mBBSize;
     }
 
-    void Point3DSet::CalculateBBSize()
+    void Point3DSet::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const
     {
-
+        bboxMin = mBBoxMin;
+        bboxMax = mBBoxMax;
     }
 }

@@ -51,7 +51,7 @@ namespace MagicApp
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
             //test
             //MagicDGP::Parser::ExportPointSet("test.ply", pPointSet);
-            MagicDGP::Point3DSet* pNewPS = MagicDGP::Sampling::WLOPSampling(pPointSet, 5000);
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Sampling::WLOPSampling(pPointSet, 10000);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pNewPS);
         }
         //just for a test in temp
