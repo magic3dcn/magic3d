@@ -27,6 +27,7 @@ namespace MagicDGP
         MagicLog << "Finish WLOP Iteration" << std::endl;
         std::vector<Vector3> norList;
         LocalPCANormalEstimate(samplePosList, norList);
+        NormalConsistent(pPS, samplePosList, norList);
         MagicLog << "Finish Normal Estimate" << std::endl;
         Point3DSet* pNewPS = new Point3DSet;
         for (int i = 0; i < sampleNum; i++)
@@ -53,21 +54,22 @@ namespace MagicDGP
         {
             samplePosList.push_back(pPS->GetPoint(i)->GetPosition());
         }
+
     }
 
     void Sampling::WLOPIteration(const Point3DSet* pPS, std::vector<Vector3> & samplePosList)
     {
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         MagicLog << "Begin Sampling::WLOPIteration" << std::endl;
-        int iterNum = 5;
+        int iterNum = 10;
         int iNum = samplePosList.size();
         int jNum = pPS->GetPointNumber();
         Vector3 bboxMin, bboxMax;
         pPS->GetBBox(bboxMin, bboxMax);
         Real smallValue = 1.0e-10;
         Real mu = 0.45;
-        Real thetaScale = -1000;
-        Real supportSize = 0.1f;
+        Real thetaScale = 1000;
+        Real supportSize = 0.03f;
         Vector3 deltaBBox = bboxMax - bboxMin;
         int resolutionX = int(deltaBBox[0] / supportSize) + 1;
         int resolutionY = int(deltaBBox[1] / supportSize) + 1;
@@ -98,8 +100,8 @@ namespace MagicDGP
             std::vector<Vector3> samplePosBak = samplePosList;
             for (int i = 0; i < iNum; i++)
             {
-                std::vector<Real> alpha(jNum, -1.f);
-                std::vector<Real> beta(iNum, 1.f);
+                //std::vector<Real> alpha(jNum, -1.f);
+                //std::vector<Real> beta(iNum, 1.f);
                 Vector3 samplePosI = samplePosBak.at(i); 
                 Vector3 sampleDeltaPos = samplePosI - bboxMin;
                 int xIndex = sampleDeltaPos[0] / supportSize;
@@ -115,25 +117,39 @@ namespace MagicDGP
                     {
                         for (int zz = -1; zz <= 1; zz++)
                         {
+                            /*if (xx != 0 || yy != 0 || zz != 0)
+                            {
+                                continue;
+                            }*/
+
                             int blockIndex = (xIndex + xx) * resolutionYZ + (yIndex + yy) * resolutionZ + zIndex + zz;
 
                             int blockSize = pcIndexMap[blockIndex].size();
                             for (int mapIndex = 0; mapIndex < blockSize; mapIndex++)
                             {
                                 int pointIndex = pcIndexMap[blockIndex].at(mapIndex);
-                                if (alpha.at(pointIndex) < 0)
+                                //if (alpha.at(pointIndex) < 0)
+                                //{
+                                //    Vector3 deltaPos = samplePosI - pPS->GetPoint(pointIndex)->GetPosition();
+                                //    Real deltaLen = deltaPos.Length();
+                                //    if (deltaLen < smallValue)
+                                //    {
+                                //        deltaLen = smallValue;
+                                //    }
+                                //    alpha.at(pointIndex) = exp(thetaScale * deltaLen * deltaLen) / deltaLen;
+                                //    //alpha.at(pointIndex) = 1.f;
+                                //}
+                                Vector3 deltaPos = samplePosI - pPS->GetPoint(pointIndex)->GetPosition();
+                                Real deltaLen = deltaPos.Length();
+                                if (deltaLen < smallValue)
                                 {
-                                    Vector3 deltaPos = samplePosI - pPS->GetPoint(pointIndex)->GetPosition();
-                                    Real deltaLen = deltaPos.Length();
-                                    if (deltaLen < smallValue)
-                                    {
-                                        deltaLen = smallValue;
-                                    }
-                                    alpha.at(pointIndex) = exp(thetaScale * deltaLen * deltaLen) / deltaLen;
-                                    //alpha.at(pointIndex) = 1.f;
+                                    deltaLen = smallValue;
                                 }
-                                posRes1 += pPS->GetPoint(pointIndex)->GetPosition() * alpha.at(pointIndex);
-                                alphaSum += alpha.at(pointIndex);
+                                //Real alpha = exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
+                                Real rTemp = thetaScale * deltaLen * deltaLen;
+                                Real alpha = 1 / deltaLen / (1 + rTemp + rTemp * rTemp);
+                                posRes1 += pPS->GetPoint(pointIndex)->GetPosition() * alpha;
+                                alphaSum += alpha;
                             }
 
                             blockSize = sampleIndexMap[blockIndex].size();
@@ -144,19 +160,28 @@ namespace MagicDGP
                                 {
                                     continue;
                                 }
-                                if (beta.at(pointIndex) > 0)
+                                //if (beta.at(pointIndex) > 0)
+                                //{
+                                //    Vector3 deltaPos = samplePosI - samplePosBak.at(pointIndex);
+                                //    Real deltaLen = deltaPos.Length();
+                                //    if (deltaLen < smallValue)
+                                //    {
+                                //        deltaLen = smallValue;
+                                //    }
+                                //    beta.at(pointIndex) = -exp(thetaScale * deltaLen * deltaLen) / deltaLen;
+                                //    //beta.at(pointIndex) = -1.f;
+                                //}
+                                Vector3 deltaPos = samplePosI - samplePosBak.at(pointIndex);
+                                Real deltaLen = deltaPos.Length();
+                                if (deltaLen < smallValue)
                                 {
-                                    Vector3 deltaPos = samplePosI - samplePosBak.at(pointIndex);
-                                    Real deltaLen = deltaPos.Length();
-                                    if (deltaLen < smallValue)
-                                    {
-                                        deltaLen = smallValue;
-                                    }
-                                    beta.at(pointIndex) = -exp(thetaScale * deltaLen * deltaLen) / deltaLen;
-                                    //beta.at(pointIndex) = -1.f;
+                                    deltaLen = smallValue;
                                 }
-                                posRes2 += (samplePosI - samplePosBak.at(pointIndex)) * beta.at(pointIndex);
-                                betaSum += beta.at(pointIndex);
+                                //Real beta = -exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
+                                Real rTemp = thetaScale * deltaLen * deltaLen;
+                                Real beta = -1 / deltaLen / (1 + rTemp + rTemp * rTemp);
+                                posRes2 += (samplePosI - samplePosBak.at(pointIndex)) * beta;
+                                betaSum += beta;
                             }
                         }
                     }
@@ -223,7 +248,7 @@ namespace MagicDGP
         MagicLog << "Sampling::LocalPCANormalEstimate, prepare time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - startTime << std::endl;
 
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
-        for (int i = 0; i < samplePosList.size(); i++)
+        for (int i = 0; i < pointNum; i++)
         {
             Vector3 pos = samplePosList.at(i);
             Vector3 deltaPos[20]; //nn
@@ -253,12 +278,37 @@ namespace MagicDGP
             {
                 MagicLog << "Error: small normal length" << std::endl;
             }
-            if (nor[2] < 0)
-            {
-                nor *= -1;
-            }
             norList.push_back(nor);
         }
+        //std::set<int> spreadSet;
+        //spreadSet.insert(0);
+        //std::vector<int> visitFlag(pointNum, 0);
+        //visitFlag.at(0) = 1;
+        //while (spreadSet.size() > 0)
+        //{
+        //    std::set<int> spreadSetNext;
+        //    for (std::set<int>::iterator itr = spreadSet.begin(); itr != spreadSet.end(); itr++)
+        //    {
+        //        Vector3 nor = norList.at(*itr);
+        //        int baseIndex = *itr * nn;
+        //        //for (int i = 0; i < nn; i++)
+        //        for (int i = 0; i < 9; i++)
+        //        {
+        //            int index = pIndex[baseIndex + i];
+        //            if (visitFlag.at(index) == 1)
+        //            {
+        //                continue;
+        //            }
+        //            if (nor * norList.at(index) < 0)
+        //            {
+        //                norList.at(index) *= -1;
+        //            }
+        //            spreadSetNext.insert(index);
+        //            visitFlag.at(index) = 1;
+        //        }
+        //    }// end for spreadSet
+        //    spreadSet = spreadSetNext;
+        //}
         if (pIndex != NULL)
         {
             delete []pIndex;
@@ -270,5 +320,80 @@ namespace MagicDGP
             pDist = NULL;
         }
         MagicLog << "Sampling::LocalPCANormalEstimate, total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - startTime << std::endl;
+    }
+
+    void Sampling::NormalConsistent(const Point3DSet* pPS, std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList)
+    {
+        float startTime = MagicCore::ToolKit::GetSingleton()->GetTime();
+
+        int dim = 3;
+        int refNum = pPS->GetPointNumber();
+        float* dataSet = new float[refNum * dim];
+        for (int i = 0; i < refNum; i++)
+        {
+            Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            dataSet[dim * i + 0] = pos[0];
+            dataSet[dim * i + 1] = pos[1];
+            dataSet[dim * i + 2] = pos[2];
+        }
+        int searchNum = samplePosList.size();
+        float* searchSet = new float[searchNum * dim];
+        for (int i = 0; i < searchNum; i++)
+        {
+            Vector3 pos = samplePosList.at(i);
+            searchSet[dim * i + 0] = pos[0];
+            searchSet[dim * i + 1] = pos[1];
+            searchSet[dim * i + 2] = pos[2];
+        }
+        int nn = 9;
+        int* pIndex = new int[searchNum * nn];
+        float* pDist = new float[searchNum * nn];
+        FLANNParameters searchPara;
+        searchPara = DEFAULT_FLANN_PARAMETERS;
+        searchPara.algorithm = FLANN_INDEX_KDTREE;
+        searchPara.trees = 8;
+        searchPara.log_level = FLANN_LOG_INFO;
+        searchPara.checks = 64;
+        float speedup;
+        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+        flann_free_index(indexId, &searchPara);
+        delete []dataSet;
+        delete []searchSet;
+
+        for (int i = 0; i < searchNum; i++)
+        {
+            Vector3 norRef(0, 0, 0);
+            int baseIndex = i * nn;
+            float norError = 0;
+            for (int j = 0; j < nn; j++)
+            {
+                norRef += pPS->GetPoint(pIndex[baseIndex + j])->GetNormal();
+                norError += fabs(pPS->GetPoint(pIndex[baseIndex + j])->GetNormal() * norList.at(i));
+            }
+            norRef.Normalise();
+            norError /= nn;
+            //MagicLog << "NorError: " << 1.f - norError << std::endl;
+            if (norError < 0.707)
+            {
+                samplePosList.at(i) = Vector3(0, 0, 0);
+            }
+            if (norList.at(i) * norRef < 0)
+            {
+                norList.at(i) *= -1;
+            }
+        }
+
+        if (pIndex != NULL)
+        {
+            delete []pIndex;
+            pIndex = NULL;
+        }
+        if (pDist != NULL)
+        {
+            delete []pDist;
+            pDist = NULL;
+        }
+        MagicLog << "Sampling::NormalConsistent, total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - startTime << std::endl;
     }
 }
