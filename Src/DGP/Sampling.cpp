@@ -100,8 +100,6 @@ namespace MagicDGP
             std::vector<Vector3> samplePosBak = samplePosList;
             for (int i = 0; i < iNum; i++)
             {
-                //std::vector<Real> alpha(jNum, -1.f);
-                //std::vector<Real> beta(iNum, 1.f);
                 Vector3 samplePosI = samplePosBak.at(i); 
                 Vector3 sampleDeltaPos = samplePosI - bboxMin;
                 int xIndex = sampleDeltaPos[0] / supportSize;
@@ -117,29 +115,14 @@ namespace MagicDGP
                     {
                         for (int zz = -1; zz <= 1; zz++)
                         {
-                            /*if (xx != 0 || yy != 0 || zz != 0)
-                            {
-                                continue;
-                            }*/
-
                             int blockIndex = (xIndex + xx) * resolutionYZ + (yIndex + yy) * resolutionZ + zIndex + zz;
 
                             int blockSize = pcIndexMap[blockIndex].size();
                             for (int mapIndex = 0; mapIndex < blockSize; mapIndex++)
                             {
                                 int pointIndex = pcIndexMap[blockIndex].at(mapIndex);
-                                //if (alpha.at(pointIndex) < 0)
-                                //{
-                                //    Vector3 deltaPos = samplePosI - pPS->GetPoint(pointIndex)->GetPosition();
-                                //    Real deltaLen = deltaPos.Length();
-                                //    if (deltaLen < smallValue)
-                                //    {
-                                //        deltaLen = smallValue;
-                                //    }
-                                //    alpha.at(pointIndex) = exp(thetaScale * deltaLen * deltaLen) / deltaLen;
-                                //    //alpha.at(pointIndex) = 1.f;
-                                //}
-                                Vector3 deltaPos = samplePosI - pPS->GetPoint(pointIndex)->GetPosition();
+                                Vector3 psPos = pPS->GetPoint(pointIndex)->GetPosition();
+                                Vector3 deltaPos = samplePosI - psPos;
                                 Real deltaLen = deltaPos.Length();
                                 if (deltaLen < smallValue)
                                 {
@@ -148,7 +131,7 @@ namespace MagicDGP
                                 //Real alpha = exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
                                 Real rTemp = thetaScale * deltaLen * deltaLen;
                                 Real alpha = 1 / deltaLen / (1 + rTemp + rTemp * rTemp);
-                                posRes1 += pPS->GetPoint(pointIndex)->GetPosition() * alpha;
+                                posRes1 += psPos * alpha;
                                 alphaSum += alpha;
                             }
 
@@ -160,18 +143,8 @@ namespace MagicDGP
                                 {
                                     continue;
                                 }
-                                //if (beta.at(pointIndex) > 0)
-                                //{
-                                //    Vector3 deltaPos = samplePosI - samplePosBak.at(pointIndex);
-                                //    Real deltaLen = deltaPos.Length();
-                                //    if (deltaLen < smallValue)
-                                //    {
-                                //        deltaLen = smallValue;
-                                //    }
-                                //    beta.at(pointIndex) = -exp(thetaScale * deltaLen * deltaLen) / deltaLen;
-                                //    //beta.at(pointIndex) = -1.f;
-                                //}
-                                Vector3 deltaPos = samplePosI - samplePosBak.at(pointIndex);
+                                Vector3 psPos = samplePosBak.at(pointIndex);
+                                Vector3 deltaPos = samplePosI - psPos;
                                 Real deltaLen = deltaPos.Length();
                                 if (deltaLen < smallValue)
                                 {
@@ -180,7 +153,7 @@ namespace MagicDGP
                                 //Real beta = -exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
                                 Real rTemp = thetaScale * deltaLen * deltaLen;
                                 Real beta = -1 / deltaLen / (1 + rTemp + rTemp * rTemp);
-                                posRes2 += (samplePosI - samplePosBak.at(pointIndex)) * beta;
+                                posRes2 += (samplePosI - psPos) * beta;
                                 betaSum += beta;
                             }
                         }

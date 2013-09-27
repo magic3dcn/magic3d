@@ -27,8 +27,21 @@ namespace MagicApp
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Pointviewer", "FileSystem", "Pointviewer");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointViewerLayout.layout");
         mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenPointSet);
-        mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::BackToHomepage);
-        mRoot.at(0)->findWidget("But_OpenMesh3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenMesh3D);
+        mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::FilterPointSet);
+        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::SavePointSet);
+        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::ReconstrutctPointSet);
+        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(1)->findWidget("But_OpenMesh")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenMesh3D);
+        mRoot.at(1)->findWidget("But_OpenMesh")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::SaveMesh3D);
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::FilterMesh3D);
+        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(1)->findWidget("But_BackToHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::BackToHomepage);
+        mRoot.at(1)->findWidget("But_BackToHome")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
     void PointSetViewerUI::Shutdown()
@@ -40,40 +53,65 @@ namespace MagicApp
 
     void PointSetViewerUI::OpenPointSet(MyGUI::Widget* pSender)
     {
-        std::string fileName;
+        //std::string fileName;
+        //MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        //MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
+        //pPointSet->UnifyPosition(2.0);
+        //PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        //if (pPSViewer != NULL)
+        //{
+        //    pPSViewer->SetPointSet(pPointSet);
+        //    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
+        //}
+        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(true);
+        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(true);
+        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(false);
+    }
+
+    void PointSetViewerUI::SavePointSet(MyGUI::Widget* pSender)
+    {
+
+    }
+
+    void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
+    {
+        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(true);
+    }
+
+    void PointSetViewerUI::ReconstrutctPointSet(MyGUI::Widget* pSender)
+    {
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+    }
+
+    void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
+    {
+        /*std::string fileName;
         MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
-        pPointSet->UnifyPosition(2.0);
-        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
-        if (pPSViewer != NULL)
-        {
-            pPSViewer->SetPointSet(pPointSet);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
-            //test
-            //MagicDGP::Parser::ExportPointSet("test.ply", pPointSet);
-            MagicDGP::Point3DSet* pNewPS = MagicDGP::Sampling::WLOPSampling(pPointSet, 10000);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pNewPS);
-        }
-        //just for a test in temp
-        //MagicDGP::Parser::ExportPointSet("pc.psr", pPointSet);
-        //MagicDGP::MeshReconstruction meshRecon;
-        //meshRecon.ScreenPoissonReconstruction(pPointSet);
+        MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
+        pMesh->UpdateNormal();
+        pMesh->UnifyPosition(2.0);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "MyCookTorrance", pMesh);*/
+        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
+    }
+
+    void PointSetViewerUI::SaveMesh3D(MyGUI::Widget* pSender)
+    {
+
+    }
+
+    void PointSetViewerUI::FilterMesh3D(MyGUI::Widget* pSender)
+    {
+        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
     }
 
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)
     {
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
-    }
-
-    void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
-    {
-        std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
-        pMesh->UpdateNormal();
-        pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "MyCookTorrance", pMesh);
-        //test
-        MagicDGP::Parser::ExportPointSetFromMesh("huahua_point.obj", pMesh);
     }
 }
