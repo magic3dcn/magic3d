@@ -28,6 +28,8 @@ namespace MagicDGP
         std::vector<Vector3> norList;
         LocalPCANormalEstimate(samplePosList, norList);
         NormalConsistent(pPS, samplePosList, norList);
+        sampleNum = samplePosList.size();
+        NormalSmooth(samplePosList, norList);
         MagicLog << "Finish Normal Estimate" << std::endl;
         Point3DSet* pNewPS = new Point3DSet;
         for (int i = 0; i < sampleNum; i++)
@@ -334,6 +336,7 @@ namespace MagicDGP
         delete []dataSet;
         delete []searchSet;
 
+        std::vector<Vector3> newPosList, newNorList;
         for (int i = 0; i < searchNum; i++)
         {
             Vector3 norRef(0, 0, 0);
@@ -346,16 +349,18 @@ namespace MagicDGP
             }
             norRef.Normalise();
             norError /= nn;
-            //MagicLog << "NorError: " << 1.f - norError << std::endl;
-            if (norError < 0.707)
+            if (norError > 0.707)
             {
-                samplePosList.at(i) = Vector3(0, 0, 0);
-            }
-            if (norList.at(i) * norRef < 0)
-            {
-                norList.at(i) *= -1;
+                newPosList.push_back(samplePosList.at(i));
+                if (norList.at(i) * norRef < 0)
+                {
+                    norList.at(i) *= -1;
+                }
+                newNorList.push_back(norList.at(i));
             }
         }
+        samplePosList = newPosList;
+        norList = newNorList;
 
         if (pIndex != NULL)
         {
@@ -368,5 +373,87 @@ namespace MagicDGP
             pDist = NULL;
         }
         MagicLog << "Sampling::NormalConsistent, total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - startTime << std::endl;
+    }
+
+    void Sampling::NormalSmooth(std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList)
+    {
+        float startTime = MagicCore::ToolKit::GetSingleton()->GetTime();
+
+        int pointNum = samplePosList.size();
+        int dim = 3;
+        int refNum = pointNum;
+        float* dataSet = new float[refNum * dim];
+        int searchNum = pointNum;
+        float* searchSet = new float[searchNum * dim];
+        for (int i = 0; i < pointNum; i++)
+        {
+            MagicDGP::Vector3 pos = samplePosList.at(i);
+            dataSet[dim * i + 0] = pos[0];
+            dataSet[dim * i + 1] = pos[1];
+            dataSet[dim * i + 2] = pos[2];
+            searchSet[dim * i + 0] = pos[0];
+            searchSet[dim * i + 1] = pos[1];
+            searchSet[dim * i + 2] = pos[2];
+        }
+        int nn = pointNum / 100;
+        int* pIndex = new int[searchNum * nn];
+        float* pDist = new float[searchNum * nn];
+        FLANNParameters searchPara;
+        searchPara = DEFAULT_FLANN_PARAMETERS;
+        searchPara.algorithm = FLANN_INDEX_KDTREE;
+        searchPara.trees = 8;
+        searchPara.log_level = FLANN_LOG_INFO;
+        searchPara.checks = 64;
+        float speedup;
+        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+        flann_free_index(indexId, &searchPara);
+        delete []dataSet;
+        delete []searchSet;
+
+        int smoothNum = nn / 2;
+        for (int k = 0; k < smoothNum; k++)
+        {
+            std::vector<Vector3> newNorList(pointNum);
+            for (int i = 0; i < pointNum; i++)
+            {
+                int avgFlag = 0;
+                Vector3 nor = norList.at(i);
+                int baseIndex = nn * i;
+                for (int j = 0; j < nn; j++)
+                {
+                    Vector3 norNeighbor = norList.at(pIndex[baseIndex + j]);
+                    if (norNeighbor * nor > 0)
+                    {
+                        avgFlag++;
+                    }
+                    else
+                    {
+                        avgFlag--;
+                    }
+                }
+                if (avgFlag < 0)
+                {
+                    newNorList.at(i) = norList.at(i) * (-1.f);
+                }
+                else
+                {
+                    newNorList.at(i) = norList.at(i);
+                }
+            }
+            norList = newNorList;
+        }
+
+        if (pIndex != NULL)
+        {
+            delete []pIndex;
+            pIndex = NULL;
+        }
+        if (pDist != NULL)
+        {
+            delete []pDist;
+            pDist = NULL;
+        }
+        MagicLog << "Sampling::NormalSmooth: " << MagicCore::ToolKit::GetSingleton()->GetTime() - startTime << std::endl;
     }
 }

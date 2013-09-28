@@ -14,7 +14,7 @@ namespace MagicDGP
         static void WLOPIteration(const Point3DSet* pPS, std::vector<Vector3> & samplePosList);
         static void LocalPCANormalEstimate(const std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList);
         static void NormalConsistent(const Point3DSet* pPS, std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList);
-
+        static void NormalSmooth(std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList);
     };
 
 
