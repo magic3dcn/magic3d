@@ -36,7 +36,7 @@ namespace MagicDependence
         std::vector< std::vector< int > > polygons;
         char* argv1[] = {"--in", "pc.psr", "--out", "pc.ply", "--depth", "10", "--density"};
         PoissonRecon(7, argv1, pPC, vertices, polygons);
-        char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "7", "--aRatio", "0"};
+        char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
         return SurfaceTrimmer(8, argv2, vertices, polygons);
     }
 

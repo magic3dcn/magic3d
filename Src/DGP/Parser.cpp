@@ -235,7 +235,8 @@ namespace MagicDGP
 
     void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)
     {
-        ExportMesh3DByOBJ(fileName, pMesh);
+        //ExportMesh3DByOBJ(fileName, pMesh);
+        ExportPointSetFromMeshByOBJ(fileName, pMesh);
     }
 
     void Parser::ExportPointSetFromMesh(std::string fileName, const Mesh3D* pMesh)

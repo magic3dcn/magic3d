@@ -45,7 +45,7 @@ namespace MagicCore
         file.lStructSize = sizeof(file);
         file.lpstrFile = szFileName;
         file.nMaxFile = MAX_PATH;
-        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0TXT Files(*.txt)\0*.txt\0All Files\0*.*\0\0";
+        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0ONI Files(*.oni)\0*.oni\0TXT Files(*.txt)\0*.txt\0All Files\0*.*\0\0";
         file.nFilterIndex = 1;//默认选择第一个
         //file.Flags = OFN_EXPLORER|OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST|OFN_ALLOWMULTISELECT|OFN_NOCHANGEDIR;
         file.Flags = OFN_NOCHANGEDIR;
@@ -68,7 +68,7 @@ namespace MagicCore
         file.lStructSize = sizeof(file);
         file.lpstrFile = szFileName;
         file.nMaxFile = MAX_PATH;
-        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0All Files\0*.*\0\0";
+        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0ONI Files(*.oni)\0*.oni\0All Files\0*.*\0\0";
         file.nFilterIndex = 1;//默认选择第一个
         // 弹出打开文件的对话框
         if(::GetSaveFileName(&file))

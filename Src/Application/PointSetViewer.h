@@ -2,6 +2,7 @@
 #include "../Common/AppBase.h"
 #include "../Tool/ViewTool.h"
 #include "../DGP/PointCloud3D.h"
+#include "../DGP/Mesh3D.h"
 #include "PointSetViewerUI.h"
 
 namespace MagicApp
@@ -18,7 +19,13 @@ namespace MagicApp
         virtual bool MouseMoved( const OIS::MouseEvent &arg );
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
-        void SetPointSet(MagicDGP::Point3DSet* pPointSet);
+        bool ImportPointSet();
+        void ExportPointSet();
+        bool FilterPointSet();
+        bool ReconstructPointSet();
+        bool ImportMesh3D();
+        void ExportMesh3D();
+        bool FilterMesh3D();
 
     private:
         void SetupScene(void);
@@ -28,5 +35,6 @@ namespace MagicApp
         PointSetViewerUI mUI;
         MagicTool::ViewTool mViewTool;
         MagicDGP::Point3DSet* mpPointSet;
+        MagicDGP::Mesh3D* mpMesh;
     };
 }

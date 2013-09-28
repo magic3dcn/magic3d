@@ -6,11 +6,15 @@
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../Common/RenderSystem.h"
+#include "../DGP/Sampling.h"
+#include "../DGP/MeshReconstruction.h"
+#include "../DGP/Filter.h"
 
 namespace MagicApp
 {
     PointSetViewer::PointSetViewer() :
-        mpPointSet(NULL)
+        mpPointSet(NULL),
+        mpMesh(NULL)
     {
     }
 
@@ -20,6 +24,11 @@ namespace MagicApp
         {
             delete mpPointSet;
             mpPointSet = NULL;
+        }
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = NULL;
         }
     }
 
@@ -60,6 +69,7 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderOBJ");
     }
 
     bool PointSetViewer::MouseMoved( const OIS::MouseEvent &arg )
@@ -74,12 +84,148 @@ namespace MagicApp
         return true;
     }
 
-    void PointSetViewer::SetPointSet(MagicDGP::Point3DSet* pPointSet)
+    bool PointSetViewer::ImportPointSet()
+    {
+        std::string fileName;
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        {
+            MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
+            if (pPointSet != NULL)
+            {
+                pPointSet->UnifyPosition(2.0);
+                if (mpPointSet != NULL)
+                {
+                    delete mpPointSet;
+                }
+                mpPointSet = pPointSet;
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void PointSetViewer::ExportPointSet()
     {
         if (mpPointSet != NULL)
         {
-            delete mpPointSet;
+            std::string fileName;
+            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+            {
+                MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
+            }
         }
-        mpPointSet = pPointSet;
+    }
+
+    bool PointSetViewer::ImportMesh3D()
+    {
+        std::string fileName;
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        {
+            MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
+            if (pMesh != NULL)
+            {
+                pMesh->UpdateNormal();
+                pMesh->UnifyPosition(2.0);
+                if (mpMesh != NULL)
+                {
+                    delete mpMesh;
+                }
+                mpMesh = pMesh;
+                MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void PointSetViewer::ExportMesh3D()
+    {
+        if (mpMesh != NULL)
+        {
+            std::string fileName;
+            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+            {
+                MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
+            }
+        }
+    }
+
+    bool PointSetViewer::FilterPointSet()
+    {
+        int pointNum = mpPointSet->GetPointNumber();
+        int sampleNum = pointNum;
+        if (pointNum > 200000)
+        {
+            sampleNum = pointNum / 20;
+        }
+        else if (pointNum > 10000)
+        {
+            sampleNum = 10000;
+        }
+        MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
+        if (pNewPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = pNewPointSet;
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool PointSetViewer::ReconstructPointSet()
+    {
+        MagicDGP::Mesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
+        if (pNewMesh != NULL)
+        {
+            if (mpMesh != NULL)
+            {
+                delete mpMesh;
+            }
+            mpMesh = pNewMesh;
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool PointSetViewer::FilterMesh3D()
+    {
+        MagicDGP::Mesh3D* pNewMesh = MagicDGP::Filter::RemoveSmallMeshPatch(mpMesh);
+        if (pNewMesh != NULL)
+        {
+            if (mpMesh != NULL)
+            {
+                delete mpMesh;
+            }
+            mpMesh = pNewMesh;
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

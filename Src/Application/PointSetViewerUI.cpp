@@ -53,61 +53,88 @@ namespace MagicApp
 
     void PointSetViewerUI::OpenPointSet(MyGUI::Widget* pSender)
     {
-        //std::string fileName;
-        //MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        //MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
-        //pPointSet->UnifyPosition(2.0);
-        //PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
-        //if (pPSViewer != NULL)
-        //{
-        //    pPSViewer->SetPointSet(pPointSet);
-        //    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("testPointSet", "SimplePoint", pPointSet);
-        //}
-        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(true);
-        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(true);
-        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(false);
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            if (pPSViewer->ImportPointSet())
+            {
+                mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(false);
+            }
+        }
     }
 
     void PointSetViewerUI::SavePointSet(MyGUI::Widget* pSender)
     {
-
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            pPSViewer->ExportPointSet();
+        }
     }
 
     void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
     {
-        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(true);
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            if (pPSViewer->FilterPointSet())
+            {
+                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(true);
+            }
+        }
     }
 
     void PointSetViewerUI::ReconstrutctPointSet(MyGUI::Widget* pSender)
     {
-        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            if (pPSViewer->ReconstructPointSet())
+            {
+                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+            }
+        }
     }
 
     void PointSetViewerUI::OpenMesh3D(MyGUI::Widget* pSender)
     {
-        /*std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
-        pMesh->UpdateNormal();
-        pMesh->UnifyPosition(2.0);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("testMesh", "MyCookTorrance", pMesh);*/
-        mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            if (pPSViewer->ImportMesh3D())
+            {
+                mRoot.at(0)->findWidget("But_FilterPointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
+            }
+        }
     }
 
     void PointSetViewerUI::SaveMesh3D(MyGUI::Widget* pSender)
     {
-
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            pPSViewer->ExportMesh3D();
+        }
     }
 
     void PointSetViewerUI::FilterMesh3D(MyGUI::Widget* pSender)
     {
-        mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            if (pPSViewer->FilterMesh3D())
+            {
+                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+            }
+        }
     }
 
     void PointSetViewerUI::BackToHomepage(MyGUI::Widget* pSender)

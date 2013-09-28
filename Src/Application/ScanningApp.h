@@ -26,6 +26,7 @@ namespace MagicApp
         void UpdateScannerDisplay();
 
     private:
+        bool mIsDeviceSetup;
         ScanningAppUI mUI;
         openni::Device mDevice;
         openni::VideoStream mDepthStream, mColorStream;

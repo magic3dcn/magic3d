@@ -113,9 +113,11 @@ namespace MagicDGP
         int GetVertexNumber() const;
         int GetEdgeNumber() const;
         int GetFaceNumber() const;
+
         Vertex3D* InsertVertex(const Vector3& pos);
         Edge3D*   InsertEdge(Vertex3D* pVertStart, Vertex3D* pVertEnd);
         Face3D*   InsertFace(const std::vector<Vertex3D* >& vertList);
+
         void UnifyPosition(Real size);
         void UpdateNormal();
         void ReverseNormal();
@@ -125,6 +127,6 @@ namespace MagicDGP
         std::vector<Vertex3D* > mVertexList;
         std::vector<Edge3D* >   mEdgeList;
         std::vector<Face3D* >   mFaceList;
-        std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap;
+        std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap; //Only used in construct mesh
     };
 }

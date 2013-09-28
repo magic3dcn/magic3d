@@ -32,6 +32,7 @@ namespace MagicApp
         void ChangeFrontRange(MyGUI::Widget* pSender, int rel);
         void ChangeBackRange(MyGUI::Widget* pSender, int rel);
         void SavePointSet(MyGUI::Widget* pSender);
+        void SmoothPointSet(MyGUI::Widget* pSender);
         void Reconstruction(MyGUI::Widget* pSender);
         void SaveMesh3D(MyGUI::Widget* pSender);
         void SmoothMesh3D(MyGUI::Widget* pSender);

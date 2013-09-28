@@ -6,6 +6,8 @@
 #include "../DGP/SignedDistanceFunction.h"
 #include "../DGP/Parser.h"
 #include "../DGP/MeshReconstruction.h"
+#include "../DGP/Sampling.h"
+#include "../DGP/Filter.h"
 
 namespace MagicApp
 {
@@ -285,34 +287,40 @@ namespace MagicApp
 
     bool ReconstructionApp::OpenSceneRecord()
     {
-        if (mIsScannerDisplaying)
-        {
-            mDevice.close();
-            mDepthStream.destroy();
-        }
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        openni::Status rc = mDevice.open(fileName.c_str());
-        if (rc != openni::STATUS_OK)
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
         {
-            MagicLog << "ReconstructionApp::OpenSceneRecord failed: " << openni::OpenNI::getExtendedError() << std::endl;
-            return false;
-        }
-        rc = mDepthStream.create(mDevice, openni::SENSOR_DEPTH);
-        if (rc != openni::STATUS_OK)
-        {
-            MagicLog << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
-            return false;
-        }
-        mDepthStream.start();
-        mIsScannerDisplaying = true;
-        mIsNeedRangeLimitCaculation = true;
-        openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
-        mFrameStartIndex = 0;
-        mFrameEndIndex = pPC->getNumberOfFrames(mDepthStream);
-        mFrameCurrent = 0;
+            if (mIsScannerDisplaying)
+            {
+                mDevice.close();
+                mDepthStream.destroy();
+            }
+            openni::Status rc = mDevice.open(fileName.c_str());
+            if (rc != openni::STATUS_OK)
+            {
+                MagicLog << "ReconstructionApp::OpenSceneRecord failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                return false;
+            }
+            rc = mDepthStream.create(mDevice, openni::SENSOR_DEPTH);
+            if (rc != openni::STATUS_OK)
+            {
+                MagicLog << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                return false;
+            }
+            mDepthStream.start();
+            mIsScannerDisplaying = true;
+            mIsNeedRangeLimitCaculation = true;
+            openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
+            mFrameStartIndex = 0;
+            mFrameEndIndex = pPC->getNumberOfFrames(mDepthStream);
+            mFrameCurrent = 0;
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void ReconstructionApp::SetTimeStart()
@@ -527,10 +535,32 @@ namespace MagicApp
     bool ReconstructionApp::SavePointSet()
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName);
         MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
 
         return true;
+    }
+
+    void ReconstructionApp::SmoothPointSet()
+    {
+        int pointNum = mpPointSet->GetPointNumber();
+        int sampleNum = pointNum;
+        if (pointNum > 200000)
+        {
+            sampleNum = pointNum / 20;
+        }
+        else if (pointNum > 10000)
+        {
+            sampleNum = 10000;
+        }
+        MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
+        if (pNewPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = pNewPointSet;
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        }
+
     }
 
     bool ReconstructionApp::ReconstructPointSet()
@@ -549,7 +579,7 @@ namespace MagicApp
     bool ReconstructionApp::SaveMesh3D()
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName);
         MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
 
         return true;
@@ -557,6 +587,15 @@ namespace MagicApp
 
     void ReconstructionApp::SmoothMesh3D()
     {
-
+        MagicDGP::Mesh3D* pNewMesh = MagicDGP::Filter::RemoveSmallMeshPatch(mpMesh);
+        if (pNewMesh != NULL)
+        {
+            if (mpMesh != NULL)
+            {
+                delete mpMesh;
+            }
+            mpMesh = pNewMesh;
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
+        }
     }
 }

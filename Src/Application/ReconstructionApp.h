@@ -33,6 +33,7 @@ namespace MagicApp
         void PointSetRegistration();
         void SetupPointSetProcessing();
         bool SavePointSet();
+        void SmoothPointSet();
         bool ReconstructPointSet();
         bool SaveMesh3D();
         void SmoothMesh3D();

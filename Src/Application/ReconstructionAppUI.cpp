@@ -85,8 +85,10 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructAndMeshProcess.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SavePointSet);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Reconstruction);
-        mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothPointSet);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Reconstruction);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setSize(86, 87);
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
@@ -100,11 +102,11 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructAndMeshProcess.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SaveMesh3D);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothMesh3D);
-        mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->changeWidgetSkin("But_Smooth");
-        mRoot.at(0)->findWidget("But_ReconAndSmooth")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothMesh3D);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setVisible(false);
     }
 
     void ReconstructionAppUI::SetProgressBarPosition(int pos)
@@ -213,6 +215,12 @@ namespace MagicApp
         {
             mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
         }
+    }
+
+    void ReconstructionAppUI::SmoothPointSet(MyGUI::Widget* pSender)
+    {
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->SmoothPointSet();
     }
 
     void ReconstructionAppUI::Reconstruction(MyGUI::Widget* pSender)

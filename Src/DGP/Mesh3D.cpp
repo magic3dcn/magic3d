@@ -253,6 +253,7 @@ namespace MagicDGP
 
     Mesh3D::~Mesh3D()
     {
+        ClearData();
     }
 
     std::vector<Vertex3D* >& Mesh3D::GetVertexList()

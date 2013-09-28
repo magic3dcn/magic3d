@@ -2,10 +2,12 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+#include "../Common/AppManager.h"
 
 namespace MagicApp
 {
-    ScanningApp::ScanningApp()
+    ScanningApp::ScanningApp() : 
+        mIsDeviceSetup(false)
     {
     }
 
@@ -16,14 +18,21 @@ namespace MagicApp
     bool ScanningApp::Enter(void)
     {
         MagicLog << "Enter ScanningApp" << std::endl;
-        mUI.Setup();
         if (SetupDevice())
         {
-            MagicLog << "Device Set Up" << std::endl;
+            MagicLog << "Device Set Up Success." << std::endl;
+            mIsDeviceSetup = true;
+            mUI.Setup();
+            SetupRenderScene();
+            return true;
         }
-        SetupRenderScene();
-
-        return true;
+        else
+        {
+            MagicLog << "Device Set Up Failed!" << std::endl;
+            mIsDeviceSetup = false;
+            MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+            return false;
+        }
     }
 
     bool ScanningApp::Update(float timeElapsed)
@@ -34,10 +43,12 @@ namespace MagicApp
 
     bool ScanningApp::Exit(void)
     {
-        mUI.Shutdown();
-        ReleaseDevice();
-        ReleaseRenderScene();
-
+        if (mIsDeviceSetup)
+        {
+            mUI.Shutdown();
+            ReleaseDevice();
+            ReleaseRenderScene();
+        }
         return true;
     }
 
@@ -128,7 +139,7 @@ namespace MagicApp
     void ScanningApp::StartRecord()
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
+        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName);
         openni::Status rc  = mRecorder.create(fileName.c_str());
         if (rc != openni::STATUS_OK)
         {
