@@ -36,21 +36,17 @@ namespace MagicApp
     void PrimitiveDetectionAppUI::OpenMesh3D(MyGUI::Widget* pSender)
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName);
-        MagicDGP::Mesh3D* pMesh3D = MagicDGP::Parser::ParseMesh3D(fileName);
-        pMesh3D->UpdateNormal();
-        pMesh3D->UnifyPosition(2.f);
-        /*int index = 10;
-        MagicDGP::Vector3 pos = pMesh3D->GetVertex(index)->GetPosition();
-        MagicDGP::Vector3 nor = pMesh3D->GetVertex(index)->GetNormal();
-        MagicDGP::Vector3 newPos = pos + nor * 0.01 * 2 * 0.1;
-        pMesh3D->GetVertex(index)->SetPosition(newPos);
-        pMesh3D->GetVertex(index)->SetColor(MagicDGP::Vector3(1, 0, 0));*/
-        PrimitiveDetectionApp* pPD = dynamic_cast<PrimitiveDetectionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PrimitiveDetectionApp"));
-        if (pPD != NULL)
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
         {
-            pPD->SetMesh3D(pMesh3D);
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", pMesh3D);
+            MagicDGP::Mesh3D* pMesh3D = MagicDGP::Parser::ParseMesh3D(fileName);
+            pMesh3D->UpdateNormal();
+            pMesh3D->UnifyPosition(2.f);
+            PrimitiveDetectionApp* pPD = dynamic_cast<PrimitiveDetectionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PrimitiveDetectionApp"));
+            if (pPD != NULL)
+            {
+                pPD->SetMesh3D(pMesh3D);
+                MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", pMesh3D);
+            }
         }
     }
 
