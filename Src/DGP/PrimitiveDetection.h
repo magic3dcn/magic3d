@@ -22,7 +22,7 @@ namespace MagicDGP
         virtual PrimitiveType GetType() = 0;
         int GetSupportNum();
         std::vector<int>& GetSupportVertex();
-    private:
+    protected:
         std::vector<int> mSupportVertex;
         PrimitiveType mType;
     };
@@ -30,53 +30,65 @@ namespace MagicDGP
     class PlaneCandidate : public ShapeCandidate
     {
     public:
-        PlaneCandidate(const Vector3& pos0, const Vector3& pos1, const Vector3& pos2, const Vector3& nor0, const Vector3& nor1, const Vector3& nor2);
+        PlaneCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~PlaneCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
-        Vector3 mPos0, mPos1, mPos2;
-        Vector3 mNor0, mNor1, mNor2;
+        const Vertex3D* mpVert0;
+        const Vertex3D* mpVert1;
+        const Vertex3D* mpVert2;
+        Vector3 mCenter, mNormal;
+
     };
 
     class SphereCandidate : public ShapeCandidate
     {
     public:
-        SphereCandidate(const Vector3& pos0, const Vector3& pos1, const Vector3& nor0, const Vector3& nor1);
+        SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~SphereCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
-        Vector3 mPos0, mPos1;
-        Vector3 mNor0, mNor1;
+        const Vertex3D* mpVert0;
+        const Vertex3D* mpVert1;
+        Vector3 mCenter;
+        Real mRadius;
     };
 
     class CylinderCandidate : public ShapeCandidate
     {
     public:
-        CylinderCandidate(const Vector3& pos0, const Vector3& pos1, const Vector3& nor0, const Vector3& nor1);
+        CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~CylinderCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
-        Vector3 mPos0, mPos1;
-        Vector3 mNor0, mNor1;
+        const Vertex3D* mpVert0;
+        const Vertex3D* mpVert1;
+        Vector3 mCenter;
+        Real mRadius;
+        Vector3 mDir;
     };
 
     class ConeCandidate : public ShapeCandidate
     {
     public:
-        ConeCandidate(const Vector3& pos0, const Vector3& pos1, const Vector3& pos2, const Vector3& nor0, const Vector3& nor1, const Vector3& nor2);
+        ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~ConeCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
-        Vector3 mPos0, mPos1, mPos2;
-        Vector3 mNor0, mNor1, mNor2;
+        const Vertex3D* mpVert0;
+        const Vertex3D* mpVert1;
+        const Vertex3D* mpVert2;
+        Vector3 mApex;
+        Vector3 mDir;
+        Real mAngle;
     };
 
     class PrimitiveDetection
