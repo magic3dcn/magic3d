@@ -177,6 +177,8 @@ namespace MagicApp
         {
             sampleNum = 10000;
         }
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
         MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
         if (pNewPointSet != NULL)
         {
@@ -193,6 +195,8 @@ namespace MagicApp
 
     bool PointSetViewer::ReconstructPointSet()
     {
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
         MagicDGP::Mesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
         if (pNewMesh != NULL)
         {

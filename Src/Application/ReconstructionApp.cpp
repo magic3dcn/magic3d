@@ -405,28 +405,39 @@ namespace MagicApp
         //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
         MagicLog << "Get Ref Point Set" << std::endl;
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
+        sdf.UpdateFineSDF(mpPointSet, &lastTrans);
+        delete mpPointSet;
+        mpPointSet = sdf.ExtractFinePointCloud();
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
+            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
             MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
             MagicDGP::HomoMatrix4 newTrans;
-            MagicLog << "Fusion: ICP Registration" << std::endl;
-            MagicDGP::Registration::ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
-            MagicLog << "Fusion: Update SDF" << std::endl;
+            MagicLog << "    GetPOintSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicDGP::Registration registrate;
+            registrate.ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
+            //MagicDGP::Registration::ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
+            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
             sdf.UpdateSDF(pNewPC, &newTrans);
+            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
             //sdf.UpdateFineSDF(pNewPC, &newTrans);
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
-            MagicLog << "Fusion: Extract Point Set" << std::endl;
+            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
             //mpPointSet = sdf.ExtractPointCloud();
             mpPointSet = sdf.ExtractFinePointCloud();
+            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
+            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         }
         //
         mUI.StartPostProcess();
@@ -553,6 +564,8 @@ namespace MagicApp
         {
             sampleNum = 10000;
         }
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
         MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
         if (pNewPointSet != NULL)
         {
@@ -570,6 +583,8 @@ namespace MagicApp
             delete mpMesh;
             mpMesh = NULL;
         }
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
         mpMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
 

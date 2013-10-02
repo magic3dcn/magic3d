@@ -70,8 +70,11 @@ namespace MagicDGP
         pPS->GetBBox(bboxMin, bboxMax);
         Real smallValue = 1.0e-10;
         Real mu = 0.45;
-        Real thetaScale = 1000;
-        Real supportSize = 0.03f;
+        //Real thetaScale = 1000;
+        //Real supportSize = 0.03f;
+        Real supportSize = pPS->GetDensity() * 100;
+        Real thetaScale = 100 / supportSize / supportSize;
+        MagicLog << "Density: " << pPS->GetDensity() << " supportSize: " << supportSize << " thetaScale: " << thetaScale << std::endl; 
         Vector3 deltaBBox = bboxMax - bboxMin;
         int resolutionX = int(deltaBBox[0] / supportSize) + 1;
         int resolutionY = int(deltaBBox[1] / supportSize) + 1;

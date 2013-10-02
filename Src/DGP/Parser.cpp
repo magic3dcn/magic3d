@@ -23,38 +23,37 @@ namespace MagicDGP
 
     Point3DSet* Parser::ParsePointSetByOBJ(std::string fileName)
     {
-        MagicLog << "ParsePointSetByOBJ file name: " << fileName.c_str() << std::endl;
         std::ifstream fin(fileName);
         std::vector<Vector3> posList;
         std::vector<Vector3> norList;
-        while (!fin.eof())
+        const int maxSize = 512;
+        char pLine[maxSize];
+        while (fin.getline(pLine, maxSize))
         {
-            char pLine[512];
-            if (fin.peek() == 'v')
+            if (pLine[0] == 'v')
             {
-                char ch;
-                fin.get(ch);
-                fin.get(ch);
-                if (ch == ' ')
+                if (pLine[1] == ' ' )
                 {
-                    Vector3 posTemp;
-                    fin >> posTemp[0] >> posTemp[1] >> posTemp[2];
-                    posList.push_back(posTemp);
+                    char* tok = strtok(pLine, " ");
+                    Vector3 pos;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tok = strtok(NULL, " ");
+                        pos[i] = (Real)atof(tok);
+                    }
+                    posList.push_back(pos);
                 }
-                else if (ch == 'n')
+                else if (pLine[1] == 'n')
                 {
-                    Vector3 norTemp;
-                    fin >> norTemp[0] >> norTemp[1] >> norTemp[2];
-                    norList.push_back(norTemp);
+                    char* tok = strtok(pLine, " ");
+                    Vector3 nor;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tok = strtok(NULL, " ");
+                        nor[i] = (Real)atof(tok);
+                    }
+                    norList.push_back(nor);
                 }
-                else
-                {
-                    fin.getline(pLine, 512);
-                }
-            }
-            else
-            {
-                fin.getline(pLine, 512);
             }
         }
         fin.close();

@@ -27,12 +27,12 @@ namespace MagicDGP
 
     void SignedDistanceFunction::UpdateSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform)
     {
-        MagicLog << "SignedDistanceFunction::UpdateSDF" << std::endl;
+        //MagicLog << "SignedDistanceFunction::UpdateSDF" << std::endl;
         int pcNum = pPC->GetPointNumber();
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
-        int truncW = 3;
+        int truncW = 2;
         int maxIndex = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
         for (int i = 0; i < pcNum; i++)
         {
@@ -120,7 +120,7 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog << "PC index: " << mPCIndex.size() << std::endl;
+        //MagicLog << "PC index: " << mPCIndex.size() << std::endl;
     }
 
     void SignedDistanceFunction::UpdateFineSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform)
@@ -438,7 +438,7 @@ namespace MagicDGP
 
     Point3DSet* SignedDistanceFunction::ExtractFinePointCloud()
     {
-        MagicLog << "SignedDistanceFunction::ExtractFinePointCloud" << std::endl;
+        //MagicLog << "SignedDistanceFunction::ExtractFinePointCloud" << std::endl;
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
@@ -632,7 +632,7 @@ namespace MagicDGP
         }
 
         int posNum = posList.size();
-        MagicLog << "Export point size: " << posNum << std::endl;
+        //MagicLog << "Export point size: " << posNum << std::endl;
         if (posNum > 0)
         {
             Point3DSet* pPC = new Point3DSet;

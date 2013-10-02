@@ -46,10 +46,13 @@ namespace MagicDGP
         void SetColor(Vector3 color);
         void GetBBox(Vector3& bboxMin, Vector3& bboxMax) const;
         void CalculateBBox();
+        Real GetDensity() const;
+        void CalculateDensity();
 
     protected:
         std::vector<Point3D* > mPointSet;
         Vector3 mBBoxMin, mBBoxMax;
+        Real mDensity;
     };
 
 }

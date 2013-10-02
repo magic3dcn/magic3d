@@ -36,8 +36,24 @@ namespace MagicDependence
         std::vector< std::vector< int > > polygons;
         char* argv1[] = {"--in", "pc.psr", "--out", "pc.ply", "--depth", "10", "--density"};
         PoissonRecon(7, argv1, pPC, vertices, polygons);
-        char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
-        return SurfaceTrimmer(8, argv2, vertices, polygons);
+
+        Real pcDensity = pPC->GetDensity();
+        MagicDGP::Vector3 bboxMin, bboxMax;
+        pPC->GetBBox(bboxMin, bboxMax);
+        Real pcLen = (bboxMax - bboxMin).Length();
+        Real relativeDensity = pcDensity / pcLen;
+        MagicLog << "Relative density: " << relativeDensity << std::endl;
+        if (relativeDensity > 2.0e-5)
+        {
+            char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
+            return SurfaceTrimmer(8, argv2, vertices, polygons);    
+        }
+        else
+        {
+            char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "7", "--aRatio", "0"};
+            return SurfaceTrimmer(8, argv2, vertices, polygons);
+        }
+        
     }
 
     void PoissonReconstruction::PoissonRecon(int argc , char* argv[], const MagicDGP::Point3DSet* pPC, std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)

@@ -2,6 +2,7 @@
 #include "PointCloud3D.h"
 #include <vector>
 #include "HomoMatrix4.h"
+#include "flann/flann.h"
 
 namespace MagicDGP
 {
@@ -12,19 +13,20 @@ namespace MagicDGP
         ~Registration();
 
     public:
-        static void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin);
-        static void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes); 
+        void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes); 
 
     private:
-        static void ICPSamplePoint(const Point3DSet* pPC, std::vector<int>& sampleIndex);
-        static void ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, 
+        void ICPInitRefData(const Point3DSet* pRef);
+        void ICPSamplePoint(const Point3DSet* pPC, std::vector<int>& sampleIndex);
+        void ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex);
-        static void ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
-            std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex);
-        static void ICPEnergyMinimization(const Point3DSet* pRef, Point3DSet* pOrigin, 
-            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex);
-        static void ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
+        void ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta);
+
+    private:
+        flann_index_t mFlannIndex;
+        float* mDataSet;
+        FLANNParameters mSearchPara;
     };
 
 

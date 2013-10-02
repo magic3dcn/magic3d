@@ -82,7 +82,7 @@ namespace MagicApp
 
     void Reconstruction::AlignPointSet()
     {
-        if (mPCSet.size() > 1)
+        /*if (mPCSet.size() > 1)
         {
             std::map<std::string, MagicDGP::Point3DSet* >::iterator itrRef = mPCSet.begin();
             std::map<std::string, MagicDGP::Point3DSet* >::iterator itrPC  = ++(mPCSet.begin());
@@ -90,7 +90,7 @@ namespace MagicApp
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", itrRef->second);
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", itrPC->second);
             MagicCore::RenderSystem::GetSingleton()->Update();
-        }
+        }*/
     }
 
     void Reconstruction::TSDFExtraction()
@@ -106,63 +106,63 @@ namespace MagicApp
     void Reconstruction::PointSetFusion()
     {
         //MagicDGP::SignedDistanceFunction sdf(512, 512, 512, -1000.f, 1000.f, -1000.f, 1000.f, 500.f, 2500.f);
-        MagicDGP::HomoMatrix4 lastTrans;
-        //Init lastTrans from file
-        std::ifstream fin("../../Media/Model/HumanTransform_67.txt");
-        for (int rowIdx = 0; rowIdx < 4; rowIdx++)
-        {
-            for (int colIdx = 0; colIdx < 4; colIdx++)
-            {
-                float t;
-                fin >> t;
-                lastTrans.SetValue(rowIdx, colIdx, t);
-            }
-        }
-        //
-        char fileName[50] = "../../Media/Model/HumanFusion_67.obj";
-        MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
-        MagicLog << "Update refPC" << std::endl;
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
-        MagicCore::RenderSystem::GetSingleton()->Update();
-        int fileStartIndex = 68;
-        int fileEndIndex = 168;
-        for (int i = fileStartIndex; i <= fileEndIndex; i++)
-        {
-            MagicLog << "Fusion Point Set: " << i << " -------------------------------"<< std::endl;
-            sprintf(fileName, "../../Media/Model/Human_%d.obj", i);
-            MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);//
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pNewPC);
-            MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicDGP::HomoMatrix4 newTrans;
-            MagicLog << "Fusion: ICP Registration" << std::endl;
-            MagicDGP::Registration::ICPRegistrate(pRefPC, pNewPC, &lastTrans, &newTrans);//
-            MagicLog << "Fusion: Update SDF" << std::endl;
-            mSdf.UpdateSDF(pNewPC, &newTrans);//
-            lastTrans = newTrans;
-            delete pRefPC;
-            delete pNewPC;
-            pNewPC = NULL;
-            MagicLog << "Fusion: Extract Point Set" << std::endl;
-            pRefPC = mSdf.ExtractPointCloud();//
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
-            MagicCore::RenderSystem::GetSingleton()->Update();
-            char exportName[50];
-            sprintf(exportName, "../../Media/Model/HumanFusion_%d.obj", i);
-            MagicDGP::Parser::ExportPointSet(exportName, pRefPC);//
-            //export transform
-            sprintf(exportName, "../../Media/Model/HumanTransform_%d.txt", i);
-            std::ofstream fout(exportName);
-            for (int rowIdx = 0; rowIdx < 4; rowIdx++)
-            {
-                for (int colIdx = 0; colIdx < 4; colIdx++)
-                {
-                    fout << lastTrans.GetValue(rowIdx, colIdx) << " ";
-                }
-                fout << std::endl;
-            }
-            fout.close();
-            //
-        }
+        //MagicDGP::HomoMatrix4 lastTrans;
+        ////Init lastTrans from file
+        //std::ifstream fin("../../Media/Model/HumanTransform_67.txt");
+        //for (int rowIdx = 0; rowIdx < 4; rowIdx++)
+        //{
+        //    for (int colIdx = 0; colIdx < 4; colIdx++)
+        //    {
+        //        float t;
+        //        fin >> t;
+        //        lastTrans.SetValue(rowIdx, colIdx, t);
+        //    }
+        //}
+        ////
+        //char fileName[50] = "../../Media/Model/HumanFusion_67.obj";
+        //MagicDGP::Point3DSet* pRefPC = MagicDGP::Parser::ParsePointSet(fileName);
+        //MagicLog << "Update refPC" << std::endl;
+        //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
+        //MagicCore::RenderSystem::GetSingleton()->Update();
+        //int fileStartIndex = 68;
+        //int fileEndIndex = 168;
+        //for (int i = fileStartIndex; i <= fileEndIndex; i++)
+        //{
+        //    MagicLog << "Fusion Point Set: " << i << " -------------------------------"<< std::endl;
+        //    sprintf(fileName, "../../Media/Model/Human_%d.obj", i);
+        //    MagicDGP::Point3DSet* pNewPC = MagicDGP::Parser::ParsePointSet(fileName);//
+        //    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pNewPC);
+        //    MagicCore::RenderSystem::GetSingleton()->Update();
+        //    MagicDGP::HomoMatrix4 newTrans;
+        //    MagicLog << "Fusion: ICP Registration" << std::endl;
+        //    MagicDGP::Registration::ICPRegistrate(pRefPC, pNewPC, &lastTrans, &newTrans);//
+        //    MagicLog << "Fusion: Update SDF" << std::endl;
+        //    mSdf.UpdateSDF(pNewPC, &newTrans);//
+        //    lastTrans = newTrans;
+        //    delete pRefPC;
+        //    delete pNewPC;
+        //    pNewPC = NULL;
+        //    MagicLog << "Fusion: Extract Point Set" << std::endl;
+        //    pRefPC = mSdf.ExtractPointCloud();//
+        //    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("refPC", "SimplePoint_Red", pRefPC);
+        //    MagicCore::RenderSystem::GetSingleton()->Update();
+        //    char exportName[50];
+        //    sprintf(exportName, "../../Media/Model/HumanFusion_%d.obj", i);
+        //    MagicDGP::Parser::ExportPointSet(exportName, pRefPC);//
+        //    //export transform
+        //    sprintf(exportName, "../../Media/Model/HumanTransform_%d.txt", i);
+        //    std::ofstream fout(exportName);
+        //    for (int rowIdx = 0; rowIdx < 4; rowIdx++)
+        //    {
+        //        for (int colIdx = 0; colIdx < 4; colIdx++)
+        //        {
+        //            fout << lastTrans.GetValue(rowIdx, colIdx) << " ";
+        //        }
+        //        fout << std::endl;
+        //    }
+        //    fout.close();
+        //    //
+        //}
     }
 
     void Reconstruction::Clear()

@@ -1,5 +1,6 @@
 //#include "StdAfx.h"
 #include "PointCloud3D.h"
+#include "flann/flann.h"
 
 namespace MagicDGP
 {
@@ -187,11 +188,95 @@ namespace MagicDGP
 
     void Point3DSet::CalculateBBox()
     {
+        Vector3 posTemp = mPointSet.at(0)->GetPosition();
+        mBBoxMin[0] = mBBoxMax[0] = posTemp[0];
+        mBBoxMin[1] = mBBoxMax[1] = posTemp[1];
+        mBBoxMin[2] = mBBoxMax[2] = posTemp[2];
+        int pointNum = mPointSet.size();
+        for (int i = 0; i < pointNum; i++)
+        {
+            Vector3 pos = mPointSet.at(i)->GetPosition();
+            for (int k = 0; k < 3; k++)
+            {
+                if (mBBoxMin[k] > pos[k])
+                {
+                    mBBoxMin[k] = pos[k];
+                }
+                if (mBBoxMax[k] < pos[k])
+                {
+                    mBBoxMax[k] = pos[k];
+                }
+            }
+        }
+        MagicLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
+            << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 
     void Point3DSet::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const
     {
         bboxMin = mBBoxMin;
         bboxMax = mBBoxMax;
+    }
+
+    Real Point3DSet::GetDensity() const
+    {
+        return mDensity;
+    }
+
+    void Point3DSet::CalculateDensity()
+    {
+        int dim = 3;
+        int pointNum = mPointSet.size();
+        int refNum = pointNum;
+        float* dataSet = new float[refNum * dim];
+        int searchNum = pointNum;
+        float* searchSet = new float[searchNum * dim];
+        for (int i = 0; i < pointNum; i++)
+        {
+            Vector3 pos = mPointSet.at(i)->GetPosition();
+            dataSet[dim * i + 0] = pos[0];
+            dataSet[dim * i + 1] = pos[1];
+            dataSet[dim * i + 2] = pos[2];
+            searchSet[dim * i + 0] = pos[0];
+            searchSet[dim * i + 1] = pos[1];
+            searchSet[dim * i + 2] = pos[2];
+        }
+        int nn = 9;
+        int* pIndex = new int[searchNum * nn];
+        float* pDist = new float[searchNum * nn];
+        FLANNParameters searchPara;
+        searchPara = DEFAULT_FLANN_PARAMETERS;
+        searchPara.algorithm = FLANN_INDEX_KDTREE;
+        searchPara.trees = 8;
+        searchPara.log_level = FLANN_LOG_INFO;
+        searchPara.checks = 64;
+        float speedup;
+        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+        flann_free_index(indexId, &searchPara);
+        delete []dataSet;
+        delete []searchSet;
+
+        mDensity = 0;
+        for (int i = 0; i < pointNum; i++)
+        {
+            int baseIndex = nn * i;
+            for (int j = 0; j < nn; j++)
+            {
+                mDensity += pDist[baseIndex + j];
+            }
+        }
+        mDensity /= (pointNum * nn);
+        MagicLog << "Point Cloud Density: " << mDensity << std::endl;
+        if (pIndex != NULL)
+        {
+            delete []pIndex;
+            pIndex = NULL;
+        }
+        if (pDist != NULL)
+        {
+            delete []pDist;
+            pDist = NULL;
+        }
     }
 }
