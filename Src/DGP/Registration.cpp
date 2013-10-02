@@ -71,11 +71,16 @@ namespace MagicDGP
         //MagicLog << "Registration::ICPSamplePoint" << std::endl;
         int pcNum = pPC->GetPointNumber();
         static int startIndex = 0;
-        int sampleNum = pcNum / 10;
-        if (sampleNum > 5000)
+        int sampleNum;
+        if (pcNum > 5000)
         {
             sampleNum = 5000;
         }
+        else
+        {
+            sampleNum = pcNum;
+        }
+
         int deltaSize = pcNum / sampleNum;
         if (deltaSize < 1)
         {

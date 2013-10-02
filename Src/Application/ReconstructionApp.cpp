@@ -335,7 +335,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeLeftRange(int rel)
     {
-        float temp = mLeftLimit + rel;
+        float temp = mLeftLimit + rel / 5;
         if (temp > -5000.f && temp < mRightLimit)
         {
             mLeftLimit = temp;
@@ -344,7 +344,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeRightRange(int rel)
     {
-        float temp = mRightLimit + rel;
+        float temp = mRightLimit + rel / 5;
         if (temp < 5000.f && temp > mLeftLimit)
         {
             mRightLimit = temp;
@@ -353,7 +353,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeTopRange(int rel)
     {
-        float temp = mTopLimit + rel;
+        float temp = mTopLimit + rel / 5;
         if (temp < 5000.f && temp > mDownLimit)
         {
             mTopLimit = temp;
@@ -362,7 +362,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeDownRange(int rel)
     {
-        float temp = mDownLimit + rel;
+        float temp = mDownLimit + rel / 5;
         if (temp > -5000.f && temp < mTopLimit)
         {
             mDownLimit = temp;
@@ -371,7 +371,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeFrontRange(int rel)
     {
-        float temp = mFrontLimit - rel;
+        float temp = mFrontLimit - rel / 5;
         if (temp < -500.f && temp > mBackLimit)
         {
             mFrontLimit = temp;
@@ -380,7 +380,7 @@ namespace MagicApp
 
     void ReconstructionApp::ChangeBackRange(int rel)
     {
-        float temp = mBackLimit - rel;
+        float temp = mBackLimit - rel / 5;
         if (temp > -5000.f && temp < mFrontLimit)
         {
             mBackLimit = temp;
@@ -417,7 +417,7 @@ namespace MagicApp
             MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
             MagicDGP::HomoMatrix4 newTrans;
-            MagicLog << "    GetPOintSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
             float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
