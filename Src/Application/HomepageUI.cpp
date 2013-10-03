@@ -5,7 +5,6 @@
 #include "../Common/LogSystem.h"
 #include "PointSetViewer.h"
 #include "Scan3D.h"
-#include "Reconstruction.h"
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
 

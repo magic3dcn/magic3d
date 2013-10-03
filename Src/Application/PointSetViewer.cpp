@@ -69,7 +69,9 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderOBJ");
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
     }
 
     bool PointSetViewer::MouseMoved( const OIS::MouseEvent &arg )

@@ -96,6 +96,7 @@ namespace MagicApp
             if (pPSViewer->ReconstructPointSet())
             {
                 mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
             }
         }
     }

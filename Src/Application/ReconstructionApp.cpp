@@ -55,6 +55,7 @@ namespace MagicApp
     bool ReconstructionApp::Exit(void)
     {
         ReleaseRenderScene();
+        ReleaseDevice();
         mUI.Shutdown();
 
         return true;
@@ -96,6 +97,19 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->destroyLight("frontLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("ScannerDepth");
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
+        mUsingViewTool = false;
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = NULL;
+        }
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = NULL;
+        }
     }
 
     bool ReconstructionApp::SetupDevice()
@@ -120,7 +134,12 @@ namespace MagicApp
 
     void ReconstructionApp::ReleaseDevice()
     {
-
+         if (mIsScannerDisplaying)
+        {
+            mDevice.close();
+            mDepthStream.destroy();
+            mIsScannerDisplaying = false;
+        }
     }
 
     void ReconstructionApp::CoarseRangeLimitCalculation(const std::vector<MagicDGP::Vector3>& posList)
