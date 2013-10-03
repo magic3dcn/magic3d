@@ -12,7 +12,7 @@ namespace MagicApp
     {
     public:
         ReconstructionApp();
-        ~ReconstructionApp();
+        virtual ~ReconstructionApp();
 
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);

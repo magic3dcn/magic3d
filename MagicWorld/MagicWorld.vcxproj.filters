@@ -49,6 +49,9 @@
     <Filter Include="Application\ReconstructionApp">
       <UniqueIdentifier>{65115103-34b5-40ec-bd23-85fd4715309d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\LeapMotionApp">
+      <UniqueIdentifier>{2fe12aff-7984-4312-af05-170f5df774cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -243,6 +246,12 @@
     <ClInclude Include="..\Src\DGP\Sampling.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\LeapMotionApp.h">
+      <Filter>Application\LeapMotionApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\LeapMotionAppUI.h">
+      <Filter>Application\LeapMotionApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -382,6 +391,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Sampling.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\LeapMotionApp.cpp">
+      <Filter>Application\LeapMotionApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp">
+      <Filter>Application\LeapMotionApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

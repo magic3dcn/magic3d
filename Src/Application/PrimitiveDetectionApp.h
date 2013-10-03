@@ -10,7 +10,7 @@ namespace MagicApp
     {
     public:
         PrimitiveDetectionApp();
-        ~PrimitiveDetectionApp();
+        virtual ~PrimitiveDetectionApp();
 
         virtual bool Enter(void);
         virtual bool Update(float timeElapsed);

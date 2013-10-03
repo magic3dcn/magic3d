@@ -57,13 +57,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\RansacPrimitive\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\RansacPrimitive\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;MyGUI.OgrePlatform_d.lib;MyGUIEngine_d.lib;OpenNI2.lib;flann.lib;PrimitiveShapes.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\MyGUI\lib\debug;..\Dependencies\OGRE\lib\debug;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\debug;..\Dependencies\RansacPrimitive\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;MyGUI.OgrePlatform_d.lib;MyGUIEngine_d.lib;OpenNI2.lib;flann.lib;PrimitiveShapes.lib;Leapd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\LeapMotion\lib\x86;..\Dependencies\MyGUI\lib\debug;..\Dependencies\OGRE\lib\debug;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\debug;..\Dependencies\RansacPrimitive\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -74,7 +74,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\RansacPrimitive\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\RansacPrimitive\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
     </ClCompile>
@@ -83,8 +83,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OgreMain.lib;OIS.lib;MyGUI.OgrePlatform.lib;MyGUIEngine.lib;OpenNI2.lib;flann.lib;PrimitiveShapes.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\OGRE\lib\release;..\Dependencies\MyGUI\lib\release;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\release;..\Dependencies\RansacPrimitive\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OgreMain.lib;OIS.lib;MyGUI.OgrePlatform.lib;MyGUIEngine.lib;OpenNI2.lib;flann.lib;PrimitiveShapes.lib;Leap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Dependencies\OGRE\lib\release;..\Dependencies\MyGUI\lib\release;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\release;..\Dependencies\RansacPrimitive\lib\release;..\Dependencies\LeapMotion\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -116,6 +116,8 @@
     <ClInclude Include="..\Dependencies\PoissonRecon\Vector.h" />
     <ClInclude Include="..\Src\Application\Homepage.h" />
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
+    <ClInclude Include="..\Src\Application\LeapMotionApp.h" />
+    <ClInclude Include="..\Src\Application\LeapMotionAppUI.h" />
     <ClInclude Include="..\Src\Application\MediaStream.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
@@ -182,6 +184,8 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\Homepage.cpp" />
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
+    <ClCompile Include="..\Src\Application\LeapMotionApp.cpp" />
+    <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\MediaStream.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
