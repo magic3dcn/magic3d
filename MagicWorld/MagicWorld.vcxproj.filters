@@ -31,9 +31,6 @@
     <Filter Include="Application\PointSetViewer">
       <UniqueIdentifier>{cc4254f7-6be8-4419-8a8e-32d56179262e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\Scan3D">
-      <UniqueIdentifier>{22ff8cf8-29f8-4bc5-8d40-ff5df025ab4a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dependence">
       <UniqueIdentifier>{5fdd45a4-5b04-4543-8226-83725c7f2b52}</UniqueIdentifier>
     </Filter>
@@ -122,15 +119,6 @@
     </ClInclude>
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h">
       <Filter>Application\PointSetViewer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Application\Scan3DUI.h">
-      <Filter>Application\Scan3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Application\Scan3D.h">
-      <Filter>Application\Scan3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Application\MediaStream.h">
-      <Filter>Application\Scan3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\DGP\Mesh3D.h">
       <Filter>DGP</Filter>
@@ -316,15 +304,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp">
       <Filter>Application\PointSetViewer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Application\Scan3D.cpp">
-      <Filter>Application\Scan3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Application\Scan3DUI.cpp">
-      <Filter>Application\Scan3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Application\MediaStream.cpp">
-      <Filter>Application\Scan3D</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp">
       <Filter>DGP</Filter>

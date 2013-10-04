@@ -118,15 +118,12 @@
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\LeapMotionApp.h" />
     <ClInclude Include="..\Src\Application\LeapMotionAppUI.h" />
-    <ClInclude Include="..\Src\Application\MediaStream.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h" />
     <ClInclude Include="..\Src\Application\ReconstructionApp.h" />
     <ClInclude Include="..\Src\Application\ReconstructionAppUI.h" />
-    <ClInclude Include="..\Src\Application\Scan3D.h" />
-    <ClInclude Include="..\Src\Application\Scan3DUI.h" />
     <ClInclude Include="..\Src\Application\ScanningApp.h" />
     <ClInclude Include="..\Src\Application\ScanningAppUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
@@ -186,15 +183,12 @@
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
     <ClCompile Include="..\Src\Application\LeapMotionApp.cpp" />
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\MediaStream.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionApp.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\Scan3D.cpp" />
-    <ClCompile Include="..\Src\Application\Scan3DUI.cpp" />
     <ClCompile Include="..\Src\Application\ScanningApp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

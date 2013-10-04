@@ -4,9 +4,9 @@
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
 #include "PointSetViewer.h"
-#include "Scan3D.h"
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
+#include "LeapMotionApp.h"
 
 namespace MagicApp
 {
@@ -30,6 +30,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_LeapMotion")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterLeapMotionApp);
+        mRoot.at(0)->findWidget("But_LeapMotion")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
     void HomepageUI::Shutdown()
@@ -50,13 +52,17 @@ namespace MagicApp
     {
         MagicLog << "EnterScan3D Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ScanningApp, "ScanningApp");
-       // MagicCore::AppManager::GetSingleton()->EnterApp(new Scan3D, "Scan3D");
     }
 
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
     {
         MagicLog << "EnterReconstruction Clicked" << std::endl;
-        //MagicCore::AppManager::GetSingleton()->EnterApp(new Reconstruction, "Reconstruction");
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReconstructionApp, "ReconstructionApp");
+    }
+
+    void HomepageUI::EnterLeapMotionApp(MyGUI::Widget* pSender)
+    {
+        MagicLog << "EnterLeapMotionApp Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new LeapMotionApp, "LeapMotionApp");
     }
 }

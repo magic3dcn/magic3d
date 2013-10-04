@@ -118,4 +118,12 @@
             <State name="normal" offset="177 469 75 25"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_LeapMotion" size="86 87" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 87" align="Stretch">
+            <State name="disabled" offset="302 440 86 87"/>
+            <State name="normal" offset="302 440 86 87"/>
+            <State name="highlighted" offset="440 438 86 87"/>
+            <State name="pushed" offset="302 440 86 87"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>
