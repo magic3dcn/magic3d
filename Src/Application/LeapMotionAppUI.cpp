@@ -3,6 +3,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
+#include "LeapMotionApp.h"
 
 namespace MagicApp
 {
@@ -34,7 +35,11 @@ namespace MagicApp
 
     void LeapMotionAppUI::OpenMesh3D(MyGUI::Widget* pSender)
     {
-
+        LeapMotionApp* pLMApp = dynamic_cast<LeapMotionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("LeapMotionApp"));
+        if (pLMApp != NULL)
+        {
+            pLMApp->OpenMesh3D();
+        }
     }
 
     void LeapMotionAppUI::BackToHome(MyGUI::Widget* pSender)
