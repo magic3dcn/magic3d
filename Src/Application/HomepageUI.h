@@ -17,6 +17,7 @@ namespace MagicApp
         void EnterScan3D(MyGUI::Widget* pSender);
         void EnterReconstruction(MyGUI::Widget* pSender);
         void EnterLeapMotionApp(MyGUI::Widget* pSender);
+        void EnterPrimitiveDetection(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

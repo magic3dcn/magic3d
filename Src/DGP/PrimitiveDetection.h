@@ -12,6 +12,17 @@ namespace MagicDGP
         Cone
     };
 
+    class PrimitiveParameters
+    {
+    public:
+        PrimitiveParameters();
+        ~PrimitiveParameters();
+
+    public:
+        static Real mMaxCylinderRadius;
+        static Real mMaxSphereRadius;
+    };
+
     class ShapeCandidate
     {
     public:

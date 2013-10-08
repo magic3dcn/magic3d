@@ -15,6 +15,7 @@ namespace MagicApp
     private:
         void OpenMesh3D(MyGUI::Widget* pSender);
         void RansacMethod(MyGUI::Widget* pSender);
+        void BackToHome(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

@@ -2,6 +2,17 @@
 
 namespace MagicDGP
 {
+    Real PrimitiveParameters::mMaxSphereRadius = 1000;
+    Real PrimitiveParameters::mMaxCylinderRadius = 1000;
+
+    PrimitiveParameters::PrimitiveParameters()
+    {
+    }
+
+    PrimitiveParameters::~PrimitiveParameters()
+    {
+    }
+
     ShapeCandidate::ShapeCandidate()
     {
     }
@@ -172,6 +183,11 @@ namespace MagicDGP
         Vector3 interPos1 = pos1 + nor1 * t1;
         mCenter = (interPos0 + interPos1) / 2;
         mRadius = ( (pos0 - mCenter).Length() + (pos1 - mCenter).Length() ) / 2;
+        if (mRadius > PrimitiveParameters::mMaxSphereRadius)
+        {
+            MagicLog << "Sphere radius is too large: " << mRadius << std::endl;
+            return false;
+        }
         //Judge
         Vector3 dir0 = pos0 - mCenter;
         Real dist0 = dir0.Normalise();
@@ -260,13 +276,59 @@ namespace MagicDGP
 
     bool CylinderCandidate::IsValid()
     {
+        Real MaxAngleDeviation = 0.9848;
+        Real MaxDistDeviation = 0.001;
+        Vector3 nor0 = mpVert0->GetNormal();
+        Vector3 nor1 = mpVert1->GetNormal();
+        mDir = nor0.CrossProduct(nor1);
+        Real dirLen = mDir.Normalise();
+        if (dirLen < Epsilon)
+        {
+            MagicLog << "dirLen is too small: " << dirLen << std::endl;
+            return false;
+        }
+        Vector3 dirX = nor0;
+        Vector3 dirY = mDir.CrossProduct(dirX);
+        dirY.Normalise();
+        Real nor1ProjectX = dirX * nor1;
+        Real nor1ProjectY = dirY * nor1;
+        if (fabs(nor1ProjectY) < Epsilon)
+        {
+            MagicLog << "nor1ProjectY is too small: " << nor1ProjectY << std::endl;
+            return false;
+        }
+        Vector3 pos0 = mpVert0->GetPosition();
+        Vector3 pos1 = mpVert1->GetPosition();
+        Vector3 originPos = pos0;
+        Vector3 pos1Dir = pos1 - originPos;
+        Real pos1ProjectX = dirX * pos1Dir;
+        Real pos1ProjectY = dirY * pos1Dir;
+        Real interX = pos1ProjectX - nor1ProjectX * pos1ProjectY / nor1ProjectY;
+        mCenter = originPos + dirX * interX;
+        mRadius = fabs(interX);
+        Real radius2 = sqrt(pos1ProjectY * pos1ProjectY + (pos1ProjectX - interX) * (pos1ProjectX - interX));
+        if (fabs(radius2 - mRadius) > MaxDistDeviation)
+        {
+            MagicLog << "Radius are too different: " << radius2 - mRadius << std::endl;
+            return false;
+        }
+        mRadius = (mRadius + radius2) / 2;
+        if (mRadius > PrimitiveParameters::mMaxCylinderRadius)
+        {
+            MagicLog << "Cylinder radius is too large: " << mRadius << std::endl;
+            return false;
+        }
+        //reject condition: No condition
+
         return true;
     }
 
     int CylinderCandidate::CalSupportVertex(const Mesh3D* pMesh)
     {
-        Real MaxAngleDeviation = 0.9848;
-        Real MaxDistDeviation = 0.001;
+        //Real MaxAngleDeviation = 0.9848;
+        //Real MaxDistDeviation = 0.001;
+        Real MaxAngleDeviation = 0.8;
+        Real MaxDistDeviation = 0.05;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         mSupportVertex.clear();
@@ -334,12 +396,139 @@ namespace MagicDGP
 
     bool ConeCandidate::IsValid()
     {
+        //calculate the intersection point of the three planes
+        Vector3 nor0 = mpVert0->GetNormal();
+        Vector3 nor1 = mpVert1->GetNormal();
+        Vector3 interDir01 = nor0.CrossProduct(nor1);
+        if (interDir01.Normalise() < Epsilon)
+        {
+            MagicLog << "Parallel Plane" << std::endl;
+            return false;
+        }
+        Vector3 lineDir0 = nor0.CrossProduct(interDir01);
+        Vector3 pos0 = mpVert0->GetPosition();
+        Vector3 pos1 = mpVert1->GetPosition();
+        Vector3 interPos01 = pos0 + lineDir0 * ( (pos1 - pos0) * nor1 / (lineDir0 * nor1) );
+        Vector3 pos2 = mpVert2->GetPosition();
+        Vector3 nor2 = mpVert2->GetNormal();
+        Real dotTemp = interDir01 * nor2;
+        if (fabs(dotTemp) < Epsilon)
+        {
+            MagicLog << "Parallel intersection line and plane" << std::endl;
+            return false;
+        }
+        mApex = interPos01 + interDir01 * ( (pos2 - interPos01) * nor2 / dotTemp );
+        Vector3 dir0 = pos0 - mApex;
+        if (dir0.Normalise() < Epsilon)
+        {
+            MagicLog << "Apex coincident" << std::endl;
+            return false;
+        }
+        Vector3 dir1 = pos1 - mApex;
+        if (dir1.Normalise() < Epsilon)
+        {
+            MagicLog << "Apex coincident" << std::endl;
+            return false;
+        }
+        Vector3 dir2 = pos2 - mApex;
+        if (dir2.Normalise() < Epsilon)
+        {
+            MagicLog << "Apex coincident" << std::endl;
+            return false;
+        }
+        Vector3 planeDir0 = dir2 - dir0;
+        Vector3 planeDir1 = dir2 - dir1;
+        mDir = planeDir0.CrossProduct(planeDir1);
+        if (mDir * dir0 < 0)
+        {
+            mDir *= -1;
+        }
+        if (mDir.Normalise() < Epsilon)
+        {
+            MagicLog << "Cone Dir Len too Small" << std::endl;
+            return false;
+        }
+        Real cos0 = mDir * dir0;
+        cos0 = cos0 > 1 ? 1 : (cos0 < -1 ? -1 : cos0);
+        Real cos1 = mDir * dir1;
+        cos1 = cos1 > 1 ? 1 : (cos1 < -1 ? -1 : cos1);
+        Real cos2 = mDir * dir2;
+        cos2 = cos2 > 1 ? 1 : (cos2 < -1 ? -1 : cos2);
+        mAngle = (acos(cos0) + acos(cos1) + acos(cos2)) / 3;
+
         return true;
     }
 
     int ConeCandidate::CalSupportVertex(const Mesh3D* pMesh)
     {
-        return 0;
+        Real MaxAngleDeviation = 0.1745329251994329; //10 degree
+        Real MaxCosAngleDeviation = 0.9848;
+        Real MaxDistDeviation = 0.001;
+        int id0 = mpVert0->GetId();
+        int id1 = mpVert1->GetId();
+        int id2 = mpVert2->GetId();
+        mSupportVertex.clear();
+        mSupportVertex.push_back(id0);
+        mSupportVertex.push_back(id1);
+        mSupportVertex.push_back(id2);
+        std::map<int, int> visitFlag;
+        visitFlag[id0] = 1;
+        visitFlag[id1] = 1;
+        visitFlag[id2] = 1;
+        std::vector<int> searchIndex;
+        searchIndex.push_back(id0);
+        searchIndex.push_back(id1);
+        searchIndex.push_back(id2);
+        while (searchIndex.size() > 0)
+        {
+            std::vector<int> searchIndexNext;
+            for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+            {
+                const Vertex3D* pVert = pMesh->GetVertex(*itr);
+                const Edge3D* pEdge = pVert->GetEdge();
+                do
+                {
+                    const Vertex3D* pNewVert = pEdge->GetVertex();
+                    pEdge = pEdge->GetPair()->GetNext();
+                    int newId = pNewVert->GetId();
+                    if (visitFlag[newId] != 1)
+                    {
+                        visitFlag[newId] = 1;
+                        Vector3 pos = pNewVert->GetPosition();
+                        Vector3 posDir = pos - mApex;
+                        if (posDir.Normalise() <  Epsilon)
+                        {
+                            continue;
+                        }
+                        Real cosAngle = posDir * mDir;
+                        cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
+                        Real angle = acos(cosAngle);
+                        if (fabs(angle - mAngle) > MaxAngleDeviation)
+                        {
+                            continue;
+                        }
+                        Vector3 dirTemp = mDir.CrossProduct(posDir);
+                        if (dirTemp.Normalise() < Epsilon)
+                        {
+                            continue;
+                        }
+                        Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+                        Vector3 nor = pNewVert->GetNormal();
+                        if (nor * ideaNor < MaxCosAngleDeviation)
+                        {
+                            continue;
+                        }
+                        searchIndexNext.push_back(newId);
+                        mSupportVertex.push_back(newId);
+                    }
+                } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+            }
+            searchIndex = searchIndexNext;
+        }
+
+        MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
+
+        return mSupportVertex.size();
     }
 
     PrimitiveType ConeCandidate::GetType()
@@ -500,29 +689,82 @@ namespace MagicDGP
                 delete planeCand;
             }*/
             //Add Sphere Candidate
-            ShapeCandidate* sphereCand = new SphereCandidate(pVert, pVertNeig1);
-            if (sphereCand->IsValid())
+            //ShapeCandidate* sphereCand = new SphereCandidate(pVert, pVertNeig1);
+            //if (sphereCand->IsValid())
+            //{
+            //    //if (sphereCand->CalSupportVertex(pMesh) > minSupportNum)
+            //    if (sphereCand->CalSupportVertex(pMesh) > 100)
+            //    {
+            //        std::vector<int> supportList = sphereCand->GetSupportVertex();
+            //        for (int i = 0; i < supportList.size(); i++)
+            //        {
+            //            res.at(supportList.at(i)) = 3;
+            //        }
+            //        res.at(pVert->GetId()) = 2;
+            //        res.at(pVertNeig1->GetId()) = 2;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        delete sphereCand;
+            //    }
+            //}
+            //else
+            //{
+            //    delete sphereCand;
+            //}
+            //
+            //Add Cylinder Candidate
+            //ShapeCandidate* cylinderCand = new CylinderCandidate(pVert, pVertNeig1);
+            //if (cylinderCand->IsValid())
+            //{
+            //    //if (sphereCand->CalSupportVertex(pMesh) > minSupportNum)
+            //    if (cylinderCand->CalSupportVertex(pMesh) > 100)
+            //    {
+            //        std::vector<int> supportList = cylinderCand->GetSupportVertex();
+            //        for (int i = 0; i < supportList.size(); i++)
+            //        {
+            //            res.at(supportList.at(i)) = 4;
+            //        }
+            //        res.at(pVert->GetId()) = 2;
+            //        res.at(pVertNeig1->GetId()) = 2;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        delete cylinderCand;
+            //    }
+            //}
+            //else
+            //{
+            //    delete cylinderCand;
+            //}
+            //
+            //Add Cone Candidate
+            ShapeCandidate* coneCand = new ConeCandidate(pVert, pVertNeig0, pVertNeig1);
+            if (coneCand->IsValid())
             {
                 //if (sphereCand->CalSupportVertex(pMesh) > minSupportNum)
-                if (sphereCand->CalSupportVertex(pMesh) > 100)
+                if (coneCand->CalSupportVertex(pMesh) > 100)
                 {
-                    std::vector<int> supportList = sphereCand->GetSupportVertex();
+                    std::vector<int> supportList = coneCand->GetSupportVertex();
                     for (int i = 0; i < supportList.size(); i++)
                     {
-                        res.at(supportList.at(i)) = 3;
+                        res.at(supportList.at(i)) = 5;
                     }
                     res.at(pVert->GetId()) = 2;
+                    res.at(pVertNeig0->GetId()) = 2;
                     res.at(pVertNeig1->GetId()) = 2;
                     break;
                 }
                 else
                 {
-                    delete sphereCand;
+                    delete coneCand;
                 }
             }
             else
             {
-                delete sphereCand;
+                delete coneCand;
             }
             //
             sampleIndex += 1001;
@@ -633,7 +875,7 @@ namespace MagicDGP
 
     int PrimitiveDetection::ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates)
     {
-
+        return 0;
     }
 
     bool PrimitiveDetection::IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates)

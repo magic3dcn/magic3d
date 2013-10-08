@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 100 768" layer="Back">
-        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.112305 1" align="Left VStretch" layer="Back">
+        <Widget type="Button" skin="But_Open" position_real="0.130435 0.0195313 0.73913 0.111979" align="Left Top" name="But_Open">
             <Property key="Caption" value="Open"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 90 60 40" align="Left Top" name="But_Ransac">
-            <Property key="Caption" value="RANSAC"/>
-        </Widget>
+        <Widget type="Button" skin="But_Primitive" position_real="0.130435 0.15625 0.73913 0.111979" align="Left Top" name="But_Ransac"/>
+        <Widget type="Button" skin="But_Home" position_real="0.130435 0.864583 0.73913 0.111979" align="Left Bottom" name="But_Home"/>
     </Widget>
 </MyGUI>

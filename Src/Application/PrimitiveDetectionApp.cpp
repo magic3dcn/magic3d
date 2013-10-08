@@ -4,6 +4,7 @@
 #include "../Common/RenderSystem.h"
 #include "../DGP/PrimitiveDetection.h"
 #include "../Common/ToolKit.h"
+#include "../DGP/Parser.h"
 
 namespace MagicApp
 {
@@ -93,10 +94,10 @@ namespace MagicApp
         sl->setPosition(10, 10, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
-        Ogre::Light*  sb = pSceneMgr->createLight("SimpleLightBack");
-        sb->setPosition(10, 10, -20);
-        sb->setDiffuseColour(0.8, 0.8, 0.8);
-        sb->setSpecularColour(0.5, 0.5, 0.5);
+        //Ogre::Light*  sb = pSceneMgr->createLight("SimpleLightBack");
+        //sb->setPosition(10, 10, -20);
+        //sb->setDiffuseColour(0.8, 0.8, 0.8);
+        //sb->setSpecularColour(0.5, 0.5, 0.5);
 
     }
      
@@ -106,7 +107,14 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
-        pSceneMgr->destroyLight("SimpleLightBack");
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = NULL;
+        }
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Mesh3D");
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
+        //pSceneMgr->destroyLight("SimpleLightBack");
     }
 
     void PrimitiveDetectionApp::SetMesh3D(MagicDGP::Mesh3D* pMesh)
@@ -116,6 +124,35 @@ namespace MagicApp
             delete mpMesh;
         }
         mpMesh = pMesh;
+    }
+
+    bool PrimitiveDetectionApp::ImportMesh3D()
+    {
+        std::string fileName;
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        {
+            MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
+            if (pMesh != NULL)
+            {
+                pMesh->UpdateNormal();
+                pMesh->UnifyPosition(2.0);
+                if (mpMesh != NULL)
+                {
+                    delete mpMesh;
+                }
+                mpMesh = pMesh;
+                MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void PrimitiveDetectionApp::RansacPrimitiveDetection()
@@ -130,6 +167,6 @@ namespace MagicApp
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
             mpMesh->GetVertex(i)->SetColor(color);
         }
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", mpMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 }

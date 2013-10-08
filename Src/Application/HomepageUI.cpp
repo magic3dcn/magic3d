@@ -7,6 +7,7 @@
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
 #include "LeapMotionApp.h"
+#include "PrimitiveDetectionApp.h"
 
 namespace MagicApp
 {
@@ -32,6 +33,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_LeapMotion")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterLeapMotionApp);
         mRoot.at(0)->findWidget("But_LeapMotion")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_PrimitiveDetection")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPrimitiveDetection);
+        mRoot.at(0)->findWidget("But_PrimitiveDetection")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
     void HomepageUI::Shutdown()
@@ -64,5 +67,11 @@ namespace MagicApp
     {
         MagicLog << "EnterLeapMotionApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new LeapMotionApp, "LeapMotionApp");
+    }
+
+    void HomepageUI::EnterPrimitiveDetection(MyGUI::Widget* pSender)
+    {
+        MagicLog << "EnterPrimitiveDetection Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
     }
 }

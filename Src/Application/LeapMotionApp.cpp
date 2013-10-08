@@ -118,9 +118,9 @@ namespace MagicApp
     {
         //MagicLog << "LeapMotionApp::onFrame" << std::endl;
         const Leap::Frame frame = controller.frame();
-        MagicLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
+        /*MagicLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
             << frame.fingers().count() << " tools: " << frame.tools().count() << " gestures: "
-            << frame.gestures().count() << std::endl;
+            << frame.gestures().count() << std::endl;*/
         const Leap::Vector translate = frame.translation(mLastFrame);
         float translateProb = frame.translationProbability(mLastFrame);
         const Leap::Vector rotateAxis = frame.rotationAxis(mLastFrame);
@@ -128,9 +128,9 @@ namespace MagicApp
         float rotateProb = frame.rotationProbability(mLastFrame);
         float scale = frame.scaleFactor(mLastFrame);
         float scaleProb = frame.scaleProbability(mLastFrame);
-        MagicLog << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
+        /*MagicLog << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
         MagicLog << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
-        MagicLog << "  scale: " << scale << " " << scaleProb << std::endl;
+        MagicLog << "  scale: " << scale << " " << scaleProb << std::endl;*/
         //MagicLog << std::endl;
         bool isSwipe = false;
         Leap::GestureList gestList = frame.gestures();
