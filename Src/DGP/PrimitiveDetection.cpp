@@ -816,7 +816,151 @@ namespace MagicDGP
 
     int ConeCandidate::Refitting(const Mesh3D* pMesh)
     {
-        return 0;
+        //Refit parameter
+        int supportNum = mSupportVertex.size();
+        Eigen::MatrixXd matA(supportNum, 3);
+        Eigen::VectorXd vecB(supportNum, 1);
+        for (int i = 0; i < supportNum; i++)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
+            Vector3 pos = pVert->GetPosition();
+            Vector3 nor = pVert->GetNormal();
+            matA(i, 0) = nor[0];
+            matA(i, 1) = nor[1];
+            matA(i, 2) = nor[2];
+            vecB(i) = pos * nor;
+        }
+        Eigen::MatrixXd matAT = matA.transpose();
+        Eigen::MatrixXd matCoefA = matAT * matA;
+        Eigen::MatrixXd vecCoefB = matAT * vecB;
+        Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
+        mApex = Vector3(res(0), res(1), res(2));
+        std::vector<Vector3> crossPosList;
+        std::vector<Vector3> crossDirList;
+        Vector3 avgCrossPos(0, 0, 0);
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
+        {
+            Vector3 dir = pMesh->GetVertex(*itr)->GetPosition() - mApex;
+            if (dir.Normalise() < Epsilon)
+            {
+                continue;
+            }
+            Vector3 pos = mApex + dir;
+            avgCrossPos += pos;
+            crossPosList.push_back(pos);
+            crossDirList.push_back(dir);
+        }
+        if (crossPosList.size() == 0)
+        {
+            MagicLog << "Cone Cross Position is Zero" << std::endl;
+            mSupportVertex.clear();
+            return 0;
+        }
+        int crossSize = mSupportVertex.size();
+        avgCrossPos /= crossSize;
+        std::vector<Vector3> crossDeltaPosList(crossSize);
+        for (int i = 0; i < crossSize; i++)
+        {
+            crossDeltaPosList.at(i) = crossPosList.at(i) - avgCrossPos;
+        }
+        Eigen::Matrix3d mat;
+        for (int xx = 0; xx < 3; xx++)
+        {
+            for (int yy = 0; yy < 3; yy++)
+            {
+                Real v = 0;
+                for (int kk = 0; kk < crossSize; kk++)
+                {
+                    v += crossDeltaPosList[kk][xx] * crossDeltaPosList[kk][yy];
+                }
+                mat(xx, yy) = v;
+            }
+        }
+        Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
+        es.compute(mat);
+        Eigen::Vector3d dirVec = es.eigenvectors().col(0);
+        mDir = Vector3(dirVec(0), dirVec(1), dirVec(2));
+        if (mDir.Normalise() < Epsilon)
+        {
+            MagicLog << "Cone: mDir is Zero" << std::endl;
+            mSupportVertex.clear();
+            return 0;
+        }
+        if (mDir * crossDirList.at(0) < 0)
+        {
+            mDir *= -1;
+        }
+        Real angle = 0;
+        for (int i = 0; i < crossSize; i++)
+        {
+            Real cos = mDir * crossDirList.at(i);
+            cos = cos > 1 ? 1 : (cos < -1 ? -1 : cos);
+            angle += acos(cos);
+        }
+        mAngle = angle / crossSize;
+
+        //Refit support vertex
+        Real MaxAngleDeviation = 0.1745329251994329; //10 degree
+        Real MaxCosAngleDeviation = 0.9;
+        Real MaxDistDeviation = 0.001;
+        std::map<int, int> visitFlag;
+        std::vector<int> searchIndex = mSupportVertex;
+        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+        {
+            visitFlag[*itr] = 1;
+        }
+        mSupportVertex.clear();
+        while (searchIndex.size() > 0)
+        {
+            std::vector<int> searchIndexNext;
+            for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+            {
+                //first check current vertex
+                const Vertex3D* pVert = pMesh->GetVertex(*itr);
+                Vector3 pos = pVert->GetPosition();
+                Vector3 posDir = pos - mApex;
+                if (posDir.Normalise() <  Epsilon)
+                {
+                    continue;
+                }
+                Real cosAngle = posDir * mDir;
+                cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
+                Real angle = acos(cosAngle);
+                if (fabs(angle - mAngle) > MaxAngleDeviation)
+                {
+                    continue;
+                }
+                Vector3 dirTemp = mDir.CrossProduct(posDir);
+                if (dirTemp.Normalise() < Epsilon)
+                {
+                    continue;
+                }
+                Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+                Vector3 nor = pVert->GetNormal();
+                if (nor * ideaNor < MaxCosAngleDeviation)
+                {
+                    continue;
+                }
+                mSupportVertex.push_back(*itr);
+                //if current vertex pass, push its neighbors into searchIndexNext
+                const Edge3D* pEdge = pVert->GetEdge();
+                do
+                {
+                    int newId = pEdge->GetVertex()->GetId();
+                    if (visitFlag[newId] != 1)
+                    {
+                        visitFlag[newId] = 1;
+                        searchIndexNext.push_back(newId);
+                    }
+                    pEdge = pEdge->GetPair()->GetNext();
+                } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+            }
+            searchIndex = searchIndexNext;
+        }
+
+        MagicLog << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+
+        return mSupportVertex.size();
     }
 
     PrimitiveType ConeCandidate::GetType()
@@ -1006,7 +1150,7 @@ namespace MagicDGP
             }*/
             //
             //Add Cylinder Candidate
-            ShapeCandidate* cylinderCand = new CylinderCandidate(pVert, pVertNeig1);
+            /*ShapeCandidate* cylinderCand = new CylinderCandidate(pVert, pVertNeig1);
             if (cylinderCand->IsValid())
             {
                 if (cylinderCand->CalSupportVertex(pMesh) > minSupportNum)
@@ -1029,34 +1173,34 @@ namespace MagicDGP
             else
             {
                 delete cylinderCand;
-            }
+            }*/
             //
             //Add Cone Candidate
-            //ShapeCandidate* coneCand = new ConeCandidate(pVert, pVertNeig0, pVertNeig1);
-            //if (coneCand->IsValid())
-            //{
-            //    //if (sphereCand->CalSupportVertex(pMesh) > minSupportNum)
-            //    if (coneCand->CalSupportVertex(pMesh) > 100)
-            //    {
-            //        std::vector<int> supportList = coneCand->GetSupportVertex();
-            //        for (int i = 0; i < supportList.size(); i++)
-            //        {
-            //            res.at(supportList.at(i)) = 5;
-            //        }
-            //        res.at(pVert->GetId()) = 2;
-            //        res.at(pVertNeig0->GetId()) = 2;
-            //        res.at(pVertNeig1->GetId()) = 2;
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        delete coneCand;
-            //    }
-            //}
-            //else
-            //{
-            //    delete coneCand;
-            //}
+            ShapeCandidate* coneCand = new ConeCandidate(pVert, pVertNeig0, pVertNeig1);
+            if (coneCand->IsValid())
+            {
+                if (coneCand->CalSupportVertex(pMesh) > minSupportNum)
+                {
+                    //coneCand->Refitting(pMesh);
+                    std::vector<int> supportList = coneCand->GetSupportVertex();
+                    for (int i = 0; i < supportList.size(); i++)
+                    {
+                        res.at(supportList.at(i)) = 5;
+                    }
+                    res.at(pVert->GetId()) = 2;
+                    res.at(pVertNeig0->GetId()) = 2;
+                    res.at(pVertNeig1->GetId()) = 2;
+                    break;
+                }
+                else
+                {
+                    delete coneCand;
+                }
+            }
+            else
+            {
+                delete coneCand;
+            }
             //
             sampleIndex += 1001;
             sampleIndex = sampleIndex % vertNum;
