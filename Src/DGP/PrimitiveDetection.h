@@ -30,6 +30,7 @@ namespace MagicDGP
         virtual ~ShapeCandidate();
         virtual bool IsValid() = 0;
         virtual int CalSupportVertex(const Mesh3D* pMesh) = 0;
+        virtual int Refitting(const Mesh3D* pMesh) = 0;
         virtual PrimitiveType GetType() = 0;
         int GetSupportNum();
         std::vector<int>& GetSupportVertex();
@@ -45,6 +46,7 @@ namespace MagicDGP
         virtual ~PlaneCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
+        virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
         const Vertex3D* mpVert0;
@@ -61,6 +63,7 @@ namespace MagicDGP
         virtual ~SphereCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
+        virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
         const Vertex3D* mpVert0;
@@ -76,6 +79,7 @@ namespace MagicDGP
         virtual ~CylinderCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
+        virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
         const Vertex3D* mpVert0;
@@ -92,6 +96,7 @@ namespace MagicDGP
         virtual ~ConeCandidate();
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh);
+        virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
     private:
         const Vertex3D* mpVert0;
