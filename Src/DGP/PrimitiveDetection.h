@@ -19,8 +19,17 @@ namespace MagicDGP
         ~PrimitiveParameters();
 
     public:
+        static int mMinInitSupportNum;
+        static int mMinSupportNum;
+        static Real mMaxAngleDeviation;
+        static Real mMaxDistDeviation;
+        static Real mMaxRadiusScale;
         static Real mMaxCylinderRadius;
         static Real mMaxSphereRadius;
+        static Real mMinConeAngle;
+        static Real mMaxConeAngle;
+        static Real mMaxConeAngleDeviation;
+        static Real mBaseScore;
     };
 
     class ShapeCandidate
@@ -32,11 +41,18 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh) = 0;
         virtual int Refitting(const Mesh3D* pMesh) = 0;
         virtual PrimitiveType GetType() = 0;
+        bool IsRemoved();
+        void SetRemoved(bool valid);
         int GetSupportNum();
         std::vector<int>& GetSupportVertex();
+        void SetSupportVertex(const std::vector<int>& supportVertex);
+        Real GetScore();
+        virtual void UpdateScore(const Mesh3D* pMesh) = 0;
     protected:
         std::vector<int> mSupportVertex;
         PrimitiveType mType;
+        Real mScore;
+        bool mRemoved;
     };
 
     class PlaneCandidate : public ShapeCandidate
@@ -48,6 +64,7 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
+        virtual void UpdateScore(const Mesh3D* pMesh);
     private:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
@@ -65,6 +82,7 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
+        virtual void UpdateScore(const Mesh3D* pMesh);
     private:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
@@ -81,6 +99,7 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
+        virtual void UpdateScore(const Mesh3D* pMesh);
     private:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
@@ -98,6 +117,7 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh);
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
+        virtual void UpdateScore(const Mesh3D* pMesh);
     private:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
@@ -116,15 +136,14 @@ namespace MagicDGP
         static void Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetection(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionTest(const Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetectionPhase1(const Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void AddShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& validFlags);
         static void FindAllShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
-        static void RemoveAcceptableCandidate(int index, std::vector<ShapeCandidate* >& candidates);
-
-    private:
+        static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& resFlag);
 
     };
 

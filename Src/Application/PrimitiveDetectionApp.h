@@ -20,7 +20,6 @@ namespace MagicApp
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
-        void SetMesh3D(MagicDGP::Mesh3D* pMesh);
         bool ImportMesh3D();
         void RansacPrimitiveDetection();
 

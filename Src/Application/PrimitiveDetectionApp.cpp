@@ -117,15 +117,6 @@ namespace MagicApp
         //pSceneMgr->destroyLight("SimpleLightBack");
     }
 
-    void PrimitiveDetectionApp::SetMesh3D(MagicDGP::Mesh3D* pMesh)
-    {
-        if (mpMesh != NULL)
-        {
-            delete mpMesh;
-        }
-        mpMesh = pMesh;
-    }
-
     bool PrimitiveDetectionApp::ImportMesh3D()
     {
         std::string fileName;
@@ -159,7 +150,8 @@ namespace MagicApp
     {
         std::vector<int> res;
         //MagicDGP::PrimitiveDetection::Primitive2DDetectionFromRansac(mpMesh, res);
-        MagicDGP::PrimitiveDetection::Primitive2DDetectionTest(mpMesh, res);
+        //MagicDGP::PrimitiveDetection::Primitive2DDetectionTest(mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DDetectionPhase1(mpMesh, res);
         int vertNum = mpMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {
