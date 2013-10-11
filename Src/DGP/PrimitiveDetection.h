@@ -23,7 +23,8 @@ namespace MagicDGP
         static int mMinSupportNum;
         static Real mMaxAngleDeviation;
         static Real mMaxDistDeviation;
-        static Real mMaxRadiusScale;
+        static Real mMaxCylinderRadiusScale;
+        static Real mMaxSphereRadiusScale;
         static Real mMaxCylinderRadius;
         static Real mMaxSphereRadius;
         static Real mMinConeAngle;
@@ -83,7 +84,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    private:
+    //private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -100,7 +102,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    private:
+    //private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -118,7 +121,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    private:
+    //private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;

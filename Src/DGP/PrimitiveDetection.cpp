@@ -5,15 +5,16 @@ namespace MagicDGP
 {
     int PrimitiveParameters::mMinInitSupportNum = 100;
     int PrimitiveParameters::mMinSupportNum = 200;
-    Real PrimitiveParameters::mMaxAngleDeviation = 0.87;
-    Real PrimitiveParameters::mMaxDistDeviation = 0.005;
-    Real PrimitiveParameters::mMaxRadiusScale = 0.05;
-    Real PrimitiveParameters::mMaxSphereRadius = 2;
-    Real PrimitiveParameters::mMaxCylinderRadius = 2;
+    Real PrimitiveParameters::mMaxAngleDeviation = 0.866;
+    Real PrimitiveParameters::mMaxDistDeviation = 0.01;
+    Real PrimitiveParameters::mMaxCylinderRadiusScale = 0.2;
+    Real PrimitiveParameters::mMaxSphereRadiusScale = 0.01;
+    Real PrimitiveParameters::mMaxSphereRadius = 1;
+    Real PrimitiveParameters::mMaxCylinderRadius = 1;
     Real PrimitiveParameters::mMinConeAngle = 0.1745329251994329; //10 degree
-    Real PrimitiveParameters::mMaxConeAngle = 1.3962; //80 degree
-    Real PrimitiveParameters::mMaxConeAngleDeviation = 0.1745329251994329; //10 degree
-    Real PrimitiveParameters::mBaseScore = 0.85;
+    Real PrimitiveParameters::mMaxConeAngle = 1.0472; //60 degree
+    Real PrimitiveParameters::mMaxConeAngleDeviation = 0.1745; //10 degree
+    Real PrimitiveParameters::mBaseScore = 0.94;
 
     PrimitiveParameters::PrimitiveParameters()
     {
@@ -301,7 +302,7 @@ namespace MagicDGP
         }
         //Judge
         //Real MaxAngleDeviation = 0.94;
-        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxRadiusScale;
+        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxSphereRadiusScale;
         Vector3 dir0 = pos0 - mCenter;
         Real dist0 = dir0.Normalise();
         if (fabs(dist0 - mRadius) > MaxDistDeviation || fabs(dir0 * nor0) < PrimitiveParameters::mMaxAngleDeviation)
@@ -324,7 +325,7 @@ namespace MagicDGP
     {
         //Real MaxAngleDeviation = 0.9848;
         //Real MaxAngleDeviation = 0.94;
-        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxRadiusScale;
+        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxSphereRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         mSupportVertex.clear();
@@ -405,7 +406,7 @@ namespace MagicDGP
         //Refit support vertex
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001 * 10;
-        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxRadiusScale;
+        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxSphereRadiusScale;
         std::map<int, int> visitFlag;
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
@@ -513,11 +514,11 @@ namespace MagicDGP
         mCenter = originPos + dirX * interX;
         mRadius = fabs(interX);
         Real radius2 = sqrt(pos1ProjectY * pos1ProjectY + (pos1ProjectX - interX) * (pos1ProjectX - interX));
-        if (fabs(radius2 - mRadius) / mRadius > 0.05)
-        {
-            //MagicLog << "Radius are too different: " << radius2 - mRadius << std::endl;
-            return false;
-        }
+        //if (fabs(radius2 - mRadius) / mRadius > 0.05)
+        //{
+        //    //MagicLog << "Radius are too different: " << radius2 - mRadius << std::endl;
+        //    return false;
+        //}
         mRadius = (mRadius + radius2) / 2;
         if (mRadius > PrimitiveParameters::mMaxCylinderRadius)
         {
@@ -536,7 +537,7 @@ namespace MagicDGP
         //Real MaxAngleDeviation = 0.9848;
         //Real MaxDistDeviation = 0.001;
         //Real MaxAngleDeviation = 0.94;
-        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxRadiusScale;
+        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxCylinderRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         mSupportVertex.clear();
@@ -652,11 +653,45 @@ namespace MagicDGP
         }
         //MagicLog << "Eigne Value: " << std::endl << es.eigenvalues() << std::endl;
         //MagicLog << "Eigen Vector: " << std::endl << es.eigenvectors() << std::endl;
+        if (rightEigenIndex != 0)
+        {
+            mSupportVertex.clear();
+            return 0;
+        }
         mDir = Vector3(dirVec[rightEigenIndex](0), dirVec[rightEigenIndex](1), dirVec[rightEigenIndex](2));
         mDir.Normalise();
         Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
-        Eigen::MatrixXd matA(supportNum, 4);
+        Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
+        Vector3 dirX = planeNor - mDir * (mDir * planeNor);
+        dirX.Normalise();
+        Vector3 dirY = mDir.CrossProduct(dirX);
+        dirY.Normalise();
+        Eigen::MatrixXd matA(supportNum, 3);
         Eigen::VectorXd vecB(supportNum, 1);
+        for (int i = 0; i < supportNum; i++)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
+            Vector3 pos = pVert->GetPosition();
+            Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
+            Vector3 projectDir = projectPos - planePos;
+            Real projectX = projectDir * dirX;
+            Real projectY = projectDir * dirY;
+            matA(i, 0) = projectX;
+            matA(i, 1) = projectY;
+            matA(i, 2) = 1;
+            vecB(i) = -(projectX * projectX + projectY * projectY);
+        }
+        Eigen::MatrixXd matAT = matA.transpose();
+        Eigen::MatrixXd matCoefA = matAT * matA;
+        Eigen::MatrixXd vecCoefB = matAT * vecB;
+        Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
+        Real centerX = res(0) / -2;
+        Real centerY = res(1) / -2;
+        mRadius = sqrt( centerX * centerX + centerY * centerY - res(2) );
+        mCenter = planePos + dirX * centerX + dirY * centerY;
+        /*Eigen::MatrixXd matA(supportNum + 1, 4);
+        Eigen::VectorXd vecB(supportNum + 1, 1);
+        Real weight = supportNum;
         for (int i = 0; i < supportNum; i++)
         {
             const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
@@ -669,12 +704,18 @@ namespace MagicDGP
             matA(i, 3) = 1;
             vecB(i) = projectPos * nor;
         }
+        matA(supportNum, 0) = mDir[0] * weight;
+        matA(supportNum, 1) = mDir[1] * weight;
+        matA(supportNum, 2) = mDir[2] * weight;
+        matA(supportNum, 3) = 0;
+        vecB(supportNum) = mDir * planePos * weight;
+
         Eigen::MatrixXd matAT = matA.transpose();
         Eigen::MatrixXd matCoefA = matAT * matA;
         Eigen::MatrixXd vecCoefB = matAT * vecB;
         Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
         mCenter = Vector3(res(0), res(1), res(2));
-        mRadius = fabs(res(3));
+        mRadius = fabs(res(3));*/
         if (mRadius > PrimitiveParameters::mMaxCylinderRadius)
         {
             mSupportVertex.clear();
@@ -685,7 +726,7 @@ namespace MagicDGP
         //Refit support vertex
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001 * 10;
-        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxRadiusScale;
+        Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxCylinderRadiusScale;
         std::map<int, int> visitFlag;
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
@@ -789,6 +830,10 @@ namespace MagicDGP
             return false;
         }
         mApex = interPos01 + interDir01 * ( (pos2 - interPos01) * nor2 / dotTemp );
+        //if (mApex.Length() > 1.5) //Here should be related with BBox.
+        //{
+        //    return false;
+        //}
         Vector3 dir0 = pos0 - mApex;
         if (dir0.Normalise() < Epsilon)
         {
@@ -928,6 +973,11 @@ namespace MagicDGP
         Eigen::MatrixXd vecCoefB = matAT * vecB;
         Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
         mApex = Vector3(res(0), res(1), res(2));
+        //if (mApex.Length() > 1.5) //Should be related with BBox.
+        //{
+        //    mSupportVertex.clear();
+        //    return 0;
+        //}
         std::vector<Vector3> crossPosList;
         std::vector<Vector3> crossDirList;
         Vector3 avgCrossPos(0, 0, 0);
@@ -973,6 +1023,73 @@ namespace MagicDGP
         es.compute(mat);
         Eigen::Vector3d dirVec = es.eigenvectors().col(0);
         mDir = Vector3(dirVec(0), dirVec(1), dirVec(2));
+        //test whether it is a true cone
+        Real XX = 0;
+        Real YY = 0;
+        Real ZZ = 0;
+        Real XY = 0;
+        Real YZ = 0;
+        Real ZX = 0;
+        Real X = 0;
+        Real Y = 0;
+        Real Z = 0;
+        for (int i = 0; i < supportNum; i++)
+        {
+            Vector3 nor = pMesh->GetVertex(mSupportVertex.at(i))->GetNormal();
+            XX += nor[0] * nor[0];
+            YY += nor[1] * nor[1];
+            ZZ += nor[2] * nor[2];
+            XY += nor[0] * nor[1];
+            YZ += nor[1] * nor[2];
+            ZX += nor[2] * nor[0];
+            X += nor[0];
+            Y += nor[1];
+            Z += nor[2];
+        }
+        XX /= supportNum;
+        YY /= supportNum;
+        ZZ /= supportNum;
+        XY /= supportNum;
+        YZ /= supportNum;
+        ZX /= supportNum;
+        X /= supportNum;
+        Y /= supportNum;
+        Z /= supportNum;
+        Eigen::Matrix3d matVirify;
+        matVirify(0, 0) = XX - X * X;
+        matVirify(0, 1) = 2 * (XY - X * Y);
+        matVirify(0, 2) = 2 * (ZX - Z * X);
+        matVirify(1, 0) = 2 * (XY - X * Y);
+        matVirify(1, 1) = YY - Y * Y;
+        matVirify(1, 2) = 2 * (YZ - Y * Z);
+        matVirify(2, 0) = 2 * (ZX - Z * X);
+        matVirify(2, 1) = 2 * (YZ - Y * Z);
+        matVirify(2, 2) = ZZ - Z * Z;
+        //Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
+        es.compute(matVirify);
+        Eigen::Vector3d dirVecVerify[3];
+        int rightEigenIndex = 0;
+        dirVecVerify[0] = es.eigenvectors().col(0);
+        Real eigenAngle = fabs(mDir[0] * dirVecVerify[0](0) + mDir[1] * dirVecVerify[0](1) + mDir[2] * dirVecVerify[0](2));
+        dirVecVerify[1] = es.eigenvectors().col(1);
+        Real eigenAngleTemp = fabs(mDir[0] * dirVecVerify[1](0) + mDir[1] * dirVecVerify[1](1) + mDir[2] * dirVecVerify[1](2));
+        if ( eigenAngleTemp > eigenAngle)
+        {
+            rightEigenIndex = 1;
+            eigenAngle = eigenAngleTemp;
+        }
+        dirVecVerify[2] = es.eigenvectors().col(2);
+        eigenAngleTemp = fabs(mDir[0] * dirVecVerify[2](0) + mDir[1] * dirVecVerify[2](1) + mDir[2] * dirVecVerify[2](2));
+        if (eigenAngleTemp > eigenAngle)
+        {
+            rightEigenIndex = 2;
+        }
+        if (rightEigenIndex != 0)
+        {
+            mSupportVertex.clear();
+            return 0;
+        }
+        //
         if (mDir.Normalise() < Epsilon)
         {
             //MagicLog << "Cone: mDir is Zero" << std::endl;
@@ -1264,6 +1381,7 @@ namespace MagicDGP
                 {
                     if (cylinderCand->Refitting(pMesh) > PrimitiveParameters::mMinSupportNum)
                     {
+                        cylinderCand->Refitting(pMesh);
                         std::vector<int> supportList = cylinderCand->GetSupportVertex();
                         for (int i = 0; i < supportList.size(); i++)
                         {
@@ -1326,14 +1444,34 @@ namespace MagicDGP
         res = std::vector<int>(pMesh->GetVertexNumber(), 5);
         std::vector<ShapeCandidate* > candidates;
         FindAllShapeCandidates(candidates, pMesh);
-        for (int k = 0; k < 30; k++)
+        for (int k = 0; k < 100; k++)
         {
-            MagicLog << "Primitive2DDetectionPhase1: ChoseBestCandidate" << std::endl; 
+            //MagicLog << "Primitive2DDetectionPhase1: ChoseBestCandidate" << std::endl; 
             int bestCand = ChoseBestCandidate(candidates);
             if (bestCand == -1)
             {
                 break;
             }
+            //just for debug
+            if (candidates.at(bestCand)->GetType() == PrimitiveType::Cone)
+            {
+                ConeCandidate* pCone = dynamic_cast<ConeCandidate*>(candidates.at(bestCand));
+                MagicLog << "Cone: " << pCone->mApex[0] << " " << pCone->mApex[1] << " " << pCone->mApex[2] << " " << pCone->mAngle 
+                    << " " << pCone->mDir[0] << " " << pCone->mDir[1] << " " << pCone->mDir[2] << std::endl;
+            }
+            else if (candidates.at(bestCand)->GetType() == PrimitiveType::Cylinder)
+            {
+                CylinderCandidate* pCylinder = dynamic_cast<CylinderCandidate*>(candidates.at(bestCand));
+                MagicLog << "Cylinder: " << pCylinder->mCenter[0] << " " << pCylinder->mCenter[1] << " " << pCylinder->mCenter[2]
+                << " " << pCylinder->mRadius << " " << pCylinder->mDir[0] << " " << pCylinder->mDir[1] << " " << pCylinder->mDir[2] << std::endl;
+            }
+            else if (candidates.at(bestCand)->GetType() == PrimitiveType::Sphere)
+            {
+                SphereCandidate* pSphere = dynamic_cast<SphereCandidate*>(candidates.at(bestCand));
+                MagicLog << "Sphere: " << pSphere->mCenter[0] << " " << pSphere->mCenter[1] << " " << pSphere->mCenter[2] << " " 
+                    << pSphere->mRadius << std::endl;
+            }
+            //
             candidates.at(bestCand)->SetRemoved(true);
             std::vector<int> supportVert = candidates.at(bestCand)->GetSupportVertex();
             int candType = candidates.at(bestCand)->GetType();
@@ -1368,13 +1506,13 @@ namespace MagicDGP
         int minInitSupportNum = 50;
         int minSupportNum = 200;
         int vertNum = pMesh->GetVertexNumber();
-        int sampleNum = 200;
+        int sampleNum = 2000;
         int sampleDelta = vertNum / sampleNum;
-        int neighborRadius = 5;
+        int neighborRadius = 10;
         MagicLog << "FindAllShapeCandidates: " << sampleDelta << std::endl;
         for (int sampleIndex = 0; sampleIndex < vertNum; sampleIndex += sampleDelta)
         {
-            MagicLog << "  Sample: " << sampleIndex << std::endl;
+            //MagicLog << "  Sample: " << sampleIndex << std::endl;
             const Vertex3D* pVert = pMesh->GetVertex(sampleIndex);
             //Get vertex n neigbors
             std::vector<int> neighborList;
@@ -1476,6 +1614,8 @@ namespace MagicDGP
                 {
                     if (cylinderCand->Refitting(pMesh) > PrimitiveParameters::mMinSupportNum)
                     {
+                        //cylinderCand->Refitting(pMesh);
+                        //cylinderCand->Refitting(pMesh);
                         candidates.push_back(cylinderCand);
                     }
                     else
@@ -1534,7 +1674,7 @@ namespace MagicDGP
     {
         int candNum = candidates.size();
         int bestIndex = -1;
-        Real bestScore = -1;
+        Real bestScore = -100000;
         for (int i = 0; i < candNum; i++)
         {
             if (candidates.at(i)->IsRemoved())
