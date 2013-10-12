@@ -1,5 +1,6 @@
 #include "PrimitiveDetection.h"
 #include "Eigen/Dense"
+#include "../Common/ToolKit.h"
 
 namespace MagicDGP
 {
@@ -1443,17 +1444,21 @@ namespace MagicDGP
     {
         res = std::vector<int>(pMesh->GetVertexNumber(), 5);
         std::vector<ShapeCandidate* > candidates;
+        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         FindAllShapeCandidates(candidates, pMesh);
-        for (int k = 0; k < 100; k++)
+        MagicLog << "FindAllShapeCandidates: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        float removeTime = MagicCore::ToolKit::GetSingleton()->GetTime();
+        for (int k = 0; k < 150; k++)
         {
-            //MagicLog << "Primitive2DDetectionPhase1: ChoseBestCandidate" << std::endl; 
+            //MagicLog << "Primitive2DDetectionPhase1: ChoseBestCandidate" << std::endl;
+            float removeEveryTime = MagicCore::ToolKit::GetSingleton()->GetTime();
             int bestCand = ChoseBestCandidate(candidates);
             if (bestCand == -1)
             {
                 break;
             }
             //just for debug
-            if (candidates.at(bestCand)->GetType() == PrimitiveType::Cone)
+            /*if (candidates.at(bestCand)->GetType() == PrimitiveType::Cone)
             {
                 ConeCandidate* pCone = dynamic_cast<ConeCandidate*>(candidates.at(bestCand));
                 MagicLog << "Cone: " << pCone->mApex[0] << " " << pCone->mApex[1] << " " << pCone->mApex[2] << " " << pCone->mAngle 
@@ -1470,7 +1475,7 @@ namespace MagicDGP
                 SphereCandidate* pSphere = dynamic_cast<SphereCandidate*>(candidates.at(bestCand));
                 MagicLog << "Sphere: " << pSphere->mCenter[0] << " " << pSphere->mCenter[1] << " " << pSphere->mCenter[2] << " " 
                     << pSphere->mRadius << std::endl;
-            }
+            }*/
             //
             candidates.at(bestCand)->SetRemoved(true);
             std::vector<int> supportVert = candidates.at(bestCand)->GetSupportVertex();
@@ -1488,8 +1493,9 @@ namespace MagicDGP
                 }
                 candidates.at(i)->UpdateScore(pMesh);
             }
+            MagicLog << "    remove" << k << " : " << MagicCore::ToolKit::GetSingleton()->GetTime() - removeEveryTime << std::endl;
         }
-
+        MagicLog << "Remove time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - removeTime << std::endl;
         for (std::vector<ShapeCandidate* >::iterator itr = candidates.begin(); itr != candidates.end(); ++itr)
         {
             if (*itr != NULL)
@@ -1506,13 +1512,14 @@ namespace MagicDGP
         int minInitSupportNum = 50;
         int minSupportNum = 200;
         int vertNum = pMesh->GetVertexNumber();
-        int sampleNum = 2000;
+        int sampleNum = 200;
         int sampleDelta = vertNum / sampleNum;
         int neighborRadius = 10;
-        MagicLog << "FindAllShapeCandidates: " << sampleDelta << std::endl;
+        //MagicLog << "FindAllShapeCandidates: " << sampleDelta << std::endl;
         for (int sampleIndex = 0; sampleIndex < vertNum; sampleIndex += sampleDelta)
         {
             //MagicLog << "  Sample: " << sampleIndex << std::endl;
+            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
             const Vertex3D* pVert = pMesh->GetVertex(sampleIndex);
             //Get vertex n neigbors
             std::vector<int> neighborList;
@@ -1553,6 +1560,7 @@ namespace MagicDGP
                 MagicLog << "  Neigborsize is small: " << neighborSize << std::endl;
                 continue;
             }
+            MagicLog << "    find neighbor time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
             //
             const Vertex3D* pVertCand0 = pMesh->GetVertex( neighborList.at(neighborSize / 3 - 1) );
             const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(neighborSize - 1) );
@@ -1656,8 +1664,9 @@ namespace MagicDGP
             {
                 delete coneCand;
             }
+            MagicLog << "      Find candidate time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         }
-        MagicLog << "Find all candidates: " << candidates.size() << std::endl;
+        //MagicLog << "Find all candidates: " << candidates.size() << std::endl;
     }
 
     void PrimitiveDetection::AddShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& validFlags)
