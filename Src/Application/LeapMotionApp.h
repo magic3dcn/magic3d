@@ -41,6 +41,8 @@ namespace MagicApp
         Leap::Controller mLeapCtrl;
         Leap::Frame mLastFrame;
         bool mLeapMotinOn;
+        int64_t mLeapLastTime;
+        Leap::Vector mLeapLastPalmVelocity;
     };
 
 

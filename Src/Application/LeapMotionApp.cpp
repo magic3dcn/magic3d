@@ -8,7 +8,8 @@ namespace MagicApp
 {
     LeapMotionApp::LeapMotionApp() :
         mpMesh(NULL),
-        mLeapMotinOn(false)
+        mLeapMotinOn(false),
+        mLeapLastTime(0)
     {
     }
 
@@ -121,46 +122,73 @@ namespace MagicApp
         /*MagicLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
             << frame.fingers().count() << " tools: " << frame.tools().count() << " gestures: "
             << frame.gestures().count() << std::endl;*/
-        const Leap::Vector translate = frame.translation(mLastFrame);
-        float translateProb = frame.translationProbability(mLastFrame);
-        const Leap::Vector rotateAxis = frame.rotationAxis(mLastFrame);
-        float rotateAngle = frame.rotationAngle(mLastFrame);
-        float rotateProb = frame.rotationProbability(mLastFrame);
-        float scale = frame.scaleFactor(mLastFrame);
-        float scaleProb = frame.scaleProbability(mLastFrame);
+        //const Leap::Vector translate = frame.translation(mLastFrame);
+        //float translateProb = frame.translationProbability(mLastFrame);
+        //const Leap::Vector rotateAxis = frame.rotationAxis(mLastFrame);
+        //float rotateAngle = frame.rotationAngle(mLastFrame);
+        //float rotateProb = frame.rotationProbability(mLastFrame);
+        //float scale = frame.scaleFactor(mLastFrame);
+        //float scaleProb = frame.scaleProbability(mLastFrame);
         /*MagicLog << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
         MagicLog << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
         MagicLog << "  scale: " << scale << " " << scaleProb << std::endl;*/
         //MagicLog << std::endl;
-        bool isSwipe = false;
-        Leap::GestureList gestList = frame.gestures();
-        if (!gestList.isEmpty())
+        //bool isSwipe = false;
+        //Leap::GestureList gestList = frame.gestures();
+        //Leap::Vector swipeDir;
+        //float swipeSpeed;
+        //if (!gestList.isEmpty())
+        //{
+        //    for (int i = 0; i < gestList.count(); i++)
+        //    {
+        //        if (gestList[i].type() == Leap::Gesture::TYPE_SWIPE)
+        //        {
+        //            isSwipe = true;
+        //            //Leap::SwipeGesture* swipeGes = dynamic_cast<Leap::SwipeGesture*>(&(gestList[i]));
+        //            Leap::SwipeGesture swipeGes = gestList[i];
+        //            swipeDir = swipeGes.direction(); 
+        //            swipeSpeed = swipeGes.speed();
+        //            MagicLog << "    Swipe detect: " << swipeSpeed << 
+        //                " " << swipeDir.x << " " << swipeDir.y << " " << swipeDir.z << std::endl << std::endl;
+        //            break;
+        //        }
+        //    }
+        //}
+        Leap::HandList handList = frame.hands();
+        float minSpeed = 1500;
+        if (!handList.isEmpty())
         {
-            for (int i = 0; i < gestList.count(); i++)
+            Leap::Vector palmVelocity;
+            palmVelocity = handList[0].palmVelocity();
+            if (palmVelocity.magnitude() > minSpeed)
             {
-                if (gestList[i].type() == Leap::Gesture::TYPE_SWIPE)
+                MagicLog << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
+                    << palmVelocity.y << " " << palmVelocity.z << std::endl;
+            }
+            if (palmVelocity.magnitude() > minSpeed)
+            {
+                int64_t currentTime = frame.timestamp();
+                if ( (currentTime - mLeapLastTime) > 500000 ||
+                    (palmVelocity.x * mLeapLastPalmVelocity.x + palmVelocity.y * mLeapLastPalmVelocity.y) > 0 )
+                    //!(palmVelocity.x * mLeapLastPalmVelocity.x < 0 || palmVelocity.y * mLeapLastPalmVelocity.y < 0) )
                 {
-                    isSwipe = true;
-                    MagicLog << "    Swipe detect" << std::endl << std::endl;
-                    break;
+
+                    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->yaw(Ogre::Degree(palmVelocity.x * 0.02), Ogre::Node::TS_PARENT);
+                    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->pitch(Ogre::Degree(palmVelocity.y * (-0.02)), Ogre::Node::TS_PARENT);
+                    mLeapLastPalmVelocity = palmVelocity;
+                    mLeapLastTime = currentTime;
                 }
             }
+            //if (palmVelocity.magnitude() > minSpeed && 
+            //    (mLeapLastPalmVelocity.magnitude() < minSpeed || mLeapLastPalmVelocity.dot(palmVelocity) > 0 )
+            //    )
+            //{
+            //    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->yaw(Ogre::Degree(palmVelocity.x * 0.01), Ogre::Node::TS_PARENT);
+            //    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->pitch(Ogre::Degree(palmVelocity.y * (-0.01)), Ogre::Node::TS_PARENT);
+            //}
         }
         mLastFrame = controller.frame();
-
-        if (translateProb > 0.5 && isSwipe)
-        //if (isSwipe)
-        {
-            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->move(Ogre::Vector3(translate.x, translate.y, translate.z) * (-0.01));
-        }
-        if (rotateProb > 0.5)
-        {
-            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->rotate(Ogre::Vector3(rotateAxis.x, rotateAxis.y, rotateAxis.z) * (-1), Ogre::Radian(rotateAngle), Ogre::Node::TS_PARENT);
-        }
-        if (scaleProb > 0.5)
-        {
-        //    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->scale(scale, scale, scale);
-        }
+        
     }
 
     void LeapMotionApp::onFocusGained(const Leap::Controller& controller)
