@@ -71,7 +71,7 @@ namespace MagicApp
         pSceneMgr->destroyLight("SimpleLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderOBJ");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
     }
 
     bool PointSetViewer::MouseMoved( const OIS::MouseEvent &arg )

@@ -7,6 +7,25 @@
 
 namespace MagicApp
 {
+    class LeapMotionData
+    {
+    public:
+        LeapMotionData();
+        ~LeapMotionData();
+
+        void LoadData();
+        void GetCurrentData(MagicDGP::Vector3& palmPos, MagicDGP::Vector3& palmVelocity);
+        int64_t GetCurrentTimeStamp();
+        int64_t GetNextTimeStamp();
+        void NextFrame();
+
+    private:
+        std::vector<MagicDGP::Vector3> mPalmPos;
+        std::vector<MagicDGP::Vector3> mPalmVelocity;
+        std::vector<int64_t> mTimeStamp;
+        int mFrameIndex;
+    };
+
     class LeapMotionApp : public MagicCore::AppBase, public Leap::Listener
     {
     public:
@@ -29,6 +48,10 @@ namespace MagicApp
         virtual void onFocusLost(const Leap::Controller& controller);
 
         void OpenMesh3D();
+        void StartLeapRecorder();
+        void StopLeapRecorder();
+        void PlayLeapData();
+        void StopLeapData();
 
     private:
         void SetupScene(void);
@@ -43,6 +66,11 @@ namespace MagicApp
         bool mLeapMotinOn;
         int64_t mLeapLastTime;
         Leap::Vector mLeapLastPalmVelocity;
+        std::ofstream mLeapRecorder;
+        bool mIsLeapRecording;
+        LeapMotionData mLeapData;
+        bool mIsLeapDataPlaying;
+        float mSysTimeAccum;
     };
 
 

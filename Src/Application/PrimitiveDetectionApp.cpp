@@ -113,7 +113,7 @@ namespace MagicApp
             mpMesh = NULL;
         }
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Mesh3D");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
         //pSceneMgr->destroyLight("SimpleLightBack");
     }
 

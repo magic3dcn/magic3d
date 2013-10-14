@@ -6,10 +6,76 @@
 
 namespace MagicApp
 {
+    LeapMotionData::LeapMotionData() :
+        mFrameIndex(0)
+    {
+
+    }
+        
+    LeapMotionData::~LeapMotionData()
+    {
+
+    }
+
+    void LeapMotionData::LoadData()
+    {
+        std::string fileName;
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        {
+            std::ifstream fin(fileName);
+            mTimeStamp.clear();
+            mPalmPos.clear();
+            mPalmVelocity.clear();
+            char ch;
+            int frameSize = 0;
+            while(!fin.eof())
+            {
+                fin >> ch;
+                int64_t time;
+                MagicDGP::Vector3 palmPos, palmVelocity;
+                fin >> time >> palmPos[0] >> palmPos[1] >> palmPos[2] >> palmVelocity[0] >> palmVelocity[1] >> palmVelocity[2];
+                mTimeStamp.push_back(time);
+                mPalmPos.push_back(palmPos);
+                mPalmVelocity.push_back(palmVelocity);
+                frameSize++;
+            }
+            fin.close();
+            MagicLog << "LeapMotionData: " << frameSize << " frames" << std::endl;
+        }
+    }
+
+    void LeapMotionData::GetCurrentData(MagicDGP::Vector3& palmPos, MagicDGP::Vector3& palmVelocity)
+    {
+        palmPos = mPalmPos.at(mFrameIndex);
+        palmVelocity = mPalmVelocity.at(mFrameIndex);
+    }
+
+    int64_t LeapMotionData::GetCurrentTimeStamp()
+    {
+        return mTimeStamp.at(mFrameIndex);
+    }
+
+    int64_t LeapMotionData::GetNextTimeStamp()
+    {
+        return mTimeStamp.at( (mFrameIndex + 1) % mTimeStamp.size() );
+    }
+
+    void LeapMotionData::NextFrame()
+    {
+        mFrameIndex++;
+        if (mFrameIndex == mTimeStamp.size())
+        {
+            mFrameIndex = 0;
+        }
+    }
+
     LeapMotionApp::LeapMotionApp() :
         mpMesh(NULL),
         mLeapMotinOn(false),
-        mLeapLastTime(0)
+        mLeapLastTime(0),
+        mIsLeapRecording(false),
+        mIsLeapDataPlaying(false),
+        mSysTimeAccum(0)
     {
     }
 
@@ -37,6 +103,39 @@ namespace MagicApp
 
     bool LeapMotionApp::Update(float timeElapsed)
     {
+        if (mIsLeapDataPlaying)
+        {
+            mSysTimeAccum += timeElapsed;
+            float currentTime = mLeapData.GetCurrentTimeStamp() / 1000000.f;
+            MagicDGP::Vector3 palmPos, palmVelocity;
+            mLeapData.GetCurrentData(palmPos, palmVelocity);
+            while (true)
+            {
+                float nextTime = mLeapData.GetNextTimeStamp() / 1000000.f;
+                if (nextTime < currentTime)
+                {
+                    mSysTimeAccum = 0;
+                    mLeapData.NextFrame();
+                    mLeapData.GetCurrentData(palmPos, palmVelocity);
+                    break;
+                }
+                if ( (nextTime - currentTime) < mSysTimeAccum )
+                {
+                    mLeapData.NextFrame();
+                    mLeapData.GetCurrentData(palmPos, palmVelocity);
+                    mSysTimeAccum -= (nextTime - currentTime);
+                    currentTime = nextTime;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            palmPos /= 500;
+            //MagicLog << "Update: palmPos: " << palmPos[0] << " " << palmPos[1] << " " << palmPos[2] << std::endl;
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPos[0], palmPos[1], palmPos[2]);
+        }
+
         return true;
     }
 
@@ -90,6 +189,28 @@ namespace MagicApp
                 mLeapMotinOn = false;
             }
         }
+        if (arg.key == OIS::KC_Q)
+        {
+            if (mIsLeapRecording == false)
+            {
+                StartLeapRecorder();
+            }
+        }
+        if (arg.key == OIS::KC_W)
+        {
+            if (mIsLeapRecording == true)
+            {
+                StopLeapRecorder();
+            }
+        }
+        if (arg.key == OIS::KC_A)
+        {
+            PlayLeapData();
+        }
+        if (arg.key == OIS::KC_S)
+        {
+            StopLeapData();
+        }
 
         return true;
     }
@@ -118,7 +239,7 @@ namespace MagicApp
     void LeapMotionApp::onFrame(const Leap::Controller& controller)
     {
         //MagicLog << "LeapMotionApp::onFrame" << std::endl;
-        const Leap::Frame frame = controller.frame();
+        //const Leap::Frame frame = controller.frame();
         /*MagicLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
             << frame.fingers().count() << " tools: " << frame.tools().count() << " gestures: "
             << frame.gestures().count() << std::endl;*/
@@ -154,41 +275,47 @@ namespace MagicApp
         //        }
         //    }
         //}
-        Leap::HandList handList = frame.hands();
-        float minSpeed = 1500;
-        if (!handList.isEmpty())
-        {
-            Leap::Vector palmVelocity;
-            palmVelocity = handList[0].palmVelocity();
-            if (palmVelocity.magnitude() > minSpeed)
-            {
-                MagicLog << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
-                    << palmVelocity.y << " " << palmVelocity.z << std::endl;
-            }
-            if (palmVelocity.magnitude() > minSpeed)
-            {
-                int64_t currentTime = frame.timestamp();
-                if ( (currentTime - mLeapLastTime) > 500000 ||
-                    (palmVelocity.x * mLeapLastPalmVelocity.x + palmVelocity.y * mLeapLastPalmVelocity.y) > 0 )
-                    //!(palmVelocity.x * mLeapLastPalmVelocity.x < 0 || palmVelocity.y * mLeapLastPalmVelocity.y < 0) )
-                {
+        //Leap::HandList handList = frame.hands();
+        //float minSpeed = 1500;
+        //if (!handList.isEmpty())
+        //{
+        //    Leap::Vector palmVelocity;
+        //    palmVelocity = handList[0].palmVelocity();
+        //    if (palmVelocity.magnitude() > minSpeed)
+        //    {
+        //        MagicLog << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
+        //            << palmVelocity.y << " " << palmVelocity.z << std::endl;
+        //    }
+        //    if (palmVelocity.magnitude() > minSpeed)
+        //    {
+        //        int64_t currentTime = frame.timestamp();
+        //        if ( (currentTime - mLeapLastTime) > 500000 ||
+        //            (palmVelocity.x * mLeapLastPalmVelocity.x + palmVelocity.y * mLeapLastPalmVelocity.y) > 0 )
+        //            //!(palmVelocity.x * mLeapLastPalmVelocity.x < 0 || palmVelocity.y * mLeapLastPalmVelocity.y < 0) )
+        //        {
 
-                    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->yaw(Ogre::Degree(palmVelocity.x * 0.02), Ogre::Node::TS_PARENT);
-                    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->pitch(Ogre::Degree(palmVelocity.y * (-0.02)), Ogre::Node::TS_PARENT);
-                    mLeapLastPalmVelocity = palmVelocity;
-                    mLeapLastTime = currentTime;
-                }
-            }
-            //if (palmVelocity.magnitude() > minSpeed && 
-            //    (mLeapLastPalmVelocity.magnitude() < minSpeed || mLeapLastPalmVelocity.dot(palmVelocity) > 0 )
-            //    )
-            //{
-            //    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->yaw(Ogre::Degree(palmVelocity.x * 0.01), Ogre::Node::TS_PARENT);
-            //    MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->pitch(Ogre::Degree(palmVelocity.y * (-0.01)), Ogre::Node::TS_PARENT);
-            //}
-        }
-        mLastFrame = controller.frame();
+        //            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->yaw(Ogre::Degree(palmVelocity.x * 0.02), Ogre::Node::TS_PARENT);
+        //            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->pitch(Ogre::Degree(palmVelocity.y * (-0.02)), Ogre::Node::TS_PARENT);
+        //            mLeapLastPalmVelocity = palmVelocity;
+        //            mLeapLastTime = currentTime;
+        //        }
+        //    }
+        //}
+        //mLastFrame = controller.frame();
         
+        if (mIsLeapRecording)
+        {
+            const Leap::Frame frame = controller.frame();
+            Leap::HandList handList = frame.hands();
+            if (!handList.isEmpty())
+            {
+                Leap::Vector palmVelocity = handList[0].palmVelocity();
+                Leap::Vector palmPosition = handList[0].palmPosition();
+                int64_t currentTime = frame.timestamp();
+                mLeapRecorder << "f " << currentTime << " " << palmPosition.x << " " << palmPosition.y << " " << palmPosition.z
+                    << " " << palmVelocity.x << " " << palmVelocity.y << " " << palmVelocity.z << std::endl;
+            }
+        }
     }
 
     void LeapMotionApp::onFocusGained(const Leap::Controller& controller)
@@ -240,6 +367,39 @@ namespace MagicApp
         pSceneMgr->destroyLight("SimpleLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderMesh");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetOrientation();
+        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+    }
+
+    void LeapMotionApp::StartLeapRecorder()
+    {
+        std::string fileName;
+        if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+        {
+            mLeapRecorder.open(fileName);
+            mIsLeapRecording = true;
+        }
+    }
+
+    void LeapMotionApp::StopLeapRecorder()
+    {
+        mLeapRecorder.close();
+        mIsLeapRecording = false;
+    }
+
+    void LeapMotionApp::PlayLeapData()
+    {
+        mLeapData.LoadData();
+        mIsLeapDataPlaying = true;
+        MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/ball.obj");
+        pMesh->UnifyPosition(0.1);
+        pMesh->UpdateNormal();
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", pMesh);
+        delete pMesh;
+        mSysTimeAccum = 0;
+    }
+
+    void LeapMotionApp::StopLeapData()
+    {
+        mIsLeapDataPlaying = false;
     }
 }
