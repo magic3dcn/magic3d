@@ -21,6 +21,7 @@ namespace MagicDGP
     public:
         static int mMinInitSupportNum;
         static int mMinSupportNum;
+        static int mSampleBreakNum;
         static Real mMaxAngleDeviation;
         static Real mMaxDistDeviation;
         static Real mMaxCylinderRadiusScale;
@@ -39,8 +40,8 @@ namespace MagicDGP
         ShapeCandidate();
         virtual ~ShapeCandidate();
         virtual bool IsValid() = 0;
-        virtual int CalSupportVertex(const Mesh3D* pMesh) = 0;
-        virtual int Refitting(const Mesh3D* pMesh) = 0;
+        virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
+        virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
         virtual PrimitiveType GetType() = 0;
         bool IsRemoved();
         void SetRemoved(bool valid);
@@ -62,8 +63,8 @@ namespace MagicDGP
         PlaneCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~PlaneCandidate();
         virtual bool IsValid();
-        virtual int CalSupportVertex(const Mesh3D* pMesh);
-        virtual int Refitting(const Mesh3D* pMesh);
+        virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
     private:
@@ -80,8 +81,8 @@ namespace MagicDGP
         SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~SphereCandidate();
         virtual bool IsValid();
-        virtual int CalSupportVertex(const Mesh3D* pMesh);
-        virtual int Refitting(const Mesh3D* pMesh);
+        virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
     //private:
@@ -98,8 +99,8 @@ namespace MagicDGP
         CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~CylinderCandidate();
         virtual bool IsValid();
-        virtual int CalSupportVertex(const Mesh3D* pMesh);
-        virtual int Refitting(const Mesh3D* pMesh);
+        virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
     //private:
@@ -117,8 +118,8 @@ namespace MagicDGP
         ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~ConeCandidate();
         virtual bool IsValid();
-        virtual int CalSupportVertex(const Mesh3D* pMesh);
-        virtual int Refitting(const Mesh3D* pMesh);
+        virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
     //private:
@@ -141,13 +142,19 @@ namespace MagicDGP
         static void Primitive2DDetection(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionTest(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionPhase1(const Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetectionPhase2(const Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void AddShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& validFlags);
         static void FindAllShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh);
+        static void FindAllShapeCandidatesWithoutReFitting(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& resFlag);
+        static bool FindNewCandidatesPhase2(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
+        static int ChoseBestCandidatephase2(std::vector<ShapeCandidate* >& candidates);
+        static bool IsCandidateAcceptablePhase2(int index, std::vector<ShapeCandidate* >& candidates);
+        static void RemoveAcceptableCandidatePhase2(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
 
     };
 
