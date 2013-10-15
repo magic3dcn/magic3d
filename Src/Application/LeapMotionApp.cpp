@@ -105,7 +105,7 @@ namespace MagicApp
     {
         if (mIsLeapDataPlaying)
         {
-            mSysTimeAccum += timeElapsed;
+            mSysTimeAccum += timeElapsed / 20;
             float currentTime = mLeapData.GetCurrentTimeStamp() / 1000000.f;
             MagicDGP::Vector3 palmPos, palmVelocity;
             mLeapData.GetCurrentData(palmPos, palmVelocity);
@@ -131,7 +131,15 @@ namespace MagicApp
                     break;
                 }
             }
-            palmPos /= 500;
+            palmPos /= 250;
+            palmPos[1] = palmPos[1] - 1.25;
+            palmPos[2] = 0;
+            palmVelocity /= 5000;
+            palmVelocity[2] = 0;
+            std::vector<MagicDGP::Vector3> startPos, endPos;
+            startPos.push_back(MagicDGP::Vector3(0, 0, 0));
+            endPos.push_back(palmVelocity);
+            MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("RenderVelocity", "SimpleLine", startPos, endPos);
             //MagicLog << "Update: palmPos: " << palmPos[0] << " " << palmPos[1] << " " << palmPos[2] << std::endl;
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPos[0], palmPos[1], palmPos[2]);
         }
@@ -154,19 +162,19 @@ namespace MagicApp
 
     bool LeapMotionApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        if (!mLeapMotinOn)
+        /*if (!mLeapMotinOn)
         {
             mViewTool.MouseMoved(arg);
-        }
+        }*/
         return true;
     }
 
     bool LeapMotionApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (!mLeapMotinOn)
+        /*if (!mLeapMotinOn)
         {
             mViewTool.MousePressed(arg);
-        }
+        }*/
         return true;
     }
 
