@@ -22,3 +22,5 @@ xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI2 .\bin\debug\OpenNI2 /S /E
 xcopy /y .\Dependencies\MyGUI\bin\debug\MyGUIEngine_d.dll .\bin\debug\
 xcopy /y .\Dependencies\FLANN\bin\debug\flann.dll .\bin\debug\
 xcopy /y .\Dependencies\LeapMotion\lib\x86\Leapd.dll .\bin\debug\
+xcopy /y .\Dependencies\Common\msvcp100d.dll .\bin\debug\
+xcopy /y .\Dependencies\Common\msvcr100d.dll .\bin\debug\

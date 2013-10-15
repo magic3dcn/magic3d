@@ -1258,10 +1258,10 @@ namespace MagicDGP
     {
     }
 
-    void PrimitiveDetection::Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res)
+    /*void PrimitiveDetection::Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res)
     {
         MagicDependence::RansacPrimitiveShapes::MeshPrimitiveDetection(pMesh, res);
-    }
+    }*/
 
     void PrimitiveDetection::Primitive2DDetection(const Mesh3D* pMesh, std::vector<int>& res)
     {

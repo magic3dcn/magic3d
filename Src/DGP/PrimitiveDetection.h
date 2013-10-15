@@ -1,5 +1,5 @@
 #pragma once 
-#include "../Dependence/RansacPrimitiveShapes.h"
+#include "Mesh3D.h"
 
 namespace MagicDGP
 {
@@ -140,7 +140,7 @@ namespace MagicDGP
         PrimitiveDetection();
         ~PrimitiveDetection();
 
-        static void Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res);
+        //static void Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetection(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionTest(const Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionPhase1(const Mesh3D* pMesh, std::vector<int>& res);
