@@ -22,6 +22,8 @@ namespace MagicDGP
         static int mMinInitSupportNum;
         static int mMinSupportNum;
         static int mSampleBreakNum;
+        static int mSampleBreakDelta;
+        static int mSampleAcceptableNum;
         static Real mMaxAngleDeviation;
         static Real mMaxDistDeviation;
         static Real mMaxCylinderRadiusScale;
@@ -151,6 +153,7 @@ namespace MagicDGP
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& resFlag);
+        static void FindInitialCandidatesPhase2(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
         static bool FindNewCandidatesPhase2(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
         static int ChoseBestCandidatephase2(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptablePhase2(int index, std::vector<ShapeCandidate* >& candidates);
