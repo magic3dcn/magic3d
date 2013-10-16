@@ -120,7 +120,8 @@ namespace MagicDGP
 
         void UnifyPosition(Real size);
         void UpdateNormal();
-        void ReverseNormal();
+        void GetBBox(Vector3& bboxMin, Vector3& bboxMax) const;
+        void CalculateBBox();
         void ClearData();
 
     private:
@@ -128,5 +129,6 @@ namespace MagicDGP
         std::vector<Edge3D* >   mEdgeList;
         std::vector<Face3D* >   mFaceList;
         std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap; //Only used in construct mesh
+        Vector3 mBBoxMin, mBBoxMax;
     };
 }

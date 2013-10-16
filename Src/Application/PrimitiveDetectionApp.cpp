@@ -63,12 +63,6 @@ namespace MagicApp
 
     bool PrimitiveDetectionApp::KeyPressed( const OIS::KeyEvent &arg )
     {
-        if (arg.key == OIS::KC_R && mpMesh !=NULL)
-        {
-            MagicLog << "Reverse Mesh Normal" << std::endl;
-            mpMesh->ReverseNormal();
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("TestMesh3D", "MyCookTorrance", mpMesh);
-        }
         if (arg.key == OIS::KC_V && mpMesh !=NULL)
         {
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
@@ -94,11 +88,6 @@ namespace MagicApp
         sl->setPosition(10, 10, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
-        //Ogre::Light*  sb = pSceneMgr->createLight("SimpleLightBack");
-        //sb->setPosition(10, 10, -20);
-        //sb->setDiffuseColour(0.8, 0.8, 0.8);
-        //sb->setSpecularColour(0.5, 0.5, 0.5);
-
     }
      
     void PrimitiveDetectionApp::ShutdownScene(void)
@@ -114,7 +103,6 @@ namespace MagicApp
         }
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Mesh3D");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
-        //pSceneMgr->destroyLight("SimpleLightBack");
     }
 
     bool PrimitiveDetectionApp::ImportMesh3D()
@@ -149,10 +137,7 @@ namespace MagicApp
     void PrimitiveDetectionApp::RansacPrimitiveDetection()
     {
         std::vector<int> res;
-        //MagicDGP::PrimitiveDetection::Primitive2DDetectionFromRansac(mpMesh, res);
-        //MagicDGP::PrimitiveDetection::Primitive2DDetectionTest(mpMesh, res);
-        //MagicDGP::PrimitiveDetection::Primitive2DDetectionPhase1(mpMesh, res);
-        MagicDGP::PrimitiveDetection::Primitive2DDetectionPhase2(mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DDetection(mpMesh, res);
         int vertNum = mpMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {

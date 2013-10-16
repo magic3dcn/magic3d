@@ -440,12 +440,36 @@ namespace MagicDGP
         }
     }
 
-    void Mesh3D::ReverseNormal()
+    void Mesh3D::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const
     {
-        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); itr++)
+        bboxMin = mBBoxMin;
+        bboxMax = mBBoxMax;
+    }
+
+    void Mesh3D::CalculateBBox()
+    {
+        Vector3 posTemp = mVertexList.at(0)->GetPosition(); //mPointSet.at(0)->GetPosition();
+        mBBoxMin[0] = mBBoxMax[0] = posTemp[0];
+        mBBoxMin[1] = mBBoxMax[1] = posTemp[1];
+        mBBoxMin[2] = mBBoxMax[2] = posTemp[2];
+        int vertNum = mVertexList.size();
+        for (int i = 0; i < vertNum; i++)
         {
-            (*itr)->SetNormal( (*itr)->GetNormal() * (-1.f) );
+            Vector3 pos = mVertexList.at(i)->GetPosition();
+            for (int k = 0; k < 3; k++)
+            {
+                if (mBBoxMin[k] > pos[k])
+                {
+                    mBBoxMin[k] = pos[k];
+                }
+                if (mBBoxMax[k] < pos[k])
+                {
+                    mBBoxMax[k] = pos[k];
+                }
+            }
         }
+        MagicLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
+            << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 
     void Mesh3D::ClearData()

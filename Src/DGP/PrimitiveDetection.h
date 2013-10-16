@@ -23,7 +23,6 @@ namespace MagicDGP
         static int mMinSupportNum;
         static int mSampleBreakNum;
         static int mSampleBreakDelta;
-        static int mSampleAcceptableNum;
         static Real mMaxAngleDeviation;
         static Real mMaxDistDeviation;
         static Real mMaxCylinderRadiusScale;
@@ -140,24 +139,13 @@ namespace MagicDGP
         PrimitiveDetection();
         ~PrimitiveDetection();
 
-        //static void Primitive2DDetectionFromRansac(const Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DDetection(const Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DDetectionTest(const Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DDetectionPhase1(const Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DDetectionPhase2(const Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
     
     private:
-        static void AddShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& validFlags);
-        static void FindAllShapeCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh);
-        static void FindAllShapeCandidatesWithoutReFitting(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh);
+        static bool FindNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
-        static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& resFlag);
-        static void FindInitialCandidatesPhase2(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
-        static bool FindNewCandidatesPhase2(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
-        static int ChoseBestCandidatephase2(std::vector<ShapeCandidate* >& candidates);
-        static bool IsCandidateAcceptablePhase2(int index, std::vector<ShapeCandidate* >& candidates);
-        static void RemoveAcceptableCandidatePhase2(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
+        static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
 
     };
 
