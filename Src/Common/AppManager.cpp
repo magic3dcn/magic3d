@@ -3,7 +3,7 @@
 #include "ToolKit.h"
 #include "LogSystem.h"
 #include "../Application/Homepage.h"
-#include "../Application/PointSetViewer.h"
+//#include "../Application/PrimitiveDetectionApp.h"
 
 namespace MagicCore
 {
@@ -26,7 +26,7 @@ namespace MagicCore
     void AppManager::Init()
     {
         EnterApp(new MagicApp::Homepage, "Homepage");
-        //EnterApp(new MagicApp::PointSetViewer, "PointSetViewer");
+        //EnterApp(new MagicApp::PrimitiveDetectionApp, "PrimitiveDetectionApp");
     }
 
     void AppManager::Update(float timeElapsed)

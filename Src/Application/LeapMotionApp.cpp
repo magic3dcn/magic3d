@@ -134,14 +134,22 @@ namespace MagicApp
             palmPos /= 250;
             palmPos[1] = palmPos[1] - 1.25;
             palmPos[2] = 0;
+            MagicDGP::Real velocity = palmVelocity.Length();
             palmVelocity /= 5000;
             palmVelocity[2] = 0;
             std::vector<MagicDGP::Vector3> startPos, endPos;
             startPos.push_back(MagicDGP::Vector3(0, 0, 0));
             endPos.push_back(palmVelocity);
             MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("RenderVelocity", "SimpleLine", startPos, endPos);
-            //MagicLog << "Update: palmPos: " << palmPos[0] << " " << palmPos[1] << " " << palmPos[2] << std::endl;
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPos[0], palmPos[1], palmPos[2]);
+            if (velocity > 1200)
+            {
+                MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setScale(1, 1, 1);
+            }
+            else
+            {
+                MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setScale(0.2, 0.2, 0.2);
+            }
         }
 
         return true;
@@ -185,8 +193,14 @@ namespace MagicApp
             if (!mLeapMotinOn)
             {
                 mLeapCtrl.addListener(*this);
-                mLeapCtrl.enableGesture(Leap::Gesture::TYPE_SWIPE);
+                //mLeapCtrl.enableGesture(Leap::Gesture::TYPE_SWIPE);
                 mLeapMotinOn = true;
+
+                MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/ball.obj");
+                pMesh->UnifyPosition(0.1);
+                pMesh->UpdateNormal();
+                MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", pMesh);
+                delete pMesh;
             }
         }
         if (arg.key == OIS::KC_M)
@@ -322,6 +336,27 @@ namespace MagicApp
                 int64_t currentTime = frame.timestamp();
                 mLeapRecorder << "f " << currentTime << " " << palmPosition.x << " " << palmPosition.y << " " << palmPosition.z
                     << " " << palmVelocity.x << " " << palmVelocity.y << " " << palmVelocity.z << std::endl;
+            }
+        }
+        else
+        {
+            const Leap::Frame frame = controller.frame();
+            Leap::HandList handList = frame.hands();
+            if (!handList.isEmpty())
+            {
+                Leap::Vector palmPosition = handList[0].palmPosition();
+                palmPosition /=250;
+                palmPosition.y = palmPosition.y - 1.25;
+                palmPosition.z = 0;
+                Leap::Vector palmVelocity = handList[0].palmVelocity();
+                MagicDGP::Real palmVeloValue = palmVelocity.magnitude();
+                palmVelocity /= 5000;
+                palmVelocity.z = 0;
+                std::vector<MagicDGP::Vector3> startPos, endPos;
+                startPos.push_back(MagicDGP::Vector3(0, 0, 0));
+                endPos.push_back(MagicDGP::Vector3(palmVelocity.x, palmVelocity.y, palmVelocity.z));
+                MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("RenderVelocity", "SimpleLine", startPos, endPos);
+                MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPosition.x, palmPosition.y, palmPosition.z);
             }
         }
     }
