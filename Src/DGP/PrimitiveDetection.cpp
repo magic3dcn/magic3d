@@ -271,7 +271,6 @@ namespace MagicDGP
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             mScore += (fabs(nor * mNormal) - PrimitiveParameters::mBaseScore);
         }
-        //mScore = fabs(mScore);
     }
 
     SphereCandidate::SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -334,8 +333,6 @@ namespace MagicDGP
 
     int SphereCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        //Real MaxAngleDeviation = 0.9848;
-        //Real MaxAngleDeviation = 0.94;
         Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxSphereRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
@@ -486,7 +483,6 @@ namespace MagicDGP
             dir.Normalise();
             mScore += (fabs(nor * dir) - PrimitiveParameters::mBaseScore);
         }
-        //mScore = fabs(mScore);
     }
 
     CylinderCandidate::CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -551,9 +547,6 @@ namespace MagicDGP
 
     int CylinderCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        //Real MaxAngleDeviation = 0.9848;
-        //Real MaxDistDeviation = 0.001;
-        //Real MaxAngleDeviation = 0.94;
         Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxCylinderRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
@@ -815,7 +808,6 @@ namespace MagicDGP
             dir.Normalise();
             mScore += (fabs(dir * nor) - PrimitiveParameters::mBaseScore);
         }
-        //mScore = fabs(mScore);
     }
 
     ConeCandidate::ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2) :

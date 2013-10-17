@@ -86,8 +86,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    //private:
-    public:
+    private:
+    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -104,8 +104,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    //private:
-    public:
+    private:
+    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -123,8 +123,8 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh);
-    //private:
-    public:
+    private:
+    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
