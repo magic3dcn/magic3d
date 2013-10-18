@@ -31,6 +31,7 @@ namespace MagicApp
         void ChangeFrontRange(int rel);
         void ChangeBackRange(int rel);
         void PointSetRegistration();
+        void PointSetRegistrationEnhance();
         void SetupPointSetProcessing();
         bool SavePointSet();
         void SmoothPointSet();

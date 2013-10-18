@@ -1,6 +1,7 @@
 //#include "StdAfx.h"
 #include "Registration.h"
 #include "Eigen/Dense"
+#include "Eigen/Geometry"
 //#include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 
@@ -258,5 +259,85 @@ namespace MagicDGP
         MagicLog << 1 << " " << -res(2) << " " << res(1) << " " << res(3) << std::endl;
         MagicLog << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
         MagicLog << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;*/
+    }
+
+    void Registration::ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes, openni::VideoStream& depthStream)
+    {
+        //int iterNum = 10;
+        //*pTransRes = *pTransInit;
+        ////ICPInitRefDataEnhance(pNewPC);
+        //std::vector<int> sampleIndex;
+        //ICPSamplePointEnhance(pRefPC, sampleIndex, pTransRes);
+        //for (int k = 0; k < iterNum; k++)
+        //{
+        //    //float timeCorres = MagicCore::ToolKit::GetSingleton()->GetTime();
+        //    std::vector<int> correspondIndex;
+        //    ICPFindCorrespondanceEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex);
+        //    //MagicLog << "        ICPCorres: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeCorres << std::endl;
+        //    //float timeMinimize = MagicCore::ToolKit::GetSingleton()->GetTime();
+        //    HomoMatrix4 transDelta;
+        //    ICPEnergyMinimizationEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, &transDelta);
+        //    //MagicLog << "        ICPMinimize: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeMinimize << std::endl;
+        //    //*pTransRes *= transDelta;
+        //    *pTransRes = transDelta * (*pTransRes);
+        //    //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
+        //    //MagicCore::RenderSystem::GetSingleton()->Update();
+        //    if (fabs(transDelta.GetValue(0, 3)) < 0.01f && 
+        //        fabs(transDelta.GetValue(1, 3)) < 0.01f && 
+        //        fabs(transDelta.GetValue(2, 3)) < 0.01f)
+        //    {
+        //        MagicLog << "ICP iterator number: " << k + 1 << std::endl;
+        //        break;
+        //    }
+        //}
+    }
+
+    //void Registration::ICPInitRefDataEnhance(const Point3DSet* pNewPC)
+    //{
+
+    //}
+
+    void Registration::ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const HomoMatrix4* pTransform, openni::VideoStream& depthStream)
+    {
+        std::vector<openni::DepthPixel> depthCache(640 * 480, 0);
+        int pcNum = pPC->GetPointNumber();
+        for (int i = 0; i < pcNum; i++)
+        {
+            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            int depthX, depthY;
+            openni::DepthPixel depthZ;
+            openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (depthCache.at(depthX * 480 + depthY) == 0)
+            {
+                depthCache.at(depthX * 480 + depthY) = depthZ;
+            }
+            else if (depthCache.at(depthX * 480 + depthY) > depthZ)
+            {
+                depthCache.at(depthX * 480 + depthY) = depthZ;
+            }
+        }
+        for (int i = 0; i < pcNum; i++)
+        {
+            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            int depthX, depthY;
+            openni::DepthPixel depthZ;
+            openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (depthCache.at(depthX * 480 + depthY) == depthZ)
+            {
+                sampleIndex.push_back(i);
+            }
+        }
+    }
+
+    void Registration::ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
+            std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex, openni::VideoStream& depthStream)
+    {
+
+    }
+
+    void Registration::ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta)
+    {
+
     }
 }

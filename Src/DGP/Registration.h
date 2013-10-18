@@ -3,6 +3,7 @@
 #include <vector>
 #include "HomoMatrix4.h"
 #include "flann/flann.h"
+#include "OpenNI.h"
 
 namespace MagicDGP
 {
@@ -13,7 +14,8 @@ namespace MagicDGP
         ~Registration();
 
     public:
-        void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes); 
+        void ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes);
+        void ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes, openni::VideoStream& depthStream);
 
     private:
         void ICPInitRefData(const Point3DSet* pRef);
@@ -21,6 +23,13 @@ namespace MagicDGP
         void ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex);
         void ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta);
+
+        //void ICPInitRefDataEnhance(const Point3DSet* pNewPC);
+        void ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const HomoMatrix4* pTransform, openni::VideoStream& depthStream);
+        void ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
+            std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex, openni::VideoStream& depthStream);
+        void ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta);
 
     private:

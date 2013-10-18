@@ -19,6 +19,7 @@ namespace MagicDGP
         Real GetValue(int row, int col) const;
         void SetValue(int row, int col, Real v);
         void Unit();
+        HomoMatrix4 Inverse();
 
     private:
         Real mValues[16];

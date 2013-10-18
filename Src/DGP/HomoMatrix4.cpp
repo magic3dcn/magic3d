@@ -112,4 +112,10 @@ namespace MagicDGP
         mValues[11] = 1;
         mValues[15] = 1;
     }
+
+    HomoMatrix4 HomoMatrix4::Inverse()
+    {
+        HomoMatrix4 inv;
+        return inv;
+    }
 }
