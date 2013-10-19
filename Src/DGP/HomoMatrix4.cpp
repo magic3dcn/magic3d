@@ -1,5 +1,6 @@
 //#include "StdAfx.h"
 #include "HomoMatrix4.h"
+#include "Eigen/Geometry"
 
 namespace MagicDGP
 {
@@ -115,7 +116,23 @@ namespace MagicDGP
 
     HomoMatrix4 HomoMatrix4::Inverse()
     {
+        Eigen::Transform<double, 3, Eigen::Affine> transform;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                transform(i, j) = GetValue(i, j);
+            }
+        }
+        Eigen::Transform<double, 3, Eigen::Affine> transInv = transform.inverse();
         HomoMatrix4 inv;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                inv.SetValue(i, j, transInv(i, j));
+            }
+        }
         return inv;
     }
 }

@@ -1,7 +1,6 @@
 //#include "StdAfx.h"
 #include "Registration.h"
 #include "Eigen/Dense"
-#include "Eigen/Geometry"
 //#include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 
@@ -9,7 +8,9 @@ namespace MagicDGP
 {
     Registration::Registration() : 
         mFlannIndex(NULL),
-        mDataSet(NULL)
+        mDataSet(NULL),
+        mDepthResolutionX(640),
+        mDepthResolutionY(480)
     {
     }
 
@@ -263,66 +264,79 @@ namespace MagicDGP
 
     void Registration::ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes, openni::VideoStream& depthStream)
     {
-        //int iterNum = 10;
-        //*pTransRes = *pTransInit;
-        ////ICPInitRefDataEnhance(pNewPC);
-        //std::vector<int> sampleIndex;
-        //ICPSamplePointEnhance(pRefPC, sampleIndex, pTransRes);
-        //for (int k = 0; k < iterNum; k++)
-        //{
-        //    //float timeCorres = MagicCore::ToolKit::GetSingleton()->GetTime();
-        //    std::vector<int> correspondIndex;
-        //    ICPFindCorrespondanceEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex);
-        //    //MagicLog << "        ICPCorres: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeCorres << std::endl;
-        //    //float timeMinimize = MagicCore::ToolKit::GetSingleton()->GetTime();
-        //    HomoMatrix4 transDelta;
-        //    ICPEnergyMinimizationEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, &transDelta);
-        //    //MagicLog << "        ICPMinimize: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeMinimize << std::endl;
-        //    //*pTransRes *= transDelta;
-        //    *pTransRes = transDelta * (*pTransRes);
-        //    //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
-        //    //MagicCore::RenderSystem::GetSingleton()->Update();
-        //    if (fabs(transDelta.GetValue(0, 3)) < 0.01f && 
-        //        fabs(transDelta.GetValue(1, 3)) < 0.01f && 
-        //        fabs(transDelta.GetValue(2, 3)) < 0.01f)
-        //    {
-        //        MagicLog << "ICP iterator number: " << k + 1 << std::endl;
-        //        break;
-        //    }
-        //}
+        int iterNum = 10;
+        *pTransRes = *pTransInit;
+        for (int k = 0; k < iterNum; k++)
+        {
+            std::vector<int> sampleIndex;
+            ICPSamplePointEnhance(pRefPC, sampleIndex, pTransRes, depthStream);
+            MagicLog << "        ICPSamplePointEnhance" << std::endl;
+            float timeCorres = MagicCore::ToolKit::GetSingleton()->GetTime();
+            std::vector<int> correspondIndex;
+            ICPFindCorrespondanceEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, depthStream);
+            MagicLog << "        ICPCorres: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeCorres << std::endl;
+            float timeMinimize = MagicCore::ToolKit::GetSingleton()->GetTime();
+            HomoMatrix4 transDelta;
+            ICPEnergyMinimizationEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, &transDelta);
+            MagicLog << "        ICPMinimize: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeMinimize << std::endl;
+            *pTransRes = transDelta * (*pTransRes);
+            //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
+            //MagicCore::RenderSystem::GetSingleton()->Update();
+            if (fabs(transDelta.GetValue(0, 3)) < 0.01f && 
+                fabs(transDelta.GetValue(1, 3)) < 0.01f && 
+                fabs(transDelta.GetValue(2, 3)) < 0.01f)
+            {
+                MagicLog << "ICP iterator number: " << k + 1 << std::endl;
+                break;
+            }
+        }
     }
-
-    //void Registration::ICPInitRefDataEnhance(const Point3DSet* pNewPC)
-    //{
-
-    //}
 
     void Registration::ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const HomoMatrix4* pTransform, openni::VideoStream& depthStream)
     {
-        std::vector<openni::DepthPixel> depthCache(640 * 480, 0);
+        std::vector<openni::DepthPixel> depthCache((mDepthResolutionX + 1) * (mDepthResolutionY + 1), 0);
         int pcNum = pPC->GetPointNumber();
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
             int depthX, depthY;
             openni::DepthPixel depthZ;
-            openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
-            if (depthCache.at(depthX * 480 + depthY) == 0)
+            openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (res != openni::STATUS_OK)
             {
-                depthCache.at(depthX * 480 + depthY) = depthZ;
+                MagicLog << "        res != openni::STATUS_OK: " << res << std::endl;
+                continue;
             }
-            else if (depthCache.at(depthX * 480 + depthY) > depthZ)
+            if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
             {
-                depthCache.at(depthX * 480 + depthY) = depthZ;
+                continue;
+            }
+            //MagicLog << "depth: " << depthX << " " << depthY << " " << depthZ << std::endl;
+            if (depthCache.at(depthX * mDepthResolutionY + depthY) == 0)
+            {
+                depthCache.at(depthX * mDepthResolutionY + depthY) = depthZ;
+            }
+            else if (depthCache.at(depthX * mDepthResolutionY + depthY) > depthZ)
+            {
+                depthCache.at(depthX * mDepthResolutionY + depthY) = depthZ;
             }
         }
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
             int depthX, depthY;
             openni::DepthPixel depthZ;
-            openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
-            if (depthCache.at(depthX * 480 + depthY) == depthZ)
+            openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (res != openni::STATUS_OK)
+            {
+                MagicLog << "        res != openni::STATUS_OK: " << res << std::endl;
+                continue;
+            }
+            if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
+            {
+                continue;
+            }
+            if (depthCache.at(depthX * mDepthResolutionY + depthY) == depthZ)
             {
                 sampleIndex.push_back(i);
             }
@@ -332,12 +346,102 @@ namespace MagicDGP
     void Registration::ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex, openni::VideoStream& depthStream)
     {
-
+        std::map<int, int> depthMap;
+        for (int i = 0; i < sampleIndex.size(); i++)
+        {
+            Vector3 pos = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
+            int depthX, depthY;
+            openni::DepthPixel depthZ;
+            openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (res != openni::STATUS_OK)
+            {
+                continue;
+            }
+            if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
+            {
+                continue;
+            }
+            depthMap[depthX * mDepthResolutionY + depthY] = sampleIndex.at(i);
+        }
+        std::vector<int> newSampleIndex;
+        correspondIndex.clear();
+        float distThre = 500.f;
+        float norThre = 0.1f; //cos(85);
+        for (int i = 0; i < pNewPC->GetPointNumber(); i++)
+        {
+            Vector3 pos = pNewPC->GetPoint(i)->GetPosition();
+            Vector3 nor = pNewPC->GetPoint(i)->GetNormal();
+            int depthX, depthY;
+            openni::DepthPixel depthZ;
+            openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
+            if (res != openni::STATUS_OK)
+            {
+                continue;
+            }
+            if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
+            {
+                continue;
+            }
+            if (depthMap[depthX * mDepthResolutionY + depthY] != 0)
+            {
+                //reject too long correspond 
+                Vector3 posCorres = pTransInit->TransformPoint( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetPosition() );            
+                if ( (posCorres - pos).Length() > distThre )
+                {
+                    continue;
+                }
+                Vector3 norCorres = pTransInit->RotateVector( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetNormal() );
+                float norDist = nor * norCorres;
+                if (norDist < norThre || norDist > 1.0)
+                {
+                    continue;
+                }
+                newSampleIndex.push_back(depthMap[depthX * mDepthResolutionY + depthY]);
+                correspondIndex.push_back(i);
+            }
+        }
+        sampleIndex = newSampleIndex;
+        MagicLog << "    sample number: " << sampleIndex.size() << std::endl;
     }
 
     void Registration::ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta)
     {
-
+        int pcNum = sampleIndex.size();
+        Eigen::MatrixXd matA(pcNum, 6);
+        Eigen::VectorXd vecB(pcNum, 1);
+        for (int i = 0; i < pcNum; i++)
+        {
+            /*Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
+            Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
+            Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            vecB(i) = (posRef - posPC) * norRef;
+            Vector3 coffTemp = posPC.CrossProduct(norRef);*/
+            Vector3 norRef = pNewPC->GetPoint(correspondIndex.at(i))->GetNormal();
+            Vector3 posRef = pNewPC->GetPoint(correspondIndex.at(i))->GetPosition();
+            Vector3 posPC  = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
+            vecB(i) = (posRef - posPC) * norRef;
+            Vector3 coffTemp = posPC.CrossProduct(norRef);
+            matA(i, 0) = coffTemp[0];
+            matA(i, 1) = coffTemp[1];
+            matA(i, 2) = coffTemp[2];
+            matA(i, 3) = norRef[0];
+            matA(i, 4) = norRef[1];
+            matA(i, 5) = norRef[2];
+        }
+        Eigen::MatrixXd matAT = matA.transpose();
+        Eigen::MatrixXd matCoefA = matAT * matA;
+        Eigen::MatrixXd vecCoefB = matAT * vecB;
+        Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
+        pTransDelta->Unit();
+        pTransDelta->SetValue(0, 1, -res(2));
+        pTransDelta->SetValue(0, 2, res(1));
+        pTransDelta->SetValue(0, 3, res(3));
+        pTransDelta->SetValue(1, 0, res(2));
+        pTransDelta->SetValue(1, 2, -res(0));
+        pTransDelta->SetValue(1, 3, res(4));
+        pTransDelta->SetValue(2, 0, -res(1));
+        pTransDelta->SetValue(2, 1, res(0));
+        pTransDelta->SetValue(2, 3, res(5));
     }
 }

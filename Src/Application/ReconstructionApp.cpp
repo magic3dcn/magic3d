@@ -16,18 +16,18 @@ namespace MagicApp
         mIsScannerDisplaying(false),
         mpPointSet(NULL),
         mpMesh(NULL), 
-        mLeftLimit(-5000.f), 
-        mRightLimit(5000.f), 
-        mTopLimit(5000.f), 
-        mDownLimit(-5000.f), 
+        mLeftLimit(-1500.f), 
+        mRightLimit(1500.f), 
+        mTopLimit(1000.f), 
+        mDownLimit(-1000.f), 
         mFrontLimit(-500.f), 
-        mBackLimit(-5000.f),
+        mBackLimit(-3000.f),
         mFrameStartIndex(0),
         mFrameEndIndex(0),
         mFrameCurrent(0),
         mIsSetFrameStart(false),
         mIsSetFrameEnd(false),
-        mIsNeedRangeLimitCaculation(true)
+        mIsNeedRangeLimitCaculation(false)
     {
     }
 
@@ -239,6 +239,82 @@ namespace MagicApp
                 CoarseRangeLimitCalculation(posList);
                 mIsNeedRangeLimitCaculation = false;
             }
+            //Smooth
+            /*std::vector<MagicDGP::Vector3> smoothPosList;
+            float depthThre = 100;
+            for (int y = 0; y < resolutionY; y++)
+            {
+                for (int x = 0; x < resolutionX ; x++)
+                {
+                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
+                        pos[1] < mDownLimit || pos[1] > mTopLimit ||
+                        pos[2] > mFrontLimit || pos[2] < mBackLimit)
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    if (pos.Length() < MagicDGP::Epsilon)
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    std::vector<MagicDGP::Vector3> neighbotPos;
+                    MagicDGP::Vector3 pos1 = posList.at(y * resolutionX + x - 1);
+                    if (pos1.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos1[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos1);
+                        }
+                    }
+                    MagicDGP::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
+                    if (pos2.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos2[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos2);
+                        }
+                    }
+                    MagicDGP::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
+                    if (pos3.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos3[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos3);
+                        }
+                    }
+                    MagicDGP::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
+                    if (pos4.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos4[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos4);
+                        }
+                    }
+                    if (neighbotPos.size() == 0)
+                    {
+                        smoothPosList.push_back(pos);
+                    }
+                    else
+                    {
+                        MagicDGP::Vector3 avgPos(0, 0, 0);
+                        for (int i = 0; i < neighbotPos.size(); i++)
+                        {
+                            avgPos += neighbotPos.at(i);
+                        }
+                        avgPos /= neighbotPos.size();
+                        smoothPosList.push_back( (pos + avgPos) / 2);
+                    }
+                }
+            }
+            posList = smoothPosList;*/
+            //
             std::vector<MagicDGP::Vector3> norList;
             for (int y = 0; y < resolutionY; y++)
             {
@@ -440,18 +516,15 @@ namespace MagicApp
             float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
-            //MagicDGP::Registration::ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
             MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
             float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
             sdf.UpdateSDF(pNewPC, &newTrans);
             MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
-            //sdf.UpdateFineSDF(pNewPC, &newTrans);
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
             float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
-            //mpPointSet = sdf.ExtractPointCloud();
             mpPointSet = sdf.ExtractFinePointCloud();
             MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
@@ -472,52 +545,48 @@ namespace MagicApp
         // Do Registration
         //
         //initialize
-        //mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        //MagicLog << "Create SignedDistanceFunction" << std::endl;
+        mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
+        MagicLog << "Create SignedDistanceFunction" << std::endl;
         MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        //MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
+        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
-        //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
-        //MagicLog << "Get Ref Point Set" << std::endl;
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
         sdf.UpdateFineSDF(mpPointSet, &lastTrans);
         delete mpPointSet;
         mpPointSet = sdf.ExtractFinePointCloud();
-        //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
-        //MagicCore::RenderSystem::GetSingleton()->Update();
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
-            //float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
-            //mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            //MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
-            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
-            MagicDGP::HomoMatrix4 newTrans;
-            //MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
-            //float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+            mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
+            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
+            MagicDGP::HomoMatrix4 newTrans;//
+            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
             MagicDGP::Registration registrate;
-            registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);
-            //MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
-            //float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
-            MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();
-            sdf.UpdateSDF(pNewPC, &newTransInv);
-            //MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
-            //sdf.UpdateFineSDF(pNewPC, &newTrans);
+            registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
+            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
+            sdf.UpdateSDF(pNewPC, &newTransInv);//
+            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
-            //float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
-            //mpPointSet = sdf.ExtractPointCloud();
-            mpPointSet = sdf.ExtractFinePointCloud();
-            //MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
-            //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
-            //MagicCore::RenderSystem::GetSingleton()->Update();
-            //MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
+            mpPointSet = sdf.ExtractFinePointCloud();//
+            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->Update();
+            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         }
         //
         mUI.StartPostProcess();
-        MagicLog << "ReconstructionApp::PointSetRegistration: End" << std::endl;
+        MagicLog << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
     }
 
     void ReconstructionApp::SetupPointSetProcessing()
@@ -565,6 +634,82 @@ namespace MagicApp
                     posList.push_back(pos);
                 }
             }
+            //Smooth
+            std::vector<MagicDGP::Vector3> smoothPosList;
+            float depthThre = 100;
+            for (int y = 0; y < resolutionY; y++)
+            {
+                for (int x = 0; x < resolutionX ; x++)
+                {
+                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
+                        pos[1] < mDownLimit || pos[1] > mTopLimit ||
+                        pos[2] > mFrontLimit || pos[2] < mBackLimit)
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    if (pos.Length() < MagicDGP::Epsilon)
+                    {
+                        smoothPosList.push_back(pos);
+                        continue;
+                    }
+                    std::vector<MagicDGP::Vector3> neighbotPos;
+                    MagicDGP::Vector3 pos1 = posList.at(y * resolutionX + x - 1);
+                    if (pos1.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos1[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos1);
+                        }
+                    }
+                    MagicDGP::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
+                    if (pos2.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos2[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos2);
+                        }
+                    }
+                    MagicDGP::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
+                    if (pos3.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos3[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos3);
+                        }
+                    }
+                    MagicDGP::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
+                    if (pos4.Length() > MagicDGP::Epsilon)
+                    {
+                        if (fabs(pos[2] - pos4[2]) < depthThre)
+                        {
+                            neighbotPos.push_back(pos4);
+                        }
+                    }
+                    if (neighbotPos.size() == 0)
+                    {
+                        smoothPosList.push_back(pos);
+                    }
+                    else
+                    {
+                        MagicDGP::Vector3 avgPos(0, 0, 0);
+                        for (int i = 0; i < neighbotPos.size(); i++)
+                        {
+                            avgPos += neighbotPos.at(i);
+                        }
+                        avgPos /= neighbotPos.size();
+                        smoothPosList.push_back( (pos + avgPos) / 2);
+                    }
+                }
+            }
+            posList = smoothPosList;
+            //
             std::vector<MagicDGP::Vector3> norList;
             for (int y = 0; y < resolutionY; y++)
             {

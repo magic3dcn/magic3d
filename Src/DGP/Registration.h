@@ -25,7 +25,6 @@ namespace MagicDGP
         void ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta);
 
-        //void ICPInitRefDataEnhance(const Point3DSet* pNewPC);
         void ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const HomoMatrix4* pTransform, openni::VideoStream& depthStream);
         void ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex, openni::VideoStream& depthStream);
@@ -36,6 +35,8 @@ namespace MagicDGP
         flann_index_t mFlannIndex;
         float* mDataSet;
         FLANNParameters mSearchPara;
+        int mDepthResolutionX;
+        int mDepthResolutionY;
     };
 
 

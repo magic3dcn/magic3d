@@ -169,7 +169,8 @@ namespace MagicApp
         MagicLog << "ReconstructionAppUI::PointSetAlign" << std::endl;
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        pRA->PointSetRegistration();
+        //pRA->PointSetRegistration();
+        pRA->PointSetRegistrationEnhance();
     }
 
     void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)

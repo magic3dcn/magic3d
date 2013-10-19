@@ -32,7 +32,7 @@ namespace MagicDGP
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
-        int truncW = 2;
+        int truncW = 5;
         int maxIndex = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
         for (int i = 0; i < pcNum; i++)
         {
