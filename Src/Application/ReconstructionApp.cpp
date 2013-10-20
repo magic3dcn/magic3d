@@ -467,7 +467,7 @@ namespace MagicApp
     void ReconstructionApp::ChangeFrontRange(int rel)
     {
         float temp = mFrontLimit - rel / 5;
-        if (temp < -500.f && temp > mBackLimit)
+        if (temp < -300.f && temp > mBackLimit)
         {
             mFrontLimit = temp;
         }
