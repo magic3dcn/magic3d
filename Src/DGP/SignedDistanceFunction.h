@@ -16,6 +16,7 @@ namespace MagicDGP
         void UpdateFineSDF(const Point3DSet* pPC, const HomoMatrix4* pTransform);
         Point3DSet* ExtractPointCloud();
         Point3DSet* ExtractFinePointCloud();
+        void ResetSDF();
 
     private:
         std::vector<float> mSDF;

@@ -650,4 +650,10 @@ namespace MagicDGP
         }
     }
 
+    void SignedDistanceFunction::ResetSDF()
+    {
+        mPCIndex.clear();
+        mSDF = std::vector<float>((mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1), 0.f);
+        mWeight = std::vector<float>((mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1), 0.f);
+    }
 }

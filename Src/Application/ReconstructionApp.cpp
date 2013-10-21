@@ -589,6 +589,59 @@ namespace MagicApp
         MagicLog << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
     }
 
+    void ReconstructionApp::PointSetRegistrationEnhance2()
+    {
+        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+             " " << mFrontLimit << " " << mBackLimit << std::endl;
+        mIsScannerDisplaying = false;
+        //initialize
+        mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
+        MagicLog << "Create SignedDistanceFunction" << std::endl;
+        MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
+        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
+        MagicDGP::HomoMatrix4 lastTrans;
+        lastTrans.Unit();
+        mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
+        sdf.UpdateFineSDF(mpPointSet, &lastTrans);
+        delete mpPointSet;
+        mpPointSet = sdf.ExtractFinePointCloud();
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->Update();
+        for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
+        {
+            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+            mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
+            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
+            //MagicDGP::HomoMatrix4 newTrans;//
+            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            //MagicDGP::Registration registrate;
+            //registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
+            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
+            //MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
+            MagicDGP::HomoMatrix4 newTransInv;
+            newTransInv.Unit();
+            sdf.UpdateSDF(pNewPC, &newTransInv);//
+            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
+            //lastTrans = newTrans;
+            delete mpPointSet;
+            delete pNewPC;
+            pNewPC = NULL;
+            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
+            mpPointSet = sdf.ExtractFinePointCloud();//
+            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
+            sdf.ResetSDF();
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->Update();
+            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        }
+        //
+        mUI.StartPostProcess();
+        MagicLog << "ReconstructionApp::PointSetRegistrationEnhance2: End" << std::endl;
+    }
+
     void ReconstructionApp::SetupPointSetProcessing()
     {
         if (mpPointSet != NULL)
