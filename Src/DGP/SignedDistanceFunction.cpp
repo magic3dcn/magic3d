@@ -32,7 +32,7 @@ namespace MagicDGP
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
-        int truncW = 3;
+        int truncW = 5;
         int maxIndex = (mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1) - 1;
         for (int i = 0; i < pcNum; i++)
         {
@@ -652,8 +652,11 @@ namespace MagicDGP
 
     void SignedDistanceFunction::ResetSDF()
     {
+        for (std::set<int>::iterator itr = mPCIndex.begin(); itr != mPCIndex.end(); itr++)
+        {
+            mSDF.at(*itr) = 0.f;
+            mWeight.at(*itr) = 0.f;
+        }
         mPCIndex.clear();
-        mSDF = std::vector<float>((mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1), 0.f);
-        mWeight = std::vector<float>((mResolutionX + 1) * (mResolutionY + 1) * (mResolutionZ + 1), 0.f);
     }
 }

@@ -613,26 +613,24 @@ namespace MagicApp
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
             MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
-            //MagicDGP::HomoMatrix4 newTrans;//
+            MagicDGP::HomoMatrix4 newTrans;//
             MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
             float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
-            //MagicDGP::Registration registrate;
-            //registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
+            MagicDGP::Registration registrate;
+            registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
             MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
             float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
-            //MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
-            MagicDGP::HomoMatrix4 newTransInv;
-            newTransInv.Unit();
+            MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
             sdf.UpdateSDF(pNewPC, &newTransInv);//
             MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
-            //lastTrans = newTrans;
+            lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
             float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();//
             MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
-            sdf.ResetSDF();
+            //sdf.ResetSDF();
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
             MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;

@@ -170,8 +170,8 @@ namespace MagicApp
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         //pRA->PointSetRegistration();
-        //pRA->PointSetRegistrationEnhance();
-        pRA->PointSetRegistrationEnhance2();
+        pRA->PointSetRegistrationEnhance();
+        //pRA->PointSetRegistrationEnhance2();
     }
 
     void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)
