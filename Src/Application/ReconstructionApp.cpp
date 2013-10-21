@@ -718,6 +718,11 @@ namespace MagicApp
                         {
                             neighbotPos.push_back(pos1);
                         }
+                        else
+                        {
+                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            continue;
+                        }
                     }
                     MagicDGP::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
                     if (pos2.Length() > MagicDGP::Epsilon)
@@ -725,6 +730,11 @@ namespace MagicApp
                         if (fabs(pos[2] - pos2[2]) < depthThre)
                         {
                             neighbotPos.push_back(pos2);
+                        }
+                        else
+                        {
+                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            continue;
                         }
                     }
                     MagicDGP::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
@@ -734,6 +744,11 @@ namespace MagicApp
                         {
                             neighbotPos.push_back(pos3);
                         }
+                        else
+                        {
+                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            continue;
+                        }
                     }
                     MagicDGP::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
                     if (pos4.Length() > MagicDGP::Epsilon)
@@ -741,6 +756,11 @@ namespace MagicApp
                         if (fabs(pos[2] - pos4[2]) < depthThre)
                         {
                             neighbotPos.push_back(pos4);
+                        }
+                        else
+                        {
+                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            continue;
                         }
                     }
                     if (neighbotPos.size() == 0)

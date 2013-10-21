@@ -170,7 +170,7 @@ namespace MagicApp
     bool PointSetViewer::FilterPointSet()
     {
         int pointNum = mpPointSet->GetPointNumber();
-        int sampleNum = pointNum;
+        /*int sampleNum = pointNum;
         if (pointNum > 200000)
         {
             sampleNum = pointNum / 20;
@@ -178,7 +178,8 @@ namespace MagicApp
         else if (pointNum > 10000)
         {
             sampleNum = 10000;
-        }
+        }*/
+        int sampleNum = pointNum / 2;
         mpPointSet->CalculateBBox();
         mpPointSet->CalculateDensity();
         MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);

@@ -63,7 +63,7 @@ namespace MagicDGP
     {
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         MagicLog << "Begin Sampling::WLOPIteration" << std::endl;
-        int iterNum = 10;
+        int iterNum = 20;
         int iNum = samplePosList.size();
         int jNum = pPS->GetPointNumber();
         Vector3 bboxMin, bboxMax;
