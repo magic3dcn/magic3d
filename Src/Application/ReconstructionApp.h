@@ -21,9 +21,9 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
     public:
-        bool OpenSceneRecord();
-        void SetTimeStart();
-        void SetTimeEnd();
+        bool OpenSceneRecord(int& frameNum);
+        void SetTimeStart(int frameIndex);
+        void SetTimeEnd(int frameIndex);
         void ChangeLeftRange(int rel);
         void ChangeRightRange(int rel);
         void ChangeTopRange(int rel);
@@ -35,7 +35,6 @@ namespace MagicApp
         void PointSetRegistrationEnhance2();
         void SetupPointSetProcessing();
         bool SavePointSet();
-        void SmoothPointSet();
         bool ReconstructPointSet();
         bool SaveMesh3D();
         void SmoothMesh3D();
@@ -60,7 +59,6 @@ namespace MagicApp
         MagicDGP::Mesh3D* mpMesh;
         float mLeftLimit, mRightLimit, mTopLimit, mDownLimit, mFrontLimit, mBackLimit;
         int mFrameStartIndex, mFrameEndIndex, mFrameCurrent;
-        bool mIsSetFrameStart, mIsSetFrameEnd;
         bool mIsNeedRangeLimitCaculation;
     };
 

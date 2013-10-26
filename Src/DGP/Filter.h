@@ -11,11 +11,8 @@ namespace MagicDGP
         ~Filter();
 
     public:
-        static void FilterDepthScanPointSet(Point3DSet* pPCSet);
         static Mesh3D* RemoveSmallMeshPatch(Mesh3D* pMesh);
-
-    private:
-        static void FindNearestNeighbors(Point3DSet* pPCSet, int nn, int** pIndex, float** pDist);
+        static void SimpleMeshSmooth(Mesh3D* pMesh);
 
     };
 }

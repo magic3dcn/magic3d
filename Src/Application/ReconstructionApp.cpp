@@ -16,17 +16,15 @@ namespace MagicApp
         mIsScannerDisplaying(false),
         mpPointSet(NULL),
         mpMesh(NULL), 
-        mLeftLimit(-1500.f), 
-        mRightLimit(1500.f), 
+        mLeftLimit(-1000.f), 
+        mRightLimit(1000.f), 
         mTopLimit(1000.f), 
         mDownLimit(-1000.f), 
-        mFrontLimit(-500.f), 
-        mBackLimit(-3000.f),
+        mFrontLimit(-200.f), 
+        mBackLimit(-2200.f),
         mFrameStartIndex(0),
         mFrameEndIndex(0),
         mFrameCurrent(0),
-        mIsSetFrameStart(false),
-        mIsSetFrameEnd(false),
         mIsNeedRangeLimitCaculation(false)
     {
     }
@@ -187,16 +185,6 @@ namespace MagicApp
 
     void ReconstructionApp::UpdateScannerDisplay()
     {
-        if (mIsSetFrameStart)
-        {
-            mFrameStartIndex = mFrameCurrent;
-            mIsSetFrameStart = false;
-        }
-        if (mIsSetFrameEnd)
-        {
-            mFrameEndIndex = mFrameCurrent;
-            mIsSetFrameEnd = false;
-        }
         openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
         pPC->seek(mDepthStream, mFrameCurrent);
         mFrameCurrent++;
@@ -239,82 +227,6 @@ namespace MagicApp
                 CoarseRangeLimitCalculation(posList);
                 mIsNeedRangeLimitCaculation = false;
             }
-            //Smooth
-            /*std::vector<MagicDGP::Vector3> smoothPosList;
-            float depthThre = 100;
-            for (int y = 0; y < resolutionY; y++)
-            {
-                for (int x = 0; x < resolutionX ; x++)
-                {
-                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
-                    if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
-                    {
-                        smoothPosList.push_back(pos);
-                        continue;
-                    }
-                    if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
-                        pos[1] < mDownLimit || pos[1] > mTopLimit ||
-                        pos[2] > mFrontLimit || pos[2] < mBackLimit)
-                    {
-                        smoothPosList.push_back(pos);
-                        continue;
-                    }
-                    if (pos.Length() < MagicDGP::Epsilon)
-                    {
-                        smoothPosList.push_back(pos);
-                        continue;
-                    }
-                    std::vector<MagicDGP::Vector3> neighbotPos;
-                    MagicDGP::Vector3 pos1 = posList.at(y * resolutionX + x - 1);
-                    if (pos1.Length() > MagicDGP::Epsilon)
-                    {
-                        if (fabs(pos[2] - pos1[2]) < depthThre)
-                        {
-                            neighbotPos.push_back(pos1);
-                        }
-                    }
-                    MagicDGP::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
-                    if (pos2.Length() > MagicDGP::Epsilon)
-                    {
-                        if (fabs(pos[2] - pos2[2]) < depthThre)
-                        {
-                            neighbotPos.push_back(pos2);
-                        }
-                    }
-                    MagicDGP::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
-                    if (pos3.Length() > MagicDGP::Epsilon)
-                    {
-                        if (fabs(pos[2] - pos3[2]) < depthThre)
-                        {
-                            neighbotPos.push_back(pos3);
-                        }
-                    }
-                    MagicDGP::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
-                    if (pos4.Length() > MagicDGP::Epsilon)
-                    {
-                        if (fabs(pos[2] - pos4[2]) < depthThre)
-                        {
-                            neighbotPos.push_back(pos4);
-                        }
-                    }
-                    if (neighbotPos.size() == 0)
-                    {
-                        smoothPosList.push_back(pos);
-                    }
-                    else
-                    {
-                        MagicDGP::Vector3 avgPos(0, 0, 0);
-                        for (int i = 0; i < neighbotPos.size(); i++)
-                        {
-                            avgPos += neighbotPos.at(i);
-                        }
-                        avgPos /= neighbotPos.size();
-                        smoothPosList.push_back( (pos + avgPos) / 2);
-                    }
-                }
-            }
-            posList = smoothPosList;*/
-            //
             std::vector<MagicDGP::Vector3> norList;
             for (int y = 0; y < resolutionY; y++)
             {
@@ -380,10 +292,11 @@ namespace MagicApp
         }
     }
 
-    bool ReconstructionApp::OpenSceneRecord()
+    bool ReconstructionApp::OpenSceneRecord(int& frameNum)
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        char filterName[] = "ONI Files(*.oni)\0*.oni\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
         {
             if (mIsScannerDisplaying)
             {
@@ -404,12 +317,12 @@ namespace MagicApp
             }
             mDepthStream.start();
             mIsScannerDisplaying = true;
-            mIsNeedRangeLimitCaculation = true;
+            //mIsNeedRangeLimitCaculation = true;
             openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
             mFrameStartIndex = 0;
             mFrameEndIndex = pPC->getNumberOfFrames(mDepthStream);
             mFrameCurrent = 0;
-
+            frameNum = mFrameEndIndex;
             return true;
         }
         else
@@ -418,14 +331,22 @@ namespace MagicApp
         }
     }
 
-    void ReconstructionApp::SetTimeStart()
+    void ReconstructionApp::SetTimeStart(int frameIndex)
     {
-        mIsSetFrameStart = true;
+        if (frameIndex <= mFrameEndIndex)
+        {
+            mFrameStartIndex = frameIndex;
+            mFrameCurrent = frameIndex;
+        }
     }
 
-    void ReconstructionApp::SetTimeEnd()
+    void ReconstructionApp::SetTimeEnd(int frameIndex)
     {
-        mIsSetFrameEnd = true;
+        if (frameIndex >= mFrameStartIndex)
+        {
+            mFrameEndIndex = frameIndex;
+            mFrameCurrent = frameIndex;
+        }
     }
 
     void ReconstructionApp::ChangeLeftRange(int rel)
@@ -838,34 +759,11 @@ namespace MagicApp
     bool ReconstructionApp::SavePointSet()
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName);
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
         MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
 
         return true;
-    }
-
-    void ReconstructionApp::SmoothPointSet()
-    {
-        int pointNum = mpPointSet->GetPointNumber();
-        int sampleNum = pointNum;
-        if (pointNum > 200000)
-        {
-            sampleNum = pointNum / 20;
-        }
-        else if (pointNum > 10000)
-        {
-            sampleNum = 10000;
-        }
-        mpPointSet->CalculateBBox();
-        mpPointSet->CalculateDensity();
-        MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
-        if (pNewPointSet != NULL)
-        {
-            delete mpPointSet;
-            mpPointSet = pNewPointSet;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
-        }
-
     }
 
     bool ReconstructionApp::ReconstructPointSet()
@@ -886,7 +784,8 @@ namespace MagicApp
     bool ReconstructionApp::SaveMesh3D()
     {
         std::string fileName;
-        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName);
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
         MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
 
         return true;
@@ -894,15 +793,7 @@ namespace MagicApp
 
     void ReconstructionApp::SmoothMesh3D()
     {
-        MagicDGP::Mesh3D* pNewMesh = MagicDGP::Filter::RemoveSmallMeshPatch(mpMesh);
-        if (pNewMesh != NULL)
-        {
-            if (mpMesh != NULL)
-            {
-                delete mpMesh;
-            }
-            mpMesh = pNewMesh;
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
-        }
+        MagicDGP::Filter::SimpleMeshSmooth(mpMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
     }
 }

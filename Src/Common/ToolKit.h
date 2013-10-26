@@ -12,8 +12,8 @@ namespace MagicCore
     public:
         static ToolKit* GetSingleton(void);
         float GetTime(void);
-        bool FileOpenDlg(std::string& selectFileName);
-        bool FileSaveDlg(std::string& selectFileName);
+        bool FileOpenDlg(std::string& selectFileName, char* filterName);
+        bool FileSaveDlg(std::string& selectFileName, char* filterName);
         bool IsAppRunning(void);
         void SetAppRunning(bool bRunning);
         bool IsONIInitialized(void);

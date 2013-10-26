@@ -20,7 +20,8 @@ namespace MagicApp
     void LeapMotionData::LoadData()
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        char filterName[] = "LEAP Files(*.leap)\0*.leap\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
         {
             std::ifstream fin(fileName);
             mTimeStamp.clear();
@@ -374,7 +375,8 @@ namespace MagicApp
     void LeapMotionApp::OpenMesh3D()
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
@@ -416,7 +418,8 @@ namespace MagicApp
     void LeapMotionApp::StartLeapRecorder()
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+        char filterName[] = "LEAP Files(*.leap)\0*.leap\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
         {
             mLeapRecorder.open(fileName);
             mIsLeapRecording = true;

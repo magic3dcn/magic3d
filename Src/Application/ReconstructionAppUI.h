@@ -23,7 +23,8 @@ namespace MagicApp
 
         void OpenScanRecord(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
-        void SetTimeRange(MyGUI::Widget* pSender);
+        void ChangeFrameStart(MyGUI::ScrollBar* pSender, size_t pos);
+        void ChangeFrameEnd(MyGUI::ScrollBar* pSender, size_t pos);
         void PointSetAlign(MyGUI::Widget* pSender);
         void ChangeLeftRange(MyGUI::Widget* pSender, int rel);
         void ChangeRightRange(MyGUI::Widget* pSender, int rel);
@@ -32,14 +33,14 @@ namespace MagicApp
         void ChangeFrontRange(MyGUI::Widget* pSender, int rel);
         void ChangeBackRange(MyGUI::Widget* pSender, int rel);
         void SavePointSet(MyGUI::Widget* pSender);
-        void SmoothPointSet(MyGUI::Widget* pSender);
         void Reconstruction(MyGUI::Widget* pSender);
         void SaveMesh3D(MyGUI::Widget* pSender);
         void SmoothMesh3D(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;
-        bool mIsTimeRangeStart;
+        int mFrameStartIndex;
+        int mFrameEndIndex;
     };
 
 }

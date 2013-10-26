@@ -18,10 +18,10 @@ namespace MagicApp
         virtual bool Exit(void);
         virtual bool MouseMoved( const OIS::MouseEvent &arg );
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+        virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
         bool ImportPointSet();
         void ExportPointSet();
-        bool FilterPointSet();
         bool ReconstructPointSet();
         bool ImportMesh3D();
         void ExportMesh3D();

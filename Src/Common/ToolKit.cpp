@@ -38,15 +38,14 @@ namespace MagicCore
         return (float) ((counter - start) / double(frequency));
     }
 
-    bool ToolKit::FileOpenDlg(std::string& selectFileName)
+    bool ToolKit::FileOpenDlg(std::string& selectFileName, char* filterName)
     {
         char szFileName[MAX_PATH] = "";
         OPENFILENAME file = { 0 };
         file.lStructSize = sizeof(file);
         file.lpstrFile = szFileName;
         file.nMaxFile = MAX_PATH;
-        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0ONI Files(*.oni)\0*.oni\0TXT Files(*.txt)\0*.txt\0All Files\0*.*\0\0";
-        file.nFilterIndex = 1;//默认选择第一个
+        file.lpstrFilter = filterName;
         //file.Flags = OFN_EXPLORER|OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST|OFN_ALLOWMULTISELECT|OFN_NOCHANGEDIR;
         file.Flags = OFN_NOCHANGEDIR;
         // 弹出打开文件的对话框
@@ -61,14 +60,14 @@ namespace MagicCore
         }
     }
 
-    bool ToolKit::FileSaveDlg(std::string& selectFileName)
+    bool ToolKit::FileSaveDlg(std::string& selectFileName, char* filterName)
     {
         char szFileName[MAX_PATH] = "";
         OPENFILENAME file = { 0 };
         file.lStructSize = sizeof(file);
         file.lpstrFile = szFileName;
         file.nMaxFile = MAX_PATH;
-        file.lpstrFilter = "OBJ Files(*.obj)\0*.obj\0ONI Files(*.oni)\0*.oni\0All Files\0*.*\0\0";
+        file.lpstrFilter = filterName;
         file.nFilterIndex = 1;//默认选择第一个
         // 弹出打开文件的对话框
         if(::GetSaveFileName(&file))

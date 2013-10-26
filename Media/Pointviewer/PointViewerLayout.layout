@@ -4,28 +4,24 @@
         <Widget type="Button" skin="But_Open" position_real="0.130435 0.078125 0.730435 0.109375" align="Left Top" name="But_OpenPointSet">
             <Property key="TextAlign" value="Center"/>
         </Widget>
-        <Widget type="Button" skin="But_Smooth" position_real="0.130435 0.324219 0.730435 0.109375" align="Left Top" name="But_FilterPointSet">
+        <Widget type="Button" skin="But_Save" position_real="0.130435 0.332031 0.730435 0.109375" align="Left Top" name="But_SavePointSet">
             <Property key="TextAlign" value="Center"/>
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Save" position_real="0.130435 0.454427 0.730435 0.109375" align="Left Top" name="But_SavePointSet">
-            <Property key="TextAlign" value="Center"/>
+        <Widget type="Button" skin="But_Reconstruction" position_real="0.130435 0.208333 0.730435 0.109375" align="Left Top" name="But_ReconstructionPointSet">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Reconstruction" position_real="0.130435 0.199219 0.730435 0.109375" align="Left Top" name="But_ReconstructionPointSet">
-            <Property key="Visible" value="false"/>
-        </Widget>
-        <Widget type="ImageBox" skin="Image_Point" position_real="0.130435 0.0195313 0.730435 0.0364583" align="Left Top" name="Img_Point"/>
+        <Widget type="ImageBox" skin="Image_Point" position_real="0.130435 0.0195313 0.730435 0.0351563" align="Left Top" name="Img_Point"/>
     </Widget>
     <Widget type="Widget" skin="PanelEmpty" position_real="0.886719 0 0.112305 1" align="Right Top" layer="Back">
         <Widget type="Button" skin="But_Open" position_real="0.130435 0.078125 0.730435 0.109375" align="Right Top" name="But_OpenMesh"/>
-        <Widget type="Button" skin="But_Save" position_real="0.130435 0.324219 0.730435 0.109375" align="Right Top" name="But_SaveMesh">
+        <Widget type="Button" skin="But_Save" position_real="0.130435 0.332031 0.730435 0.109375" align="Right Top" name="But_SaveMesh">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Smooth" position_real="0.130435 0.199219 0.730435 0.109375" align="Right Top" name="But_FilterMesh">
+        <Widget type="Button" skin="But_Smooth" position_real="0.130435 0.208333 0.730435 0.109375" align="Right Top" name="But_FilterMesh">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Home" position_real="0.130435 0.861979 0.730435 0.109375" align="Right Bottom" name="But_BackToHome"/>
-        <Widget type="ImageBox" skin="Image_Mesh" position_real="0.130435 0.0195313 0.730435 0.0364583" align="Right Top" name="Img_Mesh"/>
+        <Widget type="Button" skin="But_Home" position_real="0.130435 0.860677 0.730435 0.109375" align="Right Bottom" name="But_BackToHome"/>
+        <Widget type="ImageBox" skin="Image_Mesh" position_real="0.130435 0.0195313 0.730435 0.0351563" align="Right Top" name="Img_Mesh"/>
     </Widget>
 </MyGUI>

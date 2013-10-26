@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="HCenter VCenter" layer="Back">
-        <Widget type="Button" skin="But_Scan" position_real="0.0966797 0.515625 0.0839844 0.113281" align="Left Top" name="But_Scan3D"/>
-        <Widget type="Button" skin="But_Reconstruction" position_real="0.277344 0.515625 0.0839844 0.113281" align="Left Top" name="But_Reconstruction"/>
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
+        <Widget type="Button" skin="But_Scan" position_real="0.185547 0.515625 0.0839844 0.110677" align="Left Top" name="But_Scan3D"/>
+        <Widget type="Button" skin="But_Reconstruction" position_real="0.458008 0.515625 0.0839844 0.110677" align="HCenter Top" name="But_Reconstruction"/>
         <Widget type="ImageBox" skin="Image_Title" position_real="0.331055 0.201823 0.335938 0.109375" align="HCenter Top" name="Title"/>
-        <Widget type="Button" skin="But_Viewer" position_real="0.458008 0.515625 0.0839844 0.113281" align="HCenter Top" name="But_Viewer"/>
-        <Widget type="Button" skin="But_LeapMotion" position_real="0.638672 0.515625 0.0839844 0.113281" align="Right Top" name="But_LeapMotion"/>
-        <Widget type="Button" skin="But_Primitive" position_real="0.819336 0.515625 0.0839844 0.113281" align="Right Top" name="But_PrimitiveDetection"/>
+        <Widget type="Button" skin="But_Viewer" position_real="0.728516 0.515625 0.0839844 0.110677" align="Right Top" name="But_Viewer"/>
     </Widget>
 </MyGUI>

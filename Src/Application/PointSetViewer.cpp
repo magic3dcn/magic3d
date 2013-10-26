@@ -86,10 +86,29 @@ namespace MagicApp
         return true;
     }
 
+    bool PointSetViewer::KeyPressed( const OIS::KeyEvent &arg )
+    {
+        if (arg.key == OIS::KC_V && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
+        }
+        if (arg.key == OIS::KC_E && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_WIREFRAME);
+        }
+        if (arg.key == OIS::KC_F && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
+        }
+
+        return true;
+    }
+
     bool PointSetViewer::ImportPointSet()
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
             if (pPointSet != NULL)
@@ -119,7 +138,8 @@ namespace MagicApp
         if (mpPointSet != NULL)
         {
             std::string fileName;
-            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+            char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
             }
@@ -129,7 +149,8 @@ namespace MagicApp
     bool PointSetViewer::ImportMesh3D()
     {
         std::string fileName;
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName))
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
@@ -160,39 +181,11 @@ namespace MagicApp
         if (mpMesh != NULL)
         {
             std::string fileName;
-            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName))
+            char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
             }
-        }
-    }
-
-    bool PointSetViewer::FilterPointSet()
-    {
-        int pointNum = mpPointSet->GetPointNumber();
-        /*int sampleNum = pointNum;
-        if (pointNum > 200000)
-        {
-            sampleNum = pointNum / 20;
-        }
-        else if (pointNum > 10000)
-        {
-            sampleNum = 10000;
-        }*/
-        int sampleNum = pointNum / 2;
-        mpPointSet->CalculateBBox();
-        mpPointSet->CalculateDensity();
-        MagicDGP::Point3DSet* pNewPointSet = MagicDGP::Sampling::WLOPSampling(mpPointSet, sampleNum);
-        if (pNewPointSet != NULL)
-        {
-            delete mpPointSet;
-            mpPointSet = pNewPointSet;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -219,20 +212,8 @@ namespace MagicApp
 
     bool PointSetViewer::FilterMesh3D()
     {
-        MagicDGP::Mesh3D* pNewMesh = MagicDGP::Filter::RemoveSmallMeshPatch(mpMesh);
-        if (pNewMesh != NULL)
-        {
-            if (mpMesh != NULL)
-            {
-                delete mpMesh;
-            }
-            mpMesh = pNewMesh;
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        MagicDGP::Filter::SimpleMeshSmooth(mpMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
+        return true;
     }
 }

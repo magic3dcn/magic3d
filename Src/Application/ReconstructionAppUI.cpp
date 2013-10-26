@@ -9,7 +9,8 @@
 namespace MagicApp
 {
     ReconstructionAppUI::ReconstructionAppUI() :
-        mIsTimeRangeStart(true)
+        mFrameStartIndex(0),
+        mFrameEndIndex(0)
     {
     }
 
@@ -42,8 +43,6 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SetTimeRange);
-        mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::PointSetAlign);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeDownRange);
@@ -58,14 +57,14 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeBackRange);
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setSize(50, 50);
+        mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->eventScrollChangePosition += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeFrameStart);
+        mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->eventScrollChangePosition += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeFrameEnd);
     }
 
     void ReconstructionAppUI::SetupReconstructProgress()
     {
         MagicLog << "ReconstructionUI::SetupReconstructProgress" << std::endl;
-        //MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        //mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructProgress.layout");
-        mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setVisible(true);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(false);
@@ -75,22 +74,21 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setVisible(false);
-        mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setVisible(true);
+        mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->setVisible(false);
+        mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setVisible(false);
     }
 
     void ReconstructionAppUI::SetupReconstructing()
     {
         MagicLog << "ReconstructionAppUI::SetupReconstructing" << std::endl;
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructAndMeshProcess.layout");
+        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("Reconstruct.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SavePointSet);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothPointSet);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Reconstruction);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         pRA->SetupPointSetProcessing();
     }
@@ -99,14 +97,13 @@ namespace MagicApp
     {
         MagicLog << "ReconstructionAppUI::SetupMeshProcessing" << std::endl;
         MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReconstructAndMeshProcess.layout");
+        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("MeshProcessing.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SaveMesh3D);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothMesh3D);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
     }
 
     void ReconstructionAppUI::SetProgressBarPosition(int pos)
@@ -128,9 +125,9 @@ namespace MagicApp
     void ReconstructionAppUI::OpenScanRecord(MyGUI::Widget* pSender)
     {
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        if (pRA->OpenSceneRecord())
+        int frameNum;
+        if (pRA->OpenSceneRecord(frameNum))
         {
-            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(true);
@@ -138,6 +135,14 @@ namespace MagicApp
             mRoot.at(0)->findWidget("But_Right")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Front")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Back")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->setVisible(true);
+            mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->setScrollRange(frameNum);
+            mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->setScrollPosition(0);
+            mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setVisible(true);
+            mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setScrollRange(frameNum);
+            mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setScrollPosition(frameNum - 1);
+            mFrameStartIndex = 0;
+            mFrameEndIndex = frameNum - 1;
         }
     }
 
@@ -146,22 +151,28 @@ namespace MagicApp
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
     }
 
-    void ReconstructionAppUI::SetTimeRange(MyGUI::Widget* pSender)
+    void ReconstructionAppUI::ChangeFrameStart(MyGUI::ScrollBar* pSender, size_t pos)
     {
-        if (mIsTimeRangeStart)
+        if (pos > mFrameEndIndex)
         {
-            ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-            pRA->SetTimeStart();
-            mIsTimeRangeStart = false;
-            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->changeWidgetSkin("But_Stop");
+            pos = mFrameEndIndex;
+            mRoot.at(0)->findWidget("Slider_FrameStart")->castType<MyGUI::ScrollBar>()->setScrollPosition(pos);
         }
-        else
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->SetTimeStart(pos);
+        mFrameStartIndex = pos;
+    }
+
+    void ReconstructionAppUI::ChangeFrameEnd(MyGUI::ScrollBar* pSender, size_t pos)
+    {
+        if (pos < mFrameStartIndex)
         {
-            ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-            pRA->SetTimeEnd();
-            mIsTimeRangeStart = true;
-            mRoot.at(0)->findWidget("But_SetRange")->castType<MyGUI::Button>()->changeWidgetSkin("But_Start");
+            pos = mFrameStartIndex;
+            mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setScrollPosition(pos);
         }
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->SetTimeEnd(pos);
+        mFrameEndIndex = pos;
     }
 
     void ReconstructionAppUI::PointSetAlign(MyGUI::Widget* pSender)
@@ -217,12 +228,6 @@ namespace MagicApp
         {
             mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
         }
-    }
-
-    void ReconstructionAppUI::SmoothPointSet(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        pRA->SmoothPointSet();
     }
 
     void ReconstructionAppUI::Reconstruction(MyGUI::Widget* pSender)

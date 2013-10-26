@@ -5,6 +5,7 @@
 #include <ostream>
 #include <vector>
 #include "DGPDefines.h"
+#include "../Common/ToolKit.h"
 
 namespace MagicDGP
 {

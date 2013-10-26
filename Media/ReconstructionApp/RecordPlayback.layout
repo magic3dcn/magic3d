@@ -3,16 +3,13 @@
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
         <Widget type="Button" skin="But_Open" position_real="0.0136719 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_OpenRecord"/>
         <Widget type="Button" skin="But_Home" position_real="0.902344 0.872396 0.0839844 0.109375" align="Right Bottom" name="But_Home"/>
-        <Widget type="Button" skin="But_Start" position_real="0.121094 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_SetRange">
+        <Widget type="Button" skin="But_Down" position_real="0.475586 0.872396 0.0478516 0.0651042" align="HCenter Bottom" name="But_Down">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Down" position_real="0.475586 0.917969 0.0478516 0.0651042" align="HCenter Bottom" name="But_Down">
+        <Widget type="Button" skin="But_Left" position_real="0.0136719 0.467448 0.0478516 0.0651042" align="Left VCenter" name="But_Left">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Left" position_real="0.0136719 0.445313 0.0478516 0.0651042" align="Left VCenter" name="But_Left">
-            <Property key="Visible" value="false"/>
-        </Widget>
-        <Widget type="Button" skin="But_Right" position_real="0.9375 0.445313 0.0478516 0.0651042" align="Right VCenter" name="But_Right">
+        <Widget type="Button" skin="But_Right" position_real="0.9375 0.467448 0.0478516 0.0651042" align="Right VCenter" name="But_Right">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Top" position_real="0.475586 0.0117188 0.0478516 0.0651042" align="HCenter Top" name="But_Top">
@@ -24,11 +21,23 @@
         <Widget type="Button" skin="But_Back" position_real="0.638672 0.0117188 0.0478516 0.0651042" align="Right Top" name="But_Back">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Align" position_real="0.228516 0.869792 0.0839844 0.109375" align="Left Bottom" name="But_Align">
+        <Widget type="Button" skin="But_Align" position_real="0.117188 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_Align">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0976563 0.908854 0.804688 0.0625" align="HStretch Bottom" name="Progress_Registrate">
+        <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0976563 0.90625 0.804688 0.0625" align="HStretch Bottom" name="Progress_Registrate">
             <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.209961 0.96875 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameEnd">
+            <Property key="MoveToClick" value="false"/>
+            <Property key="Range" value="100"/>
+            <Property key="RangePosition" value="80"/>
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.208008 0.940104 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameStart">
+            <Property key="Range" value="100"/>
+            <Property key="RangePosition" value="3"/>
+            <Property key="Visible" value="false"/>
+            <Property key="MoveToClick" value="false"/>
         </Widget>
     </Widget>
 </MyGUI>

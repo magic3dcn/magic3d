@@ -43,7 +43,7 @@ namespace MagicDependence
         Real pcLen = (bboxMax - bboxMin).Length();
         Real relativeDensity = pcDensity / pcLen;
         MagicLog << "Relative density: " << relativeDensity << std::endl;
-        if (relativeDensity > 2.0e-5)
+        if (relativeDensity > 1.0e-4)
         {
             char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
             return SurfaceTrimmer(8, argv2, vertices, polygons);    
