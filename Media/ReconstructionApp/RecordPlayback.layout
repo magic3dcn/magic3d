@@ -27,13 +27,13 @@
         <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0976563 0.90625 0.804688 0.0625" align="HStretch Bottom" name="Progress_Registrate">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.209961 0.96875 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameEnd">
+        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.208008 0.96875 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameEnd">
             <Property key="MoveToClick" value="false"/>
             <Property key="Range" value="100"/>
             <Property key="RangePosition" value="80"/>
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.208008 0.940104 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameStart">
+        <Widget type="ScrollBar" skin="ScrollBarH" position_real="0.208008 0.9375 0.671875 0.0260417" align="HStretch Bottom" name="Slider_FrameStart">
             <Property key="Range" value="100"/>
             <Property key="RangePosition" value="3"/>
             <Property key="Visible" value="false"/>
