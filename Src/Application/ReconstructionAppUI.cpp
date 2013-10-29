@@ -226,7 +226,7 @@ namespace MagicApp
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         if (pRA->SavePointSet())
         {
-            mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(true);
         }
     }
 
@@ -245,7 +245,7 @@ namespace MagicApp
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         if (pRA->SaveMesh3D())
         {
-            mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(true);
         }
     }
 

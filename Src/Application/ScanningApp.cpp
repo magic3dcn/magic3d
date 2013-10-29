@@ -139,7 +139,7 @@ namespace MagicApp
     void ScanningApp::StartRecord()
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        char filterName[] = "ONI Files(*.oni)\0*.oni\0";
         MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
         openni::Status rc  = mRecorder.create(fileName.c_str());
         if (rc != openni::STATUS_OK)
