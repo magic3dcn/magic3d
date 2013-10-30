@@ -232,6 +232,16 @@ namespace MagicDGP
         mNormal = nor;
     }
 
+    void Face3D::CalArea()
+    {
+        Vector3 pos0 = mpEdge->GetVertex()->GetPosition();
+        Vector3 pos1 = mpEdge->GetNext()->GetVertex()->GetPosition();
+        Vector3 pos2 = mpEdge->GetPre()->GetVertex()->GetPosition();
+        Vector3 dir1 = pos1 - pos0;
+        Vector3 dir2 = pos2 - pos0;
+        mArea = (dir1.CrossProduct(dir2)).Length();
+    }
+
     Real Face3D::GetArea() const
     {
         return mArea;
@@ -470,6 +480,14 @@ namespace MagicDGP
         }
         MagicLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
             << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
+    }
+
+    void Mesh3D::CalculateFaceArea()
+    {
+        for (std::vector<Face3D* >::iterator itr = mFaceList.begin(); itr != mFaceList.end(); ++itr)
+        {
+            (*itr)->CalArea();
+        }
     }
 
     void Mesh3D::ClearData()

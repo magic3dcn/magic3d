@@ -83,6 +83,7 @@ namespace MagicDGP
         void    SetEdge(Edge3D* pEdge);
         Vector3 GetNormal() const;
         void    SetNormal(const Vector3& nor);
+        void    CalArea();
         Real    GetArea() const;
         int     GetId() const;
         void    SetId(int id);
@@ -122,6 +123,7 @@ namespace MagicDGP
         void UpdateNormal();
         void GetBBox(Vector3& bboxMin, Vector3& bboxMax) const;
         void CalculateBBox();
+        void CalculateFaceArea();
         void ClearData();
 
     private:

@@ -21,8 +21,11 @@ namespace MagicDGP
     public:
         static int mMinInitSupportNum;
         static int mMinSupportNum;
+        static Real mMinSupportArea;
         static int mSampleBreakNum;
         static int mSampleBreakDelta;
+        static Real mAcceptableArea;
+        static Real mAcceptableAreaDelta;
         static Real mMaxAngleDeviation;
         static Real mMaxDistDeviation;
         static Real mMaxCylinderRadiusScale;
@@ -49,13 +52,16 @@ namespace MagicDGP
         int GetSupportNum();
         std::vector<int>& GetSupportVertex();
         void SetSupportVertex(const std::vector<int>& supportVertex);
+        Real GetSupportArea();
+        void UpdateSupportArea(const Mesh3D* pMesh);
         Real GetScore();
-        virtual void UpdateScore(const Mesh3D* pMesh) = 0;
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList) = 0;
     protected:
         std::vector<int> mSupportVertex;
         PrimitiveType mType;
         Real mScore;
         bool mRemoved;
+        Real mSupportArea;
     };
 
     class PlaneCandidate : public ShapeCandidate
@@ -67,7 +73,7 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     private:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
@@ -85,9 +91,8 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     private:
-    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -103,9 +108,8 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     private:
-    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -122,9 +126,8 @@ namespace MagicDGP
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     private:
-    //public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
@@ -142,7 +145,9 @@ namespace MagicDGP
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
     
     private:
-        static bool FindNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag);
+        static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        static bool FindNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);

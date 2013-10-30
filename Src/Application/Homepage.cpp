@@ -36,6 +36,11 @@ namespace MagicApp
 
     bool Homepage::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (arg.key == OIS::KC_P)
+        {
+            MagicLog << "EnterPrimitiveDetection" << std::endl;
+            MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
+        }
         return true;
     }
 }
