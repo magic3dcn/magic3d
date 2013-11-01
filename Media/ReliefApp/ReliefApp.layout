@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 0.112305 1" layer="Back">
+        <Widget type="Button" skin="But_Open" position_real="0.130435 0.0195313 0.73913 0.110677" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="But_Relief" position_real="0.130435 0.14974 0.730435 0.109375" align="Left Top" name="But_Relief"/>
+        <Widget type="Button" skin="But_Home" position_real="0.130435 0.852865 0.782609 0.128906" align="Left Bottom" name="But_Home"/>
+    </Widget>
+</MyGUI>

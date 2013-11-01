@@ -1,15 +1,23 @@
 #include "ReliefApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
+#include "../Common/ToolKit.h"
+#include "../DGP/Parser.h"
 
 namespace MagicApp
 {
-    ReliefApp::ReliefApp ()
+    ReliefApp::ReliefApp() : 
+        mpPointSet(NULL)
     {
     }
 
-    ReliefApp::~ReliefApp ()
+    ReliefApp::~ReliefApp()
     {
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = NULL;
+        }
     }
 
     bool ReliefApp::Enter(void)
@@ -66,6 +74,37 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderOBJ");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+    }
+
+    bool ReliefApp::ImportPointSet()
+    {
+        std::string fileName;
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        {
+            MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
+            if (pPointSet != NULL)
+            {
+                pPointSet->UnifyPosition(2.0);
+                if (mpPointSet != NULL)
+                {
+                    delete mpPointSet;
+                }
+                mpPointSet = pPointSet;
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 }
