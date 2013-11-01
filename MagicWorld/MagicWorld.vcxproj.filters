@@ -49,6 +49,9 @@
     <Filter Include="Application\LeapMotionApp">
       <UniqueIdentifier>{2fe12aff-7984-4312-af05-170f5df774cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\ReliefApp">
+      <UniqueIdentifier>{22090b78-9986-4aee-8724-0a3870429e87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -237,6 +240,12 @@
     <ClInclude Include="..\Src\Application\LeapMotionAppUI.h">
       <Filter>Application\LeapMotionApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\ReliefApp.h">
+      <Filter>Application\ReliefApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\ReliefAppUI.h">
+      <Filter>Application\ReliefApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -370,6 +379,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp">
       <Filter>Application\LeapMotionApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ReliefApp.cpp">
+      <Filter>Application\ReliefApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\ReliefAppUI.cpp">
+      <Filter>Application\ReliefApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

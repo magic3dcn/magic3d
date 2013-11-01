@@ -124,6 +124,8 @@
     <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h" />
     <ClInclude Include="..\Src\Application\ReconstructionApp.h" />
     <ClInclude Include="..\Src\Application\ReconstructionAppUI.h" />
+    <ClInclude Include="..\Src\Application\ReliefApp.h" />
+    <ClInclude Include="..\Src\Application\ReliefAppUI.h" />
     <ClInclude Include="..\Src\Application\ScanningApp.h" />
     <ClInclude Include="..\Src\Application\ScanningAppUI.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
@@ -188,6 +190,8 @@
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionApp.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp" />
+    <ClCompile Include="..\Src\Application\ReliefApp.cpp" />
+    <ClCompile Include="..\Src\Application\ReliefAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ScanningApp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
