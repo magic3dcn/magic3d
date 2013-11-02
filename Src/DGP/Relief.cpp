@@ -40,6 +40,10 @@ namespace MagicDGP
             }
             int xIndex = (pos[0] - mMinX) / deltaX;
             int yIndex = (pos[1] - mMinY) / deltaY;
+            if (xIndex < 0 || xIndex > mResolutionX || yIndex < 0 || yIndex > mResolutionY)
+            {
+                continue;
+            }
             int heightIndex = xIndex * (mResolutionY + 1) + yIndex;
             mHeightField.at(heightIndex) = pos[2];
             validIndex.insert(heightIndex);
@@ -99,8 +103,9 @@ namespace MagicDGP
             }
         }
         //Compress Depth
-        Real alpha = 500.0;
-        Real threthold = 0.025;
+        Real bbScale = mMaxX - mMinX;
+        Real alpha = bbScale * 250.0;
+        Real threthold = bbScale * 0.05;
         int vertNum = (mResolutionX + 1) * (mResolutionY + 1);
         std::vector<Vector3> DeltaVector(vertNum);
         for (int xid = 0; xid < mResolutionX; xid++)
@@ -134,30 +139,6 @@ namespace MagicDGP
 
             }
         }
-        /*for (int xid = 1; xid < mResolutionX; xid++)
-        {
-            for (int yid = 1; yid < mResolutionY; yid++)
-            {
-                int index = xid * (mResolutionY + 1) + yid;
-                Real laplaceV = 4 * mHeightField.at(index) - (mHeightField.at(index + 1) + mHeightField.at(index - 1) +
-                    mHeightField.at(index + mResolutionY + 1) + mHeightField.at(index - mResolutionY - 1));
-                MagicLog << "Laplace: " << laplaceV << " ";
-                if (fabs(laplaceV) > threthold)
-                {
-                    laplaceV = 0;
-                }
-                else if (laplaceV > 0)
-                {
-                    laplaceV = log(1 + alpha * laplaceV) / alpha;
-                }
-                else
-                {
-                    laplaceV = (-1.0) * log(1 - alpha * laplaceV) / alpha;
-                }
-                MagicLog << laplaceV << std::endl;
-                LaplaceField.at(index) = laplaceV;
-            }
-        }*/
         MagicLog << "Relief: Construct Matrix" << std::endl;
         std::vector< Eigen::Triplet<double> > tripletList;
         Eigen::VectorXd b(vertNum, 1);
@@ -198,6 +179,7 @@ namespace MagicDGP
             mHeightField.at(i) = res(i);
         }
         //Generate relief mesh
+        MagicLog << "Generate relief mesh" << std::endl;
         Mesh3D* pMesh = new Mesh3D;
         for (int xid = 0; xid < mResolutionX + 1; xid++)
         {
@@ -227,38 +209,134 @@ namespace MagicDGP
                 pMesh->InsertFace(triList);
             }
         }
+        MagicLog << "Construct Down Position" << std::endl;
+        std::vector<int> boundaryYMin(mResolutionX + 1);
+        std::vector<int> boundaryYMax(mResolutionX + 1);
+        std::vector<int> boundaryXMin(mResolutionY + 1);
+        std::vector<int> boundaryXMax(mResolutionY + 1);
+        for (int xid = 0; xid < mResolutionX + 1; xid++)
+        {
+            boundaryYMin.at(xid) = xid * (mResolutionY + 1);
+            boundaryYMax.at(xid) = xid * (mResolutionY + 1) + mResolutionY;
+        }
+        for (int yid = 0; yid < mResolutionY + 1; yid++)
+        {
+            boundaryXMin.at(yid) = yid;
+            boundaryXMax.at(yid) = mResolutionX * (mResolutionY + 1) + yid;
+        }
+        std::vector<int> boundaryYMinDown(mResolutionX + 1);
+        std::vector<int> boundaryYMaxDown(mResolutionX + 1);
+        std::vector<int> boundaryXMinDown(mResolutionY + 1);
+        std::vector<int> boundaryXMaxDown(mResolutionY + 1);
+        Vector3 negVec(0, 0, -0.05);
+        for (int xid = 0; xid < mResolutionX + 1; xid++)
+        {
+            Vector3 pos = pMesh->GetVertex(boundaryYMin.at(xid))->GetPosition() + negVec;
+            pMesh->InsertVertex(pos);
+            boundaryYMinDown.at(xid) = vertNum;
+            vertNum++;
+            pos = pMesh->GetVertex(boundaryYMax.at(xid))->GetPosition() + negVec;
+            pMesh->InsertVertex(pos);
+            boundaryYMaxDown.at(xid) = vertNum;
+            vertNum++;
+        }
+        for (int yid = 0; yid < mResolutionY + 1; yid++)
+        {
+            Vector3 pos = pMesh->GetVertex(boundaryXMin.at(yid))->GetPosition() + negVec;
+            pMesh->InsertVertex(pos);
+            boundaryXMinDown.at(yid) = vertNum;
+            vertNum++;
+            pos = pMesh->GetVertex(boundaryXMax.at(yid))->GetPosition() + negVec;
+            pMesh->InsertVertex(pos);
+            boundaryXMaxDown.at(yid) = vertNum;
+            vertNum++;
+        }
+        MagicLog << "Construct down triangle" << std::endl;
+        for (int xid = 0; xid < mResolutionX; xid++)
+        {
+            std::vector<Vertex3D* > triList;
+            triList.push_back(pMesh->GetVertex(boundaryYMin.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMin.at(xid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryYMin.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryYMax.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMax.at(xid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryYMax.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid)));
+            pMesh->InsertFace(triList);
+        }
+        for (int yid = 0; yid < mResolutionY; yid++)
+        {
+            std::vector<Vertex3D* > triList;
+            triList.push_back(pMesh->GetVertex(boundaryXMin.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryXMin.at(yid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryXMinDown.at(yid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryXMin.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryXMinDown.at(yid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryXMinDown.at(yid)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryXMax.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryXMaxDown.at(yid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryXMax.at(yid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryXMax.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryXMaxDown.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryXMaxDown.at(yid + 1)));
+            pMesh->InsertFace(triList);
+        }
+        for (int xid = 1; xid < mResolutionX - 1; xid++)
+        {
+            std::vector<Vertex3D* > triList;
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid + 1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(xid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(xid)));
+            pMesh->InsertFace(triList);
+        }
+        for (int yid = 0; yid < mResolutionY; yid++)
+        {
+            std::vector<Vertex3D* > triList;
+            triList.push_back(pMesh->GetVertex(boundaryXMinDown.at(yid + 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(1)));
+            triList.push_back(pMesh->GetVertex(boundaryXMinDown.at(yid)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryXMaxDown.at(yid)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(mResolutionX - 1)));
+            triList.push_back(pMesh->GetVertex(boundaryXMaxDown.at(yid + 1)));
+            pMesh->InsertFace(triList);
+        }
+        {
+            std::vector<Vertex3D* > triList;
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(0)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(1)));
+            pMesh->InsertFace(triList);
+            triList.clear();
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(mResolutionX)));
+            triList.push_back(pMesh->GetVertex(boundaryYMinDown.at(mResolutionX - 1)));
+            triList.push_back(pMesh->GetVertex(boundaryYMaxDown.at(mResolutionX - 1)));
+            pMesh->InsertFace(triList);
+        }
         pMesh->UpdateNormal();
         return pMesh;
-        //
-        //Update normal
-        /*delete pPC;
-        pPC = new Point3DSet;
-        std::vector<Vector3> posList((mResolutionX + 1) * (mResolutionY + 1));
-        for (int xid = 0; xid < mResolutionX + 1; xid++)
-        {
-            for (int yid = 0; yid < mResolutionY + 1; yid++)
-            {
-                Vector3 pos(mMinX + deltaX * xid, mMinY + deltaY * yid, mHeightField.at(xid * (mResolutionY + 1) + yid));
-                posList.at( xid * (mResolutionY + 1) + yid ) = pos;
-            }
-        }
-        for (int xid = 0; xid < mResolutionX + 1; xid++)
-        {
-            for (int yid = 0; yid < mResolutionY + 1; yid++)
-            {
-                Vector3 pos = posList.at(xid * (mResolutionY + 1) + yid);
-                Vector3 nor(0, 0, 1);
-                if (xid < mResolutionX && yid < mResolutionY)
-                {
-                    Vector3 posX = posList.at((xid + 1) * (mResolutionY + 1) + yid);
-                    Vector3 posY = posList.at(xid * (mResolutionY + 1) + yid + 1);
-                    nor = (posX - pos).CrossProduct(posY - pos);
-                    nor.Normalise();
-                }
-                Point3D* point = new Point3D(pos, nor);
-                pPC->InsertPoint(point);
-            }
-        }
-        MagicLog << "Relief PC Number: " << pPC->GetPointNumber() << std::endl;*/
     }
 }

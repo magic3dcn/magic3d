@@ -8,6 +8,7 @@
 #include "ReconstructionApp.h"
 #include "LeapMotionApp.h"
 #include "PrimitiveDetectionApp.h"
+#include "ReliefApp.h"
 
 namespace MagicApp
 {
@@ -31,6 +32,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReliefApp);
+        mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setSize(86, 86);
     }
 
     void HomepageUI::Shutdown()
@@ -57,6 +60,12 @@ namespace MagicApp
     {
         MagicLog << "EnterReconstruction Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReconstructionApp, "ReconstructionApp");
+    }
+
+    void HomepageUI::EnterReliefApp(MyGUI::Widget* pSender)
+    {
+        MagicLog << "EnterReliefApp Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new ReliefApp, "ReliefApp");
     }
 
     /*void HomepageUI::EnterLeapMotionApp(MyGUI::Widget* pSender)

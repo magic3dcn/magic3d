@@ -64,6 +64,23 @@ namespace MagicApp
         return true;
     }
 
+    bool ReliefApp::KeyPressed( const OIS::KeyEvent &arg )
+    {
+        if (arg.key == OIS::KC_V && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
+        }
+        if (arg.key == OIS::KC_E && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_WIREFRAME);
+        }
+        if (arg.key == OIS::KC_F && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
+        }
+        return true;
+    }
+
     void ReliefApp::SetupScene(void)
     {
         MagicLog << "ReliefApp::SetupScene" << std::endl;
@@ -102,6 +119,11 @@ namespace MagicApp
                 }
                 mpPointSet = pPointSet;
                 MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                if (mpMesh != NULL)
+                {
+                    delete mpMesh;
+                    mpMesh = NULL;
+                }
                 return true;
             }
             else
@@ -127,6 +149,19 @@ namespace MagicApp
             }
             mpMesh = pMesh;
             MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
+        }
+    }
+
+    void ReliefApp::ExportReliefMesh()
+    {
+        if (mpMesh != NULL)
+        {
+            std::string fileName;
+            char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
+            {
+                MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
+            }
         }
     }
 }

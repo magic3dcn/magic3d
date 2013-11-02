@@ -15,6 +15,7 @@ namespace MagicApp
     private:
         void OpenPointCloud(MyGUI::Widget* pSender);
         void GenerateRelief(MyGUI::Widget* pSender);
+        void ExportReliefMesh(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
 
     private:

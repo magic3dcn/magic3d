@@ -22,6 +22,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::GenerateRelief);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setSize(86, 86);
+        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::ExportReliefMesh);
+        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 86);
     }
@@ -39,7 +41,10 @@ namespace MagicApp
         ReliefApp* pRelief = dynamic_cast<ReliefApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReliefApp"));
         if (pRelief != NULL)
         {
-            pRelief->ImportPointSet();
+            if (pRelief->ImportPointSet())
+            {
+                mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setVisible(true);
+            }
         }
     }
 
@@ -49,6 +54,16 @@ namespace MagicApp
         if (pRelief != NULL)
         {
             pRelief->GenerateRelief();
+            mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(true);
+        }
+    }
+
+    void ReliefAppUI::ExportReliefMesh(MyGUI::Widget* pSender)
+    {
+        ReliefApp* pRelief = dynamic_cast<ReliefApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReliefApp"));
+        if (pRelief != NULL)
+        {
+            pRelief->ExportReliefMesh();
         }
     }
 

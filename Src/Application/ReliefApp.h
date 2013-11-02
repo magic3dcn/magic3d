@@ -19,9 +19,10 @@ namespace MagicApp
         virtual bool MouseMoved( const OIS::MouseEvent &arg );
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-
+        virtual bool KeyPressed( const OIS::KeyEvent &arg );
         bool ImportPointSet();
         void GenerateRelief();
+        void ExportReliefMesh();
 
     private:
         void SetupScene(void);
