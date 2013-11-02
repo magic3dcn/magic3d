@@ -3,6 +3,7 @@
 #include "ReliefAppUI.h"
 #include "../Tool/ViewTool.h"
 #include "../DGP/PointCloud3D.h"
+#include "../DGP/Mesh3D.h"
 
 namespace MagicApp
 {
@@ -20,6 +21,7 @@ namespace MagicApp
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
         bool ImportPointSet();
+        void GenerateRelief();
 
     private:
         void SetupScene(void);
@@ -29,5 +31,6 @@ namespace MagicApp
         ReliefAppUI mUI;
         MagicTool::ViewTool mViewTool;
         MagicDGP::Point3DSet* mpPointSet;
+        MagicDGP::Mesh3D* mpMesh;
     };
 }

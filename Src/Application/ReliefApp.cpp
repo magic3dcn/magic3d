@@ -3,11 +3,13 @@
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
+#include "../DGP/Relief.h"
 
 namespace MagicApp
 {
     ReliefApp::ReliefApp() : 
-        mpPointSet(NULL)
+        mpPointSet(NULL),
+        mpMesh(NULL)
     {
     }
 
@@ -17,6 +19,11 @@ namespace MagicApp
         {
             delete mpPointSet;
             mpPointSet = NULL;
+        }
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = NULL;
         }
     }
 
@@ -105,6 +112,21 @@ namespace MagicApp
         else
         {
             return false;
+        }
+    }
+
+    void ReliefApp::GenerateRelief()
+    {
+        MagicDGP::ReliefGeneration reliefGen(512, 512, -1, 1, -1, 1);
+        MagicDGP::Mesh3D* pMesh = reliefGen.GenerationFromPointClout(mpPointSet);
+        if (pMesh != NULL)
+        {
+            if (mpMesh != NULL)
+            {
+                delete mpMesh;
+            }
+            mpMesh = pMesh;
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
         }
     }
 }

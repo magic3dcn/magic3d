@@ -45,7 +45,11 @@ namespace MagicApp
 
     void ReliefAppUI::GenerateRelief(MyGUI::Widget* pSender)
     {
-
+        ReliefApp* pRelief = dynamic_cast<ReliefApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReliefApp"));
+        if (pRelief != NULL)
+        {
+            pRelief->GenerateRelief();
+        }
     }
 
     void ReliefAppUI::BackHome(MyGUI::Widget* pSender)
