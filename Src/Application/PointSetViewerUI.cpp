@@ -28,6 +28,8 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointViewerLayout.layout");
         mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenPointSet);
         mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_FilterPoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::FilterPointSet);
+        mRoot.at(0)->findWidget("But_FilterPoint")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::SavePointSet);
         mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::ReconstrutctPointSet);
@@ -57,11 +59,17 @@ namespace MagicApp
             if (pPSViewer->ImportPointSet())
             {
                 mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(true);
-                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_FilterPoint")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(true);
                 mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
                 mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(false);
             }
         }
+    }
+
+    void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
+    {
+
     }
 
     void PointSetViewerUI::SavePointSet(MyGUI::Widget* pSender)
@@ -80,6 +88,9 @@ namespace MagicApp
         {
             if (pPSViewer->ReconstructPointSet())
             {
+                mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_FilterPoint")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
                 mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
                 mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
             }
@@ -93,9 +104,10 @@ namespace MagicApp
         {
             if (pPSViewer->ImportMesh3D())
             {
+                mRoot.at(0)->findWidget("But_FilterPoint")->castType<MyGUI::Button>()->setVisible(false);
                 mRoot.at(0)->findWidget("But_ReconstructionPointSet")->castType<MyGUI::Button>()->setVisible(false);
                 mRoot.at(0)->findWidget("But_SavePointSet")->castType<MyGUI::Button>()->setVisible(false);
-                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
                 mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setVisible(true);
             }
         }
@@ -115,10 +127,7 @@ namespace MagicApp
         PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
         if (pPSViewer != NULL)
         {
-            if (pPSViewer->FilterMesh3D())
-            {
-                mRoot.at(1)->findWidget("But_SaveMesh")->castType<MyGUI::Button>()->setVisible(true);
-            }
+            pPSViewer->FilterMesh3D();
         }
     }
 

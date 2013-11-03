@@ -14,6 +14,7 @@ namespace MagicApp
 
     private:
         void OpenPointSet(MyGUI::Widget* pSender);
+        void FilterPointSet(MyGUI::Widget* pSender);
         void SavePointSet(MyGUI::Widget* pSender);
         void ReconstrutctPointSet(MyGUI::Widget* pSender);
         void OpenMesh3D(MyGUI::Widget* pSender);
