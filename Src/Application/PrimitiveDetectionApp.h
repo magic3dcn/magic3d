@@ -22,6 +22,8 @@ namespace MagicApp
 
         bool ImportMesh3D();
         void RansacPrimitiveDetection();
+        void CalMeshCurvature();
+        void FilterMesh3D();
 
     private:
         void SetupScene(void);

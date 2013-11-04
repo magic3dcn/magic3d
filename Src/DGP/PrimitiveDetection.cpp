@@ -1587,7 +1587,7 @@ namespace MagicDGP
                     delete cylinderCand;
                 }
                 //Add Cone Candidate
-                /*ShapeCandidate* coneCand = new ConeCandidate(pVertCand0, pVertCand1, pVertCand2);
+                ShapeCandidate* coneCand = new ConeCandidate(pVertCand0, pVertCand1, pVertCand2);
                 if (coneCand->IsValid())
                 {
                 
@@ -1624,7 +1624,7 @@ namespace MagicDGP
                 else
                 {
                     delete coneCand;
-                }*/
+                }
             }
             if (bestCand != NULL)
             {
