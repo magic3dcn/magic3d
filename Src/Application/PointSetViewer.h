@@ -22,6 +22,7 @@ namespace MagicApp
 
         bool ImportPointSet();
         void ExportPointSet();
+        void FilterPointSet();
         bool ReconstructPointSet();
         bool ImportMesh3D();
         void ExportMesh3D();

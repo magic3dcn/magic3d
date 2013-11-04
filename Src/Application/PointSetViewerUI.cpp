@@ -69,7 +69,11 @@ namespace MagicApp
 
     void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
     {
-
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            pPSViewer->FilterPointSet();
+        }
     }
 
     void PointSetViewerUI::SavePointSet(MyGUI::Widget* pSender)

@@ -210,6 +210,20 @@ namespace MagicApp
         }
     }
 
+    void PointSetViewer::FilterPointSet()
+    {
+        int pcNum = mpPointSet->GetPointNumber();
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
+        MagicDGP::Point3DSet* pNewPC = MagicDGP::Sampling::WLOPSampling(mpPointSet, pcNum / 2);
+        if (pNewPC != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = pNewPC;
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+        }
+    }
+
     bool PointSetViewer::FilterMesh3D()
     {
         MagicDGP::Filter::SimpleMeshSmooth(mpMesh);

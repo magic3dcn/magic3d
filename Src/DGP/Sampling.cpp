@@ -29,7 +29,7 @@ namespace MagicDGP
         LocalPCANormalEstimate(samplePosList, norList);
         NormalConsistent(pPS, samplePosList, norList);
         sampleNum = samplePosList.size();
-        NormalSmooth(samplePosList, norList);
+        //NormalSmooth(samplePosList, norList);
         MagicLog << "Finish Normal Estimate" << std::endl;
         Point3DSet* pNewPS = new Point3DSet;
         for (int i = 0; i < sampleNum; i++)
@@ -63,9 +63,17 @@ namespace MagicDGP
     {
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         MagicLog << "Begin Sampling::WLOPIteration" << std::endl;
-        int iterNum = 20;
         int iNum = samplePosList.size();
         int jNum = pPS->GetPointNumber();
+        int iterNum = 20;
+        if (jNum > 1000000)
+        {
+            iterNum = 10;
+        }
+        else if (jNum > 10000)
+        {
+            iterNum = iterNum - jNum / 100000;
+        }
         Vector3 bboxMin, bboxMax;
         pPS->GetBBox(bboxMin, bboxMax);
         Real smallValue = 1.0e-10;
