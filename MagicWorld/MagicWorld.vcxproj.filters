@@ -249,6 +249,9 @@
     <ClInclude Include="..\Src\DGP\Relief.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\Curvature.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -390,6 +393,9 @@
       <Filter>Application\ReliefApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Relief.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Curvature.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
