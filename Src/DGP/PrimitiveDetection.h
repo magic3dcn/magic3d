@@ -143,10 +143,13 @@ namespace MagicDGP
         ~PrimitiveDetection();
 
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetection_WithoutRefitting(Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
         static bool FindNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
+        static bool FindNewCandidates_WithoutRefitting(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
