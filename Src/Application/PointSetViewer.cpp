@@ -248,7 +248,7 @@ namespace MagicApp
                 searchSet[dim * i + 1] = pos[1];
                 searchSet[dim * i + 2] = pos[2];
             }
-            int nn = 25;
+            int nn = 9;
             int* pIndex = new int[searchNum * nn];
             float* pDist = new float[searchNum * nn];
             FLANNParameters searchPara;

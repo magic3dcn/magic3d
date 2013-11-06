@@ -42,6 +42,7 @@ namespace MagicApp
         mRoot.at(1)->findWidget("But_FilterMesh")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(1)->findWidget("But_BackToHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::BackToHomepage);
         mRoot.at(1)->findWidget("But_BackToHome")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("Slider_Outlier")->castType<MyGUI::ScrollBar>()->eventScrollChangePosition += MyGUI::newDelegate(this, &PointSetViewerUI::FilterOutlierSlider);
     }
 
     void PointSetViewerUI::Shutdown()
@@ -69,11 +70,26 @@ namespace MagicApp
 
     void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
     {
+        //PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        //if (pPSViewer != NULL)
+        //{
+        //    //pPSViewer->FilterPointSet();
+        //    pPSViewer->FilterPSOutliers(0.1);
+        //}
+        mRoot.at(0)->findWidget("Slider_Outlier")->castType<MyGUI::ScrollBar>()->setVisible(true);
+    }
+
+    void PointSetViewerUI::FilterOutlierSlider(MyGUI::ScrollBar* pSender, size_t pos)
+    {
+        float proportion = pos / 100.f;
+        if (pos == 9)
+        {
+            proportion = 1;
+        }
         PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
         if (pPSViewer != NULL)
         {
-            //pPSViewer->FilterPointSet();
-            pPSViewer->FilterPSOutliers(0.1);
+            pPSViewer->FilterPSOutliers(proportion);
         }
     }
 
