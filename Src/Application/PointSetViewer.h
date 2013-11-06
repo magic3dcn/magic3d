@@ -23,6 +23,7 @@ namespace MagicApp
         bool ImportPointSet();
         void ExportPointSet();
         void FilterPointSet();
+        void FilterPSOutliers(float proportion);
         bool ReconstructPointSet();
         bool ImportMesh3D();
         void ExportMesh3D();
@@ -37,5 +38,6 @@ namespace MagicApp
         MagicTool::ViewTool mViewTool;
         MagicDGP::Point3DSet* mpPointSet;
         MagicDGP::Mesh3D* mpMesh;
+        std::map<float, int> mPSDensityMap;
     };
 }

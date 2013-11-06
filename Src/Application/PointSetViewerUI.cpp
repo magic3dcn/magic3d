@@ -72,7 +72,8 @@ namespace MagicApp
         PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
         if (pPSViewer != NULL)
         {
-            pPSViewer->FilterPointSet();
+            //pPSViewer->FilterPointSet();
+            pPSViewer->FilterPSOutliers(0.1);
         }
     }
 

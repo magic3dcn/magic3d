@@ -8,7 +8,8 @@ namespace MagicDGP
         mPosition(0, 0, 0),
         mNormal(0, 0, 0),
         mColor(1, 1, 0),
-        mId(-1)
+        mId(-1), 
+        mValid(true)
     {
     }
 
@@ -16,7 +17,8 @@ namespace MagicDGP
         mPosition(pos),
         mNormal(0, 0, 0),
         mColor(1, 1, 0),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
     }
 
@@ -24,7 +26,8 @@ namespace MagicDGP
         mPosition(pos),
         mNormal(nor),
         mColor(1, 1, 0),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
     }
 
@@ -32,7 +35,8 @@ namespace MagicDGP
         mPosition(pos),
         mNormal(0, 0, 0),
         mColor(1, 1, 0),
-        mId(id)
+        mId(id),
+        mValid(true)
     {
     }
 
@@ -40,7 +44,8 @@ namespace MagicDGP
         mPosition(pos),
         mNormal(nor),
         mColor(1, 1, 0),
-        mId(id)
+        mId(id),
+        mValid(true)
     {
     }
 
@@ -86,6 +91,16 @@ namespace MagicDGP
     int Point3D::GetId() const
     {
         return mId;
+    }
+
+    void Point3D::SetValid(bool valid)
+    {
+        mValid = valid;
+    }
+
+    bool Point3D::IsValid() const
+    {
+        return mValid;
     }
 
     Point3DSet::Point3DSet()

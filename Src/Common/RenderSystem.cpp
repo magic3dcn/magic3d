@@ -116,6 +116,10 @@ namespace MagicCore
         for (int i = 0; i < pointNum; i++)
         {
             const MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            if (pPoint->IsValid() == false)
+            {
+                continue;
+            }
             MagicDGP::Vector3 pos = pPoint->GetPosition();
             MagicDGP::Vector3 nor = pPoint->GetNormal();
             MagicDGP::Vector3 color = pPoint->GetColor();
@@ -144,6 +148,10 @@ namespace MagicCore
         for (int i = 0; i < pointNum; i++)
         {
             const MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            if (pPoint->IsValid() == false)
+            {
+                continue;
+            }
             MagicDGP::Vector3 pos = transform.TransformPoint( pPoint->GetPosition() );
             MagicDGP::Vector3 nor = transform.RotateVector( pPoint->GetNormal() );
             MagicDGP::Vector3 color = pPoint->GetColor();

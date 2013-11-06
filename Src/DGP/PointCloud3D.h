@@ -22,12 +22,15 @@ namespace MagicDGP
         Vector3 GetColor() const;
         void SetId(int id);
         int GetId() const;
+        void SetValid(bool valid);
+        bool IsValid() const;
 
     protected:
         Vector3 mPosition;
         Vector3 mNormal;
         Vector3 mColor;
         int mId;
+        bool mValid;
     };
 
     class Point3DSet

@@ -9,6 +9,7 @@
 #include "../DGP/Sampling.h"
 #include "../DGP/MeshReconstruction.h"
 #include "../DGP/Filter.h"
+#include "flann/flann.h"
 
 namespace MagicApp
 {
@@ -120,6 +121,7 @@ namespace MagicApp
                 }
                 mpPointSet = pPointSet;
                 MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                mPSDensityMap.clear();
                 return true;
             }
             else
@@ -212,7 +214,7 @@ namespace MagicApp
 
     void PointSetViewer::FilterPointSet()
     {
-        int pcNum = mpPointSet->GetPointNumber();
+        /*int pcNum = mpPointSet->GetPointNumber();
         mpPointSet->CalculateBBox();
         mpPointSet->CalculateDensity();
         MagicDGP::Point3DSet* pNewPC = MagicDGP::Sampling::WLOPSampling(mpPointSet, pcNum / 2);
@@ -221,7 +223,85 @@ namespace MagicApp
             delete mpPointSet;
             mpPointSet = pNewPC;
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+        }*/
+        //Remove outliers
+
+    }
+
+    void PointSetViewer::FilterPSOutliers(float proportion)
+    {
+        if (mPSDensityMap.size() == 0)
+        {
+            int dim = 3;
+            int pointNum = mpPointSet->GetPointNumber();
+            int refNum = pointNum;
+            float* dataSet = new float[refNum * dim];
+            int searchNum = pointNum;
+            float* searchSet = new float[searchNum * dim];
+            for (int i = 0; i < pointNum; i++)
+            {
+                MagicDGP::Vector3 pos = mpPointSet->GetPoint(i)->GetPosition();
+                dataSet[dim * i + 0] = pos[0];
+                dataSet[dim * i + 1] = pos[1];
+                dataSet[dim * i + 2] = pos[2];
+                searchSet[dim * i + 0] = pos[0];
+                searchSet[dim * i + 1] = pos[1];
+                searchSet[dim * i + 2] = pos[2];
+            }
+            int nn = 25;
+            int* pIndex = new int[searchNum * nn];
+            float* pDist = new float[searchNum * nn];
+            FLANNParameters searchPara;
+            searchPara = DEFAULT_FLANN_PARAMETERS;
+            searchPara.algorithm = FLANN_INDEX_KDTREE;
+            searchPara.trees = 8;
+            searchPara.log_level = FLANN_LOG_INFO;
+            searchPara.checks = 64;
+            float speedup;
+            flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+            flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+            flann_free_index(indexId, &searchPara);
+            delete []dataSet;
+            delete []searchSet;
+            for (int i = 0; i < pointNum; i++)
+            {
+                float density = 0;
+                int baseIndex = nn * i;
+                for (int j = 0; j < nn; j++)
+                {
+                    density += pDist[baseIndex + j];
+                }
+                density /= nn;
+                mPSDensityMap[density] = i;
+            }
+            if (pIndex != NULL)
+            {
+                delete []pIndex;
+                pIndex = NULL;
+            }
+            if (pDist != NULL)
+            {
+                delete []pDist;
+                pDist = NULL;
+            }
         }
+        int pointNum = mpPointSet->GetPointNumber();
+        for (int i = 0; i < pointNum; i++)
+        {
+            mpPointSet->GetPoint(i)->SetValid(true);
+        }
+        int invalidNum = pointNum * proportion;
+        int invalidIndex = 0;
+        for (std::map<float, int>::reverse_iterator itr = mPSDensityMap.rbegin(); itr != mPSDensityMap.rend(); ++itr)
+        {
+            if (invalidIndex == invalidNum)
+            {
+                break;
+            }
+            mpPointSet->GetPoint(itr->second)->SetValid(false);
+            invalidIndex++;
+        }
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
     }
 
     bool PointSetViewer::FilterMesh3D()
