@@ -24,6 +24,7 @@ namespace MagicDGP
         static Real mMinSupportArea;
         static int mSampleBreakNum;
         static int mSampleBreakDelta;
+        static Real mAcceptableAreaScale;
         static Real mAcceptableArea;
         static Real mAcceptableAreaDelta;
         static Real mMaxAngleDeviation;
@@ -53,7 +54,7 @@ namespace MagicDGP
         std::vector<int>& GetSupportVertex();
         void SetSupportVertex(const std::vector<int>& supportVertex);
         Real GetSupportArea();
-        void UpdateSupportArea(const Mesh3D* pMesh);
+        void UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
         Real GetScore();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList) = 0;
     protected:
@@ -154,6 +155,8 @@ namespace MagicDGP
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
+        static void ChoseInitBestCandidates(std::vector<ShapeCandidate* >& candidates, std::vector<int>& bestSet);
+        static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
 
     };
 

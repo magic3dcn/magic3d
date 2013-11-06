@@ -148,6 +148,7 @@ namespace MagicApp
     void PrimitiveDetectionApp::RansacPrimitiveDetection()
     {
         std::vector<int> res;
+        //MagicDGP::PrimitiveDetection::Primitive2DDetection(mpMesh, res);
         MagicDGP::PrimitiveDetection::Primitive2DDetection_WithoutRefitting(mpMesh, res);
         int vertNum = mpMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
