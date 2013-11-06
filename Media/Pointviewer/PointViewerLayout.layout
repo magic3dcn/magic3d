@@ -16,7 +16,7 @@
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="ScrollBar" skin="ScrollBarV" position="110 194 20 226" align="Left Top" name="Slider_Outlier">
-            <Property key="Range" value="10"/>
+            <Property key="Range" value="20"/>
             <Property key="RangePosition" value="1"/>
             <Property key="Visible" value="false"/>
         </Widget>

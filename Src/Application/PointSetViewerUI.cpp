@@ -70,19 +70,19 @@ namespace MagicApp
 
     void PointSetViewerUI::FilterPointSet(MyGUI::Widget* pSender)
     {
-        //PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
-        //if (pPSViewer != NULL)
-        //{
-        //    //pPSViewer->FilterPointSet();
-        //    pPSViewer->FilterPSOutliers(0.1);
-        //}
+        PointSetViewer* pPSViewer = dynamic_cast<PointSetViewer* >(MagicCore::AppManager::GetSingleton()->GetApp("PointSetViewer"));
+        if (pPSViewer != NULL)
+        {
+            //pPSViewer->FilterPointSet();
+            pPSViewer->FilterPSOutliers(0.1);
+        }
         mRoot.at(0)->findWidget("Slider_Outlier")->castType<MyGUI::ScrollBar>()->setVisible(true);
     }
 
     void PointSetViewerUI::FilterOutlierSlider(MyGUI::ScrollBar* pSender, size_t pos)
     {
         float proportion = pos / 100.f;
-        if (pos == 9)
+        if (pos == 19)
         {
             proportion = 1;
         }

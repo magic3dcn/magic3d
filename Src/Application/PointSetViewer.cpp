@@ -232,23 +232,31 @@ namespace MagicApp
     {
         if (mPSDensityMap.size() == 0)
         {
-            int dim = 3;
+            int dim = 6;
             int pointNum = mpPointSet->GetPointNumber();
             int refNum = pointNum;
             float* dataSet = new float[refNum * dim];
             int searchNum = pointNum;
             float* searchSet = new float[searchNum * dim];
+            float norWeight = 0.1f;
             for (int i = 0; i < pointNum; i++)
             {
                 MagicDGP::Vector3 pos = mpPointSet->GetPoint(i)->GetPosition();
+                MagicDGP::Vector3 nor = mpPointSet->GetPoint(i)->GetNormal();
                 dataSet[dim * i + 0] = pos[0];
                 dataSet[dim * i + 1] = pos[1];
                 dataSet[dim * i + 2] = pos[2];
+                dataSet[dim * i + 3] = nor[0] * norWeight;
+                dataSet[dim * i + 4] = nor[1] * norWeight;
+                dataSet[dim * i + 5] = nor[2] * norWeight;
                 searchSet[dim * i + 0] = pos[0];
                 searchSet[dim * i + 1] = pos[1];
                 searchSet[dim * i + 2] = pos[2];
+                searchSet[dim * i + 3] = nor[0] * norWeight;
+                searchSet[dim * i + 4] = nor[1] * norWeight;
+                searchSet[dim * i + 5] = nor[2] * norWeight;
             }
-            int nn = 9;
+            int nn = 25;
             int* pIndex = new int[searchNum * nn];
             float* pDist = new float[searchNum * nn];
             FLANNParameters searchPara;
@@ -286,6 +294,32 @@ namespace MagicApp
             }
         }
         int pointNum = mpPointSet->GetPointNumber();
+        int invalidNum = pointNum * 0.01;
+        int invalidIndex = 0;
+        for (std::map<float, int>::reverse_iterator itr = mPSDensityMap.rbegin(); itr != mPSDensityMap.rend(); ++itr)
+        {
+            if (invalidIndex == invalidNum)
+            {
+                break;
+            }
+            mpPointSet->GetPoint(itr->second)->SetValid(false);
+            invalidIndex++;
+        }
+        mPSDensityMap.clear();
+        MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
+        for (int i = 0; i < pointNum; i++)
+        {
+            if (mpPointSet->GetPoint(i)->IsValid() == false)
+            {
+                continue;
+            }
+            MagicDGP::Point3D* pPoint = mpPointSet->GetPoint(i);
+            MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
+            pNewPS->InsertPoint(pNewPoint);
+        }
+        delete mpPointSet;
+        mpPointSet = pNewPS;
+        /*int pointNum = mpPointSet->GetPointNumber();
         for (int i = 0; i < pointNum; i++)
         {
             mpPointSet->GetPoint(i)->SetValid(true);
@@ -300,7 +334,7 @@ namespace MagicApp
             }
             mpPointSet->GetPoint(itr->second)->SetValid(false);
             invalidIndex++;
-        }
+        }*/
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
     }
 
