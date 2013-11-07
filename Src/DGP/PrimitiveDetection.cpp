@@ -9,7 +9,7 @@ namespace MagicDGP
     Real PrimitiveParameters::mMinSupportArea = 1;
     int PrimitiveParameters::mSampleBreakNum = 50000;
     int PrimitiveParameters::mSampleBreakDelta = 100;
-    Real PrimitiveParameters::mAcceptableAreaScale = 0.15;
+    Real PrimitiveParameters::mAcceptableAreaScale = 0.17;
     Real PrimitiveParameters::mAcceptableArea = 1;
     Real PrimitiveParameters::mAcceptableAreaDelta = 1;
     Real PrimitiveParameters::mMaxAngleDeviation = 0.866;
@@ -1448,7 +1448,7 @@ namespace MagicDGP
         MagicLog << "Total Area: " << totalArea << " mAcceptableArea: " << PrimitiveParameters::mAcceptableArea << std::endl;
         MagicLog << "prepare time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         //
-        int iterNum = 50;
+        int iterNum = 100;
         int iterIndex = 0;
         bool forceBreak = false;
         int lastBestIndex = -1;
@@ -1849,7 +1849,7 @@ namespace MagicDGP
         }
         int validVertNum = validVert.size();
         MagicLog << "Valid vertex number: " << validVertNum << std::endl;
-        if (validVertNum < 1000)
+        if (validVertNum < 100)
         {
             return false;
         }

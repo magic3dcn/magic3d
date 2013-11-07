@@ -232,13 +232,12 @@ namespace MagicApp
     {
         if (mPSDensityMap.size() == 0)
         {
-            int dim = 6;
+            int dim = 3;
             int pointNum = mpPointSet->GetPointNumber();
             int refNum = pointNum;
             float* dataSet = new float[refNum * dim];
             int searchNum = pointNum;
             float* searchSet = new float[searchNum * dim];
-            float norWeight = 0.1f;
             for (int i = 0; i < pointNum; i++)
             {
                 MagicDGP::Vector3 pos = mpPointSet->GetPoint(i)->GetPosition();
@@ -246,17 +245,11 @@ namespace MagicApp
                 dataSet[dim * i + 0] = pos[0];
                 dataSet[dim * i + 1] = pos[1];
                 dataSet[dim * i + 2] = pos[2];
-                dataSet[dim * i + 3] = nor[0] * norWeight;
-                dataSet[dim * i + 4] = nor[1] * norWeight;
-                dataSet[dim * i + 5] = nor[2] * norWeight;
                 searchSet[dim * i + 0] = pos[0];
                 searchSet[dim * i + 1] = pos[1];
                 searchSet[dim * i + 2] = pos[2];
-                searchSet[dim * i + 3] = nor[0] * norWeight;
-                searchSet[dim * i + 4] = nor[1] * norWeight;
-                searchSet[dim * i + 5] = nor[2] * norWeight;
             }
-            int nn = 25;
+            int nn = 9;
             int* pIndex = new int[searchNum * nn];
             float* pDist = new float[searchNum * nn];
             FLANNParameters searchPara;
@@ -273,13 +266,16 @@ namespace MagicApp
             delete []searchSet;
             for (int i = 0; i < pointNum; i++)
             {
+                MagicDGP::Vector3 pos = mpPointSet->GetPoint(i)->GetPosition();
+                MagicDGP::Vector3 nor = mpPointSet->GetPoint(i)->GetNormal();
                 float density = 0;
                 int baseIndex = nn * i;
                 for (int j = 0; j < nn; j++)
                 {
-                    density += pDist[baseIndex + j];
+                    MagicDGP::Vector3 posNeigh = mpPointSet->GetPoint(pIndex[baseIndex + j])->GetPosition();
+                    MagicDGP::Vector3 deltaPos = posNeigh - pos + nor * 1000 * ( (posNeigh - pos) * nor );
+                    density += deltaPos.Length();
                 }
-                density /= nn;
                 mPSDensityMap[density] = i;
             }
             if (pIndex != NULL)
