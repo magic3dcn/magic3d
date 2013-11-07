@@ -21,7 +21,6 @@ namespace MagicApp
         void SaveMesh3D(MyGUI::Widget* pSender);
         void FilterMesh3D(MyGUI::Widget* pSender);
         void BackToHomepage(MyGUI::Widget* pSender);
-        void FilterOutlierSlider(MyGUI::ScrollBar* pSender, size_t pos);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

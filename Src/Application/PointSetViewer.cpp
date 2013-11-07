@@ -212,23 +212,7 @@ namespace MagicApp
         }
     }
 
-    void PointSetViewer::FilterPointSet()
-    {
-        /*int pcNum = mpPointSet->GetPointNumber();
-        mpPointSet->CalculateBBox();
-        mpPointSet->CalculateDensity();
-        MagicDGP::Point3DSet* pNewPC = MagicDGP::Sampling::WLOPSampling(mpPointSet, pcNum / 2);
-        if (pNewPC != NULL)
-        {
-            delete mpPointSet;
-            mpPointSet = pNewPC;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
-        }*/
-        //Remove outliers
-
-    }
-
-    void PointSetViewer::FilterPSOutliers(float proportion)
+    void PointSetViewer::FilterPointSetOutliers()
     {
         if (mPSDensityMap.size() == 0)
         {
@@ -249,7 +233,7 @@ namespace MagicApp
                 searchSet[dim * i + 1] = pos[1];
                 searchSet[dim * i + 2] = pos[2];
             }
-            int nn = 9;
+            int nn = 15;
             int* pIndex = new int[searchNum * nn];
             float* pDist = new float[searchNum * nn];
             FLANNParameters searchPara;
@@ -273,7 +257,7 @@ namespace MagicApp
                 for (int j = 0; j < nn; j++)
                 {
                     MagicDGP::Vector3 posNeigh = mpPointSet->GetPoint(pIndex[baseIndex + j])->GetPosition();
-                    MagicDGP::Vector3 deltaPos = posNeigh - pos + nor * 1000 * ( (posNeigh - pos) * nor );
+                    MagicDGP::Vector3 deltaPos = posNeigh - pos + nor * 10 * ( (posNeigh - pos) * nor );
                     density += deltaPos.Length();
                 }
                 mPSDensityMap[density] = i;
@@ -315,22 +299,6 @@ namespace MagicApp
         }
         delete mpPointSet;
         mpPointSet = pNewPS;
-        /*int pointNum = mpPointSet->GetPointNumber();
-        for (int i = 0; i < pointNum; i++)
-        {
-            mpPointSet->GetPoint(i)->SetValid(true);
-        }
-        int invalidNum = pointNum * proportion;
-        int invalidIndex = 0;
-        for (std::map<float, int>::reverse_iterator itr = mPSDensityMap.rbegin(); itr != mPSDensityMap.rend(); ++itr)
-        {
-            if (invalidIndex == invalidNum)
-            {
-                break;
-            }
-            mpPointSet->GetPoint(itr->second)->SetValid(false);
-            invalidIndex++;
-        }*/
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
     }
 
