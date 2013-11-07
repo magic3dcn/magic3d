@@ -173,7 +173,8 @@ namespace MagicDGP
         mSupportVertex.push_back(id0);
         mSupportVertex.push_back(id1);
         mSupportVertex.push_back(id2);
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         visitFlag[id0] = 1;
         visitFlag[id1] = 1;
         visitFlag[id2] = 1;
@@ -255,7 +256,8 @@ namespace MagicDGP
         //Real MaxAngleDeviation = 0.9848;
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001 * 5;
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
         {
@@ -393,7 +395,8 @@ namespace MagicDGP
         mSupportVertex.clear();
         mSupportVertex.push_back(id0);
         mSupportVertex.push_back(id1);
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         visitFlag[id0] = 1;
         visitFlag[id1] = 1;
         std::vector<int> searchIndex;
@@ -473,7 +476,8 @@ namespace MagicDGP
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001 * 10;
         Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxSphereRadiusScale;
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
         {
@@ -611,7 +615,8 @@ namespace MagicDGP
         mSupportVertex.clear();
         mSupportVertex.push_back(id0);
         mSupportVertex.push_back(id1);
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         visitFlag[id0] = 1;
         visitFlag[id1] = 1;
         std::vector<int> searchIndex;
@@ -801,7 +806,8 @@ namespace MagicDGP
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001 * 10;
         Real MaxDistDeviation = mRadius * PrimitiveParameters::mMaxCylinderRadiusScale;
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
         {
@@ -971,7 +977,8 @@ namespace MagicDGP
         mSupportVertex.push_back(id0);
         mSupportVertex.push_back(id1);
         mSupportVertex.push_back(id2);
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         visitFlag[id0] = 1;
         visitFlag[id1] = 1;
         visitFlag[id2] = 1;
@@ -1203,7 +1210,8 @@ namespace MagicDGP
         //Refit support vertex
         //Real MaxAngleDeviation = 0.1745329251994329; //10 degree
         //Real MaxCosAngleDeviation = 0.94;
-        std::map<int, int> visitFlag;
+        //std::map<int, int> visitFlag;
+        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         std::vector<int> searchIndex = mSupportVertex;
         for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
         {
@@ -1874,7 +1882,8 @@ namespace MagicDGP
             const Vertex3D* pVert = pMesh->GetVertex(currentIndex);
             //Get vertex n neigbors
             std::vector<int> neighborList;
-            std::map<int, int> visitFlag;
+            //std::map<int, int> visitFlag;
+            std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
             std::vector<int> tranStack;
             tranStack.push_back(currentIndex);
             visitFlag[currentIndex] = 1;
