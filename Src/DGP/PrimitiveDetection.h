@@ -57,12 +57,14 @@ namespace MagicDGP
         void UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
         Real GetScore();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList) = 0;
+        bool HasRefit() const;
     protected:
         std::vector<int> mSupportVertex;
         PrimitiveType mType;
         Real mScore;
         bool mRemoved;
         Real mSupportArea;
+        bool mHasRefit;
     };
 
     class PlaneCandidate : public ShapeCandidate

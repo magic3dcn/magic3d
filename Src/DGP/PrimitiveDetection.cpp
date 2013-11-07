@@ -34,7 +34,8 @@ namespace MagicDGP
     ShapeCandidate::ShapeCandidate() :
         mScore(0),
         mRemoved(false),
-        mSupportArea(0)
+        mSupportArea(0),
+        mHasRefit(false)
     {
     }
 
@@ -97,7 +98,7 @@ namespace MagicDGP
             mSupportArea += vertWeightList.at(*itr);
         }
         mSupportArea /= 3;
-        MagicLog << "UpdateSupportArea time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "UpdateSupportArea time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
 
     std::vector<int>& ShapeCandidate::GetSupportVertex()
@@ -108,6 +109,11 @@ namespace MagicDGP
     Real ShapeCandidate::GetScore()
     {
         return mScore;
+    }
+
+    bool ShapeCandidate::HasRefit() const
+    {
+        return mHasRefit;
     }
 
     PlaneCandidate::PlaneCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2) :
@@ -226,12 +232,13 @@ namespace MagicDGP
         }
 
         //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        MagicLog << "Plane Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+       // MagicLog << "Plane Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
     int PlaneCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
+        mHasRefit = true;
         //Refit parameter
         mCenter = Vector3(0, 0, 0);
         mNormal = Vector3(0, 0, 0);
@@ -316,7 +323,7 @@ namespace MagicDGP
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             mScore += (fabs(nor * mNormal) - PrimitiveParameters::mBaseScore) * vertWeightList.at(*itr);
         }
-        MagicLog << "Plane Update Score: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Plane Update Score: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
 
     SphereCandidate::SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -428,12 +435,13 @@ namespace MagicDGP
         }
 
         //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        MagicLog << "Sphere Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Sphere Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
     int SphereCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
+        mHasRefit = true;
         //Refit parameter
         int supportNum = mSupportVertex.size();
         Eigen::MatrixXd matA(supportNum, 4);
@@ -531,7 +539,7 @@ namespace MagicDGP
             dir.Normalise();
             mScore += (fabs(nor * dir) - PrimitiveParameters::mBaseScore) * vertWeightList.at(*itr);
         }
-        MagicLog << "Sphere Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Sphere Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
 
     CylinderCandidate::CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -646,13 +654,14 @@ namespace MagicDGP
         }
 
         //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        MagicLog << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart 
-            << " SupportVertexSize: " << mSupportVertex.size() << std::endl;
+        //MagicLog << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart 
+        //    << " SupportVertexSize: " << mSupportVertex.size() << std::endl;
         return mSupportVertex.size();
     }
 
     int CylinderCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
+        mHasRefit = true;
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
         //Refit parameter
         int supportNum = mSupportVertex.size();
@@ -839,7 +848,7 @@ namespace MagicDGP
         }
 
         //MagicLog << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
-        MagicLog << "Cylinder refitting time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Cylinder refitting time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
@@ -861,7 +870,7 @@ namespace MagicDGP
             dir.Normalise();
             mScore += (fabs(dir * nor) - PrimitiveParameters::mBaseScore) * vertWeightList.at(*itr);
         }
-        MagicLog << "Cylinder Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Cylinder Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
 
     ConeCandidate::ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2) :
@@ -1022,12 +1031,13 @@ namespace MagicDGP
         }
 
         //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        MagicLog << "Cone Support time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "Cone Support time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
     int ConeCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
+        mHasRefit = true;
         //Refit parameter
         int supportNum = mSupportVertex.size();
         Eigen::MatrixXd matA(supportNum, 3);
@@ -1284,7 +1294,7 @@ namespace MagicDGP
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             mScore += (fabs(nor * ideaNor) - PrimitiveParameters::mBaseScore) * vertWeightList.at(*itr);
         }
-        MagicLog << "Cone Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl; 
+        //MagicLog << "Cone Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl; 
     }
 
     PrimitiveDetection::PrimitiveDetection()
@@ -1440,11 +1450,9 @@ namespace MagicDGP
             ChoseInitBestCandidates(candidates, initBestSet);
             std::map<Real, int> bestSet;
             for (std::vector<int>::iterator itr = initBestSet.begin(); itr != initBestSet.end(); ++itr)
-            { 
-                if (candidates.at(*itr)->Refitting(pMesh, res) > PrimitiveParameters::mMinSupportNum)
+            {
+                if (candidates.at(*itr)->HasRefit())
                 {
-                    candidates.at(*itr)->UpdateScore(pMesh, vertWeightList);
-                    candidates.at(*itr)->UpdateSupportArea(pMesh, vertWeightList);
                     bestSet[candidates.at(*itr)->GetScore()] = *itr;
                     if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
                     {
@@ -1454,7 +1462,21 @@ namespace MagicDGP
                 }
                 else
                 {
-                    candidates.at(*itr)->SetRemoved(true);
+                    if (candidates.at(*itr)->Refitting(pMesh, res) > PrimitiveParameters::mMinSupportNum)
+                    {
+                        candidates.at(*itr)->UpdateScore(pMesh, vertWeightList);
+                        candidates.at(*itr)->UpdateSupportArea(pMesh, vertWeightList);
+                        bestSet[candidates.at(*itr)->GetScore()] = *itr;
+                        if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                        {
+                            MagicLog << "Luck break" << std::endl;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        candidates.at(*itr)->SetRemoved(true);
+                    }
                 }
             }
             MagicLog << "bestSet number: " << bestSet.size() << std::endl;
@@ -1524,7 +1546,7 @@ namespace MagicDGP
 
     void PrimitiveDetection::CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        MagicLog << "PrimitiveDetection::CalVertexWeight" << std::endl;
+        //MagicLog << "PrimitiveDetection::CalVertexWeight" << std::endl;
         vertWeightList.clear();
         int vertNum = pMesh->GetVertexNumber();
         vertWeightList.resize(vertNum);
@@ -1818,18 +1840,19 @@ namespace MagicDGP
             }
         }
         int validVertNum = validVert.size();
+        MagicLog << "Valid vertex number: " << validVertNum << std::endl;
         if (validVertNum < 1000)
         {
             return false;
         }
-        MagicLog << "validVert time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog << "validVert time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         //int sampleNum = validVertNum / 10;
         int sampleNum = 10;
         if (sampleNum > validVertNum)
         {
             sampleNum = validVertNum;
         }
-        MagicLog << "sampleNum: " << sampleNum << std::endl;
+        //MagicLog << "sampleNum: " << sampleNum << std::endl;
         int sampleDelta = validVertNum / sampleNum;
         int neighborRadius = 10;
         int minNeigborNum = 10;
@@ -1887,7 +1910,7 @@ namespace MagicDGP
                 tranStack = tranStackNext;
             }
             int neighborSize = neighborList.size();
-            MagicLog << "Get Neighbor Time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
+            //MagicLog << "Get Neighbor Time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
             //MagicLog << "  sampleIndex: " << currentIndex << " sampleNum: " << neighborSize << std::endl; 
             if (neighborSize < minNeigborNum)
             {
@@ -2067,7 +2090,7 @@ namespace MagicDGP
                     }
                 }
             }
-            MagicLog << "Iter time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
+            //MagicLog << "Iter time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
             if (bestCand != NULL)
             {
                 candidates.push_back(bestCand);
@@ -2081,9 +2104,14 @@ namespace MagicDGP
             }
         }
 
+        if (isNewAdded == false)
+        {
+            MagicLog << "Stop: No new candidates added" << std::endl;
+        }
         //MagicLog << "   FindNewCandidates: " << candidates.size() << std::endl;
-        MagicLog << "FindNewCandidates time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;;
-        return isNewAdded;
+        //MagicLog << "FindNewCandidates time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;;
+        //return isNewAdded;
+        return true;
     }
 
     int PrimitiveDetection::ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates)
