@@ -1443,15 +1443,16 @@ namespace MagicDGP
         PrimitiveParameters::mSampleBreakDelta = vertNum / 10000;
         PrimitiveParameters::mAcceptableArea = totalArea * PrimitiveParameters::mAcceptableAreaScale;
         PrimitiveParameters::mAcceptableAreaDelta = PrimitiveParameters::mAcceptableArea / 500;
-        PrimitiveParameters::mMinSupportArea = totalArea / 1000;
+        PrimitiveParameters::mMinSupportArea = totalArea / 100;
         MagicLog << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
         MagicLog << "Total Area: " << totalArea << " mAcceptableArea: " << PrimitiveParameters::mAcceptableArea << std::endl;
         MagicLog << "prepare time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         //
-        int iterNum = 100;
+        int iterNum = 500;
         int iterIndex = 0;
         bool forceBreak = false;
         int lastBestIndex = -1;
+        int zeroBestNum = 0;
         while (FindNewCandidates_WithoutRefitting(candidates, pMesh, res, sampleFlag, vertWeightList) == true)
         {
             std::vector<int> initBestSet;
@@ -1461,24 +1462,34 @@ namespace MagicDGP
             {
                 if (candidates.at(*itr)->HasRefit())
                 {
-                    bestSet[candidates.at(*itr)->GetScore()] = *itr;
-                    if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                    if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mMinSupportArea)
                     {
-                        MagicLog << "Luck break" << std::endl;
-                        break;
+                        bestSet[candidates.at(*itr)->GetScore()] = *itr;
+                        if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                        {
+                            MagicLog << "Luck break" << std::endl;
+                            break;
+                        }
                     }
                 }
                 else
                 {
                     if (candidates.at(*itr)->Refitting(pMesh, res) > PrimitiveParameters::mMinSupportNum)
                     {
-                        candidates.at(*itr)->UpdateScore(pMesh, vertWeightList);
                         candidates.at(*itr)->UpdateSupportArea(pMesh, vertWeightList);
-                        bestSet[candidates.at(*itr)->GetScore()] = *itr;
-                        if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                        if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mMinSupportArea)
                         {
-                            MagicLog << "Luck break" << std::endl;
-                            break;
+                            candidates.at(*itr)->UpdateScore(pMesh, vertWeightList);
+                            bestSet[candidates.at(*itr)->GetScore()] = *itr;
+                            if (candidates.at(*itr)->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                            {
+                                MagicLog << "Luck break" << std::endl;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            candidates.at(*itr)->SetRemoved(true);
                         }
                     }
                     else
@@ -1488,10 +1499,24 @@ namespace MagicDGP
                 }
             }
             MagicLog << "bestSet number: " << bestSet.size() << std::endl;
+            if (bestSet.size() == 0)
+            {
+                zeroBestNum++;
+                if (zeroBestNum == 10)
+                {
+                    forceBreak = true;
+                    MagicLog << "zero best num break" << std::endl;
+                }
+            }
+            else
+            {
+                zeroBestNum = 0;
+            }
             for (std::map<Real, int>::reverse_iterator itr = bestSet.rbegin(); itr != bestSet.rend(); ++itr)
             {
                 MagicLog << "Candidate" << itr->second << " : " << candidates.at(itr->second)->GetSupportArea()
-                         << "  mAcceptableArea: " << PrimitiveParameters::mAcceptableArea << std::endl;
+                         << "  mAcceptableArea: " << PrimitiveParameters::mAcceptableArea
+                         << " mMinSupportArea: " << PrimitiveParameters::mMinSupportArea << std::endl;
                 if (IsCandidateAcceptable(itr->second, candidates) || itr->second == lastBestIndex)
                 {
                     //Mark Primitive Type
@@ -1533,6 +1558,10 @@ namespace MagicDGP
                 break;
             }
             iterIndex++;
+            if (iterIndex == 50)
+            {
+                MagicLog << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+            }
             if (iterIndex == iterNum)
             {
                 break;
@@ -1849,7 +1878,7 @@ namespace MagicDGP
         }
         int validVertNum = validVert.size();
         MagicLog << "Valid vertex number: " << validVertNum << std::endl;
-        if (validVertNum < 100)
+        if (validVertNum < 500)
         {
             return false;
         }
@@ -2253,7 +2282,7 @@ namespace MagicDGP
             return false;
         }
         PrimitiveParameters::mAcceptableAreaDelta = PrimitiveParameters::mAcceptableArea / 500;
-        //PrimitiveParameters::mMinSupportArea = validArea / 100;
+        PrimitiveParameters::mMinSupportArea = validArea / 100;
         MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << PrimitiveParameters::mAcceptableArea << std::endl;
     }
 }
