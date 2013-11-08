@@ -140,7 +140,8 @@ namespace MagicApp
     void ReliefApp::GenerateRelief()
     {
         MagicDGP::ReliefGeneration reliefGen(512, 512, -1, 1, -1, 1);
-        MagicDGP::Mesh3D* pMesh = reliefGen.GenerationFromPointClout(mpPointSet);
+        MagicDGP::Mesh3D* pMesh = reliefGen.PlaneReliefFromPointCloud(mpPointSet);
+        //MagicDGP::Mesh3D* pMesh = reliefGen.CylinderReliefFromPointCloud(mpPointSet);
         if (pMesh != NULL)
         {
             if (mpMesh != NULL)
