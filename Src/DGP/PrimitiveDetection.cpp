@@ -71,27 +71,6 @@ namespace MagicDGP
     void ShapeCandidate::UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
-        /*mSupportArea = 0;
-        std::map<int, int> visitFlag;
-        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
-        {
-            const Vertex3D* pVert = pMesh->GetVertex(*itr);
-            const Edge3D* pEdge = pVert->GetEdge();
-            do
-            {
-                const Face3D* pFace = pEdge->GetFace();
-                if (pFace != NULL)
-                {
-                    int faceId = pFace->GetId();
-                    if (visitFlag[faceId] != 1)
-                    {
-                        visitFlag[faceId] = 1;
-                        mSupportArea += pFace->GetArea();
-                    }
-                }
-                pEdge = pEdge->GetPair()->GetNext();
-            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
-        }*/
         mSupportArea = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
@@ -2284,5 +2263,6 @@ namespace MagicDGP
         PrimitiveParameters::mAcceptableAreaDelta = PrimitiveParameters::mAcceptableArea / 500;
         PrimitiveParameters::mMinSupportArea = validArea / 100;
         MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << PrimitiveParameters::mAcceptableArea << std::endl;
+        return true;
     }
 }
