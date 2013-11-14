@@ -24,6 +24,7 @@ namespace MagicApp
         void RansacPrimitiveDetection();
         void CalMeshCurvature();
         void FilterMesh3D();
+        void CalNormalDeviation();
 
     private:
         void SetupScene(void);

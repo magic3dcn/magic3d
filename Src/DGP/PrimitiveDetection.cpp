@@ -1935,9 +1935,10 @@ namespace MagicDGP
             }
             int neighborDelta = neighborSize / neigborSampleNum / 2;
             const Vertex3D* pVertCand0 = pVert;
-            ShapeCandidate* bestCand = NULL;
+            //ShapeCandidate* bestCand = NULL;
             for (int neigIdx = 0; neigIdx < neigborSampleNum; neigIdx++)
             {
+                ShapeCandidate* bestCand = NULL;
                 const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(2 * neigIdx * neighborDelta) );
                 const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at((2 * neigIdx + 1) * neighborDelta) );
                 //Add Plane Candidate
@@ -2096,29 +2097,39 @@ namespace MagicDGP
                 {
                     delete coneCand;
                 }
-                //check luck break;
+                ////check luck break;
+                //if (bestCand != NULL)
+                //{
+                //    if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                //    {
+                //        MagicLog << "Super Luck break in FindNewCandidates" << std::endl;
+                //        candidates.push_back(bestCand);
+                //        return true;
+                //    }
+                //}
                 if (bestCand != NULL)
                 {
+                    candidates.push_back(bestCand);
+                    isNewAdded = true;
                     if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
                     {
-                        MagicLog << "Super Luck break in FindNewCandidates" << std::endl;
-                        candidates.push_back(bestCand);
+                        MagicLog << "Luck break in FindNewCandidates" << std::endl;
                         return true;
                     }
                 }
             }
             //MagicLog << "Iter time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
-            if (bestCand != NULL)
-            {
-                candidates.push_back(bestCand);
-                isNewAdded = true;
-                //MagicLog << "bestCand supportArea: " << bestCand->GetSupportArea() << std::endl;
-                if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
-                {
-                    MagicLog << "Luck break in FindNewCandidates" << std::endl;
-                    break;
-                }
-            }
+            //if (bestCand != NULL)
+            //{
+            //    candidates.push_back(bestCand);
+            //    isNewAdded = true;
+            //    //MagicLog << "bestCand supportArea: " << bestCand->GetSupportArea() << std::endl;
+            //    if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+            //    {
+            //        MagicLog << "Luck break in FindNewCandidates" << std::endl;
+            //        break;
+            //    }
+            //}
         }
 
         if (isNewAdded == false)
@@ -2127,8 +2138,8 @@ namespace MagicDGP
         }
         //MagicLog << "   FindNewCandidates: " << candidates.size() << std::endl;
         //MagicLog << "FindNewCandidates time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;;
-        //return isNewAdded;
-        return true;
+        return isNewAdded;
+        //return true;
     }
 
     int PrimitiveDetection::ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates)
@@ -2254,12 +2265,12 @@ namespace MagicDGP
             }
         }
         PrimitiveParameters::mAcceptableArea = validArea * PrimitiveParameters::mAcceptableAreaScale;
-        if (PrimitiveParameters::mAcceptableArea < PrimitiveParameters::mMinSupportArea)
-        {
-            PrimitiveParameters::mAcceptableArea = PrimitiveParameters::mMinSupportArea;
-            MagicLog << "Stop: PrimitiveParameters::mAcceptableArea < PrimitiveParameters::mMinSupportArea" << std::endl;
-            return false;
-        }
+        //if (PrimitiveParameters::mAcceptableArea < PrimitiveParameters::mMinSupportArea)
+        //{
+        //    PrimitiveParameters::mAcceptableArea = PrimitiveParameters::mMinSupportArea;
+        //    MagicLog << "Stop: PrimitiveParameters::mAcceptableArea < PrimitiveParameters::mMinSupportArea" << std::endl;
+        //    return false;
+        //}
         PrimitiveParameters::mAcceptableAreaDelta = PrimitiveParameters::mAcceptableArea / 500;
         PrimitiveParameters::mMinSupportArea = validArea / 100;
         MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << PrimitiveParameters::mAcceptableArea << std::endl;

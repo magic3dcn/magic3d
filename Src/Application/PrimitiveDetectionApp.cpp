@@ -85,6 +85,10 @@ namespace MagicApp
         {
             FilterMesh3D();
         }
+        else if (arg.key == OIS::KC_N && mpMesh != NULL)
+        {
+            CalNormalDeviation();
+        }
 
         return true;
     }
@@ -168,14 +172,6 @@ namespace MagicApp
         MagicDGP::Real bboxSize = (bboxMax - bboxMin).Length();
         MagicDGP::Real bboxArea = bboxSize * bboxSize;
         mpMesh->CalculateFaceArea();
-        /*int faceNum = mpMesh->GetFaceNumber();
-        MagicDGP::Real faceArea = 0;
-        for (int fid = 0; fid < faceNum; fid++)
-        {
-            faceArea += mpMesh->GetFace(fid)->GetArea();
-        }
-        faceArea /= faceNum;
-        faceArea /= bboxArea;*/
 
         int filterNum = 3;
         int vertNum = mpMesh->GetVertexNumber();
@@ -194,6 +190,10 @@ namespace MagicApp
         {
             gaussianCurvList.at(vid) /= filterNum;
         }
+        //std::vector<MagicDGP::Real> gaussianCurvList;
+        //MagicDGP::Curvature::CalGaussianCurvature(mpMesh, gaussianCurvList);
+        //int vertNum = mpMesh->GetVertexNumber();
+
         for (int vid = 0; vid < vertNum; vid++)
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
@@ -214,19 +214,67 @@ namespace MagicApp
             {
                 cv /= area;    
             }
-            cv = 0.6 + cv * 0.1;
-            if (cv > 0.7)
-            {
-                cv = 0;
-            }
-            else
-            {
-                cv = 0.6;
-            }
-            //MagicLog << "Gaussian: " << cv << std::endl;
+            cv = 0.6 + cv * 0.05;
+            //if (cv > 0.7)
+            //{
+            //    cv = 0;
+            //}
+            //else
+            //{
+            //    cv = 0.6;
+            //}
+            MagicLog << "Gaussian: " << cv << std::endl;
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+    }
+
+    void PrimitiveDetectionApp::CalNormalDeviation()
+    {
+        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+
+        int vertNum = mpMesh->GetVertexNumber();
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            std::vector<int> neighborList;
+            neighborList.reserve(10);
+            MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                neighborList.push_back(pEdge->GetVertex()->GetId());
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+
+            MagicDGP::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
+            MagicDGP::Real nDev = 0;
+            for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
+            {
+                nDev += (normal - (mpMesh->GetVertex(*neigItr)->GetNormal())).Length();
+            }
+            if (neighborList.size() > 0)
+            {
+                nDev /= neighborList.size();
+            }
+            nDev = nDev * 8 + 0.2;
+            if (nDev > 1)
+            {
+                nDev = 1.2;
+            }
+            else
+            {
+                nDev = 0.4;
+            }
+            //MagicLog << "Normal Deviation: " << nDev << " neigbor size: " << neighborList.size() << std::endl;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(nDev);
+            mpMesh->GetVertex(vid)->SetColor(color);
+        }
+        MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 
