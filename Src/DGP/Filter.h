@@ -14,6 +14,7 @@ namespace MagicDGP
         static Mesh3D* RemoveSmallMeshPatch(Mesh3D* pMesh);
         static void SimpleMeshSmooth(Mesh3D* pMesh);
         static Point3DSet* RemovePointSetOutlier(Point3DSet* pPS, Real proportion);
+        static Point3DSet* PointSetSampling(Point3DSet* pPS, int sampleNum);
 
     };
 }

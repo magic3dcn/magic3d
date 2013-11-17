@@ -101,7 +101,10 @@ namespace MagicApp
         {
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
         }
-
+        if (arg.key == OIS::KC_S && mpPointSet !=NULL)
+        {
+            SamplePointSet();
+        }
         return true;
     }
 
@@ -224,6 +227,20 @@ namespace MagicApp
             }
         }
         
+    }
+
+    void PointSetViewer::SamplePointSet()
+    {
+        if (mpPointSet != NULL)
+        {
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Filter::PointSetSampling(mpPointSet, 10000);
+            if (pNewPS != NULL)
+            {
+                delete mpPointSet;
+                mpPointSet = pNewPS;
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+            }
+        }
     }
 
     bool PointSetViewer::FilterMesh3D()

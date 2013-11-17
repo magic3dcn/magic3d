@@ -2,6 +2,7 @@
 #include "Filter.h"
 #include "flann/flann.h"
 #include "../Common/LogSystem.h"
+#include "../Common/ToolKit.h"
 #include <map>
 
 namespace MagicDGP
@@ -234,6 +235,59 @@ namespace MagicDGP
                 continue;
             }
             MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
+            pNewPS->InsertPoint(pNewPoint);
+        }
+
+        return pNewPS;
+    }
+
+    Point3DSet* Filter::PointSetSampling(Point3DSet* pPS, int sampleNum)
+    {
+        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        int psNum = pPS->GetPointNumber();
+        if (sampleNum > psNum)
+        {
+            sampleNum = psNum;
+        }
+        std::vector<bool> sampleFlag(psNum, 0);
+        std::vector<int> sampleIndex(sampleNum);
+        sampleFlag.at(0) = true;
+        sampleIndex.at(0) = 0;
+        std::vector<Real> minDist(psNum, 1.0e10);
+        int curIndex = 0;
+        for (int sid = 1; sid < sampleNum; ++sid)
+        {
+            Vector3 curPos = pPS->GetPoint(curIndex)->GetPosition();
+            Real maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < psNum; ++vid)
+            {
+                if (sampleFlag.at(vid) == 1)
+                {
+                    continue;
+                }
+                Real dist = (pPS->GetPoint(vid)->GetPosition() - curPos).LengthSquared();
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart
+            << " sample number: " << sampleIndex.size() << std::endl;
+        MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
+        for (int sid = 0; sid < sampleNum; ++sid)
+        {
+            MagicDGP::Point3D* pPoint = pPS->GetPoint(sampleIndex.at(sid));
             MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
             pNewPS->InsertPoint(pNewPoint);
         }
