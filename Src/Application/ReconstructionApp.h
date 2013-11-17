@@ -36,6 +36,7 @@ namespace MagicApp
         void SetupPointSetProcessing();
         bool SavePointSet();
         bool ReconstructPointSet();
+        void FilterPointSetOutliers();
         bool SaveMesh3D();
         void SmoothMesh3D();
        

@@ -1417,6 +1417,7 @@ namespace MagicDGP
         res = std::vector<int>(pMesh->GetVertexNumber(), PrimitiveType::None);
         std::vector<ShapeCandidate* > candidates;
         std::vector<int> sampleFlag(pMesh->GetVertexNumber(), 0);
+        CalFeatureBoundary(pMesh, sampleFlag);
         int vertNum = pMesh->GetVertexNumber();
         PrimitiveParameters::mSampleBreakNum = vertNum / 20;
         PrimitiveParameters::mSampleBreakDelta = vertNum / 10000;
@@ -2275,5 +2276,43 @@ namespace MagicDGP
         PrimitiveParameters::mMinSupportArea = validArea / 100;
         MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << PrimitiveParameters::mAcceptableArea << std::endl;
         return true;
+    }
+
+    void PrimitiveDetection::CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            std::vector<int> neighborList;
+            neighborList.reserve(10);
+            MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                neighborList.push_back(pEdge->GetVertex()->GetId());
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+
+            MagicDGP::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
+            MagicDGP::Real nDev = 0;
+            for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
+            {
+                nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
+            }
+            if (neighborList.size() > 0)
+            {
+                nDev /= neighborList.size();
+            }
+            nDev = nDev * 8 + 0.2;
+            if (nDev > 1)
+            {
+                //features.at(vid) = PrimitiveType::Blend;
+                features.at(vid) = 1;
+            }
+        }
     }
 }

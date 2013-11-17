@@ -126,6 +126,12 @@ namespace MagicApp
                 MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }
+        mLeftLimit = -1000.f; 
+        mRightLimit = 1000.f;
+        mTopLimit = 1000.f; 
+        mDownLimit = -1000.f; 
+        mFrontLimit = -200.f;
+        mBackLimit = -2200.f;
 
         return true;
     }
@@ -779,6 +785,20 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
 
         return true;
+    }
+
+    void ReconstructionApp::FilterPointSetOutliers()
+    {
+        if (mpPointSet != NULL)
+        {
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Filter::RemovePointSetOutlier(mpPointSet, 0.02);
+            if (pNewPS != NULL)
+            {
+                delete mpPointSet;
+                mpPointSet = pNewPS;
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            }
+        }
     }
 
     bool ReconstructionApp::SaveMesh3D()

@@ -85,6 +85,8 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("Reconstruct.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SavePointSet);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_PointSetFilter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::RemovePointSetOutlier);
+        mRoot.at(0)->findWidget("But_PointSetFilter")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Reconstruction);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
@@ -237,6 +239,15 @@ namespace MagicApp
         {
             Shutdown();
             SetupMeshProcessing();
+        }
+    }
+
+    void ReconstructionAppUI::RemovePointSetOutlier(MyGUI::Widget* pSender)
+    {
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        if (pRA != NULL)
+        {
+            pRA->FilterPointSetOutliers();
         }
     }
 

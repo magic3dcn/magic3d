@@ -69,6 +69,7 @@ namespace MagicCore
         file.nMaxFile = MAX_PATH;
         file.lpstrFilter = filterName;
         file.nFilterIndex = 1;//默认选择第一个
+        file.Flags = OFN_NOCHANGEDIR;
         // 弹出打开文件的对话框
         if(::GetSaveFileName(&file))
         {

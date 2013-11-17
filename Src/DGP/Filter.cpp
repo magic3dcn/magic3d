@@ -153,4 +153,91 @@ namespace MagicDGP
         }
         pMesh->UpdateNormal();
     }
+
+    Point3DSet* Filter::RemovePointSetOutlier(Point3DSet* pPS, Real proportion)
+    {
+        int dim = 3;
+        int pointNum = pPS->GetPointNumber();
+        int refNum = pointNum;
+        float* dataSet = new float[refNum * dim];
+        int searchNum = pointNum;
+        float* searchSet = new float[searchNum * dim];
+        for (int i = 0; i < pointNum; i++)
+        {
+            MagicDGP::Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            MagicDGP::Vector3 nor = pPS->GetPoint(i)->GetNormal();
+            dataSet[dim * i + 0] = pos[0];
+            dataSet[dim * i + 1] = pos[1];
+            dataSet[dim * i + 2] = pos[2];
+            searchSet[dim * i + 0] = pos[0];
+            searchSet[dim * i + 1] = pos[1];
+            searchSet[dim * i + 2] = pos[2];
+        }
+        int nn = 15;
+        int* pIndex = new int[searchNum * nn];
+        float* pDist = new float[searchNum * nn];
+        FLANNParameters searchPara;
+        searchPara = DEFAULT_FLANN_PARAMETERS;
+        searchPara.algorithm = FLANN_INDEX_KDTREE;
+        searchPara.trees = 8;
+        searchPara.log_level = FLANN_LOG_INFO;
+        searchPara.checks = 64;
+        float speedup;
+        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+        flann_free_index(indexId, &searchPara);
+        delete []dataSet;
+        delete []searchSet;
+        std::map<float, int> densityMap;
+        for (int i = 0; i < pointNum; i++)
+        {
+            MagicDGP::Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            MagicDGP::Vector3 nor = pPS->GetPoint(i)->GetNormal();
+            float density = 0;
+            int baseIndex = nn * i;
+            for (int j = 0; j < nn; j++)
+            {
+                MagicDGP::Vector3 posNeigh = pPS->GetPoint(pIndex[baseIndex + j])->GetPosition();
+                MagicDGP::Vector3 deltaPos = posNeigh - pos + nor * 10 * ( (posNeigh - pos) * nor );
+                density += deltaPos.Length();
+            }
+            densityMap[density] = i;
+        }
+        if (pIndex != NULL)
+        {
+            delete []pIndex;
+            pIndex = NULL;
+        }
+        if (pDist != NULL)
+        {
+            delete []pDist;
+            pDist = NULL;
+        }
+
+        int invalidNum = pointNum * proportion;
+        int invalidIndex = 0;
+        for (std::map<float, int>::reverse_iterator itr = densityMap.rbegin(); itr != densityMap.rend(); ++itr)
+        {
+            if (invalidIndex == invalidNum)
+            {
+                break;
+            }
+            pPS->GetPoint(itr->second)->SetValid(false);
+            invalidIndex++;
+        }
+        densityMap.clear();
+        MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
+        for (int i = 0; i < pointNum; i++)
+        {
+            if (pPS->GetPoint(i)->IsValid() == false)
+            {
+                continue;
+            }
+            MagicDGP::Point3D* pPoint = pPS->GetPoint(i);
+            MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
+            pNewPS->InsertPoint(pNewPoint);
+        }
+
+        return pNewPS;
+    }
 }

@@ -44,6 +44,7 @@ namespace MagicApp
             if (pRelief->ImportPointSet())
             {
                 mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(false);
             }
         }
     }
@@ -54,6 +55,7 @@ namespace MagicApp
         if (pRelief != NULL)
         {
             pRelief->GenerateRelief();
+            mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setVisible(false);
             mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(true);
         }
     }

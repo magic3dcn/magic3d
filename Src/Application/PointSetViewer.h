@@ -37,6 +37,5 @@ namespace MagicApp
         MagicTool::ViewTool mViewTool;
         MagicDGP::Point3DSet* mpPointSet;
         MagicDGP::Mesh3D* mpMesh;
-        std::map<float, int> mPSDensityMap;
     };
 }

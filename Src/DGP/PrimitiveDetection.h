@@ -9,7 +9,8 @@ namespace MagicDGP
         Plane, 
         Sphere,
         Cylinder,
-        Cone
+        Cone, 
+        Blend
     };
 
     class PrimitiveParameters
@@ -159,7 +160,7 @@ namespace MagicDGP
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
         static void ChoseInitBestCandidates(std::vector<ShapeCandidate* >& candidates, std::vector<int>& bestSet);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
-
+        static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
     };
 
 }
