@@ -282,8 +282,7 @@ namespace MagicDGP
             curIndex = pos;
             sampleFlag.at(pos) = 1;
         }
-        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart
-            << " sample number: " << sampleIndex.size() << std::endl;
+        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
         for (int sid = 0; sid < sampleNum; ++sid)
         {
