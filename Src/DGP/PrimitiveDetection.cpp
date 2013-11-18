@@ -1417,7 +1417,7 @@ namespace MagicDGP
         res = std::vector<int>(pMesh->GetVertexNumber(), PrimitiveType::None);
         std::vector<ShapeCandidate* > candidates;
         std::vector<int> sampleFlag(pMesh->GetVertexNumber(), 0);
-        CalFeatureBoundary(pMesh, sampleFlag);
+        CalFeatureBoundary(pMesh, res);
         int vertNum = pMesh->GetVertexNumber();
         PrimitiveParameters::mSampleBreakNum = vertNum / 20;
         PrimitiveParameters::mSampleBreakDelta = vertNum / 10000;
@@ -1872,12 +1872,17 @@ namespace MagicDGP
         //MagicLog << "sampleNum: " << sampleNum << std::endl;
         int sampleDelta = validVertNum / sampleNum;
         int neighborRadius = 10;
-        int minNeigborNum = 10;
+        int minNeigborNum = 6;
         int neigborSampleNum = 5;
         bool isNewAdded = false;
-        for (int sampleIndex = 0; sampleIndex < validVertNum; sampleIndex += sampleDelta)
+        int sampledNumber = 0;
+        int skipNumber = 0;
+        int sampleIndex = 0;
+        //for (int sampleIndex = 0; sampleIndex < validVertNum; sampleIndex += sampleDelta)
+        while (sampledNumber < sampleNum && skipNumber < sampleNum)
         {
-            //PrimitiveParameters::mSampleBreakNum -= PrimitiveParameters::mSampleBreakDelta;
+            sampleIndex = (sampleIndex + sampleDelta) % validVertNum;
+
             float iterTime = MagicCore::ToolKit::GetSingleton()->GetTime();
             PrimitiveParameters::mAcceptableArea -= PrimitiveParameters::mAcceptableAreaDelta;
             if (PrimitiveParameters::mAcceptableArea < PrimitiveParameters::mMinSupportArea)
@@ -1887,6 +1892,11 @@ namespace MagicDGP
                 return false;
             }
             int currentIndex = validVert.at(sampleIndex);
+            if (sampleFlag.at(currentIndex) == 1)
+            {
+                skipNumber++;
+                continue;
+            }
             sampleFlag.at(currentIndex) = 1;
             const Vertex3D* pVert = pMesh->GetVertex(currentIndex);
             //Get vertex n neigbors
@@ -1916,7 +1926,7 @@ namespace MagicDGP
                             if (res.at(newId) == PrimitiveType::None && sampleFlag.at(newId) == 0)
                             {
                                 tranStackNext.push_back(newId);
-                                if (k > 3)
+                                //if (k > 0)
                                 {
                                     neighborList.push_back(newId);
                                 }
@@ -1928,20 +1938,31 @@ namespace MagicDGP
                 tranStack = tranStackNext;
             }
             int neighborSize = neighborList.size();
-            //MagicLog << "Get Neighbor Time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
-            //MagicLog << "  sampleIndex: " << currentIndex << " sampleNum: " << neighborSize << std::endl; 
             if (neighborSize < minNeigborNum)
             {
+                MagicLog << "unluck: neighborSize too small: " << neighborSize << std::endl;
+                skipNumber++;
                 continue;
             }
-            int neighborDelta = neighborSize / neigborSampleNum / 2;
-            const Vertex3D* pVertCand0 = pVert;
-            //ShapeCandidate* bestCand = NULL;
-            for (int neigIdx = 0; neigIdx < neigborSampleNum; neigIdx++)
+            else
             {
-                ShapeCandidate* bestCand = NULL;
-                const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(2 * neigIdx * neighborDelta) );
-                const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at((2 * neigIdx + 1) * neighborDelta) );
+                skipNumber = 0;
+                sampledNumber++;
+            }
+            //int neighborDelta = neighborSize / neigborSampleNum / 2;
+            const Vertex3D* pVertCand0 = pVert;
+            int neighborSampleSize = neighborSize / 3;
+            int neighborSampleIterSize = (neighborSampleSize > neigborSampleNum ? neigborSampleNum : neighborSampleSize);
+            //MagicLog << "neighbor sample size: " << neighborSampleSize << std::endl;
+            ShapeCandidate* bestCand = NULL;
+            //for (int neigIdx = 0; neigIdx < neigborSampleNum; neigIdx++)
+            for (int neighborSampleIndex = 0; neighborSampleIndex < neighborSampleIterSize; neighborSampleIndex++)
+            {
+                //ShapeCandidate* bestCand = NULL;
+                //const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(2 * neigIdx * neighborDelta) );
+                //const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at((2 * neigIdx + 1) * neighborDelta) );
+                const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleIndex) );
+                const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleSize - neighborSampleIndex) );
                 //Add Plane Candidate
                 ShapeCandidate* planeCand = new PlaneCandidate(pVertCand0, pVertCand1, pVertCand2);
                 if (planeCand->IsValid())
@@ -2098,17 +2119,17 @@ namespace MagicDGP
                 {
                     delete coneCand;
                 }
-                ////check luck break;
-                //if (bestCand != NULL)
-                //{
-                //    if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
-                //    {
-                //        MagicLog << "Super Luck break in FindNewCandidates" << std::endl;
-                //        candidates.push_back(bestCand);
-                //        return true;
-                //    }
-                //}
+                //check luck break;
                 if (bestCand != NULL)
+                {
+                    if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                    {
+                        MagicLog << "Super Luck break in FindNewCandidates" << std::endl;
+                        candidates.push_back(bestCand);
+                        return true;
+                    }
+                }
+                /*if (bestCand != NULL)
                 {
                     candidates.push_back(bestCand);
                     isNewAdded = true;
@@ -2117,20 +2138,20 @@ namespace MagicDGP
                         MagicLog << "Luck break in FindNewCandidates" << std::endl;
                         return true;
                     }
-                }
+                }*/
             }
             //MagicLog << "Iter time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - iterTime << std::endl;
-            //if (bestCand != NULL)
-            //{
-            //    candidates.push_back(bestCand);
-            //    isNewAdded = true;
-            //    //MagicLog << "bestCand supportArea: " << bestCand->GetSupportArea() << std::endl;
-            //    if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
-            //    {
-            //        MagicLog << "Luck break in FindNewCandidates" << std::endl;
-            //        break;
-            //    }
-            //}
+            if (bestCand != NULL)
+            {
+                candidates.push_back(bestCand);
+                isNewAdded = true;
+                //MagicLog << "bestCand supportArea: " << bestCand->GetSupportArea() << std::endl;
+                if (bestCand->GetSupportArea() > PrimitiveParameters::mAcceptableArea)
+                {
+                    MagicLog << "Luck break in FindNewCandidates" << std::endl;
+                    break;
+                }
+            }
         }
 
         if (isNewAdded == false)
@@ -2310,8 +2331,8 @@ namespace MagicDGP
             nDev = nDev * 8 + 0.2;
             if (nDev > 1)
             {
-                //features.at(vid) = PrimitiveType::Blend;
-                features.at(vid) = 1;
+                features.at(vid) = PrimitiveType::Blend;
+                //features.at(vid) = 1;
             }
         }
     }
