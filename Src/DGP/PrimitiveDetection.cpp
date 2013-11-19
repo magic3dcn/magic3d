@@ -1268,6 +1268,10 @@ namespace MagicDGP
                 continue;
             }
             Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+            if (ideaNor.Normalise() < Epsilon)
+            {
+                continue;
+            }
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             mScore += (fabs(nor * ideaNor) - baseScore) * vertWeightList.at(*itr);
         }
