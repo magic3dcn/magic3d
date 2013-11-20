@@ -10,7 +10,8 @@ namespace MagicDGP
         Sphere,
         Cylinder,
         Cone, 
-        Blend
+        Blend, 
+        Other
     };
 
     class ShapeCandidate
@@ -120,6 +121,7 @@ namespace MagicDGP
         ~PrimitiveDetection();
 
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DSelection(int sampleId, Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);

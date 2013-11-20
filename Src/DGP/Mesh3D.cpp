@@ -435,7 +435,9 @@ namespace MagicDGP
                     Vertex3D* pOrigin = pEdge->GetPre()->GetVertex();
                     Vertex3D* pNext = pEdge->GetVertex();
                     Vertex3D* pPre = pEdge->GetNext()->GetVertex();
-                    //nor += (pPre->GetPosition() - pOrigin->GetPosition()).CrossProduct(pNext->GetPosition() - pOrigin->GetPosition());
+                    /*Vector3 faceNor = (pNext->GetPosition() - pOrigin->GetPosition()).CrossProduct(pPre->GetPosition() - pOrigin->GetPosition());
+                    faceNor.Normalise();
+                    nor += faceNor;*/
                     nor += (pNext->GetPosition() - pOrigin->GetPosition()).CrossProduct(pPre->GetPosition() - pOrigin->GetPosition());
                 }
                 pEdge = pEdge->GetPair()->GetNext();

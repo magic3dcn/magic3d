@@ -3,5 +3,5 @@
 
 namespace MagicDGP
 {
-    Real Epsilon = 1.0e-14;
+    Real Epsilon = 1.0e-15;
 }

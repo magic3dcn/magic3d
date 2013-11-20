@@ -22,6 +22,7 @@ namespace MagicApp
 
         bool ImportMesh3D();
         void RansacPrimitiveDetection();
+        void PrimitiveSelection(int sampleId);
         void CalMeshCurvature();
         void FilterMesh3D();
         void CalNormalDeviation();

@@ -128,8 +128,8 @@ namespace MagicApp
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
             {
-                pMesh->UpdateNormal();
                 pMesh->UnifyPosition(2.0);
+                pMesh->UpdateNormal();
                 if (mpMesh != NULL)
                 {
                     delete mpMesh;
@@ -154,6 +154,24 @@ namespace MagicApp
         std::vector<int> res;
         MagicDGP::PrimitiveDetection::Primitive2DDetection(mpMesh, res);
         int vertNum = mpMesh->GetVertexNumber();
+        for (int i = 0; i < vertNum; i++)
+        {
+            float cv = res.at(i) * 0.2f;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+            mpMesh->GetVertex(i)->SetColor(color);
+        }
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+    }
+
+    void PrimitiveDetectionApp::PrimitiveSelection(int sampleId)
+    {
+        int vertNum = mpMesh->GetVertexNumber();
+        static int randomId = 0;
+        randomId += 1001;
+        randomId = randomId % vertNum;
+        sampleId = randomId;
+        std::vector<int> res;
+        MagicDGP::PrimitiveDetection::Primitive2DSelection(sampleId, mpMesh, res);
         for (int i = 0; i < vertNum; i++)
         {
             float cv = res.at(i) * 0.2f;
