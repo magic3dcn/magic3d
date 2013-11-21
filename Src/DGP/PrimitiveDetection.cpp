@@ -4,7 +4,7 @@
 
 namespace MagicDGP
 {
-    static int minInitSupportNum = 50;
+    static int minInitSupportNum = 10;
     static int minSupportNum = 100;
     static Real minSupportArea = 1;
     static Real acceptableAreaScale = 0.17;
@@ -17,9 +17,10 @@ namespace MagicDGP
     static Real maxSphereRadius = 1;
     static Real maxCylinderRadius = 1;
     static Real minConeAngle = 0.1745329251994329; //10 degree
-    static Real maxConeAngle = 1.0472; //60 degree
+    static Real maxConeAngle = 1.3962; //80 degree
     static Real maxConeAngleDeviation = 0.1745; //10 degree
-    static Real baseScore = 0.95;
+    //static Real baseScore = 0.93969262;
+    static Real baseScore = 0.2618;
 
     ShapeCandidate::ShapeCandidate() :
         mScore(0),
@@ -292,7 +293,13 @@ namespace MagicDGP
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            mScore += (fabs(nor * mNormal) - baseScore) * vertWeightList.at(*itr);
+            //mScore += (fabs(nor * mNormal) - baseScore) * vertWeightList.at(*itr);
+            Real cosA = fabs(nor * mNormal);
+            cosA = cosA > 1 ? 1 : cosA;
+            /*Real scoreTrunc = baseScore - acos(cosA);
+            scoreTrunc = scoreTrunc > 0 ? scoreTrunc : 0;
+            mScore += scoreTrunc * vertWeightList.at(*itr);*/
+            mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
         //MagicLog << "Plane Update Score: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
@@ -510,7 +517,13 @@ namespace MagicDGP
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             Vector3 dir = pMesh->GetVertex(*itr)->GetPosition() - mCenter;
             dir.Normalise();
-            mScore += (fabs(nor * dir) - baseScore) * vertWeightList.at(*itr);
+            //mScore += (fabs(nor * dir) - baseScore) * vertWeightList.at(*itr);
+            Real cosA = fabs(nor * dir);
+            cosA = cosA > 1 ? 1 : cosA;
+            /*Real scoreTrunc = baseScore - acos(cosA);
+            scoreTrunc = scoreTrunc > 0 ? scoreTrunc : 0;
+            mScore += scoreTrunc * vertWeightList.at(*itr);*/
+            mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
         //MagicLog << "Sphere Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
@@ -843,7 +856,13 @@ namespace MagicDGP
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
             Vector3 dir = projectPos - mCenter;
             dir.Normalise();
-            mScore += (fabs(dir * nor) - baseScore) * vertWeightList.at(*itr);
+            //mScore += (fabs(dir * nor) - baseScore) * vertWeightList.at(*itr);
+            Real cosA = fabs(nor * dir);
+            cosA = cosA > 1 ? 1 : cosA;
+            /*Real scoreTrunc = baseScore - acos(cosA);
+            scoreTrunc = scoreTrunc > 0 ? scoreTrunc : 0;
+            mScore += scoreTrunc * vertWeightList.at(*itr);*/
+            mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
         //MagicLog << "Cylinder Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
@@ -896,13 +915,13 @@ namespace MagicDGP
         Vector3 dir1 = pos1 - mApex;
         if (dir1.Normalise() < Epsilon)
         {
-            //MagicLog << "Apex coincident" << std::endl;
+            MagicLog << "cone: Apex coincident" << std::endl;
             return false;
         }
         Vector3 dir2 = pos2 - mApex;
         if (dir2.Normalise() < Epsilon)
         {
-            //MagicLog << "Apex coincident" << std::endl;
+            MagicLog << "cone: Apex coincident" << std::endl;
             return false;
         }
         Vector3 planeDir0 = dir2 - dir0;
@@ -914,7 +933,7 @@ namespace MagicDGP
         }
         if (mDir.Normalise() < Epsilon)
         {
-            //MagicLog << "Cone Dir Len too Small" << std::endl;
+            MagicLog << "cone: Cone Dir Len too Small" << std::endl;
             return false;
         }
         Real cos0 = mDir * dir0;
@@ -926,7 +945,7 @@ namespace MagicDGP
         mAngle = (acos(cos0) + acos(cos1) + acos(cos2)) / 3;
         if (mAngle > maxConeAngle || mAngle < minConeAngle)
         {
-            //MagicLog << "Cone angle is too large: " << mAngle << std::endl;
+            MagicLog << "cone: Cone angle is too large: " << mAngle << std::endl;
             return false;
         }
         //MagicLog << "Cone: " << mApex[0] << " " << mApex[1] << " " << mApex[2] << " " << mAngle << " " << mDir[0] << " " << mDir[1] << " " << mDir[2] << std::endl;
@@ -1006,7 +1025,7 @@ namespace MagicDGP
             searchIndex = searchIndexNext;
         }
 
-        //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
+        MagicLog << "cone: Support vertex size: " << mSupportVertex.size() << std::endl;
         //MagicLog << "Cone Support time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
@@ -1241,7 +1260,7 @@ namespace MagicDGP
             }
             searchIndex = searchIndexNext;
         }
-
+        MagicLog << "cone: Refitting support number: " << mSupportVertex.size() << std::endl;
         return mSupportVertex.size();
     }
 
@@ -1273,7 +1292,13 @@ namespace MagicDGP
                 continue;
             }
             Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            mScore += (fabs(nor * ideaNor) - baseScore) * vertWeightList.at(*itr);
+            //mScore += (fabs(nor * ideaNor) - baseScore) * vertWeightList.at(*itr);
+            Real cosA = fabs(nor * ideaNor);
+            cosA = cosA > 1 ? 1 : cosA;
+            /*Real scoreTrunc = baseScore - acos(cosA);
+            scoreTrunc = scoreTrunc > 0 ? scoreTrunc : 0;
+            mScore += scoreTrunc * vertWeightList.at(*itr);*/
+            mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
         //MagicLog << "Cone Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl; 
     }
@@ -1286,94 +1311,184 @@ namespace MagicDGP
     {
     }
 
-    void PrimitiveDetection::Primitive2DSelection(int sampleId, Mesh3D* pMesh, std::vector<int>& res)
+    void PrimitiveDetection::Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res)
     {
+        static std::vector<int> localRes;
+        static Mesh3D* localMesh = NULL;
+        static std::map<Real, ShapeCandidate* > candidateMap; 
+        static std::vector<ShapeCandidate* > candidates;
         //Intialize flags
-        int vertNum = pMesh->GetVertexNumber();
+        /*int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
         std::vector<int> featureMarks(vertNum, 0);
-        CalFeatureBoundary(pMesh, featureMarks);
+        CalFeatureBoundary(pMesh, featureMarks);*/
+        int vertNum = pMesh->GetVertexNumber();
+        if (localMesh != pMesh)
+        {
+            localMesh = pMesh;
+            localRes = std::vector<int>(vertNum, PrimitiveType::None);
+            for (int candId = 0; candId < candidates.size(); candId++)
+            {
+                if (candidates.at(candId) != NULL)
+                {
+                    delete candidates.at(candId);
+                }
+            }
+            candidates.clear();
+            candidateMap.clear();
+
+            //Initialize Primitive Parameters
+            pMesh->CalculateFaceArea();
+            pMesh->CalculateBBox();
+            Vector3 bboxMin, bboxMax;
+            pMesh->GetBBox(bboxMin, bboxMax);
+            Real bboxSize = (bboxMax - bboxMin).Length();
+            maxDistDeviation = bboxSize * 0.004;
+            maxSphereRadius = bboxSize / 2;
+            maxCylinderRadius = bboxSize / 2;
+        }
+        res = localRes;
+        std::vector<int> featureMarks(vertNum, 0);
+        std::vector<Real> featureScores;
+        CalFeatureScore(pMesh, featureMarks, featureScores);
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            if (featureMarks.at(vid) == 1)
+            {
+                res.at(vid) = PrimitiveType::Other;
+            }
+        }
         std::vector<Real> vertWeightList;
-        pMesh->CalculateFaceArea();
+        //pMesh->CalculateFaceArea();
         CalVertexWeight(pMesh, vertWeightList);
 
-        //Initialize Primitive Parameters
-        pMesh->CalculateBBox();
-        Vector3 bboxMin, bboxMax;
-        pMesh->GetBBox(bboxMin, bboxMax);
-        Real bboxSize = (bboxMax - bboxMin).Length();
-        maxDistDeviation = bboxSize * 0.004;
-        maxSphereRadius = bboxSize / 2;
-        maxCylinderRadius = bboxSize / 2;
-
-        //
-        //Get vertex n neigbors
-        std::vector<ShapeCandidate* > candidates;
-        int neighborRadius = 10;
-        int minNeigborNum = 6;
-        int neigborSampleNum = 5;
-        std::vector<int> neighborList;
-        std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
-        std::vector<int> tranStack;
-        tranStack.push_back(sampleId);
-        visitFlag[sampleId] = 1;
-        for (int k = 0; k < neighborRadius; k++)
+        //Get valid vertex
+        std::vector<int> validVert;
+        for (int i = 0; i < vertNum; i++)
         {
-            std::vector<int> tranStackNext;
-            for (std::vector<int>::iterator itr = tranStack.begin(); itr != tranStack.end(); ++itr)
+            if (featureMarks.at(i) == 0 && res.at(i) == PrimitiveType::None)
             {
-                const Vertex3D* pVertNeig = pMesh->GetVertex(*itr);
-                const Edge3D* pEdgeNeig = pVertNeig->GetEdge();
-                do
-                {
-                    if (pEdgeNeig == NULL)
-                    {
-                        break;
-                    }
-                    int newId = pEdgeNeig->GetVertex()->GetId();
-                    if (visitFlag[newId] != 1)
-                    {
-                        visitFlag[newId] = 1;
-                        if (featureMarks.at(newId) == 0)
-                        {
-                            tranStackNext.push_back(newId);
-                            neighborList.push_back(newId);
-                        }
-                    }
-                    pEdgeNeig = pEdgeNeig->GetPair()->GetNext();
-                } while (pEdgeNeig != pVertNeig->GetEdge());
+                validVert.push_back(i);
             }
-            tranStack = tranStackNext;
         }
-        int neighborSize = neighborList.size();
-        MagicLog << "neighbor size: " << neighborSize << std::endl;
-        Vertex3D* pVertCand0 = pMesh->GetVertex(sampleId);
-        int neighborSampleSize = neighborSize / 3;
-        int neighborSampleIterSize = (neighborSampleSize > neigborSampleNum ? neigborSampleNum : neighborSampleSize);
-        ShapeCandidate* bestCand = NULL;
-        for (int neighborSampleIndex = 0; neighborSampleIndex < neighborSampleIterSize; neighborSampleIndex++)
+        int validVertNum = validVert.size();
+        //sample 
+        int sampleNum = 10;
+        std::vector<bool> sampleFlag(validVertNum, 0);
+        sampleFlag.at(0) = true;
+        std::vector<int> sampleIndex(sampleNum);
+        sampleIndex.at(0) = 0;
+        std::vector<Real> minDist(validVertNum, 1.0e10);
+        int curIndex = 0;
+        for (int sid = 1; sid < sampleNum; sid++)
         {
-            const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleIndex) );
-            const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleSize - neighborSampleIndex) );
-            res.at(neighborList.at(neighborSize - 1 - neighborSampleIndex)) = PrimitiveType::Other;
-            res.at(neighborList.at(neighborSize - 1 - neighborSampleSize - neighborSampleIndex)) = PrimitiveType::Blend;
-            //Add Plane Candidate
-            ShapeCandidate* planeCand = new PlaneCandidate(pVertCand0, pVertCand1, pVertCand2);
-            if (planeCand->IsValid())
+            Vector3 curPos = pMesh->GetVertex(validVert.at(curIndex))->GetPosition();
+            Real maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < validVertNum; ++vid)
             {
-                if (planeCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
+                if (sampleFlag.at(vid) == 1)
                 {
-                    planeCand->UpdateScore(pMesh, vertWeightList);
-                    planeCand->UpdateSupportArea(pMesh, vertWeightList);
-                    MagicLog << "plane score: " << planeCand->GetScore() << std::endl;
-                    if (bestCand == NULL)
+                    continue;
+                }
+                Real dist = (pMesh->GetVertex(validVert.at(vid))->GetPosition() - curPos).LengthSquared();
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        //
+        for (int sid = 0; sid < sampleNum; sid++)
+        {
+            int validSampleId = validVert.at(sampleIndex.at(sid));
+            //Get vertex n neigbors
+            int neighborRadius = 10;
+            int minNeigborNum = 6;
+            int neigborSampleNum = 5;
+            std::vector<int> neighborList;
+            std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
+            std::vector<int> tranStack;
+            tranStack.push_back(validSampleId);
+            visitFlag[validSampleId] = 1;
+            for (int k = 0; k < neighborRadius; k++)
+            {
+                std::vector<int> tranStackNext;
+                for (std::vector<int>::iterator itr = tranStack.begin(); itr != tranStack.end(); ++itr)
+                {
+                    const Vertex3D* pVertNeig = pMesh->GetVertex(*itr);
+                    const Edge3D* pEdgeNeig = pVertNeig->GetEdge();
+                    do
                     {
-                        bestCand = planeCand;
-                    }
-                    else if (bestCand->GetScore() < planeCand->GetScore())
+                        if (pEdgeNeig == NULL)
+                        {
+                            break;
+                        }
+                        int newId = pEdgeNeig->GetVertex()->GetId();
+                        if (visitFlag[newId] != 1)
+                        {
+                            visitFlag[newId] = 1;
+                            if (featureMarks.at(newId) == 0 && res.at(newId) == PrimitiveType::None)
+                            {
+                                tranStackNext.push_back(newId);
+                                neighborList.push_back(newId);
+                            }
+                        }
+                        pEdgeNeig = pEdgeNeig->GetPair()->GetNext();
+                    } while (pEdgeNeig != pVertNeig->GetEdge());
+                }
+                tranStack = tranStackNext;
+            }
+            int neighborSize = neighborList.size();
+            MagicLog << "neighbor size: " << neighborSize << std::endl;
+
+            Vertex3D* pVertCand0 = pMesh->GetVertex(validSampleId);
+            int neighborSampleSize = neighborSize / 3;
+            int neighborSampleIterSize = (neighborSampleSize > neigborSampleNum ? neigborSampleNum : neighborSampleSize);
+            ShapeCandidate* bestCand = NULL;
+            for (int neighborSampleIndex = 0; neighborSampleIndex < neighborSampleIterSize; neighborSampleIndex++)
+            {
+                const Vertex3D* pVertCand1 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleIndex) );
+                const Vertex3D* pVertCand2 = pMesh->GetVertex( neighborList.at(neighborSize - 1 - neighborSampleSize - neighborSampleIndex) );
+                //res.at(neighborList.at(neighborSize - 1 - neighborSampleIndex)) = PrimitiveType::Blend;
+                //res.at(neighborList.at(neighborSize - 1 - neighborSampleSize - neighborSampleIndex)) = PrimitiveType::Blend;
+                //Add Plane Candidate
+                ShapeCandidate* planeCand = new PlaneCandidate(pVertCand0, pVertCand1, pVertCand2);
+                if (planeCand->IsValid())
+                {
+                    if (planeCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                     {
-                        delete bestCand;
-                        bestCand = planeCand;
+                        if (planeCand->Refitting(pMesh, res) > minInitSupportNum)
+                        {
+                            planeCand->UpdateScore(pMesh, vertWeightList);
+                            planeCand->UpdateSupportArea(pMesh, vertWeightList);
+                            MagicLog << "plane score: " << planeCand->GetScore() << std::endl;
+                            if (bestCand == NULL)
+                            {
+                                bestCand = planeCand;
+                            }
+                            else if (bestCand->GetScore() < planeCand->GetScore())
+                            {
+                                delete bestCand;
+                                bestCand = planeCand;
+                            }
+                            else
+                            {
+                                delete planeCand;
+                            }
+                        }
+                        else
+                        {
+                            delete planeCand;
+                        }
                     }
                     else
                     {
@@ -1384,28 +1499,35 @@ namespace MagicDGP
                 {
                     delete planeCand;
                 }
-            }
-            else
-            {
-                delete planeCand;
-            }
-            //Add Sphere Candidate
-            ShapeCandidate* sphereCand = new SphereCandidate(pVertCand0, pVertCand1);
-            if (sphereCand->IsValid())
-            {
-                if (sphereCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
+                //Add Sphere Candidate
+                ShapeCandidate* sphereCand = new SphereCandidate(pVertCand0, pVertCand1);
+                if (sphereCand->IsValid())
                 {
-                    sphereCand->UpdateScore(pMesh, vertWeightList);
-                    sphereCand->UpdateSupportArea(pMesh, vertWeightList);
-                    MagicLog << "sphere score: " << sphereCand->GetScore() << std::endl;
-                    if (bestCand == NULL)
+                    if (sphereCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                     {
-                        bestCand = sphereCand;
-                    }
-                    else if (bestCand->GetScore() < sphereCand->GetScore())
-                    {
-                        delete bestCand;
-                        bestCand = sphereCand;
+                        if (sphereCand->Refitting(pMesh, res) > minInitSupportNum)
+                        {
+                            sphereCand->UpdateScore(pMesh, vertWeightList);
+                            sphereCand->UpdateSupportArea(pMesh, vertWeightList);
+                            MagicLog << "sphere score: " << sphereCand->GetScore() << std::endl;
+                            if (bestCand == NULL)
+                            {
+                                bestCand = sphereCand;
+                            }
+                            else if (bestCand->GetScore() < sphereCand->GetScore())
+                            {
+                                delete bestCand;
+                                bestCand = sphereCand;
+                            }
+                            else
+                            {
+                                delete sphereCand;
+                            }
+                        }
+                        else
+                        {
+                            delete sphereCand;
+                        }
                     }
                     else
                     {
@@ -1416,28 +1538,35 @@ namespace MagicDGP
                 {
                     delete sphereCand;
                 }
-            }
-            else
-            {
-                delete sphereCand;
-            }
-            //Add Cylinder Candidate
-            ShapeCandidate* cylinderCand = new CylinderCandidate(pVertCand0, pVertCand1);
-            if (cylinderCand->IsValid())
-            {
-                if (cylinderCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
+                //Add Cylinder Candidate
+                ShapeCandidate* cylinderCand = new CylinderCandidate(pVertCand0, pVertCand1);
+                if (cylinderCand->IsValid())
                 {
-                    cylinderCand->UpdateScore(pMesh, vertWeightList);
-                    cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
-                    MagicLog << "cylinder score: " << cylinderCand->GetScore() << std::endl;
-                    if (bestCand == NULL)
+                    if (cylinderCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                     {
-                        bestCand = cylinderCand;
-                    }
-                    else if (bestCand->GetScore() < cylinderCand->GetScore())
-                    {
-                        delete bestCand;
-                        bestCand = cylinderCand;
+                        if (cylinderCand->Refitting(pMesh, res) > minInitSupportNum)
+                        {
+                            cylinderCand->UpdateScore(pMesh, vertWeightList);
+                            cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
+                            MagicLog << "cylinder score: " << cylinderCand->GetScore() << std::endl;
+                            if (bestCand == NULL)
+                            {
+                                bestCand = cylinderCand;
+                            }
+                            else if (bestCand->GetScore() < cylinderCand->GetScore())
+                            {
+                                delete bestCand;
+                                bestCand = cylinderCand;
+                            }
+                            else
+                            {
+                                delete cylinderCand;
+                            }
+                        }
+                        else
+                        {
+                            delete cylinderCand;
+                        }
                     }
                     else
                     {
@@ -1448,28 +1577,35 @@ namespace MagicDGP
                 {
                     delete cylinderCand;
                 }
-            }
-            else
-            {
-                delete cylinderCand;
-            }
-            //Add Cone Candidate
-            ShapeCandidate* coneCand = new ConeCandidate(pVertCand0, pVertCand1, pVertCand2);
-            if (coneCand->IsValid())
-            {
-                if (coneCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
+                //Add Cone Candidate
+                ShapeCandidate* coneCand = new ConeCandidate(pVertCand0, pVertCand1, pVertCand2);
+                if (coneCand->IsValid())
                 {
-                    coneCand->UpdateScore(pMesh, vertWeightList);
-                    coneCand->UpdateSupportArea(pMesh, vertWeightList);
-                    MagicLog << "cone score: " << coneCand->GetScore() << std::endl;
-                    if (bestCand == NULL)
+                    if (coneCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                     {
-                        bestCand = coneCand;
-                    }
-                    else if (bestCand->GetScore() < coneCand->GetScore())
-                    {
-                        delete bestCand;
-                        bestCand = coneCand;
+                        if (coneCand->Refitting(pMesh, res) > minInitSupportNum)
+                        {
+                            coneCand->UpdateScore(pMesh, vertWeightList);
+                            coneCand->UpdateSupportArea(pMesh, vertWeightList);
+                            MagicLog << "cone score: " << coneCand->GetScore() << std::endl;
+                            if (bestCand == NULL)
+                            {
+                                bestCand = coneCand;
+                            }
+                            else if (bestCand->GetScore() < coneCand->GetScore())
+                            {
+                                delete bestCand;
+                                bestCand = coneCand;
+                            }
+                            else
+                            {
+                                delete coneCand;
+                            }
+                        }
+                        else
+                        {
+                            delete coneCand;
+                        }
                     }
                     else
                     {
@@ -1481,26 +1617,52 @@ namespace MagicDGP
                     delete coneCand;
                 }
             }
-            else
+            if (bestCand != NULL)
             {
-                delete coneCand;
+                MagicLog << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
+                candidateMap[bestCand->GetScore()] = bestCand;
+                //candidateMap[bestCand->GetSupportArea()] = bestCand;
+                candidates.push_back(bestCand);
             }
         }
-        if (bestCand != NULL)
+        
+        int acceptNum = 3;
+        int acceptId = 0;
+        for (std::map<Real, ShapeCandidate* >::reverse_iterator candItr = candidateMap.rbegin(); candItr != candidateMap.rend(); ++candItr)
         {
-            MagicLog << "best score: " << bestCand->GetScore() << std::endl;
-            std::vector<int> supportVert = bestCand->GetSupportVertex();
-            int candType = bestCand->GetType();
-            for (std::vector<int>::iterator itr = supportVert.begin(); itr != supportVert.end(); ++itr)
+            if (candItr->second->IsRemoved() == true)
             {
-                if (res.at(*itr) != PrimitiveType::Blend && res.at(*itr) != PrimitiveType::Other)
-                {
-                    res.at(*itr) = candType;
-                }
+                continue;
             }
-            delete bestCand;
+            if (acceptId == acceptNum)
+            {
+                break;
+            }
+            int candType = candItr->second->GetType();
+            std::vector<int> supportVert = candItr->second->GetSupportVertex();
+            for (std::vector<int>::iterator supportItr = supportVert.begin(); supportItr != supportVert.end(); ++supportItr)
+            {
+                res.at(*supportItr) = candType;
+            }
+            candItr->second->SetRemoved(true);
+            RemoveAcceptableCandidate(candidates, res);
+            for (int candId = 0; candId < candidates.size(); candId++)
+            {
+                if (candidates.at(candId)->IsRemoved())
+                {
+                    continue;
+                }
+                candidates.at(candId)->UpdateScore(pMesh, vertWeightList);
+                candidates.at(candId)->UpdateSupportArea(pMesh, vertWeightList);
+            }
+            acceptId++;
         }
-        res.at(sampleId) = PrimitiveType::Blend;
+        for (int sid = 0; sid < sampleNum; sid++)
+        {
+            res.at(validVert.at(sampleIndex.at(sid))) = PrimitiveType::Blend;
+        }
+        
+        localRes = res;
     }
 
     void PrimitiveDetection::Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res)
@@ -2022,6 +2184,19 @@ namespace MagicDGP
     void PrimitiveDetection::CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features)
     {
         int vertNum = pMesh->GetVertexNumber();
+        Real scale = 5;
+        if (vertNum > 100000)
+        {
+            scale = 6;
+        }
+        if (vertNum > 500000)
+        {
+            scale = 7;
+        }
+        if (vertNum > 1000000)
+        {
+            scale = 8;
+        }
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -2048,7 +2223,60 @@ namespace MagicDGP
             {
                 nDev /= neighborList.size();
             }
-            nDev = nDev * 5 + 0.2;
+            nDev = nDev * scale + 0.2;
+            if (nDev > 1)
+            {
+                //features.at(vid) = PrimitiveType::Blend;
+                features.at(vid) = 1;
+            }
+        }
+    }
+
+    void PrimitiveDetection::CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        Real scale = 5;
+        if (vertNum > 100000)
+        {
+            scale = 6;
+        }
+        if (vertNum > 500000)
+        {
+            scale = 7;
+        }
+        if (vertNum > 1000000)
+        {
+            scale = 8;
+        }
+        scores.resize(vertNum);
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            std::vector<int> neighborList;
+            neighborList.reserve(10);
+            MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                neighborList.push_back(pEdge->GetVertex()->GetId());
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+
+            MagicDGP::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
+            MagicDGP::Real nDev = 0;
+            for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
+            {
+                nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
+            }
+            if (neighborList.size() > 0)
+            {
+                nDev /= neighborList.size();
+            }
+            nDev = nDev * scale + 0.2;
+            scores.at(vid) = nDev;
             if (nDev > 1)
             {
                 //features.at(vid) = PrimitiveType::Blend;

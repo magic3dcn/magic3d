@@ -293,4 +293,47 @@ namespace MagicDGP
 
         return pNewPS;
     }
+
+    int Filter::MeshVertexSampling(const Mesh3D* pMesh, int sampleNum, std::vector<int>& sampleIndex)
+    {
+        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        int vertNum = pMesh->GetVertexNumber();
+        if (sampleNum > vertNum)
+        {
+            sampleNum = vertNum;
+        }
+        std::vector<bool> sampleFlag(vertNum, 0);
+        sampleFlag.at(0) = true;
+        sampleIndex = std::vector<int>(sampleNum);
+        sampleIndex.at(0) = 0;
+        std::vector<Real> minDist(vertNum, 1.0e10);
+        int curIndex = 0;
+        for (int sid = 1; sid < sampleNum; ++sid)
+        {
+            Vector3 curPos = pMesh->GetVertex(curIndex)->GetPosition();
+            Real maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < vertNum; ++vid)
+            {
+                if (sampleFlag.at(vid) == 1)
+                {
+                    continue;
+                }
+                Real dist = (pMesh->GetVertex(vid)->GetPosition() - curPos).LengthSquared();
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+    }
 }

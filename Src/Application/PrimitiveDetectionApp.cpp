@@ -89,6 +89,10 @@ namespace MagicApp
         {
             CalNormalDeviation();
         }
+        else if (arg.key == OIS::KC_A && mpMesh != NULL)
+        {
+            SampleVertex();
+        }
 
         return true;
     }
@@ -166,12 +170,8 @@ namespace MagicApp
     void PrimitiveDetectionApp::PrimitiveSelection(int sampleId)
     {
         int vertNum = mpMesh->GetVertexNumber();
-        static int randomId = 0;
-        randomId += 1001;
-        randomId = randomId % vertNum;
-        sampleId = randomId;
         std::vector<int> res;
-        MagicDGP::PrimitiveDetection::Primitive2DSelection(sampleId, mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DSelection(mpMesh, res);
         for (int i = 0; i < vertNum; i++)
         {
             float cv = res.at(i) * 0.2f;
@@ -252,6 +252,19 @@ namespace MagicApp
         float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
 
         int vertNum = mpMesh->GetVertexNumber();
+        MagicDGP::Real scale = 5;
+        if (vertNum > 100000)
+        {
+            scale = 6;
+        }
+        if (vertNum > 500000)
+        {
+            scale = 7;
+        }
+        if (vertNum > 1000000)
+        {
+            scale = 8;
+        }
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -278,21 +291,36 @@ namespace MagicApp
             {
                 nDev /= neighborList.size();
             }
-            nDev = nDev * 5 + 0.2;
-            if (nDev > 1)
-            {
-                nDev = 1.2;
-            }
-            else
-            {
-                nDev = 0.4;
-            }
+            nDev = nDev * scale + 0.2;
+            //if (nDev > 1)
+            //{
+            //    nDev = 1.2;
+            //}
+            //else
+            //{
+            //    nDev = 0.4;
+            //}
             //MagicLog << "Normal Deviation: " << nDev << " neigbor size: " << neighborList.size() << std::endl;
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(nDev);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+    }
+
+    void PrimitiveDetectionApp::SampleVertex()
+    {
+        if (mpMesh != NULL)
+        {
+            std::vector<int> sampleIndex;
+            MagicDGP::Filter::MeshVertexSampling(mpMesh, 100, sampleIndex);
+            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(0.2);
+            for (int sid = 0; sid < sampleIndex.size(); sid++)
+            {
+                mpMesh->GetVertex(sampleIndex.at(sid))->SetColor(color);
+            }
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+        }
     }
 
     void PrimitiveDetectionApp::FilterMesh3D()

@@ -121,7 +121,7 @@ namespace MagicDGP
         ~PrimitiveDetection();
 
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DSelection(int sampleId, Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
@@ -132,6 +132,7 @@ namespace MagicDGP
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
+        static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
         static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
             Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<Real>& vertWeightList);
     };

@@ -15,6 +15,7 @@ namespace MagicDGP
         static void SimpleMeshSmooth(Mesh3D* pMesh);
         static Point3DSet* RemovePointSetOutlier(Point3DSet* pPS, Real proportion);
         static Point3DSet* PointSetSampling(Point3DSet* pPS, int sampleNum);
+        static int MeshVertexSampling(const Mesh3D* pMesh, int sampleNum, std::vector<int>& sampleIndex);
 
     };
 }

@@ -26,6 +26,7 @@ namespace MagicApp
         void CalMeshCurvature();
         void FilterMesh3D();
         void CalNormalDeviation();
+        void SampleVertex();
 
     private:
         void SetupScene(void);
