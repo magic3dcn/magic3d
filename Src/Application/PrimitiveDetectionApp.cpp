@@ -253,18 +253,19 @@ namespace MagicApp
 
         int vertNum = mpMesh->GetVertexNumber();
         MagicDGP::Real scale = 5;
-        if (vertNum > 100000)
-        {
-            scale = 6;
-        }
-        if (vertNum > 500000)
-        {
-            scale = 7;
-        }
-        if (vertNum > 1000000)
-        {
-            scale = 8;
-        }
+        //if (vertNum > 100000)
+        //{
+        //    scale = 6;
+        //}
+        //if (vertNum > 500000)
+        //{
+        //    scale = 7;
+        //}
+        //if (vertNum > 1000000)
+        //{
+        //    scale = 8;
+        //}
+        std::vector<MagicDGP::Real> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -285,23 +286,40 @@ namespace MagicApp
             MagicDGP::Real nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
-                nDev += (normal - (mpMesh->GetVertex(*neigItr)->GetNormal())).Length();
+                //nDev += (normal - (mpMesh->GetVertex(*neigItr)->GetNormal())).Length();
+                MagicDGP::Real cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
+                cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
+                nDev += acos(cosA);
             }
             if (neighborList.size() > 0)
             {
                 nDev /= neighborList.size();
             }
-            nDev = nDev * scale + 0.2;
-            //if (nDev > 1)
-            //{
-            //    nDev = 1.2;
-            //}
-            //else
-            //{
-            //    nDev = 0.4;
-            //}
-            //MagicLog << "Normal Deviation: " << nDev << " neigbor size: " << neighborList.size() << std::endl;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(nDev);
+            norDev.at(vid) = nDev;
+        }
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            MagicDGP::Real devGrad = 0;
+            int neigNum = 0;
+            do
+            {
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                devGrad += fabs(norDev.at(vid) - norDev.at(pEdge->GetVertex()->GetId()));
+                neigNum++;
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+            if (neigNum > 0)
+            {
+                devGrad /= neigNum;
+            }
+            devGrad = devGrad * scale + 0.2;
+            MagicLog << devGrad << std::endl;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;

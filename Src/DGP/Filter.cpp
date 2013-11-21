@@ -335,5 +335,6 @@ namespace MagicDGP
             sampleFlag.at(pos) = 1;
         }
         MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        return sampleNum;
     }
 }
