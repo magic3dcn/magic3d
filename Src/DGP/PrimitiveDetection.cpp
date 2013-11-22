@@ -1363,15 +1363,28 @@ namespace MagicDGP
         CalVertexWeight(pMesh, vertWeightList);
 
         //Get valid vertex
-        std::vector<int> validVert;
+        std::map<Real, int> validMap;
         for (int i = 0; i < vertNum; i++)
         {
             if (featureMarks.at(i) == 0 && res.at(i) == PrimitiveType::None)
             {
-                validVert.push_back(i);
+                //validVert.push_back(i);
+                validMap[featureScores.at(i)] = i;
             }
         }
-        int validVertNum = validVert.size();
+        int validVertNum = validMap.size() / 5;
+        MagicLog << "valid vertex number: " << validVertNum << std::endl;
+        std::vector<int> validVert(validVertNum);
+        int indexTemp = 0;
+        for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
+        {
+            validVert.at(indexTemp) = validItr->second;
+            indexTemp++;
+            if (indexTemp == validVertNum)
+            {
+                break;
+            }
+        }
         //sample 
         int sampleNum = 10;
         std::vector<bool> sampleFlag(validVertNum, 0);
@@ -2236,19 +2249,19 @@ namespace MagicDGP
     {
         int vertNum = pMesh->GetVertexNumber();
         Real scale = 5;
-        if (vertNum > 100000)
-        {
-            scale = 6;
-        }
-        if (vertNum > 500000)
-        {
-            scale = 7;
-        }
-        if (vertNum > 1000000)
-        {
-            scale = 8;
-        }
-        scores.resize(vertNum);
+        //if (vertNum > 100000)
+        //{
+        //    scale = 6;
+        //}
+        //if (vertNum > 500000)
+        //{
+        //    scale = 7;
+        //}
+        //if (vertNum > 1000000)
+        //{
+        //    scale = 8;
+        //}
+        std::vector<MagicDGP::Real> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -2269,17 +2282,43 @@ namespace MagicDGP
             MagicDGP::Real nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
-                nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
+                //nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
+                Real cosA = normal * (pMesh->GetVertex(*neigItr)->GetNormal());
+                cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
+                nDev += acos(cosA);
             }
             if (neighborList.size() > 0)
             {
                 nDev /= neighborList.size();
             }
-            nDev = nDev * scale + 0.2;
-            scores.at(vid) = nDev;
-            if (nDev > 1)
+            norDev.at(vid) = nDev;
+        }
+        scores.clear();
+        scores.resize(vertNum);
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            MagicDGP::Real devGrad = 0;
+            int neigNum = 0;
+            do
             {
-                //features.at(vid) = PrimitiveType::Blend;
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                devGrad += fabs(norDev.at(vid) - norDev.at(pEdge->GetVertex()->GetId()));
+                neigNum++;
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+            if (neigNum > 0)
+            {
+                devGrad /= neigNum;
+            }
+            scores.at(vid) = devGrad;
+            devGrad = devGrad * scale + 0.2;
+            if (devGrad > 0.5)
+            {
                 features.at(vid) = 1;
             }
         }

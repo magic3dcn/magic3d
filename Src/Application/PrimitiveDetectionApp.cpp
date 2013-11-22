@@ -253,18 +253,6 @@ namespace MagicApp
 
         int vertNum = mpMesh->GetVertexNumber();
         MagicDGP::Real scale = 5;
-        //if (vertNum > 100000)
-        //{
-        //    scale = 6;
-        //}
-        //if (vertNum > 500000)
-        //{
-        //    scale = 7;
-        //}
-        //if (vertNum > 1000000)
-        //{
-        //    scale = 8;
-        //}
         std::vector<MagicDGP::Real> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
@@ -297,6 +285,7 @@ namespace MagicApp
             }
             norDev.at(vid) = nDev;
         }
+        //std::map<MagicDGP::Real, int> scoreMap;
         for (int vid = 0; vid < vertNum; vid++)
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
@@ -318,10 +307,30 @@ namespace MagicApp
                 devGrad /= neigNum;
             }
             devGrad = devGrad * scale + 0.2;
-            MagicLog << devGrad << std::endl;
+            if (devGrad > 0.5)
+            {
+                devGrad = 1.2;
+            }
+            else
+            {
+                devGrad = 0.4;
+            }
+            //scoreMap[devGrad] = vid;
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
+        /*int validNum = vertNum / 10;
+        int validIndex = 0;
+        MagicDGP::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
+        for (std::map<MagicDGP::Real, int>::iterator itr = scoreMap.begin(); itr != scoreMap.end(); ++itr)
+        {
+            mpMesh->GetVertex(itr->second)->SetColor(color);
+            validIndex++;
+            if (validIndex == validNum)
+            {
+                break;
+            }
+        }*/
         MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
