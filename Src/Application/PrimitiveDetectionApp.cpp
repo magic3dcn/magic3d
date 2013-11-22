@@ -156,7 +156,7 @@ namespace MagicApp
     void PrimitiveDetectionApp::RansacPrimitiveDetection()
     {
         std::vector<int> res;
-        MagicDGP::PrimitiveDetection::Primitive2DDetection(mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DDetectionEnhance(mpMesh, res);
         int vertNum = mpMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {
@@ -171,7 +171,7 @@ namespace MagicApp
     {
         int vertNum = mpMesh->GetVertexNumber();
         std::vector<int> res;
-        MagicDGP::PrimitiveDetection::Primitive2DSelection(mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DDetectionEnhance(mpMesh, res);
         for (int i = 0; i < vertNum; i++)
         {
             float cv = res.at(i) * 0.2f;

@@ -122,15 +122,21 @@ namespace MagicDGP
 
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
         static bool AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
+        static bool AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
+            std::vector<Real>& featureScores, bool isSmallSampled);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);
+        static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
+        static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, bool isFirst);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
         static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
         static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
