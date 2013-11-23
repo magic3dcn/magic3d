@@ -48,8 +48,8 @@ namespace MagicApp
     void PrimitiveDetectionAppUI::RansacMethod(MyGUI::Widget* pSender)
     {
         PrimitiveDetectionApp* pPD = dynamic_cast<PrimitiveDetectionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PrimitiveDetectionApp"));
-        //pPD->RansacPrimitiveDetection();
-        pPD->PrimitiveSelection(0);
+        pPD->RansacPrimitiveDetection();
+        //pPD->PrimitiveSelection(0);
     }
 
     void PrimitiveDetectionAppUI::BackToHome(MyGUI::Widget* pSender)

@@ -123,6 +123,7 @@ namespace MagicDGP
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);

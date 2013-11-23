@@ -252,6 +252,12 @@
     <ClInclude Include="..\Src\DGP\Curvature.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Tool\PickPointTool.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\Vector2.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -396,6 +402,12 @@
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Curvature.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
+      <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Vector2.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>

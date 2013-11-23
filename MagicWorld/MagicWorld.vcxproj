@@ -152,7 +152,9 @@
     <ClInclude Include="..\Src\DGP\Relief.h" />
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
+    <ClInclude Include="..\Src\DGP\Vector2.h" />
     <ClInclude Include="..\Src\DGP\Vector3.h" />
+    <ClInclude Include="..\Src\Tool\PickPointTool.h" />
     <ClInclude Include="..\Src\Tool\ViewTool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -226,7 +228,9 @@
     <ClCompile Include="..\Src\DGP\Relief.cpp" />
     <ClCompile Include="..\Src\DGP\Sampling.cpp" />
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
+    <ClCompile Include="..\Src\DGP\Vector2.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
+    <ClCompile Include="..\Src\Tool\PickPointTool.cpp" />
     <ClCompile Include="..\Src\Tool\ViewTool.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">

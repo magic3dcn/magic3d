@@ -36,6 +36,7 @@ namespace MagicApp
         PrimitiveDetectionAppUI mUI;
         MagicTool::ViewTool mViewTool;
         MagicDGP::Mesh3D* mpMesh;
+        bool mIsPickingMode;
     };
 
 }

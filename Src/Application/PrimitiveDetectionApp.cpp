@@ -7,11 +7,13 @@
 #include "../DGP/Parser.h"
 #include "../DGP/Curvature.h"
 #include "../DGP/Filter.h"
+#include "../Tool/PickPointTool.h"
 
 namespace MagicApp
 {
     PrimitiveDetectionApp::PrimitiveDetectionApp() : 
-        mpMesh(NULL)
+        mpMesh(NULL),
+        mIsPickingMode(false)
     {
     }
 
@@ -46,20 +48,42 @@ namespace MagicApp
 
     bool PrimitiveDetectionApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        mViewTool.MouseMoved(arg);
+        if (mIsPickingMode == false)
+        {
+            mViewTool.MouseMoved(arg);
+        }
 
         return true;
     }
 
     bool PrimitiveDetectionApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        mViewTool.MousePressed(arg);
+        if (mIsPickingMode == false)
+        {
+            mViewTool.MousePressed(arg);
+        }
 
         return true;
     }
 
     bool PrimitiveDetectionApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        if (mIsPickingMode)
+        {
+            if (mpMesh != NULL)
+            {
+                MagicDGP::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
+                    1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
+                int pickIndex = MagicTool::PickPointTool::PickMeshVertex(mpMesh, mousePos);
+                if (pickIndex != -1)
+                {
+                    PrimitiveSelection(pickIndex);
+                    mpMesh->GetVertex(pickIndex)->SetColor(MagicDGP::Vector3(0, 0, 0));
+                    MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+                }
+            }
+            
+        }
         return true;
     }
 
@@ -93,7 +117,10 @@ namespace MagicApp
         {
             SampleVertex();
         }
-
+        else if (arg.key == OIS::KC_P && mpMesh != NULL)
+        {
+            mIsPickingMode = !mIsPickingMode;
+        }
         return true;
     }
 
@@ -171,12 +198,19 @@ namespace MagicApp
     {
         int vertNum = mpMesh->GetVertexNumber();
         std::vector<int> res;
-        MagicDGP::PrimitiveDetection::Primitive2DDetectionEnhance(mpMesh, res);
+        MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
         for (int i = 0; i < vertNum; i++)
         {
-            float cv = res.at(i) * 0.2f;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
-            mpMesh->GetVertex(i)->SetColor(color);
+            if (res.at(i) == MagicDGP::PrimitiveType::None)
+            {
+                mpMesh->GetVertex(i)->SetColor(MagicDGP::Vector3(0.9, 0.9, 0.9));
+            }
+            else
+            {
+                float cv = res.at(i) * 0.2f;
+                MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+                mpMesh->GetVertex(i)->SetColor(color);
+            }
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
