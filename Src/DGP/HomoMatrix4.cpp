@@ -1,6 +1,7 @@
 //#include "StdAfx.h"
 #include "HomoMatrix4.h"
 #include "Eigen/Geometry"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -30,6 +31,19 @@ namespace MagicDGP
 
     HomoMatrix4::~HomoMatrix4()
     {
+    }
+
+    void HomoMatrix4::Print() const
+    {
+        MagicLog << "Matrix: " << std::endl; 
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                MagicLog << mValues[4 * i + j] << " ";
+            }
+            MagicLog << std::endl;
+        }
     }
 
     Vector3 HomoMatrix4::TransformPoint(const Vector3& vec) const
@@ -106,11 +120,11 @@ namespace MagicDGP
             mValues[i] = 0;
         }
         mValues[0] = 1;
-        mValues[3] = 1;
+        //mValues[3] = 1;
         mValues[5] = 1;
-        mValues[7] = 1;
+        //mValues[7] = 1;
         mValues[10] = 1;
-        mValues[11] = 1;
+        //mValues[11] = 1;
         mValues[15] = 1;
     }
 
@@ -134,5 +148,56 @@ namespace MagicDGP
             }
         }
         return inv;
+    }
+
+    void HomoMatrix4::GenerateVectorToVectorRotation(const Vector3& source, const Vector3& target)
+    {
+        Vector3 v = source.CrossProduct(target);
+        Real vLengthSquared = v.LengthSquared();
+        if (vLengthSquared < Epsilon)
+        {
+            Unit();
+        }
+        else
+        {
+            Real e = source * target;
+            Real h = (1.0 - e) / (v * v);
+            mValues[0] = e + h * v[0] * v[0];
+            mValues[1] = h * v[0] * v[1] - v[2];
+            mValues[2] = h * v[0] * v[2] + v[1];
+            mValues[3] = 0;
+            mValues[4] = h * v[0] * v[1] + v[2];
+            mValues[5] = e + h * v[1] * v[1];
+            mValues[6] = h * v[1] * v[2] - v[0];
+            mValues[7] = 0;
+            mValues[8] = h * v[0] * v[2] - v[1];
+            mValues[9] = h * v[1] * v[2] + v[0];
+            mValues[10] = e + h * v[2] * v[2];
+            mValues[11] = 0;
+            mValues[12] = 0;
+            mValues[13] = 0;
+            mValues[14] = 0;
+            mValues[15] = 1;
+        }
+    }
+
+    void HomoMatrix4::GenerateTranslation(const Vector3& translate)
+    {
+        mValues[0] = 1;
+        mValues[1] = 0;
+        mValues[2] = 0;
+        mValues[3] = translate[0];
+        mValues[4] = 0;
+        mValues[5] = 1;
+        mValues[6] = 0;
+        mValues[7] = translate[1];
+        mValues[8] = 0;
+        mValues[9] = 0;
+        mValues[10] = 1;
+        mValues[11] = translate[2];
+        mValues[12] = 0;
+        mValues[13] = 0;
+        mValues[14] = 0;
+        mValues[15] = 1;
     }
 }

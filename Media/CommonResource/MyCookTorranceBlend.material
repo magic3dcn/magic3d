@@ -1,4 +1,4 @@
-material MyCookTorrance
+material MyCookTorranceBlend
 {
     technique
     {
@@ -23,6 +23,8 @@ material MyCookTorrance
                 param_named         f              float     0.5
                 param_named         m              float     0.03
             }
+            
+            scene_blend alpha_blend
 
         }
     }

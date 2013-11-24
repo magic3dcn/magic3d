@@ -3,6 +3,7 @@
 #include "../Tool/ViewTool.h"
 #include "PrimitiveDetectionAppUI.h"
 #include "../DGP/Mesh3D.h"
+#include "../DGP/PrimitiveDetection.h"
 
 namespace MagicApp
 {
@@ -27,6 +28,7 @@ namespace MagicApp
         void FilterMesh3D();
         void CalNormalDeviation();
         void SampleVertex();
+        void DrawPrimitive(MagicDGP::ShapeCandidate* pCand);
 
     private:
         void SetupScene(void);

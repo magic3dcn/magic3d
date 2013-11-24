@@ -18,7 +18,7 @@ namespace MagicDGP
     static Real maxCylinderRadius = 1;
     static Real minConeAngle = 0.1745329251994329; //10 degree
     static Real maxConeAngle = 1.3962; //80 degree
-    static Real maxConeAngleDeviation = 0.9; //0.1745; //10 degree
+    static Real maxConeAngleDeviation = 0.1745; //10 degree
     //static Real baseScore = 0.93969262;
     static Real baseScore = 0.2618;
     static std::vector<int> gSampleIndex;
@@ -1840,7 +1840,7 @@ namespace MagicDGP
         MagicLog << "total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
     }
 
-    void PrimitiveDetection::Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res)
+    ShapeCandidate* PrimitiveDetection::Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res)
     {
         int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
@@ -2117,8 +2117,9 @@ namespace MagicDGP
             {
                 res.at(*supportItr) = candType;
             }
-            delete bestCand;
+            //delete bestCand;
         }
+        return bestCand;
     }
 
     bool PrimitiveDetection::AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 

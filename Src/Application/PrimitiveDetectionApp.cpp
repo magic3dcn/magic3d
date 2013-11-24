@@ -2,12 +2,12 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/RenderSystem.h"
-#include "../DGP/PrimitiveDetection.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../DGP/Curvature.h"
 #include "../DGP/Filter.h"
 #include "../Tool/PickPointTool.h"
+#include "../DGP/HomoMatrix4.h"
 
 namespace MagicApp
 {
@@ -147,6 +147,7 @@ namespace MagicApp
             mpMesh = NULL;
         }
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Mesh3D");
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Primitive");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
     }
 
@@ -167,6 +168,7 @@ namespace MagicApp
                 }
                 mpMesh = pMesh;
                 MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+                MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Primitive");
                 return true;
             }
             else
@@ -198,7 +200,7 @@ namespace MagicApp
     {
         int vertNum = mpMesh->GetVertexNumber();
         std::vector<int> res;
-        MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
+        MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
         for (int i = 0; i < vertNum; i++)
         {
             if (res.at(i) == MagicDGP::PrimitiveType::None)
@@ -213,6 +215,135 @@ namespace MagicApp
             }
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+        DrawPrimitive(pCand);
+        if (pCand != NULL)
+        {
+            delete pCand;
+        }
+    }
+
+    void PrimitiveDetectionApp::DrawPrimitive(MagicDGP::ShapeCandidate* pCand)
+    {
+        if (pCand != NULL)
+        {
+            MagicDGP::PrimitiveType candType = pCand->GetType();
+            if (candType == MagicDGP::PrimitiveType::Plane)
+            {
+                MagicDGP::PlaneCandidate* planeCand = dynamic_cast<MagicDGP::PlaneCandidate* >(pCand);
+                MagicDGP::Vector3 centerPos = planeCand->mCenter;
+                MagicDGP::Vector3 normal = planeCand->mNormal;
+                MagicDGP::HomoMatrix4 rotateMat;
+                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), normal);
+                MagicDGP::HomoMatrix4 translateMat;
+                translateMat.GenerateTranslation(centerPos);
+                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                MagicDGP::Mesh3D* planeMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/plane.obj");
+                if (planeMesh != NULL)
+                {
+                    int vertNum = planeMesh->GetVertexNumber();
+                    for (int vid = 0; vid < vertNum; vid++)
+                    {
+                        MagicDGP::Vertex3D* pVert = planeMesh->GetVertex(vid);
+                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        pos = totalMat.TransformPoint(pos);
+                        pVert->SetPosition(pos);
+                    }
+                    planeMesh->UpdateNormal();
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", planeMesh, 0.3);
+                }
+            }
+            else if (candType == MagicDGP::PrimitiveType::Sphere)
+            {
+                MagicDGP::SphereCandidate* sphereCand = dynamic_cast<MagicDGP::SphereCandidate* >(pCand);
+                MagicDGP::Vector3 centerPos = sphereCand->mCenter;
+                MagicDGP::Real radius = sphereCand->mRadius;
+                MagicDGP::HomoMatrix4 translateMat;
+                translateMat.GenerateTranslation(centerPos);
+                MagicDGP::Mesh3D* sphereMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/sphere.obj");
+                if (sphereCand != NULL)
+                {
+                    int vertNum = sphereMesh->GetVertexNumber();
+                    for (int vid = 0; vid < vertNum; vid++)
+                    {
+                        MagicDGP::Vertex3D* pVert = sphereMesh->GetVertex(vid);
+                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        pos *= radius;
+                        pos = translateMat.TransformPoint(pos);
+                        pVert->SetPosition(pos);
+                    }
+                    sphereMesh->UpdateNormal();
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", sphereMesh, 0.5);
+                }
+            }
+            else if (candType == MagicDGP::PrimitiveType::Cylinder)
+            {
+                MagicDGP::CylinderCandidate* cylinderCand = dynamic_cast<MagicDGP::CylinderCandidate* >(pCand);
+                MagicDGP::Vector3 centerPos = cylinderCand->mCenter;
+                MagicDGP::Vector3 direction = cylinderCand->mDir;
+                MagicDGP::Real radius = cylinderCand->mRadius;
+                MagicDGP::HomoMatrix4 rotateMat;
+                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
+                MagicDGP::HomoMatrix4 translateMat;
+                translateMat.GenerateTranslation(centerPos);
+                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                MagicDGP::Mesh3D* cylinderMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/cylinder.obj");
+                if (cylinderMesh != NULL)
+                {
+                    int vertNum = cylinderMesh->GetVertexNumber();
+                    for (int vid = 0; vid < vertNum; vid++)
+                    {
+                        MagicDGP::Vertex3D* pVert = cylinderMesh->GetVertex(vid);
+                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        pos *= radius;
+                        pos = totalMat.TransformPoint(pos);
+                        pVert->SetPosition(pos);
+                    }
+                    cylinderMesh->UpdateNormal();
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", cylinderMesh, 0.3);
+                }
+            }
+            else if (candType == MagicDGP::PrimitiveType::Cone)
+            {
+                MagicDGP::ConeCandidate* coneCand = dynamic_cast<MagicDGP::ConeCandidate* >(pCand);
+                MagicDGP::Vector3 apex = coneCand->mApex;
+                MagicDGP::Vector3 direction = coneCand->mDir;
+                MagicDGP::Real angle = coneCand->mAngle;
+                MagicDGP::Real radius = tan(angle);
+                MagicLog << "angle: " << angle << " radius: " << radius << std::endl;
+                MagicDGP::HomoMatrix4 rotateMat;
+                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
+                rotateMat.Print();
+                MagicDGP::HomoMatrix4 translateMat;
+                translateMat.GenerateTranslation(apex);
+                translateMat.Print();
+                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                totalMat.Print();
+                MagicDGP::Mesh3D* coneMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/cone.obj");
+                if (coneMesh != NULL)
+                {
+                    int vertNum = coneMesh->GetVertexNumber();
+                    for (int vid = 0; vid < vertNum; vid++)
+                    {
+                        MagicDGP::Vertex3D* pVert = coneMesh->GetVertex(vid);
+                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        pos[0] = pos[0] * radius;
+                        pos[1] = pos[1] * radius;
+                        pos = totalMat.TransformPoint(pos);
+                        pVert->SetPosition(pos);
+                    }
+                    coneMesh->UpdateNormal();
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", coneMesh, 0.6);
+                }
+            }
+            else
+            {
+                MagicLog << "No Type" << std::endl;
+            }
+        }
+        else
+        {
+            MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Primitive");
+        }
     }
 
     void PrimitiveDetectionApp::CalMeshCurvature()

@@ -28,6 +28,7 @@ namespace MagicCore
         void RenderPoint3DSet(std::string psName, std::string psMaterialName, const MagicDGP::Point3DSet* pPS, const MagicDGP::HomoMatrix4& transform);
         void RenderLineSegments(std::string lsName, std::string materialName, const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos);
         void RenderMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh);
+        void RenderBlendMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh, float alpha);
         void HideRenderingObject(std::string psName);
 
     private:

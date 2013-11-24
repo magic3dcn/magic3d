@@ -52,7 +52,7 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-    private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
@@ -70,7 +70,7 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-    private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -87,7 +87,7 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-    private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         Vector3 mCenter;
@@ -105,7 +105,7 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-    private:
+    public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
@@ -123,7 +123,7 @@ namespace MagicDGP
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res);
-        static void Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
+        static ShapeCandidate* Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
