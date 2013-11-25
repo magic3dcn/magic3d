@@ -156,29 +156,7 @@ namespace MagicDGP
         Real vLengthSquared = v.LengthSquared();
         if (vLengthSquared < Epsilon)
         {
-            //if (source * target > 0)
-            //{
-                Unit();
-            //}
-            /*else
-            {
-                mValues[0] = -1.0 / 3.0;
-                mValues[1] = 2.0 / 3.0;
-                mValues[2] = 2.0 / 3.0;
-                mValues[3] = 0;
-                mValues[4] = 2.0 / 3.0;
-                mValues[5] = -1.0 / 3.0;
-                mValues[6] = 2.0 / 3.0;
-                mValues[7] = 0;
-                mValues[8] = 2.0 / 3.0;
-                mValues[9] = 2.0 / 3.0;
-                mValues[10] = -1.0 / 3.0;
-                mValues[11] = 0;
-                mValues[12] = 0;
-                mValues[13] = 0;
-                mValues[14] = 0;
-                mValues[15] = 1;
-            }*/
+            Unit();
         }
         else
         {

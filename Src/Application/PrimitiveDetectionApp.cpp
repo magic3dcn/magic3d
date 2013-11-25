@@ -310,7 +310,19 @@ namespace MagicApp
                 MagicDGP::Real angle = coneCand->mAngle;
                 MagicDGP::Real radius = tan(angle);
                 MagicDGP::HomoMatrix4 rotateMat;
-                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
+                MagicDGP::Vector3 zAxis(0, 0, 1);
+                if ((zAxis.CrossProduct(direction)).LengthSquared() < MagicDGP::Epsilon &&
+                    zAxis * direction < 0)
+                {
+                    MagicDGP::HomoMatrix4 rotateTemp0, rotateTemp1;
+                    rotateTemp0.GenerateVectorToVectorRotation(zAxis, MagicDGP::Vector3(0, 1, 0));
+                    rotateTemp1.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 1, 0), direction);
+                    rotateMat = rotateTemp1 * rotateTemp0;
+                }
+                else
+                {
+                    rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
+                }
                 MagicDGP::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(apex);
                 MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;

@@ -22,6 +22,8 @@ namespace MagicDGP
         void Unit();
         HomoMatrix4 Inverse();
         //make sure source and target are unit vector (direction)
+        //source * target != -1
+        //Since if source * target == -1, the rotation is not unique
         void GenerateVectorToVectorRotation(const Vector3& source, const Vector3& target);
         void GenerateTranslation(const Vector3& translate);
 
