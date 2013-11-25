@@ -22,6 +22,7 @@ namespace MagicDGP
         virtual bool IsValid() = 0;
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
+        virtual bool FitParameter(const Mesh3D* pMesh) = 0;
         virtual PrimitiveType GetType() = 0;
         bool IsRemoved();
         void SetRemoved(bool valid);
@@ -50,6 +51,7 @@ namespace MagicDGP
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     public:
@@ -68,6 +70,7 @@ namespace MagicDGP
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     public:
@@ -85,6 +88,7 @@ namespace MagicDGP
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     public:
@@ -103,6 +107,7 @@ namespace MagicDGP
         virtual bool IsValid();
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
+        virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
     public:
@@ -127,11 +132,13 @@ namespace MagicDGP
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        static bool SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& featureScores,
+            std::vector<int>& sampleIndex, int sampleNum, Real validProportion);
         static bool AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
         static bool AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
-            std::vector<Real>& featureScores, bool isSmallSampled);
+            std::vector<Real>& featureScores, std::vector<int>& sampleIndex);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);

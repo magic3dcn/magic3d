@@ -249,7 +249,7 @@ namespace MagicApp
                         pVert->SetPosition(pos);
                     }
                     planeMesh->UpdateNormal();
-                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", planeMesh, 0.3);
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", planeMesh, 0.6);
                 }
             }
             else if (candType == MagicDGP::PrimitiveType::Sphere)
@@ -272,7 +272,7 @@ namespace MagicApp
                         pVert->SetPosition(pos);
                     }
                     sphereMesh->UpdateNormal();
-                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", sphereMesh, 0.5);
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", sphereMesh, 0.8);
                 }
             }
             else if (candType == MagicDGP::PrimitiveType::Cylinder)
@@ -299,7 +299,7 @@ namespace MagicApp
                         pVert->SetPosition(pos);
                     }
                     cylinderMesh->UpdateNormal();
-                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", cylinderMesh, 0.3);
+                    MagicCore::RenderSystem::GetSingleton()->RenderBlendMesh3D("Primitive", "MyCookTorranceBlend", cylinderMesh, 0.6);
                 }
             }
             else if (candType == MagicDGP::PrimitiveType::Cone)
@@ -309,15 +309,11 @@ namespace MagicApp
                 MagicDGP::Vector3 direction = coneCand->mDir;
                 MagicDGP::Real angle = coneCand->mAngle;
                 MagicDGP::Real radius = tan(angle);
-                MagicLog << "angle: " << angle << " radius: " << radius << std::endl;
                 MagicDGP::HomoMatrix4 rotateMat;
                 rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
-                rotateMat.Print();
                 MagicDGP::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(apex);
-                translateMat.Print();
                 MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
-                totalMat.Print();
                 MagicDGP::Mesh3D* coneMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/cone.obj");
                 if (coneMesh != NULL)
                 {
@@ -450,7 +446,7 @@ namespace MagicApp
             }
             norDev.at(vid) = nDev;
         }
-        //std::map<MagicDGP::Real, int> scoreMap;
+        std::map<MagicDGP::Real, int> scoreMap;
         for (int vid = 0; vid < vertNum; vid++)
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
@@ -472,19 +468,19 @@ namespace MagicApp
                 devGrad /= neigNum;
             }
             devGrad = devGrad * scale + 0.2;
-            if (devGrad > 0.5)
+            /*if (devGrad > 0.5)
             {
                 devGrad = 1.2;
             }
             else
             {
                 devGrad = 0.4;
-            }
-            //scoreMap[devGrad] = vid;
+            }*/
+            scoreMap[devGrad] = vid;
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
-        /*int validNum = vertNum / 10;
+        int validNum = vertNum / 2;
         int validIndex = 0;
         MagicDGP::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
         for (std::map<MagicDGP::Real, int>::iterator itr = scoreMap.begin(); itr != scoreMap.end(); ++itr)
@@ -495,7 +491,7 @@ namespace MagicApp
             {
                 break;
             }
-        }*/
+        }
         MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
@@ -505,7 +501,7 @@ namespace MagicApp
         if (mpMesh != NULL)
         {
             std::vector<int> sampleIndex;
-            MagicDGP::Filter::MeshVertexSampling(mpMesh, 100, sampleIndex);
+            MagicDGP::Filter::MeshVertexSampling(mpMesh, 200, sampleIndex);
             MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(0.2);
             for (int sid = 0; sid < sampleIndex.size(); sid++)
             {
