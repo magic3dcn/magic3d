@@ -11,15 +11,16 @@ namespace MagicCore
         ToolKit(void);
     public:
         static ToolKit* GetSingleton(void);
-        float GetTime(void);
-        bool FileOpenDlg(std::string& selectFileName, char* filterName);
-        bool FileSaveDlg(std::string& selectFileName, char* filterName);
+        static float GetTime(void);
+        static bool FileOpenDlg(std::string& selectFileName, char* filterName);
+        static bool FileSaveDlg(std::string& selectFileName, char* filterName);
+        static MagicDGP::Vector3 ColorCoding(float f);
+
         bool IsAppRunning(void);
         void SetAppRunning(bool bRunning);
         bool IsONIInitialized(void);
         void SetONIInitialized(bool bInitialized);
-        MagicDGP::Vector3 ColorCoding(float f);
-
+        
         virtual ~ToolKit(void);
 
     private:

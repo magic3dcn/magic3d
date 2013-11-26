@@ -35,7 +35,7 @@ namespace MagicApp
 
     bool PointSetViewer::Enter()
     {
-        MagicLog << "Enter PointSetViewer" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter PointSetViewer" << std::endl;
         mUI.Setup();
         SetupScene();
         return true;
@@ -55,7 +55,7 @@ namespace MagicApp
 
     void PointSetViewer::SetupScene()
     {
-        MagicLog << "PointSetViewer::SetupScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PointSetViewer::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -66,7 +66,7 @@ namespace MagicApp
 
     void PointSetViewer::ShutdownScene()
     {
-        MagicLog << "PointSetViewer::ShutdownScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PointSetViewer::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
@@ -112,7 +112,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
             if (pPointSet != NULL)
@@ -143,7 +143,7 @@ namespace MagicApp
         {
             std::string fileName;
             char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
+            if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
             }
@@ -154,7 +154,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
@@ -186,7 +186,7 @@ namespace MagicApp
         {
             std::string fileName;
             char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-            if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
+            if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
             }

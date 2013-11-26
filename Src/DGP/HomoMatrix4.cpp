@@ -35,14 +35,14 @@ namespace MagicDGP
 
     void HomoMatrix4::Print() const
     {
-        MagicLog << "Matrix: " << std::endl; 
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Matrix: " << std::endl; 
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
             {
-                MagicLog << mValues[4 * i + j] << " ";
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << mValues[4 * i + j] << " ";
             }
-            MagicLog << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << std::endl;
         }
     }
 

@@ -18,7 +18,7 @@ namespace MagicApp
 
     bool Homepage::Enter()
     {
-        MagicLog << "Enter Homepage" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter Homepage" << std::endl;
         mUI.Setup();
         return true;
     }
@@ -38,7 +38,7 @@ namespace MagicApp
     {
         if (arg.key == OIS::KC_P)
         {
-            MagicLog << "EnterPrimitiveDetection" << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterPrimitiveDetection" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
         }
 

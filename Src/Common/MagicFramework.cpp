@@ -22,9 +22,9 @@ namespace MagicCore
 
     void MagicFramework::Init()
     {
-        MagicLog << "MagicFramework init" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework init" << std::endl;
         RenderSystem::GetSingleton()->Init();
-        ResourceManager::GetSingleton()->Init();
+        ResourceManager::Init();
         GUISystem::GetSingleton()->Init(RenderSystem::GetSingleton()->GetRenderWindow(), RenderSystem::GetSingleton()->GetSceneManager(), "MyGUIResource");
         InputSystem::GetSingleton()->Init(RenderSystem::GetSingleton()->GetRenderWindow());
         AppManager::GetSingleton()->Init();
@@ -32,11 +32,11 @@ namespace MagicCore
 
     void MagicFramework::Run()
     {
-        MagicLog << "MagicFramework run" << std::endl;
-        float timeLastFrame = ToolKit::GetSingleton()->GetTime();
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework run" << std::endl;
+        float timeLastFrame = ToolKit::GetTime();
         while (Running())
         {
-            float timeCurrentFrame = ToolKit::GetSingleton()->GetTime();
+            float timeCurrentFrame = ToolKit::GetTime();
             float timeSinceLastFrame = timeCurrentFrame - timeLastFrame;
             timeLastFrame = timeCurrentFrame;
             Update(timeSinceLastFrame);
@@ -45,7 +45,7 @@ namespace MagicCore
 
     void MagicFramework::Update(float timeElapsed)
     {
-        //MagicLog << "MagicFramework update: " << mTimeAccumulate << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework update: " << mTimeAccumulate << std::endl;
         InputSystem::GetSingleton()->Update();
         AppManager::GetSingleton()->Update(timeElapsed);
         mTimeAccumulate += timeElapsed;

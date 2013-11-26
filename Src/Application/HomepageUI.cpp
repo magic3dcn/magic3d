@@ -23,7 +23,7 @@ namespace MagicApp
 
     void HomepageUI::Setup()
     {
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
+        MagicCore::ResourceManager::LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
         mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(345, 85);
         mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
@@ -38,45 +38,45 @@ namespace MagicApp
 
     void HomepageUI::Shutdown()
     {
-        MagicLog << "HomepageUI::Shutdown" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "HomepageUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
-        MagicCore::ResourceManager::GetSingleton()->UnloadResource("Homepage");
+        MagicCore::ResourceManager::UnloadResource("Homepage");
     }
 
     void HomepageUI::EnterPointViewer(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterPointViewer Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterPointViewer Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new PointSetViewer, "PointSetViewer");
     }
 
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterScan3D Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterScan3D Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ScanningApp, "ScanningApp");
     }
 
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterReconstruction Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterReconstruction Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReconstructionApp, "ReconstructionApp");
     }
 
     void HomepageUI::EnterReliefApp(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterReliefApp Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterReliefApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReliefApp, "ReliefApp");
     }
 
     /*void HomepageUI::EnterLeapMotionApp(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterLeapMotionApp Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterLeapMotionApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new LeapMotionApp, "LeapMotionApp");
     }*/
 
     /*void HomepageUI::EnterPrimitiveDetection(MyGUI::Widget* pSender)
     {
-        MagicLog << "EnterPrimitiveDetection Clicked" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterPrimitiveDetection Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
     }*/
 }

@@ -63,14 +63,14 @@ namespace MagicDGP
 
     void ShapeCandidate::UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         mSupportArea = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             mSupportArea += vertWeightList.at(*itr);
         }
         mSupportArea /= 3;
-        //MagicLog << "UpdateSupportArea time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "UpdateSupportArea time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     std::vector<int>& ShapeCandidate::GetSupportVertex()
@@ -112,7 +112,7 @@ namespace MagicDGP
         mNormal = dir0.CrossProduct(dir1);
         if (mNormal.Normalise() < Epsilon)
         {
-            //MagicLog << "mNormal Length too small" << std::endl; 
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "mNormal Length too small" << std::endl; 
             return false;
         }
 
@@ -122,7 +122,7 @@ namespace MagicDGP
             fabs(mNormal * (mpVert1->GetNormal()) ) < maxAngleDeviation ||
             fabs(mNormal * (mpVert2->GetNormal()) ) < maxAngleDeviation)
         {
-            //MagicLog << "Angle Deviation: " << mNormal * (mpVert0->GetNormal()) << " " << mNormal * (mpVert1->GetNormal()) 
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Angle Deviation: " << mNormal * (mpVert0->GetNormal()) << " " << mNormal * (mpVert1->GetNormal()) 
             //    << " " << mNormal * (mpVert2->GetNormal()) << std::endl;
             return false;
         }
@@ -134,7 +134,7 @@ namespace MagicDGP
 
     int PlaneCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         //Real MaxAngleDeviation = 0.9848;
         //Real MaxAngleDeviation = 0.94;
         //Real MaxDistDeviation = 0.001;
@@ -163,7 +163,7 @@ namespace MagicDGP
         //while (searchIndex.size() > 0)
         while (searchStack[stackCurrent].size() > 0)
         {
-            //MagicLog << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
             //std::vector<int> searchIndexNext;
             searchStack[stackNext].clear();
             for (std::vector<int>::iterator itr = searchStack[stackCurrent].begin(); itr != searchStack[stackCurrent].end(); ++itr)
@@ -208,8 +208,8 @@ namespace MagicDGP
         {
             mSupportVertex.clear();
         }
-        //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-       // MagicLog << "Plane Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Support vertex size: " << mSupportVertex.size() << std::endl;
+       // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Plane Support Vertex time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
@@ -266,7 +266,7 @@ namespace MagicDGP
             searchIndex = searchIndexNext;
         }
 
-        //MagicLog << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
         if (FitParameter(pMesh) == false)
         {
             mSupportVertex.clear();
@@ -304,7 +304,7 @@ namespace MagicDGP
 
     void PlaneCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         int supportNum = mSupportVertex.size();
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
@@ -318,7 +318,7 @@ namespace MagicDGP
             mScore += scoreTrunc * vertWeightList.at(*itr);*/
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
-        //MagicLog << "Plane Update Score: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Plane Update Score: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     SphereCandidate::SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -339,7 +339,7 @@ namespace MagicDGP
         Real cosThetaSquare = cosTheta * cosTheta;
         if (1 - cosThetaSquare < Epsilon)
         {
-            //MagicLog << "cosThetaSquare too large: " << cosThetaSquare << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cosThetaSquare too large: " << cosThetaSquare << std::endl;
             return false;
         }
         Vector3 pos0 = mpVert0->GetPosition();
@@ -355,7 +355,7 @@ namespace MagicDGP
         mRadius = ( (pos0 - mCenter).Length() + (pos1 - mCenter).Length() ) / 2;
         if (mRadius > maxSphereRadius)
         {
-            //MagicLog << "Sphere radius is too large: " << mRadius << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere radius is too large: " << mRadius << std::endl;
             return false;
         }
         //Judge
@@ -365,23 +365,23 @@ namespace MagicDGP
         Real dist0 = dir0.Normalise();
         if (fabs(dist0 - mRadius) > MaxDistDeviation || fabs(dir0 * nor0) < maxAngleDeviation)
         {
-            //MagicLog << "Sphere is valid reject vertex0: " << fabs(dist0 - mRadius) << " " << fabs(dir0 * nor0) << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere is valid reject vertex0: " << fabs(dist0 - mRadius) << " " << fabs(dir0 * nor0) << std::endl;
             return false;
         }
         Vector3 dir1 = pos1 - mCenter;
         Real dist1 = dir1.Normalise();
         if (fabs(dist1 - mRadius) > MaxDistDeviation || fabs(dir1 * nor1) < maxAngleDeviation)
         {
-            //MagicLog << "Sphere is valid reject vertex1: " << fabs(dist1 - mRadius) << " " << fabs(dir1 * nor1) << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere is valid reject vertex1: " << fabs(dist1 - mRadius) << " " << fabs(dir1 * nor1) << std::endl;
             return false;
         }
-        //MagicLog << "Sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl; 
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl; 
         return true;
     }
 
     int SphereCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
@@ -397,7 +397,7 @@ namespace MagicDGP
         searchIndex.push_back(id1);
         while (searchIndex.size() > 0)
         {
-            //MagicLog << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
             std::vector<int> searchIndexNext;
             for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
             {
@@ -434,15 +434,15 @@ namespace MagicDGP
         {
             mSupportVertex.clear();
         }
-        //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog << "Sphere Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere Support Vertex time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
     int SphereCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         mHasRefit = true;
-        //MagicLog << "Refit sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl;
         //Refit support vertex
         Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
         //std::map<int, int> visitFlag;
@@ -496,7 +496,7 @@ namespace MagicDGP
             mSupportVertex.clear();
         }
 
-        //MagicLog << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
 
         return mSupportVertex.size();
     }
@@ -543,7 +543,7 @@ namespace MagicDGP
 
     void SphereCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
@@ -558,7 +558,7 @@ namespace MagicDGP
             mScore += scoreTrunc * vertWeightList.at(*itr);*/
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
-        //MagicLog << "Sphere Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere Update Score time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     CylinderCandidate::CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1) :
@@ -580,7 +580,7 @@ namespace MagicDGP
         Real dirLen = mDir.Normalise();
         if (dirLen < Epsilon)
         {
-            //MagicLog << "dirLen is too small: " << dirLen << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "dirLen is too small: " << dirLen << std::endl;
             return false;
         }
         Vector3 dirX = nor0;
@@ -590,7 +590,7 @@ namespace MagicDGP
         Real nor1ProjectY = dirY * nor1;
         if (fabs(nor1ProjectY) < Epsilon)
         {
-            //MagicLog << "nor1ProjectY is too small: " << nor1ProjectY << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "nor1ProjectY is too small: " << nor1ProjectY << std::endl;
             return false;
         }
         Vector3 pos0 = mpVert0->GetPosition();
@@ -605,16 +605,16 @@ namespace MagicDGP
         Real radius2 = sqrt(pos1ProjectY * pos1ProjectY + (pos1ProjectX - interX) * (pos1ProjectX - interX));
         //if (fabs(radius2 - mRadius) / mRadius > 0.05)
         //{
-        //    //MagicLog << "Radius are too different: " << radius2 - mRadius << std::endl;
+        //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Radius are too different: " << radius2 - mRadius << std::endl;
         //    return false;
         //}
         mRadius = (mRadius + radius2) / 2;
         if (mRadius > maxCylinderRadius)
         {
-            //MagicLog << "Cylinder radius is too large: " << mRadius << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder radius is too large: " << mRadius << std::endl;
             return false;
         }
-        //MagicLog << "Cylinder is Valid: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder is Valid: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
         //    << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << std::endl;
         //reject condition: No condition
 
@@ -623,7 +623,7 @@ namespace MagicDGP
 
     int CylinderCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
@@ -639,7 +639,7 @@ namespace MagicDGP
         searchIndex.push_back(id1);
         while (searchIndex.size() > 0)
         {
-            //MagicLog << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Search support vertex: searchIndex size: " << searchIndex.size() << std::endl;
             std::vector<int> searchIndexNext;
             for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
             {
@@ -678,8 +678,8 @@ namespace MagicDGP
             mSupportVertex.clear();
         }
 
-        //MagicLog << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart 
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetTime() - timeStart 
         //    << " SupportVertexSize: " << mSupportVertex.size() << std::endl;
         return mSupportVertex.size();
     }
@@ -687,8 +687,8 @@ namespace MagicDGP
     int CylinderCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         mHasRefit = true;
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
-        //MagicLog << "Refit Cylinder: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
+        float timeStart = MagicCore::ToolKit::GetTime();
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Cylinder: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
         //    << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << std::endl;
         //Refit support vertex
         Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
@@ -744,8 +744,8 @@ namespace MagicDGP
             mSupportVertex.clear();
         }
 
-        //MagicLog << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog << "Cylinder refitting time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder refitting time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
@@ -867,7 +867,7 @@ namespace MagicDGP
 
     void CylinderCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
@@ -884,7 +884,7 @@ namespace MagicDGP
             mScore += scoreTrunc * vertWeightList.at(*itr);*/
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
-        //MagicLog << "Cylinder Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder Update Score time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     ConeCandidate::ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2) :
@@ -906,7 +906,7 @@ namespace MagicDGP
         Vector3 interDir01 = nor0.CrossProduct(nor1);
         if (interDir01.Normalise() < Epsilon)
         {
-            //MagicLog << "Parallel Plane" << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parallel Plane" << std::endl;
             return false;
         }
         Vector3 lineDir0 = nor0.CrossProduct(interDir01);
@@ -918,7 +918,7 @@ namespace MagicDGP
         Real dotTemp = interDir01 * nor2;
         if (fabs(dotTemp) < Epsilon)
         {
-            //MagicLog << "Parallel intersection line and plane" << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parallel intersection line and plane" << std::endl;
             return false;
         }
         mApex = interPos01 + interDir01 * ( (pos2 - interPos01) * nor2 / dotTemp );
@@ -929,19 +929,19 @@ namespace MagicDGP
         Vector3 dir0 = pos0 - mApex;
         if (dir0.Normalise() < Epsilon)
         {
-            //MagicLog << "Apex coincident" << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Apex coincident" << std::endl;
             return false;
         }
         Vector3 dir1 = pos1 - mApex;
         if (dir1.Normalise() < Epsilon)
         {
-           // MagicLog << "cone: Apex coincident" << std::endl;
+           // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Apex coincident" << std::endl;
             return false;
         }
         Vector3 dir2 = pos2 - mApex;
         if (dir2.Normalise() < Epsilon)
         {
-           // MagicLog << "cone: Apex coincident" << std::endl;
+           // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Apex coincident" << std::endl;
             return false;
         }
         Vector3 planeDir0 = dir2 - dir0;
@@ -953,7 +953,7 @@ namespace MagicDGP
         }
         if (mDir.Normalise() < Epsilon)
         {
-           // MagicLog << "cone: Cone Dir Len too Small" << std::endl;
+           // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Cone Dir Len too Small" << std::endl;
             return false;
         }
         Real cos0 = mDir * dir0;
@@ -965,17 +965,17 @@ namespace MagicDGP
         mAngle = (acos(cos0) + acos(cos1) + acos(cos2)) / 3;
         if (mAngle > maxConeAngle || mAngle < minConeAngle)
         {
-            //MagicLog << "cone: Cone angle is too large: " << mAngle << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Cone angle is too large: " << mAngle << std::endl;
             return false;
         }
-        //MagicLog << "Cone: " << mApex[0] << " " << mApex[1] << " " << mApex[2] << " " << mAngle << " " << mDir[0] << " " << mDir[1] << " " << mDir[2] << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone: " << mApex[0] << " " << mApex[1] << " " << mApex[2] << " " << mAngle << " " << mDir[0] << " " << mDir[1] << " " << mDir[2] << std::endl;
 
         return true;
     }
 
     int ConeCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         //Real MaxAngleDeviation = 0.1745329251994329; //10 degree
         //Real MaxCosAngleDeviation = 0.94;
         int id0 = mpVert0->GetId();
@@ -1051,8 +1051,8 @@ namespace MagicDGP
             mSupportVertex.clear();
         }
 
-        //MagicLog << "cone: Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog << "Cone Support time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Support vertex size: " << mSupportVertex.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone Support time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return mSupportVertex.size();
     }
 
@@ -1206,7 +1206,7 @@ namespace MagicDGP
         }
         if (mDir.Normalise() < Epsilon)
         {
-            //MagicLog << "Cone: mDir is Zero" << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone: mDir is Zero" << std::endl;
             //mSupportVertex.clear();
             return false;
         }
@@ -1221,7 +1221,7 @@ namespace MagicDGP
         if (mAngle > maxConeAngle || mAngle < minConeAngle)
         {
             //mSupportVertex.clear();
-            //MagicLog << "Cone refit angle is too large: " << mAngle << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone refit angle is too large: " << mAngle << std::endl;
             return false;
         }
 
@@ -1235,7 +1235,7 @@ namespace MagicDGP
 
     void ConeCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
@@ -1264,7 +1264,7 @@ namespace MagicDGP
             mScore += scoreTrunc * vertWeightList.at(*itr);*/
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
-        //MagicLog << "Cone Update Score time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl; 
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone Update Score time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl; 
     }
 
     PrimitiveDetection::PrimitiveDetection()
@@ -1337,7 +1337,7 @@ namespace MagicDGP
             }
         }
         int validVertNum = validMap.size() / 5;
-        MagicLog << "valid vertex number: " << validVertNum << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "valid vertex number: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
         for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
@@ -1425,7 +1425,7 @@ namespace MagicDGP
                 tranStack = tranStackNext;
             }
             int neighborSize = neighborList.size();
-            MagicLog << "neighbor size: " << neighborSize << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "neighbor size: " << neighborSize << std::endl;
 
             Vertex3D* pVertCand0 = pMesh->GetVertex(validSampleId);
             int neighborSampleSize = neighborSize / 3;
@@ -1447,7 +1447,7 @@ namespace MagicDGP
                         {
                             planeCand->UpdateScore(pMesh, vertWeightList);
                             planeCand->UpdateSupportArea(pMesh, vertWeightList);
-                            MagicLog << "plane score: " << planeCand->GetScore() << std::endl;
+                            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "plane score: " << planeCand->GetScore() << std::endl;
                             if (bestCand == NULL)
                             {
                                 bestCand = planeCand;
@@ -1486,7 +1486,7 @@ namespace MagicDGP
                         {
                             sphereCand->UpdateScore(pMesh, vertWeightList);
                             sphereCand->UpdateSupportArea(pMesh, vertWeightList);
-                            MagicLog << "sphere score: " << sphereCand->GetScore() << std::endl;
+                            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "sphere score: " << sphereCand->GetScore() << std::endl;
                             if (bestCand == NULL)
                             {
                                 bestCand = sphereCand;
@@ -1525,7 +1525,7 @@ namespace MagicDGP
                         {
                             cylinderCand->UpdateScore(pMesh, vertWeightList);
                             cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
-                            MagicLog << "cylinder score: " << cylinderCand->GetScore() << std::endl;
+                            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cylinder score: " << cylinderCand->GetScore() << std::endl;
                             if (bestCand == NULL)
                             {
                                 bestCand = cylinderCand;
@@ -1564,7 +1564,7 @@ namespace MagicDGP
                         {
                             coneCand->UpdateScore(pMesh, vertWeightList);
                             coneCand->UpdateSupportArea(pMesh, vertWeightList);
-                            MagicLog << "cone score: " << coneCand->GetScore() << std::endl;
+                            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone score: " << coneCand->GetScore() << std::endl;
                             if (bestCand == NULL)
                             {
                                 bestCand = coneCand;
@@ -1596,7 +1596,7 @@ namespace MagicDGP
             }
             if (bestCand != NULL)
             {
-                MagicLog << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
                 candidateMap[bestCand->GetScore()] = bestCand;
                 //candidateMap[bestCand->GetSupportArea()] = bestCand;
                 candidates.push_back(bestCand);
@@ -1644,7 +1644,7 @@ namespace MagicDGP
 
     void PrimitiveDetection::Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
 
         //Intialize flags
         int vertNum = pMesh->GetVertexNumber();
@@ -1672,8 +1672,8 @@ namespace MagicDGP
         std::vector<ShapeCandidate* > candidates;
         std::vector<int> sampleIndex;
         SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 200, 0.5);
-        MagicLog << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
-        MagicLog << "prepare time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         
         //Find init best candidates
         int maxIterCount = 10;
@@ -1684,7 +1684,7 @@ namespace MagicDGP
         {
             if (AddNewCandidatesEnhance(candidates, pMesh, res, sampleFlag, vertWeightList, featureScores, sampleIndex) == false)
             {
-                MagicLog << "Break: No New Candidates Found" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Break: No New Candidates Found" << std::endl;
                 break;
             }
             while (true)
@@ -1692,10 +1692,10 @@ namespace MagicDGP
                 int bestIndex = ChoseBestCandidate(candidates);
                 if (bestIndex == -1)
                 {
-                    MagicLog << "no best candidate" << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "no best candidate" << std::endl;
                     break;
                 }
-                MagicLog << "best index: " << bestIndex << " " << candidates.at(bestIndex)->GetSupportArea() << 
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best index: " << bestIndex << " " << candidates.at(bestIndex)->GetSupportArea() << 
                     " " << acceptableArea << "                                " << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() << std::endl;
                 if (bestIndex == lastBestIndex)
                 {
@@ -1741,31 +1741,31 @@ namespace MagicDGP
                 UpdateAcceptableAreaEnhance(pMesh, res, false);
             }
         }
-        MagicLog << "large time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "large time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         //Find small candidates
-        MagicLog << "small candidates++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "small candidates++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
         int maxSmallCount = 10;
         int acceptSize = 5;
         for (int smallIndex = 0; smallIndex < maxSmallCount; smallIndex++)
         {
-            MagicLog << "small index: " << smallIndex << " -------------------" << std::endl; 
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "small index: " << smallIndex << " -------------------" << std::endl; 
             AddNewCandidatesEnhance(candidates, pMesh, res, sampleFlag, vertWeightList, featureScores, sampleIndex);
             for (int acceptIndex = 0; acceptIndex < acceptSize; acceptIndex++)
             {
                 int bestIndex = ChoseBestCandidate(candidates);
                 if (bestIndex == -1)
                 {
-                    MagicLog << "no best candidate" << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "no best candidate" << std::endl;
                     break;
                 }
                 if (candidates.at(bestIndex)->GetScore() < 0 || 
                     candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() > minScoreProportion)
                 {
-                    MagicLog << "low score: " << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "low score: " << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() << std::endl;
                     candidates.at(bestIndex)->SetRemoved(true);
                     break;
                 }
-                MagicLog << "best index: " << bestIndex << " " << candidates.at(bestIndex)->GetSupportArea() << 
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best index: " << bestIndex << " " << candidates.at(bestIndex)->GetSupportArea() << 
                         " " << acceptableArea << "                                " 
                         << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() << std::endl;
                 if (candidates.at(bestIndex)->GetSupportArea() > minSupportArea)
@@ -1791,7 +1791,7 @@ namespace MagicDGP
                 }
                 else
                 {
-                    MagicLog << "stop: no valid small candidates" << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "stop: no valid small candidates" << std::endl;
                     candidates.at(bestIndex)->SetRemoved(true);
                     break;
                 }
@@ -1802,7 +1802,7 @@ namespace MagicDGP
         {
             res.at(gSampleIndex.at(sid)) = PrimitiveType::Other;
         }
-        MagicLog << "total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     ShapeCandidate* PrimitiveDetection::Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res)
@@ -1887,7 +1887,7 @@ namespace MagicDGP
                     {
                         planeCand->UpdateScore(pMesh, vertWeightList);
                         planeCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog << "plane score: " << planeCand->GetScore() << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "plane score: " << planeCand->GetScore() << std::endl;
                         if (planeCand->GetSupportArea() < (planeCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -1933,7 +1933,7 @@ namespace MagicDGP
                     {
                         sphereCand->UpdateScore(pMesh, vertWeightList);
                         sphereCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog << "sphere score: " << sphereCand->GetScore() << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "sphere score: " << sphereCand->GetScore() << std::endl;
                         if (sphereCand->GetSupportArea() < (sphereCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -1979,7 +1979,7 @@ namespace MagicDGP
                     {
                         cylinderCand->UpdateScore(pMesh, vertWeightList);
                         cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog << "cylinder score: " << cylinderCand->GetScore() << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cylinder score: " << cylinderCand->GetScore() << std::endl;
                         if (cylinderCand->GetSupportArea() < (cylinderCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -2025,12 +2025,12 @@ namespace MagicDGP
                     {
                         coneCand->UpdateScore(pMesh, vertWeightList);
                         coneCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
                             << " score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
                         //if (coneCand->GetScore() > 0)
                         if (coneCand->GetSupportArea() < (coneCand->GetScore() * minScoreProportion))
                         {
-                            //MagicLog << "score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
+                            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
                             if (bestCand == NULL)
                             {
                                 bestCand = coneCand;
@@ -2069,14 +2069,14 @@ namespace MagicDGP
                 //check lucky break
                 if (bestCand->GetSupportArea() > acceptableArea)
                 {
-                    MagicLog << "Lucky break: " << bestCand->GetSupportArea() << " " << acceptableArea << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Lucky break: " << bestCand->GetSupportArea() << " " << acceptableArea << std::endl;
                     break;
                 }
             }
         }
         if (bestCand != NULL)
         {
-            MagicLog << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
             int candType = bestCand->GetType();
             std::vector<int> supportVert = bestCand->GetSupportVertex();
             for (std::vector<int>::iterator supportItr = supportVert.begin(); supportItr != supportVert.end(); ++supportItr)
@@ -2165,7 +2165,7 @@ namespace MagicDGP
                 tranStack = tranStackNext;
             }
             int neighborSize = neighborList.size();
-            //MagicLog << "neighbor size: " << neighborSize << std::endl;
+            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "neighbor size: " << neighborSize << std::endl;
 
             const Vertex3D* pVertCand0 = pMesh->GetVertex(validSampleId);
             int neighborSampleSize = neighborSize / 3;
@@ -2187,7 +2187,7 @@ namespace MagicDGP
                         {
                             planeCand->UpdateScore(pMesh, vertWeightList);
                             planeCand->UpdateSupportArea(pMesh, vertWeightList);
-                            //MagicLog << "plane score: " << planeCand->GetScore() << std::endl;
+                            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "plane score: " << planeCand->GetScore() << std::endl;
                             if (planeCand->GetSupportArea() < (planeCand->GetScore() * minScoreProportion))
                             {
                                 if (bestCand == NULL)
@@ -2233,7 +2233,7 @@ namespace MagicDGP
                         {
                             sphereCand->UpdateScore(pMesh, vertWeightList);
                             sphereCand->UpdateSupportArea(pMesh, vertWeightList);
-                            //MagicLog << "sphere score: " << sphereCand->GetScore() << std::endl;
+                            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "sphere score: " << sphereCand->GetScore() << std::endl;
                             if (sphereCand->GetSupportArea() < (sphereCand->GetScore() * minScoreProportion))
                             {
                                 if (bestCand == NULL)
@@ -2279,7 +2279,7 @@ namespace MagicDGP
                         {
                             cylinderCand->UpdateScore(pMesh, vertWeightList);
                             cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
-                            //MagicLog << "cylinder score: " << cylinderCand->GetScore() << std::endl;
+                            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cylinder score: " << cylinderCand->GetScore() << std::endl;
                             if (cylinderCand->GetSupportArea() < (cylinderCand->GetScore() * minScoreProportion))
                             {
                                 if (bestCand == NULL)
@@ -2325,7 +2325,7 @@ namespace MagicDGP
                         {
                             coneCand->UpdateScore(pMesh, vertWeightList);
                             coneCand->UpdateSupportArea(pMesh, vertWeightList);
-                            //MagicLog << "cone score: " << coneCand->GetScore() << std::endl;
+                            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone score: " << coneCand->GetScore() << std::endl;
                             if (coneCand->GetSupportArea() < (coneCand->GetScore() * minScoreProportion))
                             {
                                 if (bestCand == NULL)
@@ -2366,7 +2366,7 @@ namespace MagicDGP
                     //check lucky break
                     if (bestCand->GetSupportArea() > acceptableArea)
                     {
-                        MagicLog << "Lucky break: " << bestCand->GetSupportArea() << " " << acceptableArea << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Lucky break: " << bestCand->GetSupportArea() << " " << acceptableArea << std::endl;
                         candidates.push_back(bestCand);
                         return true;
                     }
@@ -2374,7 +2374,7 @@ namespace MagicDGP
             }
             if (bestCand != NULL)
             {
-                //MagicLog << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
+                //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
                 candidates.push_back(bestCand);
                 isNewAdded = true;
             }
@@ -2403,7 +2403,7 @@ namespace MagicDGP
 
     void PrimitiveDetection::Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
 
         //Intialize flags
         int vertNum = pMesh->GetVertexNumber();
@@ -2427,8 +2427,8 @@ namespace MagicDGP
 
         //Initialize candidates   
         std::vector<ShapeCandidate* > candidates;
-        MagicLog << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
-        MagicLog << "prepare time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         //Initialize iteration parameters
         int maxIterCount = 500;
         bool stopIteration = false;
@@ -2439,7 +2439,7 @@ namespace MagicDGP
         {
             if (AddNewCandidates(candidates, pMesh, res, sampleFlag, vertWeightList) == false)
             {
-                MagicLog << "Stop: No New Candidates Found" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Stop: No New Candidates Found" << std::endl;
                 break;
             }
 
@@ -2448,13 +2448,13 @@ namespace MagicDGP
             //std::map<Real, int> bestSet;
             std::map<Real, int> refitedPotentials;
             int refitedNum = RefitPotentials(candidates, potentials, refitedPotentials, pMesh, res, vertWeightList);
-            MagicLog << "Refited Potential number: " << refitedPotentials.size() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refited Potential number: " << refitedPotentials.size() << std::endl;
             if (refitedNum == 0)
             {
                 noRefittedPotentialsTime++;
                 if (noRefittedPotentialsTime == 10)
                 {
-                    MagicLog << "Stop: no refitted potentials" << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Stop: no refitted potentials" << std::endl;
                     break;
                 }
             }
@@ -2465,7 +2465,7 @@ namespace MagicDGP
             //Judge whether to accept 
             for (std::map<Real, int>::reverse_iterator itr = refitedPotentials.rbegin(); itr != refitedPotentials.rend(); ++itr)
             {
-                MagicLog << "Candidate" << itr->second << " : " << candidates.at(itr->second)->GetSupportArea()
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Candidate" << itr->second << " : " << candidates.at(itr->second)->GetSupportArea()
                          << "  mAcceptableArea: " << acceptableArea
                          << " mMinSupportArea: " << minSupportArea << std::endl;
                 if (IsCandidateAcceptable(itr->second, candidates) || itr->second == lastBestPotential)
@@ -2506,7 +2506,7 @@ namespace MagicDGP
             }
             if (stopIteration)
             {
-                MagicLog << "Stop: Force Break" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Stop: Force Break" << std::endl;
                 break;
             }
             
@@ -2522,12 +2522,12 @@ namespace MagicDGP
             }
         }
         candidates.clear();
-        MagicLog << "PrimitiveDetection::Primitive2DDetection total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetection::Primitive2DDetection total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     void PrimitiveDetection::CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList)
     {
-        //MagicLog << "PrimitiveDetection::CalVertexWeight" << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetection::CalVertexWeight" << std::endl;
         vertWeightList.clear();
         int vertNum = pMesh->GetVertexNumber();
         vertWeightList.resize(vertNum);
@@ -2571,7 +2571,7 @@ namespace MagicDGP
         {
             return false;
         }
-        MagicLog << "SampleVertex validVertNum: " << validVertNum << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SampleVertex validVertNum: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
         for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
@@ -2628,7 +2628,7 @@ namespace MagicDGP
     bool PrimitiveDetection::AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         std::vector<int> validVert;
         for (int i = 0; i < res.size(); i++)
         {
@@ -2638,7 +2638,7 @@ namespace MagicDGP
             }
         }
         int validVertNum = validVert.size();
-        MagicLog << "Valid vertex number: " << validVertNum << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Valid vertex number: " << validVertNum << std::endl;
         if (validVertNum < 500)
         {
             return false;
@@ -2657,12 +2657,12 @@ namespace MagicDGP
         while (sampledNumber < sampleNum && skipNumber < sampleNum)
         {
             sampleIndex = (sampleIndex + sampleDelta) % validVertNum;
-            float iterTime = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float iterTime = MagicCore::ToolKit::GetTime();
             acceptableArea -= acceptableAreaDelta;
             if (acceptableArea < minSupportArea)
             {
                 acceptableArea = minSupportArea;
-                MagicLog << "Stop: acceptableArea < minSupportArea" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Stop: acceptableArea < minSupportArea" << std::endl;
                 return false;
             }
             int currentIndex = validVert.at(sampleIndex);
@@ -2713,7 +2713,7 @@ namespace MagicDGP
             int neighborSize = neighborList.size();
             if (neighborSize < minNeigborNum)
             {
-                MagicLog << "unluck: neighborSize too small: " << neighborSize << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "unluck: neighborSize too small: " << neighborSize << std::endl;
                 skipNumber++;
                 continue;
             }
@@ -2859,7 +2859,7 @@ namespace MagicDGP
                 {
                     if (bestCand->GetSupportArea() > acceptableArea)
                     {
-                        MagicLog << "Super Luck break in FindNewCandidates" << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Super Luck break in FindNewCandidates" << std::endl;
                         candidates.push_back(bestCand);
                         return true;
                     }
@@ -2871,7 +2871,7 @@ namespace MagicDGP
                 isNewAdded = true;
                 if (bestCand->GetSupportArea() > acceptableArea)
                 {
-                    MagicLog << "Luck break in FindNewCandidates" << std::endl;
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Luck break in FindNewCandidates" << std::endl;
                     break;
                 }
             }
@@ -2879,10 +2879,10 @@ namespace MagicDGP
 
         if (isNewAdded == false)
         {
-            MagicLog << "Stop: No new candidates added" << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Stop: No new candidates added" << std::endl;
         }
-        //MagicLog << "   FindNewCandidates: " << candidates.size() << std::endl;
-        //MagicLog << "FindNewCandidates time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "   FindNewCandidates: " << candidates.size() << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "FindNewCandidates time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;;
         return isNewAdded;
     }
 
@@ -2960,7 +2960,7 @@ namespace MagicDGP
             potentials.at(bestIdx) = itr->second;
             bestIdx++;
         }
-        MagicLog << "validCandNum: " << validCandNum << " potentialNum: " << bestNum << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "validCandNum: " << validCandNum << " potentialNum: " << bestNum << std::endl;
     }
 
     bool PrimitiveDetection::UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res)
@@ -2989,7 +2989,7 @@ namespace MagicDGP
         acceptableArea = validArea * acceptableAreaScale;
         acceptableAreaDelta = acceptableArea / 500;
         minSupportArea = validArea / 100;
-        MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << acceptableArea << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << acceptableArea << std::endl;
         return true;
     }
 
@@ -3026,7 +3026,7 @@ namespace MagicDGP
         }
         
         minSupportArea = validArea / 100;
-        MagicLog << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << acceptableArea << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << acceptableArea << std::endl;
         return true;
     }
 
@@ -3173,7 +3173,7 @@ namespace MagicDGP
                     refitedPotentials[candidates.at(*itr)->GetScore()] = *itr;
                     if (candidates.at(*itr)->GetSupportArea() > acceptableArea)
                     {
-                        MagicLog << "Luck break" << std::endl;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Luck break" << std::endl;
                         return refitedPotentials.size();
                     }
                 }
@@ -3189,7 +3189,7 @@ namespace MagicDGP
                         refitedPotentials[candidates.at(*itr)->GetScore()] = *itr;
                         if (candidates.at(*itr)->GetSupportArea() > acceptableArea)
                         {
-                            MagicLog << "Luck break" << std::endl;
+                            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Luck break" << std::endl;
                             return refitedPotentials.size();
                         }
                     }

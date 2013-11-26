@@ -35,7 +35,7 @@ namespace MagicApp
 
     bool ReconstructionApp::Enter(void)
     {
-        MagicLog << "Enter ReconstructionApp" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter ReconstructionApp" << std::endl;
         mUI.Setup();
         SetupRenderScene();
         return SetupDevice();
@@ -117,12 +117,12 @@ namespace MagicApp
             openni::Status rc = openni::OpenNI::initialize();
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             else
             {
-                MagicLog << "OpenNI initialize succeed" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize succeed" << std::endl;
                 MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }
@@ -185,7 +185,7 @@ namespace MagicApp
                 mBackLimit = pos[2];
             }
         }
-        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
             " " << mFrontLimit << " " << mBackLimit << std::endl;
     }
 
@@ -302,7 +302,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "ONI Files(*.oni)\0*.oni\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             if (mIsScannerDisplaying)
             {
@@ -312,13 +312,13 @@ namespace MagicApp
             openni::Status rc = mDevice.open(fileName.c_str());
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "ReconstructionApp::OpenSceneRecord failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::OpenSceneRecord failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             rc = mDepthStream.create(mDevice, openni::SENSOR_DEPTH);
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             mDepthStream.start();
@@ -411,7 +411,7 @@ namespace MagicApp
 
     void ReconstructionApp::PointSetRegistration()
     {
-        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
              " " << mFrontLimit << " " << mBackLimit << std::endl;
         mIsScannerDisplaying = false;
         //
@@ -419,13 +419,13 @@ namespace MagicApp
         //
         //initialize
         mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicLog << "Create SignedDistanceFunction" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
         MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
         //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
-        MagicLog << "Get Ref Point Set" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Get Ref Point Set" << std::endl;
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
         sdf.UpdateFineSDF(mpPointSet, &lastTrans);
         delete mpPointSet;
@@ -434,38 +434,38 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
-            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeStart = MagicCore::ToolKit::GetTime();
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
             MagicDGP::HomoMatrix4 newTrans;
-            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
-            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
-            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
-            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetTime();
             sdf.UpdateSDF(pNewPC, &newTrans);
-            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
-            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeExtract = MagicCore::ToolKit::GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();
-            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
         //
         mUI.StartPostProcess();
-        MagicLog << "ReconstructionApp::PointSetRegistration: End" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistration: End" << std::endl;
     }
 
     void ReconstructionApp::PointSetRegistrationEnhance()
     {
-        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
              " " << mFrontLimit << " " << mBackLimit << std::endl;
         mIsScannerDisplaying = false;
         //
@@ -473,9 +473,9 @@ namespace MagicApp
         //
         //initialize
         mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicLog << "Create SignedDistanceFunction" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
         MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
@@ -486,46 +486,46 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
-            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeStart = MagicCore::ToolKit::GetTime();
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
             MagicDGP::HomoMatrix4 newTrans;//
-            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
-            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
-            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
-            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetTime();
             MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
             sdf.UpdateSDF(pNewPC, &newTransInv);//
-            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
-            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeExtract = MagicCore::ToolKit::GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();//
-            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
         //
         mUI.StartPostProcess();
-        MagicLog << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
     }
 
     void ReconstructionApp::PointSetRegistrationEnhance2()
     {
-        MagicLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
              " " << mFrontLimit << " " << mBackLimit << std::endl;
         mIsScannerDisplaying = false;
         //initialize
         mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicLog << "Create SignedDistanceFunction" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
         MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        MagicLog << "Create SignedDistanceFunction Finish" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
         mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
@@ -536,35 +536,35 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
-            float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeStart = MagicCore::ToolKit::GetTime();
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            MagicLog << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
             MagicDGP::HomoMatrix4 newTrans;//
-            MagicLog << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
-            float timeRegistrate = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            float timeRegistrate = MagicCore::ToolKit::GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
-            MagicLog << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeRegistrate << std::endl;
-            float timeUpdateSDF = MagicCore::ToolKit::GetSingleton()->GetTime();
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
+            float timeUpdateSDF = MagicCore::ToolKit::GetTime();
             MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
             sdf.UpdateSDF(pNewPC, &newTransInv);//
-            MagicLog << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeUpdateSDF << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
             delete mpPointSet;
             delete pNewPC;
             pNewPC = NULL;
-            float timeExtract = MagicCore::ToolKit::GetSingleton()->GetTime();
+            float timeExtract = MagicCore::ToolKit::GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();//
-            MagicLog << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeExtract << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
             //sdf.ResetSDF();
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicLog << "One iteration time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
         //
         mUI.StartPostProcess();
-        MagicLog << "ReconstructionApp::PointSetRegistrationEnhance2: End" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistrationEnhance2: End" << std::endl;
     }
 
     void ReconstructionApp::SetupPointSetProcessing()
@@ -580,7 +580,7 @@ namespace MagicApp
 
     MagicDGP::Point3DSet* ReconstructionApp::GetPointSetFromRecord(int frameId)
     {
-        MagicLog << "ReconstructionApp::GetPointSetFromRecord " << frameId << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::GetPointSetFromRecord " << frameId << std::endl;
         openni::PlaybackControl* pPC = mDevice.getPlaybackControl();
         pPC->seek(mDepthStream, frameId);
         openni::VideoFrameRef depthFrame;
@@ -766,7 +766,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
+        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
         MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
 
         return true;
@@ -805,7 +805,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
+        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
         MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
 
         return true;

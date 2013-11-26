@@ -16,7 +16,7 @@ namespace MagicApp
 
     void ReliefAppUI::Setup()
     {
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/ReliefApp", "FileSystem", "ReliefApp");
+        MagicCore::ResourceManager::LoadResource("../../Media/ReliefApp", "FileSystem", "ReliefApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReliefApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::OpenPointCloud);
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->setSize(86, 86);
@@ -30,10 +30,10 @@ namespace MagicApp
 
     void ReliefAppUI::Shutdown()
     {
-        MagicLog << "ReliefAppUI::Shutdown" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReliefAppUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
-        MagicCore::ResourceManager::GetSingleton()->UnloadResource("ReliefApp");
+        MagicCore::ResourceManager::UnloadResource("ReliefApp");
     }
 
     void ReliefAppUI::OpenPointCloud(MyGUI::Widget* pSender)

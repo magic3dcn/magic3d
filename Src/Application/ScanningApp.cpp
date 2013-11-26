@@ -17,10 +17,10 @@ namespace MagicApp
 
     bool ScanningApp::Enter(void)
     {
-        MagicLog << "Enter ScanningApp" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter ScanningApp" << std::endl;
         if (SetupDevice())
         {
-            MagicLog << "Device Set Up Success." << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Device Set Up Success." << std::endl;
             mIsDeviceSetup = true;
             mUI.Setup();
             SetupRenderScene();
@@ -28,7 +28,7 @@ namespace MagicApp
         }
         else
         {
-            MagicLog << "Device Set Up Failed!" << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Device Set Up Failed!" << std::endl;
             mIsDeviceSetup = false;
             MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
             return false;
@@ -59,12 +59,12 @@ namespace MagicApp
             openni::Status rc = openni::OpenNI::initialize();
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             else
             {
-                MagicLog << "OpenNI initialize succeed" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize succeed" << std::endl;
                 MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }
@@ -72,31 +72,31 @@ namespace MagicApp
         openni::Status rc = mDevice.open(openni::ANY_DEVICE);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "Devive open failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Devive open failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mDepthStream.create(mDevice, openni::SENSOR_DEPTH);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mColorStream.create(mDevice, openni::SENSOR_COLOR);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "ColorStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mDepthStream.start();
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "DepthStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mColorStream.start();
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "ColorStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
 
@@ -121,7 +121,7 @@ namespace MagicApp
         mColorStream.destroy();
         mDepthStream.destroy();
         mDevice.close();
-        MagicLog << "ScanningApp::ReleaseDevice" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningApp::ReleaseDevice" << std::endl;
     }
 
     void ScanningApp::ReleaseRenderScene()
@@ -133,30 +133,30 @@ namespace MagicApp
         }
         pSceneMgr->destroyLight("frontLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-        MagicLog << "ScanningApp::ReleaseRenderScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningApp::ReleaseRenderScene" << std::endl;
     }
 
     void ScanningApp::StartRecord()
     {
         std::string fileName;
         char filterName[] = "ONI Files(*.oni)\0*.oni\0";
-        MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName);
+        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
         openni::Status rc  = mRecorder.create(fileName.c_str());
         if (rc != openni::STATUS_OK)
         {
-            MagicLog << "Recorder create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Recorder create failed: " << openni::OpenNI::getExtendedError() << std::endl;
         }
         if (mRecorder.isValid())
         {
             rc = mRecorder.attach(mColorStream, true);
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "ColorStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
             }
             rc = mRecorder.attach(mDepthStream, false);
             if (rc != openni::STATUS_OK)
             {
-                MagicLog << "DepthStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
             }
             mRecorder.start();
         }

@@ -17,7 +17,7 @@ namespace MagicDGP
 
     Mesh3D* Filter::RemoveSmallMeshPatch(Mesh3D* pMesh)
     {
-        MagicLog << "Filter::RemoveSmallMeshPatch" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Filter::RemoveSmallMeshPatch" << std::endl;
         int vertNum = pMesh->GetVertexNumber();
         std::vector<int> visitFlag(vertNum, 0);
         std::vector<std::vector<int> > vertGroups;
@@ -127,7 +127,7 @@ namespace MagicDGP
 
     void Filter::SimpleMeshSmooth(Mesh3D* pMesh)
     {
-        MagicLog << "Filter::SimpleMeshSmooth...." << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Filter::SimpleMeshSmooth...." << std::endl;
         int vertNum = pMesh->GetVertexNumber();
         std::vector<Vector3> posBakList(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
@@ -244,7 +244,7 @@ namespace MagicDGP
 
     Point3DSet* Filter::PointSetSampling(Point3DSet* pPS, int sampleNum)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         int psNum = pPS->GetPointNumber();
         if (sampleNum > psNum)
         {
@@ -282,7 +282,7 @@ namespace MagicDGP
             curIndex = pos;
             sampleFlag.at(pos) = 1;
         }
-        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
         for (int sid = 0; sid < sampleNum; ++sid)
         {
@@ -296,7 +296,7 @@ namespace MagicDGP
 
     int Filter::MeshVertexSampling(const Mesh3D* pMesh, int sampleNum, std::vector<int>& sampleIndex)
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
         int vertNum = pMesh->GetVertexNumber();
         if (sampleNum > vertNum)
         {
@@ -334,7 +334,7 @@ namespace MagicDGP
             curIndex = pos;
             sampleFlag.at(pos) = 1;
         }
-        MagicLog << "Sampling time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return sampleNum;
     }
 }

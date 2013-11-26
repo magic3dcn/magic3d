@@ -4,19 +4,8 @@
 
 namespace MagicCore
 {
-    ResourceManager* ResourceManager::mpResourceMgr = NULL;
-
     ResourceManager::ResourceManager()
     {
-    }
-
-    ResourceManager* ResourceManager::GetSingleton()
-    {
-        if (mpResourceMgr == NULL)
-        {
-            mpResourceMgr = new ResourceManager;
-        }
-        return mpResourceMgr;
     }
 
     void ResourceManager::Init()

@@ -5,15 +5,11 @@ namespace MagicCore
 {
     class ResourceManager
     {
-    private:
-        ResourceManager();
-        static ResourceManager* mpResourceMgr;
-
     public:
-        static ResourceManager* GetSingleton();
-        void Init(void);
-        void LoadResource(std::string path = "", std::string type = "", std::string groupName = "", bool recursive = false);
-        void UnloadResource(std::string groupName);
+        ResourceManager();
+        static void Init(void);
+        static void LoadResource(std::string path = "", std::string type = "", std::string groupName = "", bool recursive = false);
+        static void UnloadResource(std::string groupName);
         ~ResourceManager();
     };
 }

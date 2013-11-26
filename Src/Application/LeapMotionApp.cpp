@@ -21,7 +21,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "LEAP Files(*.leap)\0*.leap\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             std::ifstream fin(fileName);
             mTimeStamp.clear();
@@ -41,7 +41,7 @@ namespace MagicApp
                 frameSize++;
             }
             fin.close();
-            MagicLog << "LeapMotionData: " << frameSize << " frames" << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionData: " << frameSize << " frames" << std::endl;
         }
     }
 
@@ -95,7 +95,7 @@ namespace MagicApp
 
     bool LeapMotionApp::Enter(void)
     {
-        MagicLog << "LeapMotionApp::Enter" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::Enter" << std::endl;
         mUI.Setup();
         SetupScene();
 
@@ -158,7 +158,7 @@ namespace MagicApp
 
     bool LeapMotionApp::Exit(void)
     {
-        MagicLog << "LeapMotionApp::Exit" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::Exit" << std::endl;
         mUI.Shutdown();
         ShutdownScene();
 
@@ -240,30 +240,30 @@ namespace MagicApp
 
     void LeapMotionApp::onInit(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onInit" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onInit" << std::endl;
     }
 
     void LeapMotionApp::onConnect(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onConnect" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onConnect" << std::endl;
         mLastFrame = controller.frame();
     }
 
     void LeapMotionApp::onDisconnect(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onDisconnect" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onDisconnect" << std::endl;
     }
 
     void LeapMotionApp::onExit(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onExit" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onExit" << std::endl;
     }
 
     void LeapMotionApp::onFrame(const Leap::Controller& controller)
     {
-        //MagicLog << "LeapMotionApp::onFrame" << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFrame" << std::endl;
         //const Leap::Frame frame = controller.frame();
-        /*MagicLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
+        /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
             << frame.fingers().count() << " tools: " << frame.tools().count() << " gestures: "
             << frame.gestures().count() << std::endl;*/
         //const Leap::Vector translate = frame.translation(mLastFrame);
@@ -273,10 +273,10 @@ namespace MagicApp
         //float rotateProb = frame.rotationProbability(mLastFrame);
         //float scale = frame.scaleFactor(mLastFrame);
         //float scaleProb = frame.scaleProbability(mLastFrame);
-        /*MagicLog << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
-        MagicLog << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
-        MagicLog << "  scale: " << scale << " " << scaleProb << std::endl;*/
-        //MagicLog << std::endl;
+        /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  scale: " << scale << " " << scaleProb << std::endl;*/
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << std::endl;
         //bool isSwipe = false;
         //Leap::GestureList gestList = frame.gestures();
         //Leap::Vector swipeDir;
@@ -292,7 +292,7 @@ namespace MagicApp
         //            Leap::SwipeGesture swipeGes = gestList[i];
         //            swipeDir = swipeGes.direction(); 
         //            swipeSpeed = swipeGes.speed();
-        //            MagicLog << "    Swipe detect: " << swipeSpeed << 
+        //            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Swipe detect: " << swipeSpeed << 
         //                " " << swipeDir.x << " " << swipeDir.y << " " << swipeDir.z << std::endl << std::endl;
         //            break;
         //        }
@@ -306,7 +306,7 @@ namespace MagicApp
         //    palmVelocity = handList[0].palmVelocity();
         //    if (palmVelocity.magnitude() > minSpeed)
         //    {
-        //        MagicLog << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
+        //        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
         //            << palmVelocity.y << " " << palmVelocity.z << std::endl;
         //    }
         //    if (palmVelocity.magnitude() > minSpeed)
@@ -364,19 +364,19 @@ namespace MagicApp
 
     void LeapMotionApp::onFocusGained(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onFocusGained" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFocusGained" << std::endl;
     }
 
     void LeapMotionApp::onFocusLost(const Leap::Controller& controller)
     {
-        MagicLog << "LeapMotionApp::onFocusLost" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFocusLost" << std::endl;
     }
 
     void LeapMotionApp::OpenMesh3D()
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
@@ -395,7 +395,7 @@ namespace MagicApp
 
     void LeapMotionApp::SetupScene(void)
     {
-        MagicLog << "LeapMotionApp::SetupScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -406,7 +406,7 @@ namespace MagicApp
 
     void LeapMotionApp::ShutdownScene(void)
     {
-        MagicLog << "LeapMotionApp::ShutdownScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
@@ -419,7 +419,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "LEAP Files(*.leap)\0*.leap\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileSaveDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
         {
             mLeapRecorder.open(fileName);
             mIsLeapRecording = true;

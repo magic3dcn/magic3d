@@ -28,7 +28,7 @@ namespace MagicApp
 
     bool PrimitiveDetectionApp::Enter(void)
     {
-        MagicLog << "Enter PrimitiveDetectionApp" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter PrimitiveDetectionApp" << std::endl;
         mUI.Setup();
         SetupScene();
         return true;
@@ -126,7 +126,7 @@ namespace MagicApp
 
     void PrimitiveDetectionApp::SetupScene(void)
     {
-        MagicLog << "PrimitiveDetectionApp::SetupScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetectionApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -137,7 +137,7 @@ namespace MagicApp
      
     void PrimitiveDetectionApp::ShutdownScene(void)
     {
-        MagicLog << "PrimitiveDetectionApp::ShutdownScene" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetectionApp::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
@@ -155,7 +155,7 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        if (MagicCore::ToolKit::GetSingleton()->FileOpenDlg(fileName, filterName))
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
@@ -190,7 +190,7 @@ namespace MagicApp
         for (int i = 0; i < vertNum; i++)
         {
             float cv = res.at(i) * 0.2f;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
             mpMesh->GetVertex(i)->SetColor(color);
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
@@ -210,7 +210,7 @@ namespace MagicApp
             else
             {
                 float cv = res.at(i) * 0.2f;
-                MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+                MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
                 mpMesh->GetVertex(i)->SetColor(color);
             }
         }
@@ -345,7 +345,7 @@ namespace MagicApp
             }
             else
             {
-                MagicLog << "No Type" << std::endl;
+                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "No Type" << std::endl;
             }
         }
         else
@@ -413,8 +413,8 @@ namespace MagicApp
             //{
             //    cv = 0.6;
             //}
-            MagicLog << "Gaussian: " << cv << std::endl;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(cv);
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Gaussian: " << cv << std::endl;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
@@ -422,7 +422,7 @@ namespace MagicApp
 
     void PrimitiveDetectionApp::CalNormalDeviation()
     {
-        float timeStart = MagicCore::ToolKit::GetSingleton()->GetTime();
+        float timeStart = MagicCore::ToolKit::GetTime();
 
         int vertNum = mpMesh->GetVertexNumber();
         MagicDGP::Real scale = 5;
@@ -489,7 +489,7 @@ namespace MagicApp
                 devGrad = 0.4;
             }*/
             scoreMap[devGrad] = vid;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(devGrad);
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         int validNum = vertNum / 2;
@@ -504,7 +504,7 @@ namespace MagicApp
                 break;
             }
         }
-        MagicLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetSingleton()->GetTime() - timeStart << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 
@@ -514,7 +514,7 @@ namespace MagicApp
         {
             std::vector<int> sampleIndex;
             MagicDGP::Filter::MeshVertexSampling(mpMesh, 200, sampleIndex);
-            MagicDGP::Vector3 color = MagicCore::ToolKit::GetSingleton()->ColorCoding(0.2);
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(0.2);
             for (int sid = 0; sid < sampleIndex.size(); sid++)
             {
                 mpMesh->GetVertex(sampleIndex.at(sid))->SetColor(color);

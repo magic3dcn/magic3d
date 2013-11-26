@@ -56,7 +56,7 @@ namespace MagicDGP
                 pMesh->InsertFace(triList);
             }
         }
-        MagicLog << "Construct Down Position" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Construct Down Position" << std::endl;
         Real thick = -0.1;
         for (int xid = 0; xid < mResolutionX + 1; xid++)
         {
@@ -209,7 +209,7 @@ namespace MagicDGP
         Real deltaY = (mMaxY - mMinY) / mResolutionY;
         std::set<int> validIndex;
         std::vector<bool> validFlag((mResolutionX + 1) * (mResolutionY + 1), 0);
-        MagicLog << "Relief: deltaX: " << deltaX << " deltaY: " << deltaY << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: deltaX: " << deltaX << " deltaY: " << deltaY << std::endl;
         //Init Height Field
         for (int i = 0; i < pcNum; i++)
         {
@@ -321,7 +321,7 @@ namespace MagicDGP
 
             }
         }
-        MagicLog << "Relief: Construct Matrix" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: Construct Matrix" << std::endl;
         std::vector< Eigen::Triplet<double> > tripletList;
         Eigen::VectorXd b(vertNum, 1);
         for (int xid = 0; xid < mResolutionX + 1; xid++)
@@ -345,14 +345,14 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog << "Relief: Solve Matrix" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: Solve Matrix" << std::endl;
         Eigen::SparseMatrix<double, Eigen::ColMajor> matA(vertNum,vertNum);
         matA.setFromTriplets(tripletList.begin(), tripletList.end());
         Eigen::SparseLU<Eigen::SparseMatrix<double, Eigen::ColMajor> > solver;
         solver.compute(matA);
         if(solver.info()!= Eigen::Success) 
         {
-            MagicLog << "Relief: SuperLU Failed" << std::endl;
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: SuperLU Failed" << std::endl;
         }
         Eigen::VectorXd res = solver.solve(b);
         //Copy results

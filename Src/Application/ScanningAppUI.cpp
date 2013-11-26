@@ -17,7 +17,7 @@ namespace MagicApp
 
     void ScanningAppUI::Setup()
     {
-        MagicCore::ResourceManager::GetSingleton()->LoadResource("../../Media/Scanning", "FileSystem", "Scanning");
+        MagicCore::ResourceManager::LoadResource("../../Media/Scanning", "FileSystem", "Scanning");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ScanningAppLayout.layout");
         mRoot.at(0)->findWidget("But_Record")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ScanningAppUI::RecordDepth);
         mRoot.at(0)->findWidget("But_Record")->castType<MyGUI::Button>()->setSize(86, 87);
@@ -27,10 +27,10 @@ namespace MagicApp
 
     void ScanningAppUI::Shutdown()
     {
-        MagicLog << "ScanningAppUI::Shutdown" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningAppUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
-        MagicCore::ResourceManager::GetSingleton()->UnloadResource("Scanning");
+        MagicCore::ResourceManager::UnloadResource("Scanning");
     }
 
     void ScanningAppUI::RecordDepth(MyGUI::Widget* pSender)
