@@ -26,7 +26,7 @@ namespace MagicCore
 
     void RenderSystem::Init()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "RenderSystem init...." << std::endl;
+        InfoLog << "RenderSystem init...." << std::endl;
         mpRoot = new Ogre::Root();
         bool hasConfig = false;
         if (mpRoot->restoreConfig())
@@ -61,7 +61,7 @@ namespace MagicCore
             const Ogre::GpuProgramManager::SyntaxCodes &syntaxCodes = Ogre::GpuProgramManager::getSingleton().getSupportedSyntax();
             for (Ogre::GpuProgramManager::SyntaxCodes::const_iterator iter = syntaxCodes.begin();iter != syntaxCodes.end();++iter)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "supported syntax : " << (*iter) << std::endl;
+                InfoLog << "supported syntax : " << (*iter) << std::endl;
             }
         }
         else
@@ -189,7 +189,7 @@ namespace MagicCore
 
     void RenderSystem::RenderMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "RenderSystem::RenderMesh3D" << std::endl;
+        InfoLog << "RenderSystem::RenderMesh3D" << std::endl;
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(meshName))
         {
@@ -224,7 +224,7 @@ namespace MagicCore
 
     void RenderSystem::RenderBlendMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh, float alpha)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "RenderSystem::RenderBlendMesh3D" << std::endl;
+        InfoLog << "RenderSystem::RenderBlendMesh3D" << std::endl;
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(meshName))
         {

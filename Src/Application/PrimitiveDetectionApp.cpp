@@ -28,7 +28,7 @@ namespace MagicApp
 
     bool PrimitiveDetectionApp::Enter(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter PrimitiveDetectionApp" << std::endl;
+        InfoLog << "Enter PrimitiveDetectionApp" << std::endl;
         mUI.Setup();
         SetupScene();
         return true;
@@ -126,7 +126,7 @@ namespace MagicApp
 
     void PrimitiveDetectionApp::SetupScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetectionApp::SetupScene" << std::endl;
+        InfoLog << "PrimitiveDetectionApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -137,7 +137,7 @@ namespace MagicApp
      
     void PrimitiveDetectionApp::ShutdownScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetectionApp::ShutdownScene" << std::endl;
+        InfoLog << "PrimitiveDetectionApp::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");

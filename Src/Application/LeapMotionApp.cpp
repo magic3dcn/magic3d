@@ -95,7 +95,7 @@ namespace MagicApp
 
     bool LeapMotionApp::Enter(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::Enter" << std::endl;
+        InfoLog << "LeapMotionApp::Enter" << std::endl;
         mUI.Setup();
         SetupScene();
 
@@ -158,7 +158,7 @@ namespace MagicApp
 
     bool LeapMotionApp::Exit(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::Exit" << std::endl;
+        InfoLog << "LeapMotionApp::Exit" << std::endl;
         mUI.Shutdown();
         ShutdownScene();
 
@@ -240,23 +240,23 @@ namespace MagicApp
 
     void LeapMotionApp::onInit(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onInit" << std::endl;
+        InfoLog << "LeapMotionApp::onInit" << std::endl;
     }
 
     void LeapMotionApp::onConnect(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onConnect" << std::endl;
+        InfoLog << "LeapMotionApp::onConnect" << std::endl;
         mLastFrame = controller.frame();
     }
 
     void LeapMotionApp::onDisconnect(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onDisconnect" << std::endl;
+        InfoLog << "LeapMotionApp::onDisconnect" << std::endl;
     }
 
     void LeapMotionApp::onExit(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onExit" << std::endl;
+        InfoLog << "LeapMotionApp::onExit" << std::endl;
     }
 
     void LeapMotionApp::onFrame(const Leap::Controller& controller)
@@ -364,12 +364,12 @@ namespace MagicApp
 
     void LeapMotionApp::onFocusGained(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFocusGained" << std::endl;
+        InfoLog << "LeapMotionApp::onFocusGained" << std::endl;
     }
 
     void LeapMotionApp::onFocusLost(const Leap::Controller& controller)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFocusLost" << std::endl;
+        InfoLog << "LeapMotionApp::onFocusLost" << std::endl;
     }
 
     void LeapMotionApp::OpenMesh3D()
@@ -395,7 +395,7 @@ namespace MagicApp
 
     void LeapMotionApp::SetupScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::SetupScene" << std::endl;
+        InfoLog << "LeapMotionApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -406,7 +406,7 @@ namespace MagicApp
 
     void LeapMotionApp::ShutdownScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::ShutdownScene" << std::endl;
+        InfoLog << "LeapMotionApp::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");

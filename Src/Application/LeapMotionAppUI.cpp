@@ -17,7 +17,7 @@ namespace MagicApp
 
     void LeapMotionAppUI::Setup()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionAppUI::Setup" << std::endl;
+        InfoLog << "LeapMotionAppUI::Setup" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/LeapMotionApp", "FileSystem", "LeapMotionApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("LeapMotionAppUI.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &LeapMotionAppUI::OpenMesh3D);

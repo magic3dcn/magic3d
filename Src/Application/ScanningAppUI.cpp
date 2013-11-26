@@ -27,7 +27,7 @@ namespace MagicApp
 
     void ScanningAppUI::Shutdown()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningAppUI::Shutdown" << std::endl;
+        InfoLog << "ScanningAppUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
         MagicCore::ResourceManager::UnloadResource("Scanning");

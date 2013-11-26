@@ -22,7 +22,7 @@ namespace MagicCore
 
     void MagicFramework::Init()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework init" << std::endl;
+        InfoLog << "MagicFramework init" << std::endl;
         RenderSystem::GetSingleton()->Init();
         ResourceManager::Init();
         GUISystem::GetSingleton()->Init(RenderSystem::GetSingleton()->GetRenderWindow(), RenderSystem::GetSingleton()->GetSceneManager(), "MyGUIResource");
@@ -32,7 +32,7 @@ namespace MagicCore
 
     void MagicFramework::Run()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework run" << std::endl;
+        InfoLog << "MagicFramework run" << std::endl;
         float timeLastFrame = ToolKit::GetTime();
         while (Running())
         {

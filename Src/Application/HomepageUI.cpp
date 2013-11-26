@@ -38,7 +38,7 @@ namespace MagicApp
 
     void HomepageUI::Shutdown()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "HomepageUI::Shutdown" << std::endl;
+        InfoLog << "HomepageUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
         MagicCore::ResourceManager::UnloadResource("Homepage");
@@ -46,37 +46,26 @@ namespace MagicApp
 
     void HomepageUI::EnterPointViewer(MyGUI::Widget* pSender)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterPointViewer Clicked" << std::endl;
+        InfoLog << "EnterPointViewer Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new PointSetViewer, "PointSetViewer");
     }
 
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterScan3D Clicked" << std::endl;
+        InfoLog << "EnterScan3D Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ScanningApp, "ScanningApp");
     }
 
     void HomepageUI::EnterReconstruction(MyGUI::Widget* pSender)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterReconstruction Clicked" << std::endl;
+        InfoLog << "EnterReconstruction Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReconstructionApp, "ReconstructionApp");
     }
 
     void HomepageUI::EnterReliefApp(MyGUI::Widget* pSender)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterReliefApp Clicked" << std::endl;
+        InfoLog << "EnterReliefApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReliefApp, "ReliefApp");
     }
 
-    /*void HomepageUI::EnterLeapMotionApp(MyGUI::Widget* pSender)
-    {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterLeapMotionApp Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new LeapMotionApp, "LeapMotionApp");
-    }*/
-
-    /*void HomepageUI::EnterPrimitiveDetection(MyGUI::Widget* pSender)
-    {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "EnterPrimitiveDetection Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
-    }*/
 }

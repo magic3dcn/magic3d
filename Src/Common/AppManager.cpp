@@ -1,7 +1,6 @@
 //#include "StdAfx.h"
 #include "AppManager.h"
 #include "ToolKit.h"
-#include "LogSystem.h"
 #include "../Application/Homepage.h"
 //#include "../Application/PrimitiveDetectionApp.h"
 

@@ -23,7 +23,7 @@ namespace MagicApp
 
     void PointSetViewerUI::Setup()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PointSetViewerUI::Setup" << std::endl;
+        InfoLog << "PointSetViewerUI::Setup" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/Pointviewer", "FileSystem", "Pointviewer");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointViewerLayout.layout");
         mRoot.at(0)->findWidget("But_OpenPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointSetViewerUI::OpenPointSet);

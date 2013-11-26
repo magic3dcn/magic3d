@@ -35,7 +35,7 @@ namespace MagicApp
 
     bool PointSetViewer::Enter()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter PointSetViewer" << std::endl;
+        InfoLog << "Enter PointSetViewer" << std::endl;
         mUI.Setup();
         SetupScene();
         return true;
@@ -55,7 +55,7 @@ namespace MagicApp
 
     void PointSetViewer::SetupScene()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PointSetViewer::SetupScene" << std::endl;
+        InfoLog << "PointSetViewer::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -66,7 +66,7 @@ namespace MagicApp
 
     void PointSetViewer::ShutdownScene()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PointSetViewer::ShutdownScene" << std::endl;
+        InfoLog << "PointSetViewer::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");

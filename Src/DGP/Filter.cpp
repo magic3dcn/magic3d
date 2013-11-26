@@ -17,7 +17,7 @@ namespace MagicDGP
 
     Mesh3D* Filter::RemoveSmallMeshPatch(Mesh3D* pMesh)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Filter::RemoveSmallMeshPatch" << std::endl;
+        DebugLog << "Filter::RemoveSmallMeshPatch" << std::endl;
         int vertNum = pMesh->GetVertexNumber();
         std::vector<int> visitFlag(vertNum, 0);
         std::vector<std::vector<int> > vertGroups;
@@ -127,7 +127,7 @@ namespace MagicDGP
 
     void Filter::SimpleMeshSmooth(Mesh3D* pMesh)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Filter::SimpleMeshSmooth...." << std::endl;
+        DebugLog << "Filter::SimpleMeshSmooth...." << std::endl;
         int vertNum = pMesh->GetVertexNumber();
         std::vector<Vector3> posBakList(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
@@ -282,7 +282,7 @@ namespace MagicDGP
             curIndex = pos;
             sampleFlag.at(pos) = 1;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
         for (int sid = 0; sid < sampleNum; ++sid)
         {
@@ -334,7 +334,7 @@ namespace MagicDGP
             curIndex = pos;
             sampleFlag.at(pos) = 1;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return sampleNum;
     }
 }

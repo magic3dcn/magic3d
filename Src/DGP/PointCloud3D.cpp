@@ -223,7 +223,7 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
+        DebugLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
             << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 
@@ -282,7 +282,7 @@ namespace MagicDGP
             }
         }
         mDensity /= (pointNum * nn);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Point Cloud Density: " << mDensity << std::endl;
+        DebugLog << "Point Cloud Density: " << mDensity << std::endl;
         if (pIndex != NULL)
         {
             delete []pIndex;

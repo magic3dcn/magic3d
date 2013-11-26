@@ -386,7 +386,7 @@ namespace MagicDGP
 
     void Mesh3D::UnifyPosition(Real size)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Mesh3D::UnifyPosition" << std::endl;
+        DebugLog << "Mesh3D::UnifyPosition" << std::endl;
         Vector3 posMin(10e10, 10e10, 10e10);
         Vector3 posMax(-10e10, -10e10, -10e10);
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
@@ -422,7 +422,7 @@ namespace MagicDGP
 
     void Mesh3D::UpdateNormal()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Update Mesh Normal" << std::endl;
+        DebugLog << "Update Mesh Normal" << std::endl;
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
         {
             Vertex3D* pVert = *itr;
@@ -445,7 +445,7 @@ namespace MagicDGP
             Real norLen = nor.Normalise();
             if (norLen < Epsilon)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "normal lenth too small" << std::endl;
+                DebugLog << "normal lenth too small" << std::endl;
                 nor[0] = 1.0;
             }
             pVert->SetNormal(nor);
@@ -480,7 +480,7 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
+        DebugLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
             << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 

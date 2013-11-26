@@ -20,7 +20,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::Setup()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionUI::Setup" << std::endl;
+        InfoLog << "ReconstructionUI::Setup" << std::endl;
         SetupRecordPlayback();
         //SetupReconstructProgress();
         //SetupReconstructing();
@@ -36,7 +36,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::SetupRecordPlayback()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionUI::SetupRecordPlayback" << std::endl;
+        InfoLog << "ReconstructionUI::SetupRecordPlayback" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("RecordPlayback.layout");
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::OpenScanRecord);
@@ -63,7 +63,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::SetupReconstructProgress()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionUI::SetupReconstructProgress" << std::endl;
+        InfoLog << "ReconstructionUI::SetupReconstructProgress" << std::endl;
         mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setVisible(true);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(false);
@@ -80,7 +80,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::SetupReconstructing()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionAppUI::SetupReconstructing" << std::endl;
+        InfoLog << "ReconstructionAppUI::SetupReconstructing" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("Reconstruct.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SavePointSet);
@@ -97,7 +97,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::SetupMeshProcessing()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionAppUI::SetupMeshProcessing" << std::endl;
+        InfoLog << "ReconstructionAppUI::SetupMeshProcessing" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("MeshProcessing.layout");
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SaveMesh3D);

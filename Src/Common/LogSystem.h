@@ -20,6 +20,10 @@ namespace MagicCore
 #define MagicLog(level) \
     if (level < MagicCore::gSystemLogLevel) ;\
     else MagicCore::LogSystem::GetSingleton()->GetOFStream() 
+#define DebugLog MagicLog(MagicCore::LOGLEVEL_DEBUG)
+#define InfoLog MagicLog(MagicCore::LOGLEVEL_INFO)
+#define WarnLog MagicLog(MagicCore::LOGLEVEL_WARN)
+#define ErrorLog MagicLog(MagicCore::LOGLEVEL_ERROR)
 
     class LogSystem
     {

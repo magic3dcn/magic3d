@@ -17,10 +17,10 @@ namespace MagicApp
 
     bool ScanningApp::Enter(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter ScanningApp" << std::endl;
+        InfoLog << "Enter ScanningApp" << std::endl;
         if (SetupDevice())
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Device Set Up Success." << std::endl;
+            InfoLog << "Device Set Up Success." << std::endl;
             mIsDeviceSetup = true;
             mUI.Setup();
             SetupRenderScene();
@@ -28,7 +28,7 @@ namespace MagicApp
         }
         else
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Device Set Up Failed!" << std::endl;
+            InfoLog << "Device Set Up Failed!" << std::endl;
             mIsDeviceSetup = false;
             MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
             return false;
@@ -59,12 +59,12 @@ namespace MagicApp
             openni::Status rc = openni::OpenNI::initialize();
             if (rc != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                InfoLog << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             else
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize succeed" << std::endl;
+                InfoLog << "OpenNI initialize succeed" << std::endl;
                 MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }
@@ -72,31 +72,31 @@ namespace MagicApp
         openni::Status rc = mDevice.open(openni::ANY_DEVICE);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Devive open failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            InfoLog << "Devive open failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mDepthStream.create(mDevice, openni::SENSOR_DEPTH);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            InfoLog << "DepthStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mColorStream.create(mDevice, openni::SENSOR_COLOR);
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            InfoLog << "ColorStream create failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mDepthStream.start();
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            InfoLog << "DepthStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
         rc = mColorStream.start();
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            InfoLog << "ColorStream start failed: " << openni::OpenNI::getExtendedError() << std::endl;
             return false;
         }
 
@@ -121,7 +121,7 @@ namespace MagicApp
         mColorStream.destroy();
         mDepthStream.destroy();
         mDevice.close();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningApp::ReleaseDevice" << std::endl;
+        InfoLog << "ScanningApp::ReleaseDevice" << std::endl;
     }
 
     void ScanningApp::ReleaseRenderScene()
@@ -133,7 +133,7 @@ namespace MagicApp
         }
         pSceneMgr->destroyLight("frontLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ScanningApp::ReleaseRenderScene" << std::endl;
+        InfoLog << "ScanningApp::ReleaseRenderScene" << std::endl;
     }
 
     void ScanningApp::StartRecord()

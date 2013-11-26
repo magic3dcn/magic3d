@@ -59,7 +59,7 @@ namespace MagicDGP
         }
         fin.close();
         Point3DSet* pPSet = new Point3DSet;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Vertex number: " << posList.size() << " normal number: " << norList.size() << std::endl;
+        InfoLog << "Vertex number: " << posList.size() << " normal number: " << norList.size() << std::endl;
         if (norList.size() > 0)
         {
             MAGICASSERT(norList.size() == posList.size(), "Error: Positino size != Normal Size in OBJ file!");
@@ -87,7 +87,7 @@ namespace MagicDGP
 
     Mesh3D* Parser::ParseMesh3DByOBJ(std::string fileName)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ParseMesh3DByOBJ file name: " << fileName.c_str() << std::endl;
+        DebugLog << "ParseMesh3DByOBJ file name: " << fileName.c_str() << std::endl;
         std::ifstream fin(fileName);
         const int maxSize = 512;
         char pLine[maxSize];
@@ -153,7 +153,7 @@ namespace MagicDGP
             }
         }
         int vertNum = pMesh->GetVertexNumber();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Import Vertex Number: " << vertNum << " Normal Number: " << normalList.size() << " Texture Number: " << texcordList.size() << std::endl;
+        InfoLog << "Import Vertex Number: " << vertNum << " Normal Number: " << normalList.size() << " Texture Number: " << texcordList.size() << std::endl;
         if (texcordList.size() == vertNum)
         {
             for (int i = 0; i < vertNum; i++)
@@ -181,7 +181,7 @@ namespace MagicDGP
 
     void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parser::ExportPointSetByPSR" << std::endl;
+        DebugLog << "Parser::ExportPointSetByPSR" << std::endl;
         std::ofstream fout(fileName);
         int pcNum = pPC->GetPointNumber();
         for (int i = 0; i < pcNum; i++)
@@ -196,7 +196,7 @@ namespace MagicDGP
 
     void Parser::ExportPointSetByOBJ(std::string fileName, const Point3DSet* pPC)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parser::ExportPointSetByOBJ" << std::endl;
+        DebugLog << "Parser::ExportPointSetByOBJ" << std::endl;
         std::ofstream fout(fileName);
         int pcNum = pPC->GetPointNumber();
         for (int i = 0; i < pcNum; i++)
@@ -212,7 +212,7 @@ namespace MagicDGP
 
     void Parser::ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parser::ExportPointSetByPLY" << std::endl;
+        DebugLog << "Parser::ExportPointSetByPLY" << std::endl;
         std::ofstream fout(fileName);
         int pcNum = pPC->GetPointNumber();
         fout << "ply" << std::endl;
@@ -246,7 +246,7 @@ namespace MagicDGP
 
     void Parser::ExportPointSetFromMeshByOBJ(std::string fileName, const Mesh3D* pMesh)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parser::ExportPointSetByOBJFromMesh" << std::endl;
+        DebugLog << "Parser::ExportPointSetByOBJFromMesh" << std::endl;
         std::ofstream fout(fileName);
         int vertNum = pMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
@@ -261,7 +261,7 @@ namespace MagicDGP
 
     void Parser::ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parser::ExportMesh3DByOBJ" << std::endl;
+        DebugLog << "Parser::ExportMesh3DByOBJ" << std::endl;
         std::ofstream fout(fileName);
         int vertNum = pMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)

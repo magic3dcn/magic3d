@@ -29,7 +29,7 @@ namespace MagicApp
 
     bool ReliefApp::Enter(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter ReliefApp" << std::endl;
+        InfoLog << "Enter ReliefApp" << std::endl;
         mUI.Setup();
         SetupScene();
         return true;
@@ -83,7 +83,7 @@ namespace MagicApp
 
     void ReliefApp::SetupScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReliefApp::SetupScene" << std::endl;
+        InfoLog << "ReliefApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
@@ -94,7 +94,7 @@ namespace MagicApp
 
     void ReliefApp::ShutdownScene(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReliefApp::ShutdownScene" << std::endl;
+        InfoLog << "ReliefApp::ShutdownScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");

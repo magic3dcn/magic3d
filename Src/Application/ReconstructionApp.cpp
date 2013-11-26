@@ -35,7 +35,7 @@ namespace MagicApp
 
     bool ReconstructionApp::Enter(void)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Enter ReconstructionApp" << std::endl;
+        InfoLog << "Enter ReconstructionApp" << std::endl;
         mUI.Setup();
         SetupRenderScene();
         return SetupDevice();
@@ -117,12 +117,12 @@ namespace MagicApp
             openni::Status rc = openni::OpenNI::initialize();
             if (rc != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                InfoLog << "OpenNI initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
                 return false;
             }
             else
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OpenNI initialize succeed" << std::endl;
+                InfoLog << "OpenNI initialize succeed" << std::endl;
                 MagicCore::ToolKit::GetSingleton()->SetONIInitialized(true);
             }
         }

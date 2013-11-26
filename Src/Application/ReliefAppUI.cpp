@@ -30,7 +30,7 @@ namespace MagicApp
 
     void ReliefAppUI::Shutdown()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReliefAppUI::Shutdown" << std::endl;
+        InfoLog << "ReliefAppUI::Shutdown" << std::endl;
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
         MagicCore::ResourceManager::UnloadResource("ReliefApp");

@@ -18,7 +18,7 @@ namespace MagicApp
 
     void PrimitiveDetectionAppUI::Setup()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetectionAppUI::Setup" << std::endl;
+        InfoLog << "PrimitiveDetectionAppUI::Setup" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/PrimitiveDetection", "FileSystem", "PrimitiveDetection");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PrimitiveDetectionLayout.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PrimitiveDetectionAppUI::OpenMesh3D);
