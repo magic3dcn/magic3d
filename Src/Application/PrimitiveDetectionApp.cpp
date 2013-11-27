@@ -278,6 +278,7 @@ namespace MagicApp
             else if (candType == MagicDGP::PrimitiveType::Cylinder)
             {
                 MagicDGP::CylinderCandidate* cylinderCand = dynamic_cast<MagicDGP::CylinderCandidate* >(pCand);
+                //cylinderCand->Rectify(mpMesh);
                 MagicDGP::Vector3 centerPos = cylinderCand->mCenter;
                 MagicDGP::Vector3 direction = cylinderCand->mDir;
                 MagicDGP::Real radius = cylinderCand->mRadius;

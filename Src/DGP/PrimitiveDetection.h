@@ -91,6 +91,7 @@ namespace MagicDGP
         virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
         virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        void Rectify(const Mesh3D* pMesh);
     public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;

@@ -12,7 +12,7 @@ namespace MagicDGP
     static Real acceptableAreaDelta = 1;
     static Real maxAngleDeviation = 0.866;
     static Real maxDistDeviation = 0.01;
-    static Real maxCylinderRadiusScale = 0.2;
+    static Real maxCylinderRadiusScale = 0.1;
     static Real maxSphereRadiusScale = 0.01;
     static Real maxSphereRadius = 1;
     static Real maxCylinderRadius = 1;
@@ -22,7 +22,7 @@ namespace MagicDGP
     //static Real baseScore = 0.93969262;
     static Real baseScore = 0.2618;
     static std::vector<int> gSampleIndex;
-    static Real minScoreProportion = 7;
+    static Real minScoreProportion = 4;
 
     ShapeCandidate::ShapeCandidate() :
         mScore(0),
@@ -856,8 +856,88 @@ namespace MagicDGP
         {
             return false;
         }
+        Rectify(pMesh);
 
         return true;
+    }
+
+    void CylinderCandidate::Rectify(const Mesh3D* pMesh)
+    {
+        int iterNum = 3;
+        for (int iterIdx = 0; iterIdx < iterNum; iterIdx++)
+        {
+            //float timeStart = MagicCore::ToolKit::GetTime();
+            int supportNum = mSupportVertex.size();
+            std::vector<Vector3> axisPosList(supportNum);
+            Vector3 avgPos(0, 0, 0);
+            for (int sid = 0; sid < supportNum; sid++)
+            {
+                Vector3 supportPos = pMesh->GetVertex(mSupportVertex.at(sid))->GetPosition();
+                Real t = mDir * (supportPos - mCenter);
+                Vector3 interPos = mCenter + mDir * t;
+                Vector3 accurateDir = interPos - supportPos;
+                accurateDir.Normalise();
+                axisPosList.at(sid) = supportPos + accurateDir * mRadius;
+                avgPos += axisPosList.at(sid);
+            }
+            avgPos /= supportNum;
+            std::vector<Vector3> deltaPosList(supportNum);
+            for (int sid = 0; sid < supportNum; sid++)
+            {
+                deltaPosList.at(sid) = axisPosList.at(sid) - avgPos;
+            }
+            Eigen::Matrix3d mat;
+            for (int xx = 0; xx < 3; xx++)
+            {
+                for (int yy = 0; yy < 3; yy++)
+                {
+                    Real v = 0;
+                    for (int kk = 0; kk < supportNum; kk++)
+                    {
+                        v += deltaPosList[kk][xx] * deltaPosList[kk][yy];
+                    }
+                    mat(xx, yy) = v;
+                }
+            }
+            Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
+            es.compute(mat);
+            Eigen::Vector3d dirVec = es.eigenvectors().col(2);
+            //Vector3 oldDir = mDir;
+            mDir = Vector3(dirVec(0), dirVec(1), dirVec(2));
+            mDir.Normalise();
+
+            Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
+            Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
+            Vector3 dirX = planeNor - mDir * (mDir * planeNor);
+            dirX.Normalise();
+            Vector3 dirY = mDir.CrossProduct(dirX);
+            dirY.Normalise();
+            Eigen::MatrixXd matA(supportNum, 3);
+            Eigen::VectorXd vecB(supportNum, 1);
+            for (int i = 0; i < supportNum; i++)
+            {
+                const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
+                Vector3 pos = pVert->GetPosition();
+                Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
+                Vector3 projectDir = projectPos - planePos;
+                Real projectX = projectDir * dirX;
+                Real projectY = projectDir * dirY;
+                matA(i, 0) = projectX;
+                matA(i, 1) = projectY;
+                matA(i, 2) = 1;
+                vecB(i) = -(projectX * projectX + projectY * projectY);
+            }
+            Eigen::MatrixXd matAT = matA.transpose();
+            Eigen::MatrixXd matCoefA = matAT * matA;
+            Eigen::MatrixXd vecCoefB = matAT * vecB;
+            Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
+            Real centerX = res(0) / -2;
+            Real centerY = res(1) / -2;
+            mRadius = sqrt( centerX * centerX + centerY * centerY - res(2) );
+            mCenter = planePos + dirX * centerX + dirY * centerY;
+            //DebugLog << "rectify time: " << MagicCore::ToolKit::GetTime() - timeStart 
+            //    << " delta angle: " << acos(fabs(mDir * oldDir)) << std::endl;
+        }
     }
 
     PrimitiveType CylinderCandidate::GetType()
@@ -1167,6 +1247,7 @@ namespace MagicDGP
             {
                 continue;
             }
+            pos = mApex + dir;
             avgCrossPos += pos;
             crossPosList.push_back(pos);
             crossDirList.push_back(dir);
@@ -1744,7 +1825,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "large time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         //Find small candidates
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "small candidates++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-        int maxSmallCount = 10;
+        int maxSmallCount = 5;
         int acceptSize = 5;
         for (int smallIndex = 0; smallIndex < maxSmallCount; smallIndex++)
         {
@@ -1887,7 +1968,8 @@ namespace MagicDGP
                     {
                         planeCand->UpdateScore(pMesh, vertWeightList);
                         planeCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "plane score: " << planeCand->GetScore() << std::endl;
+                        DebugLog << "plane score: " << planeCand->GetScore() << " area: " << planeCand->GetSupportArea() 
+                            << " score proportion: " << planeCand->GetSupportArea() / planeCand->GetScore() << std::endl;
                         if (planeCand->GetSupportArea() < (planeCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -1933,7 +2015,8 @@ namespace MagicDGP
                     {
                         sphereCand->UpdateScore(pMesh, vertWeightList);
                         sphereCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "sphere score: " << sphereCand->GetScore() << std::endl;
+                        DebugLog << "sphere score: " << sphereCand->GetScore() << " area: " << sphereCand->GetSupportArea() 
+                            << " score proportion: " << sphereCand->GetSupportArea() / sphereCand->GetScore() << std::endl;
                         if (sphereCand->GetSupportArea() < (sphereCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -1979,7 +2062,8 @@ namespace MagicDGP
                     {
                         cylinderCand->UpdateScore(pMesh, vertWeightList);
                         cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cylinder score: " << cylinderCand->GetScore() << std::endl;
+                        DebugLog << "cylinder score: " << cylinderCand->GetScore() << " area: " << cylinderCand->GetSupportArea() 
+                            << " score proportion: " << cylinderCand->GetSupportArea() / cylinderCand->GetScore() << std::endl;
                         if (cylinderCand->GetSupportArea() < (cylinderCand->GetScore() * minScoreProportion))
                         {
                             if (bestCand == NULL)
@@ -2025,10 +2109,10 @@ namespace MagicDGP
                     {
                         coneCand->UpdateScore(pMesh, vertWeightList);
                         coneCand->UpdateSupportArea(pMesh, vertWeightList);
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
+                        DebugLog << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
                             << " score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
-                        //if (coneCand->GetScore() > 0)
-                        if (coneCand->GetSupportArea() < (coneCand->GetScore() * minScoreProportion))
+                        if (coneCand->GetScore() > 0)
+                        //if (coneCand->GetSupportArea() < (coneCand->GetScore() * minScoreProportion))
                         {
                             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
                             if (bestCand == NULL)
