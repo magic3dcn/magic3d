@@ -57,7 +57,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\VCG;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\VCG;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
     </ClCompile>
