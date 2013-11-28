@@ -19,7 +19,21 @@ namespace MagicDGP
 
     Point3DSet* Parser::ParsePointSet(std::string fileName)
     {
-        return ParsePointSetByOBJ(fileName);
+        size_t dotPos = fileName.rfind('.');
+        if (dotPos == std::string::npos)
+        {
+            return NULL;
+        }
+        std::string extName = fileName.substr(dotPos + 1);
+        if (extName == std::string("obj"))
+        {
+            return ParsePointSetByOBJ(fileName);
+        }
+        else
+        {
+            return NULL;
+        }
+        
     }
 
     Point3DSet* Parser::ParsePointSetByOBJ(std::string fileName)
@@ -82,7 +96,37 @@ namespace MagicDGP
 
     Mesh3D* Parser::ParseMesh3D(std::string fileName)
     {
-        return ParseMesh3DByOBJ(fileName);
+        size_t dotPos = fileName.rfind('.');
+        if (dotPos == std::string::npos)
+        {
+            return NULL;
+        }
+        std::string extName = fileName.substr(dotPos + 1);
+        if (extName == std::string("obj"))
+        {
+            return ParseMesh3DByOBJ(fileName);
+        }
+        else if (extName == std::string("stl"))
+        {
+            return ParseMesh3dBySTL(fileName);
+        }
+        else if (extName == std::string("ply"))
+        {
+            return ParseMesh3dByPLY(fileName);
+        }
+        else if (extName == std::string("off"))
+        {
+            return ParseMesh3dByOFF(fileName);
+        }
+        else if (extName == std::string("vrml"))
+        {
+            return ParseMesh3dByVRML(fileName);
+        }
+        else
+        {
+            return NULL;
+        }
+        
     }
 
     Mesh3D* Parser::ParseMesh3DByOBJ(std::string fileName)
@@ -172,6 +216,26 @@ namespace MagicDGP
         return pMesh;
     }
 
+    Mesh3D* Parser::ParseMesh3dBySTL(std::string fileName)
+    {
+        return NULL;
+    }
+
+    Mesh3D* Parser::ParseMesh3dByPLY(std::string fileName)
+    {
+        return NULL;
+    }
+
+    Mesh3D* Parser::ParseMesh3dByOFF(std::string fileName)
+    {
+        return NULL;
+    }
+
+    Mesh3D* Parser::ParseMesh3dByVRML(std::string fileName)
+    {
+        return NULL;
+    }
+
     void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
     {
         //ExportPointSetByPSR(fileName, pPC);
@@ -235,7 +299,41 @@ namespace MagicDGP
 
     void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)
     {
-        ExportMesh3DByOBJ(fileName, pMesh);
+        size_t dotPos = fileName.rfind('.');
+        if (dotPos != std::string::npos)
+        {
+            std::string extName = fileName.substr(dotPos + 1);
+            if (extName == std::string("obj"))
+            {
+                ExportMesh3DByOBJ(fileName, pMesh);
+            }
+            else if (extName == std::string("stl"))
+            {
+                ExportMesh3DBySTL(fileName, pMesh);
+            }
+            else if (extName == std::string("ply"))
+            {
+                ExportMesh3DByPLY(fileName, pMesh);
+            }
+            else if (extName == std::string("off"))
+            {
+                ExportMesh3DByOFF(fileName, pMesh);
+            }
+            else if (extName == std::string("vrml"))
+            {
+                ExportMesh3DByVRML(fileName, pMesh);
+            }
+            else
+            {
+                DebugLog << "Export mesh failed: file name extension error!" << std::endl;
+            }
+        }
+        else
+        {
+            DebugLog << "Export mesh failed: file name error!" << std::endl;
+        }
+
+        
         //ExportPointSetFromMeshByOBJ(fileName, pMesh);
     }
 
@@ -276,5 +374,25 @@ namespace MagicDGP
             fout << "f " << pEdge->GetVertex()->GetId() + 1 << " " << pEdge->GetNext()->GetVertex()->GetId() + 1 << " " << pEdge->GetPre()->GetVertex()->GetId() + 1 << std::endl; 
         }
         fout.close();
+    }
+
+    void Parser::ExportMesh3DBySTL(std::string fileName, const Mesh3D* pMesh)
+    {
+
+    }
+
+    void Parser::ExportMesh3DByPLY(std::string fileName, const Mesh3D* pMesh)
+    {
+
+    }
+
+    void Parser::ExportMesh3DByOFF(std::string fileName, const Mesh3D* pMesh)
+    {
+
+    }
+
+    void Parser::ExportMesh3DByVRML(std::string fileName, const Mesh3D* pMesh)
+    {
+
     }
 }

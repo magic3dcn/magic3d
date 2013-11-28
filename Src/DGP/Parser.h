@@ -19,12 +19,22 @@ namespace MagicDGP
 
     private:
         static Point3DSet* ParsePointSetByOBJ(std::string fileName);
+
         static Mesh3D*     ParseMesh3DByOBJ(std::string fileName);
+        static Mesh3D*     ParseMesh3dBySTL(std::string fileName);
+        static Mesh3D*     ParseMesh3dByPLY(std::string fileName);
+        static Mesh3D*     ParseMesh3dByOFF(std::string fileName);
+        static Mesh3D*     ParseMesh3dByVRML(std::string fileName);
 
         static void ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC);
         static void ExportPointSetByOBJ(std::string fileName, const Point3DSet* pPC);
         static void ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC);
         static void ExportPointSetFromMeshByOBJ(std::string fileName, const Mesh3D* pMesh);
+
         static void ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh);
+        static void ExportMesh3DBySTL(std::string fileName, const Mesh3D* pMesh);
+        static void ExportMesh3DByPLY(std::string fileName, const Mesh3D* pMesh);
+        static void ExportMesh3DByOFF(std::string fileName, const Mesh3D* pMesh);
+        static void ExportMesh3DByVRML(std::string fileName, const Mesh3D* pMesh);
     };
 }
