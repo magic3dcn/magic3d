@@ -4,6 +4,7 @@
 #include <istream>
 #include <ostream>
 #include <vector>
+#include <stdio.h>
 #include "DGPDefines.h"
 #include "../Common/ToolKit.h"
 
@@ -131,6 +132,7 @@ namespace MagicDGP
 
     Mesh3D* Parser::ParseMesh3DByOBJ(std::string fileName)
     {
+        //float timeStart = MagicCore::ToolKit::GetTime();
         DebugLog << "ParseMesh3DByOBJ file name: " << fileName.c_str() << std::endl;
         std::ifstream fin(fileName);
         const int maxSize = 512;
@@ -178,7 +180,7 @@ namespace MagicDGP
             }
             else if (pLine[0] == 'f' && pLine[1] == ' ')
             {
-                std::vector<Vertex3D* > vertList;
+                std::vector<Vertex3D* > vertList(3);
                 char* tok = strtok(pLine, " ");
                 for (int i = 0; i < 3; i++)
                 {
@@ -187,17 +189,14 @@ namespace MagicDGP
                     strcpy(temp, tok);
                     temp[strcspn(temp, "/")] = 0;
                     int id = (int)strtol(temp, NULL, 10) - 1;
-                    Vertex3D* pVert = pMesh->GetVertex(id);
-                    vertList.push_back(pVert);
+                    vertList.at(i) = pMesh->GetVertex(id);
                 }
-                if (vertList.size() == 3)
-                {
-                    pMesh->InsertFace(vertList);
-                }
+                pMesh->InsertFace(vertList);
             }
         }
         int vertNum = pMesh->GetVertexNumber();
-        InfoLog << "Import Vertex Number: " << vertNum << " Normal Number: " << normalList.size() << " Texture Number: " << texcordList.size() << std::endl;
+        InfoLog << "Import Vertex Number: " << vertNum << " Face Number: " << pMesh->GetFaceNumber() << std::endl;
+//        DebugLog << "Parse obj file time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         if (texcordList.size() == vertNum)
         {
             for (int i = 0; i < vertNum; i++)
@@ -212,13 +211,182 @@ namespace MagicDGP
                 pMesh->GetVertex(i)->SetNormal(normalList.at(i));
             }
         }
-
+        //DebugLog << "Parse total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return pMesh;
     }
 
     Mesh3D* Parser::ParseMesh3dBySTL(std::string fileName)
     {
-        return NULL;
+        //Judge whether it is a binary format.
+        //If it is binary there are 80 char of comment, the number fn of faces and then exactly fn*4*3 bytes.
+        DebugLog << "ParseMesh3dBySTL file name: " << fileName.c_str() << std::endl;
+        int stlLabelSize = 80;
+        bool isBinary=false;
+        FILE *fp = fopen(fileName.c_str(), "r");
+        //Find size of file
+        fseek(fp, 0, SEEK_END);
+        int file_size = ftell(fp);
+        int facenum;
+        /* Check for binary or ASCII file */
+        fseek(fp, stlLabelSize, SEEK_SET);
+        fread(&facenum, sizeof(int), 1, fp);
+        int expected_file_size = stlLabelSize + 4 + (sizeof(short)+sizeof(float) * 4) * facenum ;
+        if(file_size ==  expected_file_size) isBinary = true;
+        unsigned char tmpbuf[128];
+        fread(tmpbuf,sizeof(tmpbuf),1,fp);
+        for(unsigned int i = 0; i < sizeof(tmpbuf); i++)
+        {
+            if(tmpbuf[i] > 127)
+            {
+                isBinary=true;
+                break;
+            }
+        }
+        // Now we know if the stl file is ascii or binary.
+        fclose(fp);
+        //
+        Mesh3D* pMesh = NULL;
+        if (isBinary)
+        {
+            FILE *fp = fopen(fileName.c_str(), "rb");
+            if (fp == NULL)
+            {
+                DebugLog << "ParseMesh3dBySTL:: open failed in binary" << std::endl;
+                return NULL;
+            }
+            int faceNum;
+            fseek(fp, stlLabelSize, SEEK_SET);
+            fread(&faceNum, sizeof(int), 1, fp);
+            pMesh = new Mesh3D;
+            std::map<Vector3, int> vertPosMap;
+            int currentVertId = 0;
+            for (int fid = 0; fid < faceNum; fid++)
+            {
+                unsigned short attr;
+                float xx, yy, zz;
+                //read face normal
+                fread(&xx, sizeof(xx), 1, fp);
+                fread(&yy, sizeof(yy), 1, fp);
+                fread(&zz, sizeof(zz), 1, fp);
+                //read face position
+                std::vector<Vertex3D* > vertList(3);
+                for (int vid = 0; vid < 3; vid++)
+                {
+                    fread(&xx, sizeof(xx), 1, fp);
+                    fread(&yy, sizeof(yy), 1, fp);
+                    fread(&zz, sizeof(zz), 1, fp);
+                    Vector3 pos(xx, yy, zz);
+                    std::pair<std::map<Vector3, int>::iterator, bool> mapRes 
+                        = vertPosMap.insert( std::pair<Vector3, int>(pos, currentVertId) );
+                    if (mapRes.second)
+                    {
+                        vertList.at(vid) = pMesh->InsertVertex(pos);
+                        currentVertId++;
+                    }
+                    else
+                    {
+                        vertList.at(vid) = pMesh->GetVertex(vertPosMap[pos]);
+                    }
+                    //vertList.at(vid) = pMesh->InsertVertex(pos);
+                }
+                pMesh->InsertFace(vertList);
+                fread(&attr,sizeof(unsigned short),1,fp);
+            }
+            fclose(fp);
+        }
+        else
+        {
+            FILE *fp = fopen(fileName.c_str(), "r");
+            if (fp == NULL)
+            {
+                DebugLog << "ParseMesh3dBySTL:: open failed in asic" << std::endl;
+                return NULL;
+            }
+            //skip the first line of the file
+            while (getc(fp) != '\n') 
+            {//Skip the first line of the file 
+            }
+            //read file
+            pMesh = new Mesh3D;
+            std::map<Vector3, int> vertPosMap;
+            int currentVertId = 0;
+            while (!feof(fp))
+            {
+                Vector3 faceNorm;
+                float xx, yy, zz;
+                int ret = fscanf(fp, "%*s %*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    continue;
+                }
+                ret = fscanf(fp, "%*s %*s");
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pMesh;
+                }
+                Vector3 pos0(xx, yy, zz);
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pMesh;
+                }
+                Vector3 pos1(xx, yy, zz);
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pMesh;
+                }
+                Vector3 pos2(xx, yy, zz);
+                std::vector<Vertex3D* > vertList(3);
+                std::pair<std::map<Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos0, currentVertId) );
+                if (mapRes.second)
+                {
+                    vertList.at(0) = pMesh->InsertVertex(pos0);
+                    currentVertId++;
+                }
+                else
+                {
+                    vertList.at(0) = pMesh->GetVertex(vertPosMap[pos0]);
+                }
+                mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos1, currentVertId) );
+                if (mapRes.second)
+                {
+                    vertList.at(1) = pMesh->InsertVertex(pos1);
+                    currentVertId++;
+                }
+                else
+                {
+                    vertList.at(1) = pMesh->GetVertex(vertPosMap[pos1]);
+                }
+                mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos2, currentVertId) );
+                if (mapRes.second)
+                {
+                    vertList.at(2) = pMesh->InsertVertex(pos2);
+                    currentVertId++;
+                }
+                else
+                {
+                    vertList.at(2) = pMesh->GetVertex(vertPosMap[pos2]);
+                }
+                //vertList.at(0) = pMesh->InsertVertex(pos0);
+                //vertList.at(1) = pMesh->InsertVertex(pos1);
+                //vertList.at(2) = pMesh->InsertVertex(pos2);
+                pMesh->InsertFace(vertList);
+                ret = fscanf(fp, "%*s");
+                ret = fscanf(fp, "%*s");
+                if (feof(fp))
+                {
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+        InfoLog << "Import Vertex Number: " << pMesh->GetVertexNumber() << " Face Number: " << pMesh->GetFaceNumber() << std::endl;
+        return pMesh;
     }
 
     Mesh3D* Parser::ParseMesh3dByPLY(std::string fileName)
@@ -228,7 +396,42 @@ namespace MagicDGP
 
     Mesh3D* Parser::ParseMesh3dByOFF(std::string fileName)
     {
-        return NULL;
+        DebugLog << "ParseMesh3dByOFF file name: " << fileName.c_str() << std::endl;
+        std::ifstream fin(fileName);
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        int vertNum, edgeNum, faceNum;
+        fin >> vertNum >> edgeNum >> faceNum;
+        Mesh3D* pMesh = new Mesh3D;
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            fin.getline(pLine, maxSize);
+            Vector3 pos;
+            char* tok = strtok(pLine, " ");
+            pos[0] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[1] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[2] = (Real)atof(tok);
+            pMesh->InsertVertex(pos);
+        }
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            std::vector<Vertex3D* > vertList(3);
+            fin.getline(pLine, maxSize);
+            char* tok = strtok(pLine, " ");
+            for (int k = 0; k < 3; k++)
+            {
+                tok = strtok(NULL, " ");
+                int vid = atoi(tok);
+                vertList.at(k) = pMesh->GetVertex(vid);
+            }
+            pMesh->InsertFace(vertList);
+        }
+        InfoLog << "Import Vertex Number: " << vertNum << " Face Number: " << pMesh->GetFaceNumber() << std::endl;
+
+        return pMesh;
     }
 
     Mesh3D* Parser::ParseMesh3dByVRML(std::string fileName)
@@ -276,23 +479,23 @@ namespace MagicDGP
 
     void Parser::ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC)
     {
-        DebugLog << "Parser::ExportPointSetByPLY" << std::endl;
+        DebugLog << "Parser::ExportPointSetByPLY" << "\n";
         std::ofstream fout(fileName);
         int pcNum = pPC->GetPointNumber();
         fout << "ply" << std::endl;
-        fout << "format ascii 1.0 " << std::endl;
-        fout << "comment just for a test" << std::endl;
-        fout << "element vertex " << pcNum << std::endl;
-        fout << "property float x" << std::endl;
-        fout << "property float y" << std::endl;
-        fout << "property float z" << std::endl;
-        fout << "element face " << 0 << std::endl;
-        fout << "property list uchar int vertex_indices" << std::endl;
-        fout << "end_header" << std::endl;
+        fout << "format ascii 1.0 " << "\n";
+        fout << "comment just for a test" << "\n";
+        fout << "element vertex " << pcNum << "\n";
+        fout << "property float x" << "\n";
+        fout << "property float y" << "\n";
+        fout << "property float z" << "\n";
+        fout << "element face " << 0 << "\n";
+        fout << "property list uchar int vertex_indices" << "\n";
+        fout << "end_header" << "\n";
         for (int i = 0; i < pcNum; i++)
         {
             Vector3 pos = pPC->GetPoint(i)->GetPosition();
-            fout << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+            fout << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
         }
         fout.close();
     }
@@ -359,26 +562,47 @@ namespace MagicDGP
 
     void Parser::ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh)
     {
-        DebugLog << "Parser::ExportMesh3DByOBJ" << std::endl;
+        DebugLog << "Parser::ExportMesh3DByOBJ: " << fileName.c_str() << std::endl;
         std::ofstream fout(fileName);
         int vertNum = pMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {
             Vector3 pos = pMesh->GetVertex(i)->GetPosition();
-            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
         }
         int faceNum = pMesh->GetFaceNumber();
         for (int i = 0; i < faceNum; i++)
         {
             const Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
-            fout << "f " << pEdge->GetVertex()->GetId() + 1 << " " << pEdge->GetNext()->GetVertex()->GetId() + 1 << " " << pEdge->GetPre()->GetVertex()->GetId() + 1 << std::endl; 
+            fout << "f " << pEdge->GetVertex()->GetId() + 1 << " " << pEdge->GetNext()->GetVertex()->GetId() + 1 
+                << " " << pEdge->GetPre()->GetVertex()->GetId() + 1 << "\n"; 
         }
         fout.close();
     }
 
     void Parser::ExportMesh3DBySTL(std::string fileName, const Mesh3D* pMesh)
     {
-
+        DebugLog << "Parser::ExportMesh3DBySTL: " << fileName.c_str() << std::endl;
+        std::ofstream fout(fileName);
+        fout << "solid magic3d" << std::endl;
+        int faceNum = pMesh->GetFaceNumber();
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            const Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
+            Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+            Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+            Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            nor.Normalise();
+            fout << "  facet normal " << nor[0] << " " << nor[1] << " " << nor[2] << "\n";
+            fout << "    outer loop" << "\n";
+            fout << "      vertex " << pos0[0] << " " << pos0[1] << " " << pos0[2] << "\n";
+            fout << "      vertex " << pos1[0] << " " << pos1[1] << " " << pos1[2] << "\n"; 
+            fout << "      vertex " << pos2[0] << " " << pos2[1] << " " << pos2[2] << "\n";
+            fout << "    endloop" << "\n";
+            fout << "  endfacet" << "\n";
+        }
+        fout.close();
     }
 
     void Parser::ExportMesh3DByPLY(std::string fileName, const Mesh3D* pMesh)

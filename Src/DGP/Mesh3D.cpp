@@ -361,12 +361,12 @@ namespace MagicDGP
             return NULL;
         }
         Face3D* pFace = new Face3D;
-        std::vector<Edge3D* > innerEdgeList;
+        std::vector<Edge3D* > innerEdgeList(3);
         for (int i = 0; i < 3; i++)
         {
             Edge3D* pEdge0 = InsertEdge(vertList.at(i), vertList.at((i + 1) % 3));
             pEdge0->SetFace(pFace);
-            innerEdgeList.push_back(pEdge0);
+            innerEdgeList.at(i) = pEdge0;
             Edge3D* pEdge1 = InsertEdge(vertList.at((i + 1) % 3), vertList.at(i));
             pEdge0->SetPair(pEdge1);
             pEdge1->SetPair(pEdge0);

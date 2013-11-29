@@ -153,7 +153,7 @@ namespace MagicApp
     bool PointSetViewer::ImportMesh3D()
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
@@ -185,7 +185,7 @@ namespace MagicApp
         if (mpMesh != NULL)
         {
             std::string fileName;
-            char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+            char filterName[] = "Support format(*.obj, *.stl)\0*.*\0";
             if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);

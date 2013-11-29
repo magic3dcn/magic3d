@@ -60,9 +60,56 @@ namespace MagicDGP
         MAGICASSERT((index < 3 && index > -1), "Vector3 index out of range!");
         return *(&mX + index);
     }
+
     bool Vector3::operator == (const Vector3& vec3) const
     {
-        return (mX == vec3[0] && mY == vec3[1] && mZ == vec3[2]);
+        //return (mX == vec3[0] && mY == vec3[1] && mZ == vec3[2]);
+        if ( (vec3 - *this).Length() < Epsilon )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool Vector3::operator < (const Vector3& vec3) const
+    {
+        if ((vec3 - *this).Length() < Epsilon)
+        {
+            return false;
+        }
+        if (mX < vec3[0])
+        {
+            return true;
+        }
+        else if (mX == vec3[0])
+        {
+            if (mY < vec3[1])
+            {
+                return true;
+            }
+            else if (mY == vec3[1])
+            {
+                if (mZ < vec3[2])
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     Vector3 Vector3::operator + (const Vector3& vec3) const

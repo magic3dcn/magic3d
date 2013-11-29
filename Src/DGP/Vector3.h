@@ -19,6 +19,7 @@ namespace MagicDGP
         Real     operator [] (int index) const;
         Real&    operator [] (int index);
         bool     operator == (const Vector3& vec3) const;
+        bool     operator < (const Vector3& vec3) const; // just used in std::set
         Vector3  operator + (const Vector3& vec3) const;
         Vector3  operator - (const Vector3& vec3) const;
         Vector3  operator * (Real s) const;

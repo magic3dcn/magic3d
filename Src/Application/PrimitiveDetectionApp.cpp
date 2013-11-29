@@ -154,7 +154,7 @@ namespace MagicApp
     bool PrimitiveDetectionApp::ImportMesh3D()
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
