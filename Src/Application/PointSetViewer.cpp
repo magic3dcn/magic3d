@@ -159,8 +159,8 @@ namespace MagicApp
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
             {
-                pMesh->UpdateNormal();
                 pMesh->UnifyPosition(2.0);
+                pMesh->UpdateNormal();
                 if (mpMesh != NULL)
                 {
                     delete mpMesh;
@@ -185,7 +185,7 @@ namespace MagicApp
         if (mpMesh != NULL)
         {
             std::string fileName;
-            char filterName[] = "Support format(*.obj, *.stl)\0*.*\0";
+            char filterName[] = "Support format(*.obj, *.stl, *.off)\0*.*\0";
             if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);

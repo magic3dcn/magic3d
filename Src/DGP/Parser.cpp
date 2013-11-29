@@ -401,32 +401,30 @@ namespace MagicDGP
         const int maxSize = 512;
         char pLine[maxSize];
         fin.getline(pLine, maxSize);
-        int vertNum, edgeNum, faceNum;
-        fin >> vertNum >> edgeNum >> faceNum;
+        int vertNum, faceNum;
+        fin >> vertNum >> faceNum;
+        fin.getline(pLine, maxSize);
         Mesh3D* pMesh = new Mesh3D;
         for (int vid = 0; vid < vertNum; vid++)
         {
+            float xx, yy, zz;
+            fin >> xx >> yy >> zz;
             fin.getline(pLine, maxSize);
-            Vector3 pos;
-            char* tok = strtok(pLine, " ");
-            pos[0] = (Real)atof(tok);
-            tok = strtok(NULL, " ");
-            pos[1] = (Real)atof(tok);
-            tok = strtok(NULL, " ");
-            pos[2] = (Real)atof(tok);
+            Vector3 pos(xx, yy, zz);
             pMesh->InsertVertex(pos);
         }
         for (int fid = 0; fid < faceNum; fid++)
         {
             std::vector<Vertex3D* > vertList(3);
+            int kk;
+            fin >> kk;
+            fin >> kk;
+            vertList.at(0) = pMesh->GetVertex(kk);
+            fin >> kk;
+            vertList.at(1) = pMesh->GetVertex(kk);
+            fin >> kk;
+            vertList.at(2) = pMesh->GetVertex(kk);
             fin.getline(pLine, maxSize);
-            char* tok = strtok(pLine, " ");
-            for (int k = 0; k < 3; k++)
-            {
-                tok = strtok(NULL, " ");
-                int vid = atoi(tok);
-                vertList.at(k) = pMesh->GetVertex(vid);
-            }
             pMesh->InsertFace(vertList);
         }
         InfoLog << "Import Vertex Number: " << vertNum << " Face Number: " << pMesh->GetFaceNumber() << std::endl;
@@ -612,7 +610,24 @@ namespace MagicDGP
 
     void Parser::ExportMesh3DByOFF(std::string fileName, const Mesh3D* pMesh)
     {
-
+        DebugLog << "Parser::ExportMesh3DByOFF: " << fileName.c_str() << std::endl;
+        std::ofstream fout(fileName);
+        fout << "OFF\n";
+        int vertNum = pMesh->GetVertexNumber();
+        int faceNum = pMesh->GetFaceNumber();
+        fout << vertNum << " " << faceNum << " " << 0 << "\n";
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            Vector3 pos = pMesh->GetVertex(vid)->GetPosition();
+            fout << pos[0] << "  " << pos[1] << " " << pos[2] << "\n"; 
+        }
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            const Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
+            fout << 3 << " " << pEdge->GetVertex()->GetId() << " " << pEdge->GetNext()->GetVertex()->GetId() 
+                << " " << pEdge->GetPre()->GetVertex()->GetId() << "\n";
+        }
+        fout.close();
     }
 
     void Parser::ExportMesh3DByVRML(std::string fileName, const Mesh3D* pMesh)
