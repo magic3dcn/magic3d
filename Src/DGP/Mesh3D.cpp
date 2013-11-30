@@ -6,7 +6,8 @@ namespace MagicDGP
     Vertex3D::Vertex3D() : 
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
     }
 
@@ -14,7 +15,8 @@ namespace MagicDGP
         mPosition(pos), 
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
 
     }
@@ -24,7 +26,8 @@ namespace MagicDGP
         mNormal(nor),
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
 
     }
@@ -98,13 +101,24 @@ namespace MagicDGP
         mId = id;
     }
 
+    void Vertex3D::SetValid(bool valid)
+    {
+        mValid = valid;
+    }
+
+    bool Vertex3D::IsValid() const
+    {
+        return mValid;
+    }
+
     Edge3D::Edge3D() :
         mpVertex(NULL),
         mpPair(NULL),
         mpNext(NULL),
         mpPre(NULL),
         mpFace(NULL),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
     }
 
@@ -197,9 +211,20 @@ namespace MagicDGP
         mId = id;
     }
 
+    void Edge3D::SetValid(bool valid)
+    {
+        mValid = valid;
+    }
+
+    bool Edge3D::IsValid() const
+    {
+        return mValid;
+    }
+
     Face3D::Face3D() : 
         mpEdge(NULL),
-        mId(-1)
+        mId(-1),
+        mValid(true)
     {
     }
 
@@ -255,6 +280,16 @@ namespace MagicDGP
     void Face3D::SetId(int id)
     {
         mId = id;
+    }
+
+    void Face3D::SetValid(bool valid)
+    {
+        mValid = valid;
+    }
+
+    bool Face3D::IsValid() const
+    {
+        return mValid;
     }
 
     Mesh3D::Mesh3D()

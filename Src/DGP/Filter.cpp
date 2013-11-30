@@ -337,4 +337,54 @@ namespace MagicDGP
         DebugLog << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         return sampleNum;
     }
+
+    bool Filter::SimplifyMesh(Mesh3D* pMesh, int targetNum)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        if (targetNum >= vertNum)
+        {
+            InfoLog << "Filter::SimplifyMesh target vertex number is less than vertex number." << std::endl;
+            return false;
+        }
+        std::vector<std::vector<Real> > quadricMatList;
+        CalQuadricMatrix(pMesh, quadricMatList);
+        int collapseNum = vertNum - targetNum;
+        for (int collapseId = 0; collapseId < collapseNum; collapseId++)
+        {
+            int colEdgeId = ChooseCollapseEdge(pMesh, quadricMatList);
+            CollapseEdge(pMesh, colEdgeId, quadricMatList);
+        }
+        //Update mesh structure
+
+    }
+
+    void Filter::CalQuadricMatrix(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatList)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        int faceNum = pMesh->GetFaceNumber();
+        quadricMatList.clear();
+        quadricMatList = std::vector<std::vector<Real> >(vertNum, std::vector<Real>(16, 0.0));
+        std::vector<std::vector<Real> > faceQuadricMat = std::vector<std::vector<Real> >(faceNum);
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
+            Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+            Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+            Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            nor.Normalise();
+            Real d = nor * pos0 * (-1.0);
+
+        }
+    }
+
+    int Filter::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatrix)
+    {
+        return 0;
+    }
+
+    void Filter::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<std::vector<Real> >& quadricMatList)
+    {
+
+    }
 }

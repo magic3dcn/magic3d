@@ -27,6 +27,8 @@ namespace MagicDGP
         void    SetEdge(Edge3D* pEdge);
         int     GetId() const;
         void    SetId(int id);
+        void    SetValid(bool valid);
+        bool    IsValid() const;
 
     private:
         Vector3 mPosition;
@@ -35,6 +37,7 @@ namespace MagicDGP
         Vector3 mColor;
         Edge3D* mpEdge;
         int     mId;
+        bool    mValid;
     };
 
     class Face3D;
@@ -61,6 +64,8 @@ namespace MagicDGP
         void      SetFace(Face3D* pFace);
         int       GetId() const;
         void      SetId(int id);
+        void      SetValid(bool valid);
+        bool      IsValid() const;
 
     private:
         Vertex3D* mpVertex;
@@ -69,6 +74,7 @@ namespace MagicDGP
         Edge3D*   mpPre;
         Face3D*   mpFace;
         int       mId;
+        bool      mValid;
     };
 
 
@@ -87,12 +93,15 @@ namespace MagicDGP
         Real    GetArea() const;
         int     GetId() const;
         void    SetId(int id);
+        void    SetValid(bool valid);
+        bool    IsValid() const;
 
     private:
         Edge3D* mpEdge;
         Vector3 mNormal;
         Real    mArea;
         int     mId;
+        bool    mValid;
     };
 
     class Mesh3D

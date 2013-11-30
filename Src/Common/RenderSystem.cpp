@@ -216,8 +216,11 @@ namespace MagicCore
         int faceNum = pMesh->GetFaceNumber();
         for (int i = 0; i < faceNum; i++)
         {
-            const MagicDGP::Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
-            pMObj->triangle(pEdge->GetVertex()->GetId(), pEdge->GetNext()->GetVertex()->GetId(), pEdge->GetPre()->GetVertex()->GetId());
+            if (pMesh->GetFace(i)->IsValid())
+            {
+                const MagicDGP::Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
+                pMObj->triangle(pEdge->GetVertex()->GetId(), pEdge->GetNext()->GetVertex()->GetId(), pEdge->GetPre()->GetVertex()->GetId());
+            }
         }
         pMObj->end();
     }

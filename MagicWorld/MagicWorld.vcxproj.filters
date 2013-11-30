@@ -258,6 +258,9 @@
     <ClInclude Include="..\Src\DGP\Vector2.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\HomoVector4.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -408,6 +411,9 @@
       <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Vector2.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\HomoVector4.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
