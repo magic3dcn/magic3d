@@ -63,15 +63,7 @@ namespace MagicDGP
 
     bool Vector3::operator == (const Vector3& vec3) const
     {
-        //return (mX == vec3[0] && mY == vec3[1] && mZ == vec3[2]);
-        if ( (vec3 - *this).Length() < Epsilon )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return ( (vec3 - *this).Length() < Epsilon );
     }
 
     bool Vector3::operator < (const Vector3& vec3) const

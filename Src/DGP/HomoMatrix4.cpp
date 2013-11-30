@@ -46,14 +46,25 @@ namespace MagicDGP
         }
     }
 
-    Vector3 HomoMatrix4::TransformPoint(const Vector3& vec) const
+    Vector3 HomoMatrix4::TransformPoint(const Vector3& point) const
     {
-        Vector3 vecRes;
-        vecRes[0] = mValues[0] * vec[0] + mValues[1] * vec[1] + mValues[2] * vec[2] + mValues[3];
-        vecRes[1] = mValues[4] * vec[0] + mValues[5] * vec[1] + mValues[6] * vec[2] + mValues[7];
-        vecRes[2] = mValues[8] * vec[0] + mValues[9] * vec[1] + mValues[10] * vec[2] + mValues[11];
+        Vector3 pointRes;
+        pointRes[0] = mValues[0] * point[0] + mValues[1] * point[1] + mValues[2] * point[2] + mValues[3];
+        pointRes[1] = mValues[4] * point[0] + mValues[5] * point[1] + mValues[6] * point[2] + mValues[7];
+        pointRes[2] = mValues[8] * point[0] + mValues[9] * point[1] + mValues[10] * point[2] + mValues[11];
         
-        return vecRes;
+        return pointRes;
+    }
+
+    HomoVector4 HomoMatrix4::TransformPoint(const HomoVector4& point) const
+    {
+        HomoVector4 pointRes;
+        pointRes[0] = mValues[0] * point[0] + mValues[1] * point[1] + mValues[2] * point[2] + mValues[3] * point[3];
+        pointRes[1] = mValues[4] * point[0] + mValues[5] * point[1] + mValues[6] * point[2] + mValues[7] * point[3];
+        pointRes[2] = mValues[8] * point[0] + mValues[9] * point[1] + mValues[10] * point[2] + mValues[11] * point[3];
+        pointRes[3] = mValues[12] * point[0] + mValues[13] * point[1] + mValues[14] * point[2] + mValues[15] * point[3];
+
+        return pointRes;
     }
 
     Vector3 HomoMatrix4::RotateVector(const Vector3& vec) const
@@ -63,6 +74,16 @@ namespace MagicDGP
         vecRes[1] = mValues[4] * vec[0] + mValues[5] * vec[1] + mValues[6] * vec[2];
         vecRes[2] = mValues[8] * vec[0] + mValues[9] * vec[1] + mValues[10] * vec[2];
 
+        return vecRes;
+    }
+
+    HomoVector4 HomoMatrix4::RotateVector(const HomoVector4& vec) const
+    {
+        HomoVector4 vecRes;
+        vecRes[0] = mValues[0] * vec[0] + mValues[1] * vec[1] + mValues[2] * vec[2];
+        vecRes[1] = mValues[4] * vec[0] + mValues[5] * vec[1] + mValues[6] * vec[2];
+        vecRes[2] = mValues[8] * vec[0] + mValues[9] * vec[1] + mValues[10] * vec[2];
+        vecRes[3] = 0;
         return vecRes;
     }
 

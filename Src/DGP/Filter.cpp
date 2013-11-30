@@ -346,7 +346,7 @@ namespace MagicDGP
             InfoLog << "Filter::SimplifyMesh target vertex number is less than vertex number." << std::endl;
             return false;
         }
-        std::vector<std::vector<Real> > quadricMatList;
+        std::vector<HomoMatrix4> quadricMatList;
         CalQuadricMatrix(pMesh, quadricMatList);
         int collapseNum = vertNum - targetNum;
         for (int collapseId = 0; collapseId < collapseNum; collapseId++)
@@ -358,12 +358,12 @@ namespace MagicDGP
 
     }
 
-    void Filter::CalQuadricMatrix(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatList)
+    void Filter::CalQuadricMatrix(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatList)
     {
         int vertNum = pMesh->GetVertexNumber();
         int faceNum = pMesh->GetFaceNumber();
         quadricMatList.clear();
-        quadricMatList = std::vector<std::vector<Real> >(vertNum, std::vector<Real>(16, 0.0));
+        quadricMatList = std::vector<HomoMatrix4>(vertNum);
         std::vector<std::vector<Real> > faceQuadricMat = std::vector<std::vector<Real> >(faceNum);
         for (int fid = 0; fid < faceNum; fid++)
         {
@@ -378,12 +378,12 @@ namespace MagicDGP
         }
     }
 
-    int Filter::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatrix)
+    int Filter::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatrix)
     {
         return 0;
     }
 
-    void Filter::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<std::vector<Real> >& quadricMatList)
+    void Filter::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<HomoMatrix4>& quadricMatList)
     {
 
     }

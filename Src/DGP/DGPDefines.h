@@ -5,5 +5,5 @@ namespace MagicDGP
 {
     typedef double Real;
     extern Real Epsilon;
-    #define MAGICASSERT(b, m) if (!(b)) { MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Error: " << m << std::endl; }
+    #define MAGICASSERT(b, m) if (!(b)) { ErrorLog << "Error: " << m << std::endl; }
 }

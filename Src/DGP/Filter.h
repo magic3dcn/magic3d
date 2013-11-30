@@ -1,6 +1,7 @@
 #pragma once
 #include "PointCloud3D.h"
 #include "Mesh3D.h"
+#include "HomoMatrix4.h"
 
 namespace MagicDGP
 {
@@ -19,8 +20,8 @@ namespace MagicDGP
         static bool SimplifyMesh(Mesh3D* pMesh, int targetNum);
 
     private:
-        static int ChooseCollapseEdge(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatrix);
-        static void CalQuadricMatrix(Mesh3D* pMesh, std::vector<std::vector<Real> >& quadricMatList);
-        static void CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<std::vector<Real> >& quadricMatList);
+        static int ChooseCollapseEdge(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatrix);
+        static void CalQuadricMatrix(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatList);
+        static void CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<HomoMatrix4>& quadricMatList);
     };
 }

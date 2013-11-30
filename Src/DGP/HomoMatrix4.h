@@ -1,6 +1,7 @@
 #pragma once
 #include "DGPDefines.h"
 #include "Vector3.h"
+#include "HomoVector4.h"
 
 namespace MagicDGP
 {
@@ -13,8 +14,10 @@ namespace MagicDGP
         ~HomoMatrix4();
 
         void Print() const;
-        Vector3 TransformPoint(const Vector3& vec) const;
+        Vector3 TransformPoint(const Vector3& point) const;
+        HomoVector4 TransformPoint(const HomoVector4& point) const;
         Vector3 RotateVector(const Vector3& vec) const;
+        HomoVector4 RotateVector(const HomoVector4& vec) const;
         HomoMatrix4 operator * (const HomoMatrix4& mat) const;
         HomoMatrix4 operator *= (const HomoMatrix4& mat);
         Real GetValue(int row, int col) const;

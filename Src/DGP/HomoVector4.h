@@ -11,18 +11,20 @@ namespace MagicDGP
 
         Real Distance(const HomoVector4 vec4) const;
         Real DistanceSquare(const HomoVector4 vec4) const;
-        void NormalisePoint();
+        bool NormalisePoint();
 
+        Real Length() const;
+        Real LengthSquare() const;
         Real NormaliseVector();
         HomoVector4 CrossProduct(const HomoVector4& vec4) const;
 
-        Real     operator [] (int index) const;
-        Real&    operator [] (int index);
-        bool     operator == (const HomoVector4& vec4) const;
+        Real operator [] (int index) const;
+        Real& operator [] (int index);
+        bool operator == (const HomoVector4& vec4) const;
         HomoVector4  operator + (const HomoVector4& vec4) const;
         HomoVector4  operator - (const HomoVector4& vec4) const;
         HomoVector4  operator * (Real s) const;
-        Real     operator * (const HomoVector4& vec4) const;
+        Real operator * (const HomoVector4& vec4) const;
         HomoVector4  operator / (Real s) const;
         HomoVector4  operator - (void) const;
         HomoVector4& operator += (const HomoVector4& vec4);
