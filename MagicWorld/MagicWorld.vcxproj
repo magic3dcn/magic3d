@@ -118,8 +118,12 @@
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\LeapMotionApp.h" />
     <ClInclude Include="..\Src\Application\LeapMotionAppUI.h" />
+    <ClInclude Include="..\Src\Application\MeshShopApp.h" />
+    <ClInclude Include="..\Src\Application\MeshShopAppUI.h" />
     <ClInclude Include="..\Src\Application\PointSetViewer.h" />
     <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
+    <ClInclude Include="..\Src\Application\PointShopApp.h" />
+    <ClInclude Include="..\Src\Application\PointShopAppUI.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionAppUI.h" />
     <ClInclude Include="..\Src\Application\ReconstructionApp.h" />
@@ -189,8 +193,12 @@
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
     <ClCompile Include="..\Src\Application\LeapMotionApp.cpp" />
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
+    <ClCompile Include="..\Src\Application\MeshShopApp.cpp" />
+    <ClCompile Include="..\Src\Application\MeshShopAppUI.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
     <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
+    <ClCompile Include="..\Src\Application\PointShopApp.cpp" />
+    <ClCompile Include="..\Src\Application\PointShopAppUI.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ReconstructionApp.cpp" />

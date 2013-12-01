@@ -142,4 +142,12 @@
             <State name="pushed" offset="577 541 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_PointShop" size="86 86" texture="MagicUI.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="36 527 86 86"/>
+            <State name="normal" offset="36 637 86 86"/>
+            <State name="highlighted" offset="36 527 86 86"/>
+            <State name="pushed" offset="36 527 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

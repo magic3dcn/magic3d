@@ -3,6 +3,8 @@
 #include "../Common/AppManager.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
+#include "PointShopApp.h"
+#include "MeshShopApp.h"
 #include "PointSetViewer.h"
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
@@ -26,6 +28,10 @@ namespace MagicApp
         MagicCore::ResourceManager::LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
         mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(345, 85);
+        mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointShopApp);
+        mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterMeshShopApp);
+        mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
         mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
@@ -42,6 +48,18 @@ namespace MagicApp
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
         MagicCore::ResourceManager::UnloadResource("Homepage");
+    }
+
+    void HomepageUI::EnterPointShopApp(MyGUI::Widget* pSender)
+    {
+        InfoLog << "EnterPointShopApp Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new PointShopApp, "PointShopApp");
+    }
+
+    void HomepageUI::EnterMeshShopApp(MyGUI::Widget* pSender)
+    {
+        InfoLog << "EnterMeshShopApp Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshtShopApp");
     }
 
     void HomepageUI::EnterPointViewer(MyGUI::Widget* pSender)

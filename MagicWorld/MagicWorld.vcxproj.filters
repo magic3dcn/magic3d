@@ -52,6 +52,12 @@
     <Filter Include="Application\ReliefApp">
       <UniqueIdentifier>{22090b78-9986-4aee-8724-0a3870429e87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\PointShopApp">
+      <UniqueIdentifier>{b9c40667-34fd-4781-802c-5e393fa7602e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\MeshShopApp">
+      <UniqueIdentifier>{bf1b4d9f-7ec0-41c7-af71-3b635eb3cc52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -261,6 +267,18 @@
     <ClInclude Include="..\Src\DGP\HomoVector4.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\PointShopApp.h">
+      <Filter>Application\PointShopApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\PointShopAppUI.h">
+      <Filter>Application\PointShopApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\MeshShopApp.h">
+      <Filter>Application\MeshShopApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\MeshShopAppUI.h">
+      <Filter>Application\MeshShopApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -415,6 +433,18 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\HomoVector4.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PointShopApp.cpp">
+      <Filter>Application\PointShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\PointShopAppUI.cpp">
+      <Filter>Application\PointShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\MeshShopApp.cpp">
+      <Filter>Application\MeshShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\MeshShopAppUI.cpp">
+      <Filter>Application\MeshShopApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
