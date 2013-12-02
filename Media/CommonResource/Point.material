@@ -4,8 +4,9 @@ material SimplePoint
     {
         pass
         {
+            //lighting off
             point_size 2
-            diffuse 0.86 0.86 0.86
+            diffuse 0.86 0.86 0.0
         }
     }
 }

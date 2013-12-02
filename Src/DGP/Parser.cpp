@@ -4,6 +4,7 @@
 #include <istream>
 #include <ostream>
 #include <vector>
+#include <set>
 #include <stdio.h>
 #include "DGPDefines.h"
 #include "../Common/ToolKit.h"
@@ -109,7 +110,152 @@ namespace MagicDGP
 
     Point3DSet* Parser::ParsePointSetBySTL(std::string fileName)
     {
-        return NULL;
+        //Judge whether it is a binary format.
+        //If it is binary there are 80 char of comment, the number fn of faces and then exactly fn*4*3 bytes.
+        DebugLog << "ParsePointSetBySTL file name: " << fileName.c_str() << std::endl;
+        int stlLabelSize = 80;
+        bool isBinary=false;
+        FILE *fp = fopen(fileName.c_str(), "r");
+        //Find size of file
+        fseek(fp, 0, SEEK_END);
+        int file_size = ftell(fp);
+        int facenum;
+        /* Check for binary or ASCII file */
+        fseek(fp, stlLabelSize, SEEK_SET);
+        fread(&facenum, sizeof(int), 1, fp);
+        int expected_file_size = stlLabelSize + 4 + (sizeof(short)+sizeof(float) * 4) * facenum ;
+        if(file_size ==  expected_file_size) isBinary = true;
+        unsigned char tmpbuf[128];
+        fread(tmpbuf,sizeof(tmpbuf),1,fp);
+        for(unsigned int i = 0; i < sizeof(tmpbuf); i++)
+        {
+            if(tmpbuf[i] > 127)
+            {
+                isBinary=true;
+                break;
+            }
+        }
+        // Now we know if the stl file is ascii or binary.
+        fclose(fp);
+        //
+        Point3DSet* pPointSet = NULL;
+        if (isBinary)
+        {
+            FILE *fp = fopen(fileName.c_str(), "rb");
+            if (fp == NULL)
+            {
+                DebugLog << "ParseMesh3dBySTL:: open failed in binary" << std::endl;
+                return NULL;
+            }
+            int faceNum;
+            fseek(fp, stlLabelSize, SEEK_SET);
+            fread(&faceNum, sizeof(int), 1, fp);
+            pPointSet = new Point3DSet;
+            std::set<Vector3> vertPosSet;
+            for (int fid = 0; fid < faceNum; fid++)
+            {
+                unsigned short attr;
+                float xx, yy, zz;
+                //read face normal
+                fread(&xx, sizeof(xx), 1, fp);
+                fread(&yy, sizeof(yy), 1, fp);
+                fread(&zz, sizeof(zz), 1, fp);
+                //read face position
+                std::vector<Vertex3D* > vertList(3);
+                for (int vid = 0; vid < 3; vid++)
+                {
+                    fread(&xx, sizeof(xx), 1, fp);
+                    fread(&yy, sizeof(yy), 1, fp);
+                    fread(&zz, sizeof(zz), 1, fp);
+                    Vector3 pos(xx, yy, zz);
+                    std::pair<std::set<Vector3>::iterator, bool> res = vertPosSet.insert( pos );
+                    if (res.second)
+                    {
+                        Point3D* point = new Point3D(pos);
+                        pPointSet->InsertPoint(point);
+                    }
+                }
+                fread(&attr,sizeof(unsigned short),1,fp);
+            }
+            fclose(fp);
+        }
+        else
+        {
+            FILE *fp = fopen(fileName.c_str(), "r");
+            if (fp == NULL)
+            {
+                DebugLog << "ParseMesh3dBySTL:: open failed in asic" << std::endl;
+                return NULL;
+            }
+            //skip the first line of the file
+            while (getc(fp) != '\n') 
+            {//Skip the first line of the file 
+            }
+            //read file
+            pPointSet = new Point3DSet;
+            std::set<Vector3> vertPosSet;
+            int currentVertId = 0;
+            while (!feof(fp))
+            {
+                Vector3 faceNorm;
+                float xx, yy, zz;
+                int ret = fscanf(fp, "%*s %*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    continue;
+                }
+                ret = fscanf(fp, "%*s %*s");
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pPointSet;
+                }
+                Vector3 pos0(xx, yy, zz);
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pPointSet;
+                }
+                Vector3 pos1(xx, yy, zz);
+                ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
+                if (ret != 3)
+                {
+                    ErrorLog << "error: parse position error" << std::endl;
+                    return pPointSet;
+                }
+                Vector3 pos2(xx, yy, zz);
+
+                std::pair<std::set<Vector3>::iterator, bool> res = vertPosSet.insert( pos0 );
+                if (res.second)
+                {
+                    Point3D* point = new Point3D(pos0);
+                    pPointSet->InsertPoint(point);
+                }
+                res = vertPosSet.insert( pos1 );
+                if (res.second)
+                {
+                    Point3D* point = new Point3D(pos1);
+                    pPointSet->InsertPoint(point);
+                }
+                res = vertPosSet.insert( pos2 );
+                if (res.second)
+                {
+                    Point3D* point = new Point3D(pos2);
+                    pPointSet->InsertPoint(point);
+                }
+                ret = fscanf(fp, "%*s");
+                ret = fscanf(fp, "%*s");
+                if (feof(fp))
+                {
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+        InfoLog << "Import Point Number: " << pPointSet->GetPointNumber() << std::endl;
+        return pPointSet;
     }
 
     Point3DSet* Parser::ParsePointSetByPLY(std::string fileName)
@@ -119,7 +265,31 @@ namespace MagicDGP
 
     Point3DSet* Parser::ParsePointSetByOFF(std::string fileName)
     {
-        return NULL;
+        DebugLog << "ParsePointSetByOFF file name: " << fileName.c_str() << std::endl;
+        std::ifstream fin(fileName);
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        int pointNum;
+        fin >> pointNum;
+        fin.getline(pLine, maxSize);
+        Point3DSet* pPointSet = new Point3DSet;
+        for (int vid = 0; vid < pointNum; vid++)
+        {
+            Vector3 pos;
+            fin.getline(pLine, maxSize);
+            char* tok = strtok(pLine, " ");
+            pos[0] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[1] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[2] = (Real)atof(tok);
+            Point3D* point = new Point3D(pos);
+            pPointSet->InsertPoint(point);
+        }
+        InfoLog << "Import Point Number: " << pPointSet->GetPointNumber() << std::endl;
+
+        return pPointSet;
     }
 
     Mesh3D* Parser::ParseMesh3D(std::string fileName)
@@ -430,24 +600,28 @@ namespace MagicDGP
         Mesh3D* pMesh = new Mesh3D;
         for (int vid = 0; vid < vertNum; vid++)
         {
-            float xx, yy, zz;
-            fin >> xx >> yy >> zz;
+            Vector3 pos;
             fin.getline(pLine, maxSize);
-            Vector3 pos(xx, yy, zz);
+            char* tok = strtok(pLine, " ");
+            pos[0] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[1] = (Real)atof(tok);
+            tok = strtok(NULL, " ");
+            pos[2] = (Real)atof(tok);
             pMesh->InsertVertex(pos);
         }
         for (int fid = 0; fid < faceNum; fid++)
         {
             std::vector<Vertex3D* > vertList(3);
-            int kk;
-            fin >> kk;
-            fin >> kk;
-            vertList.at(0) = pMesh->GetVertex(kk);
-            fin >> kk;
-            vertList.at(1) = pMesh->GetVertex(kk);
-            fin >> kk;
-            vertList.at(2) = pMesh->GetVertex(kk);
             fin.getline(pLine, maxSize);
+            int kk;
+            char* tok = strtok(pLine, " ");
+            for (int j = 0; j < 3; j++)
+            {
+                tok = strtok(NULL, " ");
+                kk = atoi(tok);
+                vertList.at(j) = pMesh->GetVertex(kk);
+            }
             pMesh->InsertFace(vertList);
         }
         InfoLog << "Import Vertex Number: " << vertNum << " Face Number: " << pMesh->GetFaceNumber() << std::endl;
@@ -464,10 +638,6 @@ namespace MagicDGP
             if (extName == std::string("obj"))
             {
                 ExportPointSetByOBJ(fileName, pPC);
-            }
-            else if (extName == std::string("stl"))
-            {
-                ExportPointSetBySTL(fileName, pPC);
             }
             else if (extName == std::string("ply"))
             {
@@ -504,11 +674,6 @@ namespace MagicDGP
         fout.close();
     }
 
-    void Parser::ExportPointSetBySTL(std::string fileName, const Point3DSet* pPC)
-    {
-
-    }
-
     void Parser::ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC)
     {
         DebugLog << "Parser::ExportPointSetByPLY" << "\n";
@@ -534,7 +699,17 @@ namespace MagicDGP
 
     void Parser::ExportPointSetByOFF(std::string fileName, const Point3DSet* pPC)
     {
-
+        DebugLog << "Parser::ExportPointSetByOFF: " << fileName.c_str() << std::endl;
+        std::ofstream fout(fileName);
+        fout << "OFF\n";
+        int pointNum = pPC->GetPointNumber();
+        fout << pointNum << " " << 0 << " " << 0 << "\n";
+        for (int vid = 0; vid < pointNum; vid++)
+        {
+            Vector3 pos = pPC->GetPoint(vid)->GetPosition();
+            fout << pos[0] << "  " << pos[1] << " " << pos[2] << "\n"; 
+        }
+        fout.close();
     }
 
     void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)

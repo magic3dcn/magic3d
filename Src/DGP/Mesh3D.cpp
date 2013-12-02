@@ -1,4 +1,4 @@
-//#include "StdAfx.h"
+  //#include "StdAfx.h"
 #include "Mesh3D.h"
 
 namespace MagicDGP

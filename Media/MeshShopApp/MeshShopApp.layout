@@ -1,18 +1,30 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 234 768" align="Left Top" layer="Back">
-        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open"/>
-        <Widget type="Button" skin="But_Save" position="15 90 60 60" align="Left Top" name="But_Save"/>
-        <Widget type="Button" skin="But_Smooth" position="15 165 60 60" align="Left Top" name="But_Filter"/>
-        <Widget type="Button" skin="Button" position="85 185 40 40" align="Left Top" name="But_Smooth"/>
-        <Widget type="Button" skin="Button" position="135 185 40 40" align="Left Top" name="But_Simplify"/>
-        <Widget type="Button" skin="Button" position="185 185 40 40" align="Left Top" name="But_Outlier"/>
-        <Widget type="Button" skin="Button" position="15 240 60 60" align="Left Top" name="But_AddNoise"/>
-        <Widget type="Button" skin="Button" position="15 315 60 60" align="Left Top" name="But_Select"/>
-        <Widget type="Button" skin="Button" position="85 335 40 40" align="Left Top" name="But_Select_Rectangle"/>
-        <Widget type="Button" skin="Button" position="135 335 40 40" align="Left Top" name="But_Select_Cycle"/>
-        <Widget type="Button" skin="Button" position="185 335 40 40" align="Left Top" name="But_Select_Intelligent"/>
-        <Widget type="Button" skin="Button" position="15 395 60 60" align="Left Top" name="But_Deform"/>
-        <Widget type="Button" skin="But_Home" position="15 475 60 60" align="Left Top" name="But_Home"/>
+        <Widget type="Button" skin="But_Open" position_real="0.0641026 0.0195313 0.25641 0.078125" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="But_Save" position_real="0.0641026 0.117188 0.25641 0.078125" align="Left Top" name="But_Save"/>
+        <Widget type="Button" skin="But_Smooth" position_real="0.0641026 0.214844 0.25641 0.078125" align="Left Top" name="But_Filter"/>
+        <Widget type="Button" skin="Button" position_real="0.363248 0.240885 0.17094 0.0520833" align="Left Top" name="But_Smooth">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.576923 0.240885 0.17094 0.0520833" align="Left Top" name="But_Simplify">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.790598 0.240885 0.17094 0.0520833" align="Left Top" name="But_Outlier">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0641026 0.3125 0.25641 0.078125" align="Left Top" name="But_AddNoise"/>
+        <Widget type="Button" skin="Button" position_real="0.0641026 0.410156 0.25641 0.078125" align="Left Top" name="But_Select"/>
+        <Widget type="Button" skin="Button" position_real="0.363248 0.436198 0.17094 0.0520833" align="Left Top" name="But_Select_Rectangle">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.576923 0.436198 0.17094 0.0520833" align="Left Top" name="But_Select_Cycle">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.790598 0.436198 0.17094 0.0520833" align="Left Top" name="But_Select_Intelligent">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0641026 0.514323 0.25641 0.078125" align="Left Top" name="But_Deform"/>
+        <Widget type="Button" skin="But_Home" position_real="0.0641026 0.61849 0.25641 0.078125" align="Left Top" name="But_Home"/>
     </Widget>
 </MyGUI>

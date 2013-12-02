@@ -123,7 +123,8 @@ namespace MagicApp
                     delete mpPointSet;
                 }
                 mpPointSet = pPointSet;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "MyCookTorrancePoint", mpPointSet);
                 return true;
             }
             else

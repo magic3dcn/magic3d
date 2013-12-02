@@ -73,7 +73,7 @@ namespace MagicApp
                     delete mpPointSet;
                 }
                 mpPointSet = pPointSet;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
                 return true;
             }
             else
@@ -92,7 +92,7 @@ namespace MagicApp
         if (mpPointSet != NULL)
         {
             std::string fileName;
-            char filterName[] = "Support format(*.obj, *.stl, *.off, *.ply)\0*.*\0";
+            char filterName[] = "Support format(*.obj, *.off, *.ply)\0*.*\0";
             if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
                 MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
