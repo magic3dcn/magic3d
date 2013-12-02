@@ -30,6 +30,18 @@ namespace MagicDGP
         {
             return ParsePointSetByOBJ(fileName);
         }
+        else if (extName == std::string("stl"))
+        {
+            return ParsePointSetBySTL(fileName);
+        }
+        else if (extName == std::string("ply"))
+        {
+            return ParsePointSetByPLY(fileName);
+        }
+        else if (extName == std::string("off"))
+        {
+            return ParsePointSetByOFF(fileName);
+        }
         else
         {
             return NULL;
@@ -95,6 +107,21 @@ namespace MagicDGP
         return pPSet;
     }
 
+    Point3DSet* Parser::ParsePointSetBySTL(std::string fileName)
+    {
+        return NULL;
+    }
+
+    Point3DSet* Parser::ParsePointSetByPLY(std::string fileName)
+    {
+        return NULL;
+    }
+
+    Point3DSet* Parser::ParsePointSetByOFF(std::string fileName)
+    {
+        return NULL;
+    }
+
     Mesh3D* Parser::ParseMesh3D(std::string fileName)
     {
         size_t dotPos = fileName.rfind('.');
@@ -118,10 +145,6 @@ namespace MagicDGP
         else if (extName == std::string("off"))
         {
             return ParseMesh3dByOFF(fileName);
-        }
-        else if (extName == std::string("vrml"))
-        {
-            return ParseMesh3dByVRML(fileName);
         }
         else
         {
@@ -432,31 +455,37 @@ namespace MagicDGP
         return pMesh;
     }
 
-    Mesh3D* Parser::ParseMesh3dByVRML(std::string fileName)
-    {
-        return NULL;
-    }
-
     void Parser::ExportPointSet(std::string fileName, const Point3DSet* pPC)
     {
-        //ExportPointSetByPSR(fileName, pPC);
-        ExportPointSetByOBJ(fileName, pPC);
-        //ExportPointSetByPLY(fileName, pPC);
-    }
-
-    void Parser::ExportPointSetByPSR(std::string fileName, const Point3DSet* pPC)
-    {
-        DebugLog << "Parser::ExportPointSetByPSR" << std::endl;
-        std::ofstream fout(fileName);
-        int pcNum = pPC->GetPointNumber();
-        for (int i = 0; i < pcNum; i++)
+        size_t dotPos = fileName.rfind('.');
+        if (dotPos != std::string::npos)
         {
-            const Point3D* pPoint = pPC->GetPoint(i);
-            Vector3 pos = pPoint->GetPosition();
-            Vector3 nor = pPoint->GetNormal();
-            fout << pos[0] << " " << pos[1] << " " << pos[2] << " " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+            std::string extName = fileName.substr(dotPos + 1);
+            if (extName == std::string("obj"))
+            {
+                ExportPointSetByOBJ(fileName, pPC);
+            }
+            else if (extName == std::string("stl"))
+            {
+                ExportPointSetBySTL(fileName, pPC);
+            }
+            else if (extName == std::string("ply"))
+            {
+                ExportPointSetByPLY(fileName, pPC);
+            }
+            else if (extName == std::string("off"))
+            {
+                ExportPointSetByOFF(fileName, pPC);
+            }
+            else
+            {
+                DebugLog << "Export point set failed: file name extension error!" << std::endl;
+            }
         }
-        fout.close();
+        else
+        {
+            DebugLog << "Export point set failed: file name error!" << std::endl;
+        }
     }
 
     void Parser::ExportPointSetByOBJ(std::string fileName, const Point3DSet* pPC)
@@ -473,6 +502,11 @@ namespace MagicDGP
             fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
         }
         fout.close();
+    }
+
+    void Parser::ExportPointSetBySTL(std::string fileName, const Point3DSet* pPC)
+    {
+
     }
 
     void Parser::ExportPointSetByPLY(std::string fileName, const Point3DSet* pPC)
@@ -498,6 +532,11 @@ namespace MagicDGP
         fout.close();
     }
 
+    void Parser::ExportPointSetByOFF(std::string fileName, const Point3DSet* pPC)
+    {
+
+    }
+
     void Parser::ExportMesh3D(std::string fileName, const Mesh3D* pMesh)
     {
         size_t dotPos = fileName.rfind('.');
@@ -520,10 +559,6 @@ namespace MagicDGP
             {
                 ExportMesh3DByOFF(fileName, pMesh);
             }
-            else if (extName == std::string("vrml"))
-            {
-                ExportMesh3DByVRML(fileName, pMesh);
-            }
             else
             {
                 DebugLog << "Export mesh failed: file name extension error!" << std::endl;
@@ -533,29 +568,6 @@ namespace MagicDGP
         {
             DebugLog << "Export mesh failed: file name error!" << std::endl;
         }
-
-        
-        //ExportPointSetFromMeshByOBJ(fileName, pMesh);
-    }
-
-    void Parser::ExportPointSetFromMesh(std::string fileName, const Mesh3D* pMesh)
-    {
-        ExportPointSetFromMeshByOBJ(fileName, pMesh);
-    }
-
-    void Parser::ExportPointSetFromMeshByOBJ(std::string fileName, const Mesh3D* pMesh)
-    {
-        DebugLog << "Parser::ExportPointSetByOBJFromMesh" << std::endl;
-        std::ofstream fout(fileName);
-        int vertNum = pMesh->GetVertexNumber();
-        for (int i = 0; i < vertNum; i++)
-        {
-            Vector3 pos = pMesh->GetVertex(i)->GetPosition();
-            Vector3 nor = pMesh->GetVertex(i)->GetNormal();
-            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
-            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
-        }
-        fout.close();
     }
 
     void Parser::ExportMesh3DByOBJ(std::string fileName, const Mesh3D* pMesh)
@@ -628,10 +640,5 @@ namespace MagicDGP
                 << " " << pEdge->GetPre()->GetVertex()->GetId() << "\n";
         }
         fout.close();
-    }
-
-    void Parser::ExportMesh3DByVRML(std::string fileName, const Mesh3D* pMesh)
-    {
-
     }
 }

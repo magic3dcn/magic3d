@@ -59,7 +59,7 @@ namespace MagicApp
     void HomepageUI::EnterMeshShopApp(MyGUI::Widget* pSender)
     {
         InfoLog << "EnterMeshShopApp Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshtShopApp");
+        MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
     }
 
     void HomepageUI::EnterPointViewer(MyGUI::Widget* pSender)

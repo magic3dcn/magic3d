@@ -1,6 +1,18 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 105 768" align="Left Top" layer="Back">
-        <Widget type="Button" skin="Button" position="15 30 75 55" align="Left Top" name="But_Open"/>
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 234 768" align="Left Top" layer="Back">
+        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="But_Save" position="15 90 60 60" align="Left Top" name="But_Save"/>
+        <Widget type="Button" skin="But_Smooth" position="15 165 60 60" align="Left Top" name="But_Filter"/>
+        <Widget type="Button" skin="Button" position="85 185 40 40" align="Left Top" name="But_Smooth"/>
+        <Widget type="Button" skin="Button" position="135 185 40 40" align="Left Top" name="But_Simplify"/>
+        <Widget type="Button" skin="Button" position="185 185 40 40" align="Left Top" name="But_Outlier"/>
+        <Widget type="Button" skin="Button" position="15 240 60 60" align="Left Top" name="But_AddNoise"/>
+        <Widget type="Button" skin="Button" position="15 315 60 60" align="Left Top" name="But_Select"/>
+        <Widget type="Button" skin="Button" position="85 335 40 40" align="Left Top" name="But_Select_Rectangle"/>
+        <Widget type="Button" skin="Button" position="135 335 40 40" align="Left Top" name="But_Select_Cycle"/>
+        <Widget type="Button" skin="Button" position="185 335 40 40" align="Left Top" name="But_Select_Intelligent"/>
+        <Widget type="Button" skin="Button" position="15 395 60 60" align="Left Top" name="But_Deform"/>
+        <Widget type="Button" skin="But_Home" position="15 475 60 60" align="Left Top" name="But_Home"/>
     </Widget>
 </MyGUI>
