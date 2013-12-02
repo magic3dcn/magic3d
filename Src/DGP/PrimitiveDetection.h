@@ -14,6 +14,19 @@ namespace MagicDGP
         Other
     };
 
+    struct PrimitiveScore
+    {
+        Real mScore[4];
+
+        PrimitiveScore()
+        {
+            mScore[0] = 0;
+            mScore[1] = 0;
+            mScore[2] = 0;
+            mScore[3] = 0;
+        }
+    };
+
     class ShapeCandidate
     {
     public:
@@ -129,6 +142,7 @@ namespace MagicDGP
         static void Primitive2DDetection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DSelection(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res);
+        static void Primitive2DDetectionByScore(Mesh3D* pMesh, std::vector<int>& res);
         static ShapeCandidate* Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
@@ -140,12 +154,16 @@ namespace MagicDGP
         static bool AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
             std::vector<Real>& featureScores, std::vector<int>& sampleIndex);
+        static bool AddNewCandidatesByScore(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
+            std::vector<Real>& featureScores, std::vector<int>& sampleIndex);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
         static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, bool isFirst);
+        static bool UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, Real scoreScale);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
         static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
         static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
