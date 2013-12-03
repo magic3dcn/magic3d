@@ -26,6 +26,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::CalPointSetNormal);
         mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setSize(60, 60);
+        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FlipPointSetNormal);
+        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setSize(40, 40);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FilterPointSet);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SmoothPointSet);
@@ -67,13 +69,14 @@ namespace MagicApp
             bool hasNormal = false;
             if (pPSA->OpenPointSet(hasNormal))
             {
-                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
-                mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setVisible(hasNormal);
+                mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setVisible(true);
+                mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setVisible(true);
             }
         }
     }
@@ -93,12 +96,25 @@ namespace MagicApp
         if (pPSA != NULL)
         {
             pPSA->CalPointSetNormal();
+            mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setVisible(true);
+        }
+    }
+
+    void PointShopAppUI::FlipPointSetNormal(MyGUI::Widget* pSender)
+    {
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->FlipPointSetNormal();
         }
     }
 
     void PointShopAppUI::FilterPointSet(MyGUI::Widget* pSender)
     {
-
+        bool isVisible = mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->isVisible();
+        mRoot.at(0)->findWidget("But_Sampling")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setVisible(!isVisible);
     }
 
     void PointShopAppUI::SmoothPointSet(MyGUI::Widget* pSender)

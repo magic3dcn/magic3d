@@ -16,6 +16,7 @@ namespace MagicApp
         void OpenPointSet(MyGUI::Widget* pSender);
         void SavePointSet(MyGUI::Widget* pSender);
         void CalPointSetNormal(MyGUI::Widget* pSender);
+        void FlipPointSetNormal(MyGUI::Widget* pSender);
         void FilterPointSet(MyGUI::Widget* pSender);
         void SmoothPointSet(MyGUI::Widget* pSender);
         void SamplePointSet(MyGUI::Widget* pSender);

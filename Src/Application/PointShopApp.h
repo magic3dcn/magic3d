@@ -22,6 +22,7 @@ namespace MagicApp
         bool OpenPointSet(bool& hasNormal);
         void SavePointSet();
         void CalPointSetNormal();
+        void FlipPointSetNormal();
         void SmoothPointSet();
         void SamplePointSet();
         void RemoveOutlier();

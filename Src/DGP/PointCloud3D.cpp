@@ -7,7 +7,7 @@ namespace MagicDGP
     Point3D::Point3D() : 
         mPosition(0, 0, 0),
         mNormal(0, 0, 0),
-        mColor(0.86, 0.86, 0.86),
+        mColor(0.09, 0.48627, 0.69),
         mId(-1), 
         mValid(true)
     {
@@ -16,7 +16,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos) : 
         mPosition(pos),
         mNormal(0, 0, 0),
-        mColor(0.86, 0.86, 0.86),
+        mColor(0.09, 0.48627, 0.69),
         mId(-1),
         mValid(true)
     {
@@ -25,7 +25,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, const Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
-        mColor(0.86, 0.86, 0.86),
+        mColor(0.09, 0.48627, 0.69),
         mId(-1),
         mValid(true)
     {
@@ -34,7 +34,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, int id) :
         mPosition(pos),
         mNormal(0, 0, 0),
-        mColor(0.86, 0.86, 0.86),
+        mColor(0.09, 0.48627, 0.69),
         mId(id),
         mValid(true)
     {
@@ -43,7 +43,7 @@ namespace MagicDGP
     Point3D::Point3D(const Vector3& pos, const Vector3& nor, int id) : 
         mPosition(pos),
         mNormal(nor),
-        mColor(0.86, 0.86, 0.86),
+        mColor(0.09, 0.48627, 0.69),
         mId(id),
         mValid(true)
     {

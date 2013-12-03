@@ -6,7 +6,7 @@ material SimplePoint
         {
             lighting off
             point_size 1
-           // diffuse 0.4 0.4 0
+            //color 0.4 0.4 0
         }
     }
 }

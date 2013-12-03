@@ -116,6 +116,18 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
     }
 
+    void PointShopApp::FlipPointSetNormal()
+    {
+        int pointNum = mpPointSet->GetPointNumber();
+        for (int pid = 0; pid < pointNum; pid++)
+        {
+            MagicDGP::Vector3 nor = mpPointSet->GetPoint(pid)->GetNormal();
+            nor *= -1;
+            mpPointSet->GetPoint(pid)->SetNormal(nor);
+        }
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+    }
+
     void PointShopApp::SmoothPointSet()
     {
 

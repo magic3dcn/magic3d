@@ -143,7 +143,9 @@ namespace MagicCore
                     continue;
                 }
                 MagicDGP::Vector3 pos = pPoint->GetPosition();
+                MagicDGP::Vector3 color = pPoint->GetColor();
                 pMObj->position(pos[0], pos[1], pos[2]);
+                pMObj->colour(color[0], color[1], color[2]);
             }
             pMObj->end();
         }
