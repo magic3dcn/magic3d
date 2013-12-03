@@ -19,7 +19,6 @@ namespace MagicDGP
     private:
         static Point3DSet* ParsePointSetByOBJ(std::string fileName);
         static Point3DSet* ParsePointSetBySTL(std::string fileName);
-        static Point3DSet* ParsePointSetByPLY(std::string fileName);
         static Point3DSet* ParsePointSetByOFF(std::string fileName);
 
         static Mesh3D* ParseMesh3DByOBJ(std::string fileName);

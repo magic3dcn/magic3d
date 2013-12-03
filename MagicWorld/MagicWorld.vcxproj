@@ -143,6 +143,7 @@
     <ClInclude Include="..\Src\Common\ResourceManager.h" />
     <ClInclude Include="..\Src\Common\ToolKit.h" />
     <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h" />
+    <ClInclude Include="..\Src\DGP\Consolidation.h" />
     <ClInclude Include="..\Src\DGP\Curvature.h" />
     <ClInclude Include="..\Src\DGP\DGPDefines.h" />
     <ClInclude Include="..\Src\DGP\Filter.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Src\DGP\Consolidation.cpp" />
     <ClCompile Include="..\Src\DGP\Curvature.cpp" />
     <ClCompile Include="..\Src\DGP\DGPDefines.cpp" />
     <ClCompile Include="..\Src\DGP\Filter.cpp" />

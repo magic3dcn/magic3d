@@ -35,10 +35,6 @@ namespace MagicDGP
         {
             return ParsePointSetBySTL(fileName);
         }
-        else if (extName == std::string("ply"))
-        {
-            return ParsePointSetByPLY(fileName);
-        }
         else if (extName == std::string("off"))
         {
             return ParsePointSetByOFF(fileName);
@@ -256,11 +252,6 @@ namespace MagicDGP
         }
         InfoLog << "Import Point Number: " << pPointSet->GetPointNumber() << std::endl;
         return pPointSet;
-    }
-
-    Point3DSet* Parser::ParsePointSetByPLY(std::string fileName)
-    {
-        return NULL;
     }
 
     Point3DSet* Parser::ParsePointSetByOFF(std::string fileName)

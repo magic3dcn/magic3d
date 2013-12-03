@@ -3,6 +3,7 @@
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
+#include "../DGP/Consolidation.h"
 
 namespace MagicApp
 {
@@ -61,7 +62,7 @@ namespace MagicApp
     bool PointShopApp::OpenPointSet()
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0PLY Files(*.ply)\0*.ply\0";
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
@@ -102,7 +103,8 @@ namespace MagicApp
 
     void PointShopApp::CalPointSetNormal()
     {
-
+        MagicDGP::Consolidation::CalPointSetNormal(mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
     }
 
     void PointShopApp::SmoothPointSet()

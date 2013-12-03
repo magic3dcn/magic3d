@@ -279,6 +279,9 @@
     <ClInclude Include="..\Src\Application\MeshShopAppUI.h">
       <Filter>Application\MeshShopApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\Consolidation.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -445,6 +448,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\MeshShopAppUI.cpp">
       <Filter>Application\MeshShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\Consolidation.cpp">
+      <Filter>DGP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
