@@ -92,6 +92,7 @@ namespace MagicDGP
                 Point3D* point = new Point3D(posList.at(i), norList.at(i), i);
                 pPSet->InsertPoint(point);
             }
+            pPSet->SetHasNormal(true);
         }
         else
         {

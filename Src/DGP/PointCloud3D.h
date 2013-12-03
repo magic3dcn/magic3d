@@ -51,11 +51,14 @@ namespace MagicDGP
         void CalculateBBox();
         Real GetDensity() const;
         void CalculateDensity();
+        bool HasNormal() const;
+        void SetHasNormal(bool has);
 
     protected:
         std::vector<Point3D* > mPointSet;
         Vector3 mBBoxMin, mBBoxMax;
         Real mDensity;
+        bool mHasNormal;
     };
 
 }

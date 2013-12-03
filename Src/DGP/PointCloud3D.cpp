@@ -103,7 +103,8 @@ namespace MagicDGP
         return mValid;
     }
 
-    Point3DSet::Point3DSet()
+    Point3DSet::Point3DSet() : 
+        mHasNormal(false)
     {
     }
 
@@ -293,5 +294,15 @@ namespace MagicDGP
             delete []pDist;
             pDist = NULL;
         }
+    }
+
+    bool Point3DSet::HasNormal() const
+    {
+        return mHasNormal;
+    }
+
+    void Point3DSet::SetHasNormal(bool has)
+    {
+        mHasNormal = has;
     }
 }

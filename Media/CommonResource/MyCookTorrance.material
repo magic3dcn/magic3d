@@ -34,14 +34,16 @@ material MyCookTorrancePoint
     {
         pass
         {
-            vertex_program_ref VCookTorrance
+            point_size 2
+
+            vertex_program_ref VCookTorrancePoint
             {
                 param_named_auto worldViewProj    worldviewproj_matrix
                 param_named_auto worldMatrix      world_matrix
                 param_named_auto worldMatrix_IT   inverse_transpose_world_matrix
             }
             
-            fragment_program_ref FCookTorrance
+            fragment_program_ref FCookTorrancePoint
             {
                 param_named_auto    globalAmbient  ambient_light_colour
                 param_named_auto    eyePosition    camera_position

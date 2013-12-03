@@ -21,3 +21,27 @@ fragment_program FCookTorrance cg
         
     }
 }
+
+vertex_program VCookTorrancePoint cg
+{
+	source VCookTorrance.cg
+	entry_point main_v_point
+	profiles arbvp1
+
+	default_params
+	{
+		
+	}
+}
+
+fragment_program FCookTorrancePoint cg
+{
+    source FCookTorrance.cg
+    entry_point main_f_point
+    profiles arbfp1
+    
+    default_params
+    {
+        
+    }
+}

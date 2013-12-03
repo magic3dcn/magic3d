@@ -19,7 +19,7 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
-        bool OpenPointSet();
+        bool OpenPointSet(bool& hasNormal);
         void SavePointSet();
         void CalPointSetNormal();
         void SmoothPointSet();

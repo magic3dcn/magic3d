@@ -2,14 +2,28 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 234 768" align="Left Top" layer="Back">
         <Widget type="Button" skin="But_Open" position_real="0.0598291 0.0195313 0.24359 0.078125" align="Left Top" name="But_Open"/>
-        <Widget type="Button" skin="But_Save" position_real="0.0598291 0.109375 0.24359 0.078125" align="Left Top" name="But_Save"/>
-        <Widget type="Button" skin="Button" position_real="0.0598291 0.201823 0.24359 0.078125" align="Left Top" name="But_CalNormal"/>
-        <Widget type="Button" skin="But_Smooth" position_real="0.0598291 0.296875 0.24359 0.078125" align="Left Top" name="But_Filter"/>
-        <Widget type="Button" skin="Button" position_real="0.0598291 0.390625 0.24359 0.078125" align="Left Top" name="But_Reconstruction"/>
-        <Widget type="Button" skin="Button" position_real="0.0598291 0.484375 0.24359 0.078125" align="Left Top" name="But_AddNoise"/>
-        <Widget type="Button" skin="Button" position_real="0.0598291 0.585938 0.24359 0.078125" align="Left Top" name="But_Select"/>
-        <Widget type="Button" skin="Button" position_real="0.0598291 0.683594 0.24359 0.078125" align="Left Top" name="But_Deform"/>
-        <Widget type="Button" skin="But_Home" position_real="0.0598291 0.786458 0.24359 0.078125" align="Left Bottom" name="But_Home"/>
+        <Widget type="Button" skin="But_Save" position_real="0.0598291 0.109375 0.24359 0.078125" align="Left Top" name="But_Save">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0598291 0.201823 0.24359 0.078125" align="Left Top" name="But_CalNormal">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="But_Smooth" position_real="0.0598291 0.296875 0.24359 0.078125" align="Left Top" name="But_Filter">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0598291 0.390625 0.24359 0.078125" align="Left Top" name="But_Reconstruction">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0598291 0.484375 0.24359 0.078125" align="Left Top" name="But_AddNoise">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0598291 0.585938 0.24359 0.078125" align="Left Top" name="But_Select">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position_real="0.0598291 0.683594 0.24359 0.078125" align="Left Top" name="But_Deform">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="But_Home" position_real="0.0598291 0.782552 0.24359 0.078125" align="Left Bottom" name="But_Home"/>
         <Widget type="Button" skin="Button" position_real="0.354701 0.325521 0.166667 0.0507813" align="Left Top" name="But_Sampling">
             <Property key="Visible" value="false"/>
         </Widget>

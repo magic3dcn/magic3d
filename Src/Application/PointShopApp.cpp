@@ -59,7 +59,7 @@ namespace MagicApp
         return true;
     }
 
-    bool PointShopApp::OpenPointSet()
+    bool PointShopApp::OpenPointSet(bool& hasNormal)
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
@@ -68,13 +68,22 @@ namespace MagicApp
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
             if (pPointSet != NULL)
             {
+                hasNormal = pPointSet->HasNormal();
                 pPointSet->UnifyPosition(2.0);
                 if (mpPointSet != NULL)
                 {
                     delete mpPointSet;
                 }
                 mpPointSet = pPointSet;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+                if (hasNormal)
+                {
+                    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+                }
+                else
+                {
+                    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
+                }
+                
                 return true;
             }
             else
@@ -155,10 +164,11 @@ namespace MagicApp
     void PointShopApp::SetupScene(void)
     {
         InfoLog << "PointShopApp::SetupScene" << std::endl;
+        //MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getViewport(0)->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light* sl = pSceneMgr->createLight("SimpleLight");
-        sl->setPosition(10, 10, 20);
+        sl->setPosition(0, 0, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
     }

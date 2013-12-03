@@ -64,7 +64,17 @@ namespace MagicApp
         PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
         if (pPSA != NULL)
         {
-            pPSA->OpenPointSet();
+            bool hasNormal = false;
+            if (pPSA->OpenPointSet(hasNormal))
+            {
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
+                mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+            }
         }
     }
 

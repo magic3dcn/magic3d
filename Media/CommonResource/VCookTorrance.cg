@@ -15,3 +15,21 @@ void main_v(float4 position	:	POSITION,
 	oNormal	=	normalize(oNormal);
 	ocolor = color;
 }
+
+void main_v_point(float4 position	:	POSITION,
+						float4 normal	:	NORMAL,
+						float4 color : COLOR,
+						out	float4 oPosition : POSITION,
+						out	float3 worldPos	:	TEXCOORD0,
+						out	float3 oNormal : TEXCOORD1,
+						out	float4 ocolor	:	TEXCOORD2,
+						uniform	float4x4 worldMatrix,
+						uniform	float4x4 worldMatrix_IT,
+						uniform	float4x4 worldViewProj)
+{
+	oPosition	=	mul(worldViewProj, position);
+	worldPos = mul(worldMatrix,	position).xyz;
+	oNormal	=	mul(worldMatrix_IT,normal).xyz;
+	oNormal	=	normalize(oNormal);
+	ocolor = color;
+}
