@@ -162,7 +162,7 @@ namespace MagicDGP
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
-        static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, bool isFirst);
+        static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, Real acceptScale);
         static bool UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, Real scoreScale);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
         static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);

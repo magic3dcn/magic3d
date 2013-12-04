@@ -1771,88 +1771,121 @@ namespace MagicDGP
         maxSphereRadius = bboxSize / 2;
         maxCylinderRadius = bboxSize / 2;
         minSupportArea = 0;
-        UpdateAcceptableAreaEnhance(pMesh, res, true); //need change to new
+        UpdateAcceptableAreaEnhance(pMesh, res, 0.5); //need change to new
         gSampleIndex.clear();
 
         //Initialize candidates   
         std::vector<ShapeCandidate* > candidates;
         std::vector<int> sampleIndex;
-        SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 200, 0.5);
+        
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
-        
         //Find init best candidates
-        int maxIterCount = 10;
-        int lastBestIndex = -2;
-        int lastBestTimes = 0;
-        int accpetableTimes = 2;
-        for (int iterIndex = 0; iterIndex < maxIterCount; ++iterIndex)
+        int scanNum = 3;
+        for (int scanId = 0; scanId < scanNum; scanId++)
         {
-            if (AddNewCandidatesEnhance(candidates, pMesh, res, sampleFlag, vertWeightList, featureScores, sampleIndex) == false)
+            int maxIterCount = 15;
+            int lastBestIndex = -2;
+            int lastBestTimes = 0;
+            int accpetableTimes = 2;
+            if (scanId == 0)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Break: No New Candidates Found" << std::endl;
-                break;
+                SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 100, 0.5);
             }
-            while (true)
+            else if (scanId == 1)
             {
-                int bestIndex = ChoseBestCandidate(candidates);
-                if (bestIndex == -1)
-                {
-                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "no best candidate" << std::endl;
-                    break;
-                }
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best index: " << bestIndex << " " << candidates.at(bestIndex)->GetScore() 
-                    << " " << candidates.at(bestIndex)->GetSupportArea() << 
-                    " " << acceptableArea << "                                " << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() 
-                    << " type: " << candidates.at(bestIndex)->GetType() << std::endl;
-                if (bestIndex == lastBestIndex)
-                {
-                    lastBestTimes++;
-                }
-                if (candidates.at(bestIndex)->GetSupportArea() > acceptableArea || lastBestTimes == accpetableTimes)
-                {
-                    int candType = candidates.at(bestIndex)->GetType();
-                    std::vector<int> supportVert = candidates.at(bestIndex)->GetSupportVertex();
-                    for (std::vector<int>::iterator supportItr = supportVert.begin(); supportItr != supportVert.end(); ++supportItr)
-                    {
-                        res.at(*supportItr) = candType;
-                    }
-                    candidates.at(bestIndex)->SetRemoved(true);
-                    RemoveAcceptableCandidate(candidates, res);
-                    for (int candId = 0; candId < candidates.size(); candId++)
-                    {
-                        if (candidates.at(candId)->IsRemoved())
-                        {
-                            continue;
-                        }
-                        candidates.at(candId)->UpdateScore(pMesh, vertWeightList);
-                        candidates.at(candId)->UpdateSupportArea(pMesh, vertWeightList);
-                    }
-                    UpdateAcceptableAreaEnhance(pMesh, res, false);
+                UpdateAcceptableAreaEnhance(pMesh, res, 0.1);
+                SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 200, 0.5);
+                maxIterCount = 20;
+            }
+            else
+            {
+                UpdateAcceptableAreaEnhance(pMesh, res, 0.05);
+                SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 500, 0.7);
+                maxIterCount = 50;
+                accpetableTimes = 1;
+            }
 
-                    lastBestIndex = -2;
-                    lastBestTimes = 0;
-                }
-                else
+            for (int iterIndex = 0; iterIndex < maxIterCount; ++iterIndex)
+            {
+                if (AddNewCandidatesEnhance(candidates, pMesh, res, sampleFlag, vertWeightList, featureScores, sampleIndex) == false)
                 {
-                    if (lastBestIndex != bestIndex)
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Break: No New Candidates Found" << std::endl;
+                    continue;
+                }
+                while (true)
+                {
+                    int bestIndex = ChoseBestCandidate(candidates);
+                    if (bestIndex == -1)
                     {
-                        lastBestIndex = bestIndex;
+                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "no best candidate" << std::endl;
+                        break;
+                    }
+                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "scan" << scanId << " best index: " << bestIndex << " " << candidates.at(bestIndex)->GetScore() 
+                        << " " << candidates.at(bestIndex)->GetSupportArea() << 
+                        " " << acceptableArea << "                                " << candidates.at(bestIndex)->GetSupportArea() / candidates.at(bestIndex)->GetScore() 
+                        << " type: " << candidates.at(bestIndex)->GetType() << std::endl;
+                    if (bestIndex == lastBestIndex)
+                    {
+                        lastBestTimes++;
+                    }
+                    if (candidates.at(bestIndex)->GetSupportArea() > acceptableArea || lastBestTimes == accpetableTimes)
+                    {
+                        int candType = candidates.at(bestIndex)->GetType();
+                        std::vector<int> supportVert = candidates.at(bestIndex)->GetSupportVertex();
+                        for (std::vector<int>::iterator supportItr = supportVert.begin(); supportItr != supportVert.end(); ++supportItr)
+                        {
+                            res.at(*supportItr) = candType;
+                        }
+                        candidates.at(bestIndex)->SetRemoved(true);
+                        RemoveAcceptableCandidate(candidates, res);
+                        for (int candId = 0; candId < candidates.size(); candId++)
+                        {
+                            if (candidates.at(candId)->IsRemoved())
+                            {
+                                continue;
+                            }
+                            candidates.at(candId)->UpdateScore(pMesh, vertWeightList);
+                            candidates.at(candId)->UpdateSupportArea(pMesh, vertWeightList);
+                        }
+                        if (scanId == 0)
+                        {
+                            UpdateAcceptableAreaEnhance(pMesh, res, 0.2);
+                        }
+                        else if (scanId == 1)
+                        {
+                            UpdateAcceptableAreaEnhance(pMesh, res, 0.1);
+                        }
+                        else
+                        {
+                            UpdateAcceptableAreaEnhance(pMesh, res, 0.05);
+                        }
+                        
+                        lastBestIndex = -2;
                         lastBestTimes = 0;
                     }
+                    else
+                    {
+                        if (lastBestIndex != bestIndex)
+                        {
+                            lastBestIndex = bestIndex;
+                            lastBestTimes = 0;
+                        }
 
-                    break;
+                        break;
+                    }
+                }
+                if (scanId == 0 && iterIndex == 0)
+                {
+                    UpdateAcceptableAreaEnhance(pMesh, res, 0.2);
                 }
             }
-            if (iterIndex == 0)
-            {
-                UpdateAcceptableAreaEnhance(pMesh, res, false);
-            }
+            DebugLog << "large time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "large time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+
         //Find small candidates
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "small candidates++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-        int maxSmallCount = 10;
+        int maxSmallCount = 0;
         int acceptSize = 5;
         for (int smallIndex = 0; smallIndex < maxSmallCount; smallIndex++)
         {
@@ -1896,7 +1929,7 @@ namespace MagicDGP
                         candidates.at(candId)->UpdateScore(pMesh, vertWeightList);
                         candidates.at(candId)->UpdateSupportArea(pMesh, vertWeightList);
                     }
-                    UpdateAcceptableAreaEnhance(pMesh, res, false);
+                    UpdateAcceptableAreaEnhance(pMesh, res, 0.01);
                 }
                 else
                 {
@@ -2882,7 +2915,8 @@ namespace MagicDGP
             }
             if (validSampleId == -1)
             {
-                if (SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 200, 0.5))
+                return isNewAdded;
+                /*if (SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 200, 0.5))
                 {
                     validSampleId = sampleIndex.at(0);
                     sampleId = 1;
@@ -2891,7 +2925,7 @@ namespace MagicDGP
                 else
                 {
                     return isNewAdded;
-                }
+                }*/
             }
 
             sampleFlag.at(validSampleId) = 1;
@@ -2899,7 +2933,7 @@ namespace MagicDGP
             //Get vertex n neigbors
             int neighborRadius = 10;
             int minNeigborNum = 6;
-            int neigborSampleNum = 5;
+            int neigborSampleNum = 1;
             std::vector<int> neighborList;
             std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
             std::vector<int> tranStack;
@@ -3344,7 +3378,7 @@ namespace MagicDGP
         {
             return false;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SampleVertex validVertNum: " << validVertNum << std::endl;
+        DebugLog << "SampleVertex validVertNum: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
         for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
@@ -3766,7 +3800,7 @@ namespace MagicDGP
         return true;
     }
 
-    bool PrimitiveDetection::UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, bool isFirst)
+    bool PrimitiveDetection::UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, Real acceptScale)
     {
         Real validArea = 0;
         int faceNum = pMesh->GetFaceNumber();
@@ -3789,14 +3823,7 @@ namespace MagicDGP
                 continue;
             }
         }
-        if (isFirst)
-        {
-            acceptableArea = validArea / 2;
-        }
-        else
-        {
-            acceptableArea = validArea / 6;
-        }
+        acceptableArea = validArea * acceptScale;
         
         minSupportArea = validArea / 100;
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "UpdateAcceptableArea: valid: " << validArea << " Acceptable: " << acceptableArea << std::endl;
