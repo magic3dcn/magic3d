@@ -1944,6 +1944,16 @@ namespace MagicDGP
         {
             res.at(gSampleIndex.at(sid)) = PrimitiveType::Other;
         }
+        //Clear
+        for (std::vector<ShapeCandidate* >::iterator itr = candidates.begin(); itr != candidates.end(); ++itr)
+        {
+            if (*itr != NULL)
+            {
+                delete *itr;
+                *itr = NULL;
+            }
+        }
+        candidates.clear();
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
@@ -2968,6 +2978,10 @@ namespace MagicDGP
                 tranStack = tranStackNext;
             }
             int neighborSize = neighborList.size();
+            if (neighborSize < minNeigborNum)
+            {
+                continue;
+            }
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "neighbor size: " << neighborSize << std::endl;
 
             const Vertex3D* pVertCand0 = pMesh->GetVertex(validSampleId);
@@ -3192,7 +3206,7 @@ namespace MagicDGP
     int PrimitiveDetection::ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates)
     {
         Real bestScore = -1.0e10;
-        Real bestIndex = -1;
+        int bestIndex = -1;
         for (int candId = 0; candId < candidates.size(); candId++)
         {
             if (candidates.at(candId)->IsRemoved() == true)
@@ -3361,12 +3375,13 @@ namespace MagicDGP
     {
         int vertNum = pMesh->GetVertexNumber();
         //Get valid vertex
-        std::map<Real, int> validMap;
+        std::multimap<Real, int> validMap;
         for (int vid = 0; vid < vertNum; vid++)
         {
             if (sampleFlag.at(vid) == 0 && res.at(vid) == PrimitiveType::None)
             {
-                validMap[featureScores.at(vid)] = vid;
+                validMap.insert(std::pair<Real, int>(featureScores.at(vid), vid));
+                //validMap[featureScores.at(vid)] = vid;
             }
         }
         if (validMap.size() < 100)
@@ -3381,7 +3396,7 @@ namespace MagicDGP
         DebugLog << "SampleVertex validVertNum: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
-        for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
+        for (std::multimap<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
         {
             validVert.at(indexTemp) = validItr->second;
             indexTemp++;

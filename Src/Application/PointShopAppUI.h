@@ -29,6 +29,7 @@ namespace MagicApp
         void IntelligentSelect(MyGUI::Widget* pSender);
         void DeformPointSet(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
+        void EditSample(MyGUI::EditBox* _sender);
 
 
     private:

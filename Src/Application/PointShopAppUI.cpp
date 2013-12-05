@@ -20,6 +20,8 @@ namespace MagicApp
         InfoLog << "PointShopAppUI::Setup" << std::endl;
         MagicCore::ResourceManager::LoadResource("../../Media/PointShopApp", "FileSystem", "PointShopApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointShopApp.layout");
+        mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setOnlyText(std::string("test"));
+        mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->eventEditTextChange += MyGUI::newDelegate(this, &PointShopAppUI::EditSample);
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::OpenPointSet);
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SavePointSet);
@@ -59,6 +61,11 @@ namespace MagicApp
         MyGUI::LayoutManager::getInstance().unloadLayout(mRoot);
         mRoot.clear();
         MagicCore::ResourceManager::UnloadResource("PointShopApp");
+    }
+
+    void PointShopAppUI::EditSample(MyGUI::EditBox* _sender)
+    {
+        DebugLog << "edit changes" << std::endl;
     }
 
     void PointShopAppUI::OpenPointSet(MyGUI::Widget* pSender)

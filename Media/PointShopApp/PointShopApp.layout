@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 234 768" align="Left Top" layer="Back">
-        <Widget type="Button" skin="But_Open" position_real="0.0641026 0.0195313 0.24359 0.078125" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="But_Open" position_real="0.0641026 0.0195313 0.24359 0.078125" align="Left Top" name="But_Open">
+            <Property key="NeedToolTip" value="true"/>
+        </Widget>
         <Widget type="Button" skin="But_Save" position_real="0.0641026 0.109375 0.24359 0.078125" align="Left Top" name="But_Save">
             <Property key="Visible" value="false"/>
         </Widget>
@@ -24,19 +26,19 @@
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Home" position_real="0.0641026 0.78125 0.24359 0.078125" align="Left Bottom" name="But_Home"/>
-        <Widget type="Button" skin="Button" position_real="0.34188 0.325521 0.166667 0.0507813" align="Left Top" name="But_Sampling">
+        <Widget type="Button" skin="Button" position_real="0.337607 0.325521 0.166667 0.0507813" align="Left Top" name="But_Sampling">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.534188 0.325521 0.166667 0.0507813" align="Left Top" name="But_Smooth">
+        <Widget type="Button" skin="Button" position_real="0.529915 0.325521 0.166667 0.0507813" align="Left Top" name="But_Smooth">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position_real="0.726496 0.325521 0.166667 0.0507813" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.34188 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="Button" position_real="0.337607 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.534188 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="Button" position_real="0.529915 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position_real="0.726496 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Intelligent">
@@ -45,5 +47,15 @@
         <Widget type="Button" skin="Button" position_real="0.337607 0.227865 0.166667 0.0507813" align="Left Top" name="But_FlipNormal">
             <Property key="Visible" value="false"/>
         </Widget>
+        <Widget type="EditBox" skin="EditBox" position="165 105 50 135" align="Left Top" name="Edit_SampleNumber">
+            <Property key="Caption" value="test"/>
+            <Property key="TextColour" value="0.94152 0.0660716 0.0660716"/>
+        </Widget>
     </Widget>
+    <CodeGeneratorSettings>
+        <Property key="IncludeDirectory" value=""/>
+        <Property key="PanelName" value="test"/>
+        <Property key="PanelNamespace" value="nametest"/>
+        <Property key="SourceDirectory" value="D:\fun\MYGUI_3.2.0_win32\bin\release"/>
+    </CodeGeneratorSettings>
 </MyGUI>
