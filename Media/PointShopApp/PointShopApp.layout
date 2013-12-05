@@ -1,61 +1,55 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 234 768" align="Left Top" layer="Back">
-        <Widget type="Button" skin="But_Open" position_real="0.0641026 0.0195313 0.24359 0.078125" align="Left Top" name="But_Open">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 180 768" align="Left Top" layer="Back">
+        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open">
             <Property key="NeedToolTip" value="true"/>
         </Widget>
-        <Widget type="Button" skin="But_Save" position_real="0.0641026 0.109375 0.24359 0.078125" align="Left Top" name="But_Save">
+        <Widget type="Button" skin="But_Save" position="15 85 60 60" align="Left Top" name="But_Save">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.0641026 0.201823 0.252137 0.078125" align="Left Top" name="But_CalNormal">
+        <Widget type="Button" skin="Button" position="14 155 60 60" align="Left Top" name="But_CalNormal">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Smooth" position="15 228 57 60" align="Left Top" name="But_Filter">
+        <Widget type="Button" skin="But_Smooth" position="15 230 57 60" align="Left Top" name="But_Filter">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.0641026 0.390625 0.24359 0.078125" align="Left Top" name="But_Reconstruction">
+        <Widget type="Button" skin="Button" position="15 300 60 60" align="Left Top" name="But_Reconstruction">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.0641026 0.484375 0.24359 0.078125" align="Left Top" name="But_AddNoise">
+        <Widget type="Button" skin="Button" position="15 370 60 60" align="Left Top" name="But_AddNoise">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.0641026 0.585938 0.24359 0.078125" align="Left Top" name="But_Select">
+        <Widget type="Button" skin="Button" position="15 445 60 60" align="Left Top" name="But_Select">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.0641026 0.683594 0.24359 0.078125" align="Left Top" name="But_Deform">
+        <Widget type="Button" skin="Button" position="15 520 60 60" align="Left Top" name="But_Deform">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Home" position_real="0.0641026 0.78125 0.24359 0.078125" align="Left Bottom" name="But_Home"/>
-        <Widget type="Button" skin="Button" position_real="0.337607 0.325521 0.166667 0.0507813" align="Left Top" name="But_Sampling">
+        <Widget type="Button" skin="But_Home" position="15 590 60 60" align="Left Bottom" name="But_Home"/>
+        <Widget type="Button" skin="Button" position="80 265 25 25" align="Left Top" name="But_Sampling">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.529915 0.325521 0.166667 0.0507813" align="Left Top" name="But_Smooth">
+        <Widget type="Button" skin="Button" position="110 230 25 25" align="Left Top" name="But_Smooth">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.726496 0.325521 0.166667 0.0507813" align="Left Top" name="But_Outlier">
+        <Widget type="Button" skin="Button" position="80 230 25 25" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.337607 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="Button" position="80 445 25 25" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.529915 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="Button" position="110 445 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.726496 0.609375 0.166667 0.0507813" align="Left Top" name="But_Select_Intelligent">
+        <Widget type="Button" skin="Button" position="140 445 25 25" align="Left Top" name="But_Select_Intelligent">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.337607 0.227865 0.166667 0.0507813" align="Left Top" name="But_FlipNormal">
+        <Widget type="Button" skin="Button" position="80 155 25 25" align="Left Top" name="But_FlipNormal">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="EditBox" skin="EditBox" position="165 105 50 135" align="Left Top" name="Edit_SampleNumber">
-            <Property key="Caption" value="test"/>
-            <Property key="TextColour" value="0.94152 0.0660716 0.0660716"/>
+        <Widget type="EditBox" skin="EditBox" position="110 265 60 25" align="Left Top" name="Edit_SampleNumber">
+            <Property key="TextColour" value="0.662745 0.505882 0.458824"/>
+            <Property key="Visible" value="false"/>
         </Widget>
     </Widget>
-    <CodeGeneratorSettings>
-        <Property key="IncludeDirectory" value=""/>
-        <Property key="PanelName" value="test"/>
-        <Property key="PanelNamespace" value="nametest"/>
-        <Property key="SourceDirectory" value="D:\fun\MYGUI_3.2.0_win32\bin\release"/>
-    </CodeGeneratorSettings>
 </MyGUI>

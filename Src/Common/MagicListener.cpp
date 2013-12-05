@@ -56,13 +56,15 @@ namespace MagicCore
 
     bool MagicListener::keyPressed( const OIS::KeyEvent &arg )
     {
-        MyGUI::InputManager::getInstance().injectKeyPress(MyGUI::KeyCode::Enum(arg.key));
+        MyGUI::KeyCode code = MyGUI::KeyCode::Enum(arg.key);
+        MyGUI::InputManager::getInstance().injectKeyPress(code, arg.text);
         return AppManager::GetSingleton()->KeyPressed(arg);
     }
 
     bool MagicListener::keyReleased( const OIS::KeyEvent &arg )
     {
-        MyGUI::InputManager::getInstance().injectKeyRelease(MyGUI::KeyCode::Enum(arg.key));
+        MyGUI::KeyCode code = MyGUI::KeyCode::Enum(arg.key);
+        MyGUI::InputManager::getInstance().injectKeyRelease(code);
         return AppManager::GetSingleton()->KeyReleased(arg);
     }
 
