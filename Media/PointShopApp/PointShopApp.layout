@@ -1,29 +1,27 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 180 768" align="Left Top" layer="Back">
-        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open">
-            <Property key="NeedToolTip" value="true"/>
-        </Widget>
+        <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open"/>
         <Widget type="Button" skin="But_Save" position="15 85 60 60" align="Left Top" name="But_Save">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position="14 155 60 60" align="Left Top" name="But_CalNormal">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Smooth" position="15 230 57 60" align="Left Top" name="But_Filter">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position="15 300 60 60" align="Left Top" name="But_Reconstruction">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position="15 370 60 60" align="Left Top" name="But_AddNoise">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position="15 445 60 60" align="Left Top" name="But_Select">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="Button" position="15 520 60 60" align="Left Top" name="But_Deform">
-            <Property key="Visible" value="false"/>
+            <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Home" position="15 590 60 60" align="Left Bottom" name="But_Home"/>
         <Widget type="Button" skin="Button" position="80 265 25 25" align="Left Top" name="But_Sampling">

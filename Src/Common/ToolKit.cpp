@@ -8,7 +8,8 @@ namespace MagicCore
 
     ToolKit::ToolKit(void) : 
         mAppRunning(true), 
-        mIsONIInitialized(false)
+        mIsONIInitialized(false),
+        mMousePressLocked(false)
     {
     }
 
@@ -21,7 +22,7 @@ namespace MagicCore
         return mpToolKit;
     }
 
-    float ToolKit::GetTime()
+    double ToolKit::GetTime()
     {
         static __int64 start = 0;
         static __int64 frequency = 0;
@@ -35,7 +36,7 @@ namespace MagicCore
 
         __int64 counter = 0;
         QueryPerformanceCounter((LARGE_INTEGER*)&counter);
-        return (float) ((counter - start) / double(frequency));
+        return (double) ((counter - start) / double(frequency));
     }
 
     bool ToolKit::FileOpenDlg(std::string& selectFileName, char* filterName)
@@ -154,6 +155,16 @@ namespace MagicCore
             colorV[2] = 0;
         }
         return colorV;
+    }
+
+    void ToolKit::SetMousePressLocked(bool locked)
+    {
+        mMousePressLocked = locked;
+    }
+
+    bool ToolKit::IsMousePressLocked() const
+    {
+        return mMousePressLocked;
     }
 
     ToolKit::~ToolKit(void)

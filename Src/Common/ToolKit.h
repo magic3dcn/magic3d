@@ -11,7 +11,7 @@ namespace MagicCore
         ToolKit(void);
     public:
         static ToolKit* GetSingleton(void);
-        static float GetTime(void);
+        static double GetTime(void);
         static bool FileOpenDlg(std::string& selectFileName, char* filterName);
         static bool FileSaveDlg(std::string& selectFileName, char* filterName);
         static MagicDGP::Vector3 ColorCoding(float f);
@@ -20,12 +20,15 @@ namespace MagicCore
         void SetAppRunning(bool bRunning);
         bool IsONIInitialized(void);
         void SetONIInitialized(bool bInitialized);
+        void SetMousePressLocked(bool locked);
+        bool IsMousePressLocked() const;
         
         virtual ~ToolKit(void);
 
     private:
         bool mAppRunning;
         bool mIsONIInitialized;
+        bool mMousePressLocked; //this is just a hack
 	};
 }
 

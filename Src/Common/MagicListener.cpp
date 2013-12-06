@@ -38,20 +38,36 @@ namespace MagicCore
 
     bool MagicListener::mouseMoved( const OIS::MouseEvent &arg )
     {
+        ToolKit::GetSingleton()->SetMousePressLocked(false);
         MyGUI::InputManager::getInstance().injectMouseMove(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
         return AppManager::GetSingleton()->MouseMoved(arg);
+        
     }
 
     bool MagicListener::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
-        return AppManager::GetSingleton()->MousePressed(arg, id);
+        if (ToolKit::GetSingleton()->IsMousePressLocked())
+        {
+            return true;
+        }
+        else
+        {
+            MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
+            return AppManager::GetSingleton()->MousePressed(arg, id);
+        }
     }
 
     bool MagicListener::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
-        return AppManager::GetSingleton()->MouseReleased(arg, id);
+        if (ToolKit::GetSingleton()->IsMousePressLocked())
+        {
+            return true;
+        }
+        else
+        {
+            MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
+            return AppManager::GetSingleton()->MouseReleased(arg, id);
+        }
     }
 
     bool MagicListener::keyPressed( const OIS::KeyEvent &arg )
@@ -79,6 +95,11 @@ namespace MagicCore
     {
         ToolKit::GetSingleton()->SetAppRunning(false);
         return true;
+    }
+
+    void MagicListener::windowFocusChange(Ogre::RenderWindow* rw)
+    {
+        ToolKit::GetSingleton()->SetMousePressLocked(true);
     }
 
     MagicListener::~MagicListener()
