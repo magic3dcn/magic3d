@@ -19,12 +19,12 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
-        bool OpenPointSet(bool& hasNormal);
+        bool OpenPointSet(bool& hasNormal, int& pointNum);
         void SavePointSet();
         void CalPointSetNormal();
         void FlipPointSetNormal();
         void SmoothPointSet();
-        void SamplePointSet();
+        bool SamplePointSet(int sampleNum);
         void RemoveOutlier();
         void Reconstruction();
         void AddNoise();
@@ -36,7 +36,7 @@ namespace MagicApp
     private:
         void SetupScene(void);
         void ShutdownScene(void);
-
+        void UpdatePointSetRendering();
 
     private:
         PointShopAppUI mUI;

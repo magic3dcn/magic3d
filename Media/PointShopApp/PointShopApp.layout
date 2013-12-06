@@ -33,20 +33,20 @@
         <Widget type="Button" skin="Button" position="80 230 25 25" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="80 445 25 25" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="Button" position="80 460 25 25" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="110 445 25 25" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="Button" position="110 460 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="140 445 25 25" align="Left Top" name="But_Select_Intelligent">
+        <Widget type="Button" skin="Button" position="140 460 25 25" align="Left Top" name="But_Select_Intelligent">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="80 155 25 25" align="Left Top" name="But_FlipNormal">
+        <Widget type="Button" skin="Button" position="80 170 25 25" align="Left Top" name="But_FlipNormal">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="EditBox" skin="EditBox" position="110 265 60 25" align="Left Top" name="Edit_SampleNumber">
-            <Property key="TextColour" value="0.662745 0.505882 0.458824"/>
+            <Property key="TextColour" value="0.286275 0.254902 0.4"/>
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>

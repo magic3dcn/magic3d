@@ -67,16 +67,23 @@ namespace MagicApp
         if (pPSA != NULL)
         {
             bool hasNormal = false;
-            if (pPSA->OpenPointSet(hasNormal))
+            int pointNum = 0;
+            if (pPSA->OpenPointSet(hasNormal, pointNum))
             {
                 mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setEnabled(hasNormal);
+                mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setVisible(hasNormal);
                 mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
                 mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+
+                std::stringstream ss;
+                std::string textString;
+                ss << pointNum;
+                ss >> textString;
+                mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
             }
         }       
     }
@@ -97,7 +104,7 @@ namespace MagicApp
         {
             pPSA->CalPointSetNormal();
             mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(true);
-            mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setEnabled(true);
+            mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setVisible(true);
         }
     }
 
@@ -114,9 +121,9 @@ namespace MagicApp
     {
         bool isVisible = mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->isVisible();
         mRoot.at(0)->findWidget("But_Sampling")->castType<MyGUI::Button>()->setVisible(!isVisible);
-        mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setVisible(!isVisible);
     }
 
     void PointShopAppUI::SmoothPointSet(MyGUI::Widget* pSender)
@@ -126,17 +133,35 @@ namespace MagicApp
 
     void PointShopAppUI::SamplePointSet(MyGUI::Widget* pSender)
     {
-
+        std::string textString = mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->getOnlyText();
+        int sampleNum = std::atoi(textString.c_str());
+        if (sampleNum > 0)
+        {
+            PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+            if (pPSA != NULL)
+            {
+                pPSA->SamplePointSet(sampleNum);
+            }
+        }
+        DebugLog << "PointShopAppUI::SamplePointSet: " << sampleNum << " " << textString.c_str() << std::endl;
     }
 
     void PointShopAppUI::RemoveOutlier(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->RemoveOutlier();
+        }
     }
 
     void PointShopAppUI::Reconstruction(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->Reconstruction();
+        }
     }
 
     void PointShopAppUI::AddNoise(MyGUI::Widget* pSender)

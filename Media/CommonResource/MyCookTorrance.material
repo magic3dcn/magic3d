@@ -34,7 +34,7 @@ material MyCookTorrancePoint
     {
         pass
         {
-            point_size 1
+            point_size 2
 
             vertex_program_ref VCookTorrancePoint
             {

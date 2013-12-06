@@ -11,6 +11,8 @@ namespace MagicApp
 
         void Setup();
         void Shutdown();
+        
+        void SetupFromPointShopApp(int vertNum);
 
     private:
         void OpenMesh(MyGUI::Widget* pSender);

@@ -248,7 +248,8 @@ namespace MagicDGP
         int psNum = pPS->GetPointNumber();
         if (sampleNum > psNum)
         {
-            sampleNum = psNum;
+            DebugLog << "Error: sampleNum > pointNum" << std::endl;
+            return NULL;
         }
         std::vector<bool> sampleFlag(psNum, 0);
         std::vector<int> sampleIndex(sampleNum);

@@ -80,7 +80,7 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
     }
 
-    bool MeshShopApp::OpenMesh()
+    bool MeshShopApp::OpenMesh(int& vertNum)
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
@@ -89,6 +89,7 @@ namespace MagicApp
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
             {
+                vertNum = pMesh->GetVertexNumber();
                 pMesh->UnifyPosition(2.0);
                 pMesh->UpdateNormal();
                 if (mpMesh != NULL)
@@ -161,5 +162,16 @@ namespace MagicApp
     void MeshShopApp::DeformMesh()
     {
 
+    }
+
+    void MeshShopApp::SetupFromPointShopApp(MagicDGP::Mesh3D* pMesh)
+    {
+        if (mpMesh != NULL)
+        {
+            delete mpMesh;
+        }
+        mpMesh = pMesh;
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        mUI.SetupFromPointShopApp(mpMesh->GetVertexNumber());
     }
 }

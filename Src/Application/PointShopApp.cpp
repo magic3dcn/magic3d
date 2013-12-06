@@ -4,6 +4,10 @@
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../DGP/Consolidation.h"
+#include "../DGP/Filter.h"
+#include "../DGP/MeshReconstruction.h"
+#include "../Common/AppManager.h"
+#include "../Application/MeshShopApp.h"
 
 namespace MagicApp
 {
@@ -59,7 +63,7 @@ namespace MagicApp
         return true;
     }
 
-    bool PointShopApp::OpenPointSet(bool& hasNormal)
+    bool PointShopApp::OpenPointSet(bool& hasNormal, int& pointNum)
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
@@ -69,20 +73,14 @@ namespace MagicApp
             if (pPointSet != NULL)
             {
                 hasNormal = pPointSet->HasNormal();
+                pointNum = pPointSet->GetPointNumber();
                 pPointSet->UnifyPosition(2.0);
                 if (mpPointSet != NULL)
                 {
                     delete mpPointSet;
                 }
                 mpPointSet = pPointSet;
-                if (hasNormal)
-                {
-                    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
-                }
-                else
-                {
-                    MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
-                }
+                UpdatePointSetRendering();
                 
                 return true;
             }
@@ -113,7 +111,7 @@ namespace MagicApp
     void PointShopApp::CalPointSetNormal()
     {
         MagicDGP::Consolidation::CalPointSetNormal(mpPointSet);
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+        UpdatePointSetRendering();
     }
 
     void PointShopApp::FlipPointSetNormal()
@@ -125,7 +123,7 @@ namespace MagicApp
             nor *= -1;
             mpPointSet->GetPoint(pid)->SetNormal(nor);
         }
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+        UpdatePointSetRendering();
     }
 
     void PointShopApp::SmoothPointSet()
@@ -133,19 +131,62 @@ namespace MagicApp
 
     }
 
-    void PointShopApp::SamplePointSet()
+    bool PointShopApp::SamplePointSet(int sampleNum)
     {
-
+        MagicDGP::Point3DSet* pSamplePointSet = MagicDGP::Filter::PointSetSampling(mpPointSet, sampleNum);
+        if (pSamplePointSet != NULL)
+        {
+            //transfer property
+            pSamplePointSet->SetHasNormal(mpPointSet->HasNormal());
+            //
+            delete mpPointSet;
+            mpPointSet = pSamplePointSet;
+            UpdatePointSetRendering();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void PointShopApp::RemoveOutlier()
     {
-
+        if (mpPointSet != NULL)
+        {
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Filter::RemovePointSetOutlier(mpPointSet, 0.02);
+            if (pNewPS != NULL)
+            {
+                //transfer property
+                pNewPS->SetHasNormal(mpPointSet->HasNormal());
+                //
+                delete mpPointSet;
+                mpPointSet = pNewPS;
+                UpdatePointSetRendering();
+            }
+        }
     }
 
     void PointShopApp::Reconstruction()
     {
-
+        mpPointSet->CalculateBBox();
+        mpPointSet->CalculateDensity();
+        MagicDGP::Mesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
+        if (pNewMesh != NULL)
+        {
+            //pNewMesh->UnifyPosition(2);
+            //pNewMesh->UpdateNormal();
+            MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
+            MeshShopApp* pMSApp = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+            if (pMSApp != NULL)
+            {
+                pMSApp->SetupFromPointShopApp(pNewMesh);
+            }
+            else
+            {
+                WarnLog << "Get MeshShopApp Failed" << std::endl;
+            }
+        }
     }
 
     void PointShopApp::AddNoise()
@@ -194,5 +235,17 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderPointSet");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+    }
+
+    void PointShopApp::UpdatePointSetRendering()
+    {
+        if (mpPointSet->HasNormal())
+        {
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "MyCookTorrancePoint", mpPointSet);
+        }
+        else
+        {
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
+        }
     }
 }

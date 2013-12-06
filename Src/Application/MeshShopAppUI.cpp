@@ -27,25 +27,39 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::FilterMesh);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::SmoothMesh);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Simplify")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::SimplifyMesh);
-        mRoot.at(0)->findWidget("But_Simplify")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Simplify")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::RemoveOutlier);
-        mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::AddNoise);
         mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::SelectMesh);
         mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::RectangleSelect);
-        mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::CycleSelect);
-        mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::IntelligentSelect);
-        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::DeformMesh);
         mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::BackToHome);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(60, 60);
+    }
+
+    void MeshShopAppUI::SetupFromPointShopApp(int vertNum)
+    {
+        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+        std::stringstream ss;
+        std::string textString;
+        ss << vertNum;
+        ss >> textString;
+        mRoot.at(0)->findWidget("Edit_SimplifyNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
     }
 
     void MeshShopAppUI::Shutdown()
@@ -60,7 +74,21 @@ namespace MagicApp
         MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
         if (pMSA != NULL)
         {
-            pMSA->OpenMesh();
+            int vertNum = 0;
+            if (pMSA->OpenMesh(vertNum))
+            {
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+
+                std::stringstream ss;
+                std::string textString;
+                ss << vertNum;
+                ss >> textString;
+                mRoot.at(0)->findWidget("Edit_SimplifyNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
+            }
         }
     }
 
@@ -75,7 +103,11 @@ namespace MagicApp
 
     void MeshShopAppUI::FilterMesh(MyGUI::Widget* pSender)
     {
-
+        bool isVisible = mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->isVisible();
+        mRoot.at(0)->findWidget("But_Simplify")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("Edit_SimplifyNumber")->castType<MyGUI::EditBox>()->setVisible(!isVisible);
     }
 
     void MeshShopAppUI::SmoothMesh(MyGUI::Widget* pSender)

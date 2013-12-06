@@ -19,7 +19,7 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
-        bool OpenMesh();
+        bool OpenMesh(int& vertNum);
         void SaveMesh();
         void SmoothMesh();
         void SimplifyMesh();
@@ -29,6 +29,8 @@ namespace MagicApp
         void CycleSelect();
         void IntelligentSelect();
         void DeformMesh();
+
+        void SetupFromPointShopApp(MagicDGP::Mesh3D* pMesh);
 
     private:
         void SetupScene(void);
