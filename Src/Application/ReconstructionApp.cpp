@@ -85,7 +85,7 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light* frontLight = pSceneMgr->createLight("frontLight");
-        frontLight->setPosition(0, 0, 500);
+        frontLight->setPosition(0, 0, 100000);
         frontLight->setDiffuseColour(0.8, 0.8, 0.8);
         frontLight->setSpecularColour(0.5, 0.5, 0.5);
     }
@@ -279,7 +279,7 @@ namespace MagicApp
                 pMObj = pSceneMgr->createManualObject(psName);
                 pSceneMgr->getRootSceneNode()->attachObject(pMObj);
             }
-            pMObj->begin("SimplePoint", Ogre::RenderOperation::OT_POINT_LIST);
+            pMObj->begin("MyCookTorrancePoint", Ogre::RenderOperation::OT_POINT_LIST);
             int pointNum = posList.size();
             for (int i = 0; i < pointNum; i++)
             {
@@ -293,6 +293,7 @@ namespace MagicApp
                 MagicDGP::Vector3 nor = norList.at(i);
                 pMObj->position(pos[0], pos[1], pos[2]);
                 pMObj->normal(nor[0], nor[1], nor[2]);
+                pMObj->colour(0.86, 0.86, 0.86);
             }
             pMObj->end();
         }
@@ -430,7 +431,7 @@ namespace MagicApp
         sdf.UpdateFineSDF(mpPointSet, &lastTrans);
         delete mpPointSet;
         mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
@@ -454,7 +455,7 @@ namespace MagicApp
             float timeExtract = MagicCore::ToolKit::GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
@@ -482,7 +483,7 @@ namespace MagicApp
         sdf.UpdateFineSDF(mpPointSet, &lastTrans);
         delete mpPointSet;
         mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
@@ -507,7 +508,7 @@ namespace MagicApp
             float timeExtract = MagicCore::ToolKit::GetTime();
             mpPointSet = sdf.ExtractFinePointCloud();//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
@@ -532,7 +533,7 @@ namespace MagicApp
         sdf.UpdateFineSDF(mpPointSet, &lastTrans);
         delete mpPointSet;
         mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
@@ -558,7 +559,7 @@ namespace MagicApp
             mpPointSet = sdf.ExtractFinePointCloud();//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
             //sdf.ResetSDF();
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
@@ -572,7 +573,7 @@ namespace MagicApp
         if (mpPointSet != NULL)
         {
             mpPointSet->UnifyPosition(2.f);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
             MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
             mUsingViewTool = true;
         }
@@ -796,7 +797,7 @@ namespace MagicApp
             {
                 delete mpPointSet;
                 mpPointSet = pNewPS;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "SimplePoint", mpPointSet);
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
             }
         }
     }

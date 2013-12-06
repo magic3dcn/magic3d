@@ -87,7 +87,7 @@ namespace MagicApp
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light*  sl = pSceneMgr->createLight("SimpleLight");
-        sl->setPosition(10, 10, 20);
+        sl->setPosition(0, 0, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
     }
@@ -118,7 +118,7 @@ namespace MagicApp
                     delete mpPointSet;
                 }
                 mpPointSet = pPointSet;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "SimplePoint", mpPointSet);
+                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "MyCookTorrancePoint", mpPointSet);
                 if (mpMesh != NULL)
                 {
                     delete mpMesh;
