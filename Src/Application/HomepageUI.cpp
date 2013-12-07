@@ -27,13 +27,11 @@ namespace MagicApp
     {
         MagicCore::ResourceManager::LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
-        mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(345, 85);
+        mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(406, 110);
         mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointShopApp);
         mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterMeshShopApp);
         mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointViewer);
-        mRoot.at(0)->findWidget("But_Viewer")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
@@ -60,12 +58,6 @@ namespace MagicApp
     {
         InfoLog << "EnterMeshShopApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
-    }
-
-    void HomepageUI::EnterPointViewer(MyGUI::Widget* pSender)
-    {
-        InfoLog << "EnterPointViewer Clicked" << std::endl;
-        MagicCore::AppManager::GetSingleton()->EnterApp(new PointSetViewer, "PointSetViewer");
     }
 
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)

@@ -11,6 +11,9 @@ namespace MagicApp
 
         void Setup();
         void Shutdown();
+        void SetupFromPointsetInput(bool hasNormal, int pointNum);
+        void SetProgressBarPosition(int pos);
+        void SetProgressBarRange(int range);
 
     private:
         void OpenPointSet(MyGUI::Widget* pSender);

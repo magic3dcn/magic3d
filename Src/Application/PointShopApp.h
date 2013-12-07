@@ -33,6 +33,8 @@ namespace MagicApp
         void IntelligentSelect();
         void DeformPointSet();
 
+        void SetupFromPointsetInput(MagicDGP::Point3DSet* pPS);
+
     private:
         void SetupScene(void);
         void ShutdownScene(void);

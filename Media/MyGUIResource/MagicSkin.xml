@@ -16,9 +16,9 @@
             <State name="pushed" offset="946 261 86 87"/>
         </BasisSkin>
     </Resource>
-    <Resource type="ResourceSkin" name="Image_Title" size="344 84" texture="MagicSkin.png">
-        <BasisSkin type="SubSkin" offset="0 0 344 84" align="Stretch">
-            <State name="normal" offset="40 1416 344 84"/>
+    <Resource type="ResourceSkin" name="Image_Title" size="480 130" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 480 130" align="Stretch">
+            <State name="normal" offset="37 1427 480 130"/>
         </BasisSkin>
     </Resource>
     <Resource type="ResourceSkin" name="But_Viewer" size="86 86" texture="MagicSkin.png">
@@ -159,6 +159,94 @@
             <State name="normal" offset="603 88 86 86"/>
             <State name="highlighted" offset="603 175 86 86"/>
             <State name="pushed" offset="603 262 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Normal" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1549 1 86 86"/>
+            <State name="normal" offset="1549 88 86 86"/>
+            <State name="highlighted" offset="1549 175 86 86"/>
+            <State name="pushed" offset="1549 262 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Flip" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="0 349 86 86"/>
+            <State name="normal" offset="0 436 86 86"/>
+            <State name="highlighted" offset="0 523 86 86"/>
+            <State name="pushed" offset="0 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_MeshTool" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="87 349 86 86"/>
+            <State name="normal" offset="87 436 86 86"/>
+            <State name="highlighted" offset="87 523 86 86"/>
+            <State name="pushed" offset="87 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Sampling" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="173 349 86 86"/>
+            <State name="normal" offset="173 436 86 86"/>
+            <State name="highlighted" offset="173 523 86 86"/>
+            <State name="pushed" offset="173 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Outlier" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="259 349 86 86"/>
+            <State name="normal" offset="259 436 86 86"/>
+            <State name="highlighted" offset="259 523 86 86"/>
+            <State name="pushed" offset="259 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Noise" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="345 349 86 86"/>
+            <State name="normal" offset="345 436 86 86"/>
+            <State name="highlighted" offset="345 523 86 86"/>
+            <State name="pushed" offset="345 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Select" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="431 349 86 86"/>
+            <State name="normal" offset="431 436 86 86"/>
+            <State name="highlighted" offset="431 523 86 86"/>
+            <State name="pushed" offset="431 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Rectangle" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="517 349 86 86"/>
+            <State name="normal" offset="517 436 86 86"/>
+            <State name="highlighted" offset="517 523 86 86"/>
+            <State name="pushed" offset="517 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Cycle" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="603 349 86 86"/>
+            <State name="normal" offset="603 436 86 86"/>
+            <State name="highlighted" offset="603 523 86 86"/>
+            <State name="pushed" offset="603 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Brush" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="689 349 86 86"/>
+            <State name="normal" offset="689 436 86 86"/>
+            <State name="highlighted" offset="689 523 86 86"/>
+            <State name="pushed" offset="689 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Deform" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="775 349 86 86"/>
+            <State name="normal" offset="775 436 86 86"/>
+            <State name="highlighted" offset="775 523 86 86"/>
+            <State name="pushed" offset="775 610 86 86"/>
         </BasisSkin>
     </Resource>
 </MyGUI>

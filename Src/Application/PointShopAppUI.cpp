@@ -3,6 +3,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
+#include "../Common/RenderSystem.h"
 #include "PointShopApp.h"
 
 namespace MagicApp
@@ -27,7 +28,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::CalPointSetNormal);
         mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FlipPointSetNormal);
-        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setSize(25, 25);
+        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FilterPointSet);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SmoothPointSet);
@@ -61,6 +62,33 @@ namespace MagicApp
         MagicCore::ResourceManager::UnloadResource("PointShopApp");
     }
 
+    void PointShopAppUI::SetupFromPointsetInput(bool hasNormal, int pointNum)
+    {
+        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setEnabled(hasNormal);
+        mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
+        mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
+        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
+        std::stringstream ss;
+        std::string textString;
+        ss << pointNum;
+        ss >> textString;
+        mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
+    }
+
+    void PointShopAppUI::SetProgressBarPosition(int pos)
+    {
+        mRoot.at(0)->findWidget("Progress_General")->castType<MyGUI::ProgressBar>()->setProgressPosition(pos);
+    }
+
+    void PointShopAppUI::SetProgressBarRange(int range)
+    {
+        mRoot.at(0)->findWidget("Progress_General")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
+    }
+
     void PointShopAppUI::OpenPointSet(MyGUI::Widget* pSender)
     {
         PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
@@ -72,7 +100,7 @@ namespace MagicApp
             {
                 mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setVisible(hasNormal);
+                mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setEnabled(hasNormal);
                 mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
                 mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
@@ -104,7 +132,7 @@ namespace MagicApp
         {
             pPSA->CalPointSetNormal();
             mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(true);
-            mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setEnabled(true);
         }
     }
 
@@ -171,7 +199,10 @@ namespace MagicApp
 
     void PointShopAppUI::SelectPointSet(MyGUI::Widget* pSender)
     {
-
+        bool isVisible = mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->isVisible();
+        mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setVisible(!isVisible);
     }
 
     void PointShopAppUI::RectangleSelect(MyGUI::Widget* pSender)

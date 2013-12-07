@@ -55,6 +55,19 @@ namespace MagicApp
 
     bool MeshShopApp::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (arg.key == OIS::KC_V && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
+        }
+        else if (arg.key == OIS::KC_E && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_WIREFRAME);
+        }
+        else if (arg.key == OIS::KC_F && mpMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
+        }
+
         return true;
     }
 
@@ -164,7 +177,7 @@ namespace MagicApp
 
     }
 
-    void MeshShopApp::SetupFromPointShopApp(MagicDGP::Mesh3D* pMesh)
+    void MeshShopApp::SetupFromMeshInput(MagicDGP::Mesh3D* pMesh)
     {
         if (mpMesh != NULL)
         {
@@ -172,6 +185,6 @@ namespace MagicApp
         }
         mpMesh = pMesh;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
-        mUI.SetupFromPointShopApp(mpMesh->GetVertexNumber());
+        mUI.SetupFromMeshInput(mpMesh->GetVertexNumber());
     }
 }

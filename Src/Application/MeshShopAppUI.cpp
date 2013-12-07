@@ -48,7 +48,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(60, 60);
     }
 
-    void MeshShopAppUI::SetupFromPointShopApp(int vertNum)
+    void MeshShopAppUI::SetupFromMeshInput(int vertNum)
     {
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setEnabled(true);
@@ -136,7 +136,10 @@ namespace MagicApp
 
     void MeshShopAppUI::SelectMesh(MyGUI::Widget* pSender)
     {
-
+        bool isVisible = mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->isVisible();
+        mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setVisible(!isVisible);
     }
 
     void MeshShopAppUI::RectangleSelect(MyGUI::Widget* pSender)

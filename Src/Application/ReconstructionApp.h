@@ -31,14 +31,6 @@ namespace MagicApp
         void ChangeFrontRange(int rel);
         void ChangeBackRange(int rel);
         void PointSetRegistration();
-        void PointSetRegistrationEnhance();
-        void PointSetRegistrationEnhance2();
-        void SetupPointSetProcessing();
-        bool SavePointSet();
-        bool ReconstructPointSet();
-        void FilterPointSetOutliers();
-        bool SaveMesh3D();
-        void SmoothMesh3D();
        
     private:
         void SetupRenderScene();
@@ -56,8 +48,6 @@ namespace MagicApp
         openni::Device mDevice;
         openni::VideoStream mDepthStream;
         bool mIsScannerDisplaying;
-        MagicDGP::Point3DSet* mpPointSet;
-        MagicDGP::Mesh3D* mpMesh;
         float mLeftLimit, mRightLimit, mTopLimit, mDownLimit, mFrontLimit, mBackLimit;
         int mFrameStartIndex, mFrameEndIndex, mFrameCurrent;
         bool mIsNeedRangeLimitCaculation;

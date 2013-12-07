@@ -8,14 +8,14 @@
 #include "../DGP/MeshReconstruction.h"
 #include "../DGP/Sampling.h"
 #include "../DGP/Filter.h"
+#include "../Common/AppManager.h"
+#include "PointShopApp.h"
 
 namespace MagicApp
 {
     ReconstructionApp::ReconstructionApp() :
         mUsingViewTool(false),
         mIsScannerDisplaying(false),
-        mpPointSet(NULL),
-        mpMesh(NULL), 
         mLeftLimit(-1000.f), 
         mRightLimit(1000.f), 
         mTopLimit(1000.f), 
@@ -55,7 +55,7 @@ namespace MagicApp
         ReleaseRenderScene();
         ReleaseDevice();
         mUI.Shutdown();
-
+        InfoLog << "ReconstructionApp::Exit" << std::endl;
         return true;
     }
 
@@ -98,16 +98,6 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("ScannerDepth");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
         mUsingViewTool = false;
-        if (mpPointSet != NULL)
-        {
-            delete mpPointSet;
-            mpPointSet = NULL;
-        }
-        if (mpMesh != NULL)
-        {
-            delete mpMesh;
-            mpMesh = NULL;
-        }
     }
 
     bool ReconstructionApp::SetupDevice()
@@ -425,65 +415,11 @@ namespace MagicApp
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
         MagicDGP::HomoMatrix4 lastTrans;
         lastTrans.Unit();
-        //MagicDGP::Point3DSet* pRefPC = GetPointSetFromRecord(mFrameStartIndex);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Get Ref Point Set" << std::endl;
-        mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
-        sdf.UpdateFineSDF(mpPointSet, &lastTrans);
-        delete mpPointSet;
-        mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-        MagicCore::RenderSystem::GetSingleton()->Update();
-        for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
-        {
-            float timeStart = MagicCore::ToolKit::GetTime();
-            mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
-            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);
-            MagicDGP::HomoMatrix4 newTrans;
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
-            float timeRegistrate = MagicCore::ToolKit::GetTime();
-            MagicDGP::Registration registrate;
-            registrate.ICPRegistrate(mpPointSet, pNewPC, &lastTrans, &newTrans);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
-            float timeUpdateSDF = MagicCore::ToolKit::GetTime();
-            sdf.UpdateSDF(pNewPC, &newTrans);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
-            lastTrans = newTrans;
-            delete mpPointSet;
-            delete pNewPC;
-            pNewPC = NULL;
-            float timeExtract = MagicCore::ToolKit::GetTime();
-            mpPointSet = sdf.ExtractFinePointCloud();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-            MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
-        }
-        //
-        mUI.StartPostProcess();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistration: End" << std::endl;
-    }
-
-    void ReconstructionApp::PointSetRegistrationEnhance()
-    {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
-             " " << mFrontLimit << " " << mBackLimit << std::endl;
-        mIsScannerDisplaying = false;
-        //
-        // Do Registration
-        //
-        //initialize
-        mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
-        MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
-        MagicDGP::HomoMatrix4 lastTrans;
-        lastTrans.Unit();
-        mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
-        sdf.UpdateFineSDF(mpPointSet, &lastTrans);
-        delete mpPointSet;
-        mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
+        MagicDGP::Point3DSet* pPointSet = GetPointSetFromRecord(mFrameStartIndex);
+        sdf.UpdateFineSDF(pPointSet, &lastTrans);
+        delete pPointSet;
+        pPointSet = sdf.ExtractFinePointCloud();
+        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", pPointSet);
         MagicCore::RenderSystem::GetSingleton()->Update();
         for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
         {
@@ -495,88 +431,38 @@ namespace MagicApp
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
             float timeRegistrate = MagicCore::ToolKit::GetTime();
             MagicDGP::Registration registrate;
-            registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
+            registrate.ICPRegistrateEnhance(pPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
             float timeUpdateSDF = MagicCore::ToolKit::GetTime();
             MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
             sdf.UpdateSDF(pNewPC, &newTransInv);//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
-            delete mpPointSet;
+            delete pPointSet;
             delete pNewPC;
             pNewPC = NULL;
             float timeExtract = MagicCore::ToolKit::GetTime();
-            mpPointSet = sdf.ExtractFinePointCloud();//
+            pPointSet = sdf.ExtractFinePointCloud();//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", pPointSet);
             MagicCore::RenderSystem::GetSingleton()->Update();
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
         //
-        mUI.StartPostProcess();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
-    }
-
-    void ReconstructionApp::PointSetRegistrationEnhance2()
-    {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 
-             " " << mFrontLimit << " " << mBackLimit << std::endl;
-        mIsScannerDisplaying = false;
-        //initialize
-        mUI.SetProgressBarRange(mFrameEndIndex - mFrameStartIndex);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
-        MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
-        MagicDGP::HomoMatrix4 lastTrans;
-        lastTrans.Unit();
-        mpPointSet = GetPointSetFromRecord(mFrameStartIndex);
-        sdf.UpdateFineSDF(mpPointSet, &lastTrans);
-        delete mpPointSet;
-        mpPointSet = sdf.ExtractFinePointCloud();
-        MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-        MagicCore::RenderSystem::GetSingleton()->Update();
-        for (int frameIndex = mFrameStartIndex + 1; frameIndex <= mFrameEndIndex; frameIndex++)
+        //mUI.StartPostProcess();
+        pPointSet->SetHasNormal(true);
+        MagicCore::AppManager::GetSingleton()->EnterApp(new PointShopApp, "PointShopApp");
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
         {
-            float timeStart = MagicCore::ToolKit::GetTime();
-            mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
-            MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
-            MagicDGP::HomoMatrix4 newTrans;//
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
-            float timeRegistrate = MagicCore::ToolKit::GetTime();
-            MagicDGP::Registration registrate;
-            registrate.ICPRegistrateEnhance(mpPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
-            float timeUpdateSDF = MagicCore::ToolKit::GetTime();
-            MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
-            sdf.UpdateSDF(pNewPC, &newTransInv);//
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
-            lastTrans = newTrans;
-            delete mpPointSet;
-            delete pNewPC;
-            pNewPC = NULL;
-            float timeExtract = MagicCore::ToolKit::GetTime();
-            mpPointSet = sdf.ExtractFinePointCloud();//
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Extract Point Set: " << MagicCore::ToolKit::GetTime() - timeExtract << std::endl;
-            //sdf.ResetSDF();
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-            MagicCore::RenderSystem::GetSingleton()->Update();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "One iteration time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            pPSA->SetupFromPointsetInput(pPointSet);
         }
-        //
-        mUI.StartPostProcess();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionApp::PointSetRegistrationEnhance2: End" << std::endl;
-    }
-
-    void ReconstructionApp::SetupPointSetProcessing()
-    {
-        if (mpPointSet != NULL)
+        else
         {
-            mpPointSet->UnifyPosition(2.f);
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-            MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-            mUsingViewTool = true;
+            WarnLog << "Get PointShopApp Failed" << std::endl;
         }
+        pPointSet = NULL;// pPointSet has been transfered to PointShopApp
+        DebugLog << "ReconstructionApp::PointSetRegistrationEnhance: End" << std::endl;
     }
 
     MagicDGP::Point3DSet* ReconstructionApp::GetPointSetFromRecord(int frameId)
@@ -763,58 +649,4 @@ namespace MagicApp
         }
     }
 
-    bool ReconstructionApp::SavePointSet()
-    {
-        std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
-        MagicDGP::Parser::ExportPointSet(fileName, mpPointSet);
-
-        return true;
-    }
-
-    bool ReconstructionApp::ReconstructPointSet()
-    {
-        if (mpMesh != NULL)
-        {
-            delete mpMesh;
-            mpMesh = NULL;
-        }
-        mpPointSet->CalculateBBox();
-        mpPointSet->CalculateDensity();
-        mpMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
-
-        return true;
-    }
-
-    void ReconstructionApp::FilterPointSetOutliers()
-    {
-        if (mpPointSet != NULL)
-        {
-            MagicDGP::Point3DSet* pNewPS = MagicDGP::Filter::RemovePointSetOutlier(mpPointSet, 0.02);
-            if (pNewPS != NULL)
-            {
-                delete mpPointSet;
-                mpPointSet = pNewPS;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("ScannerDepth", "MyCookTorrancePoint", mpPointSet);
-            }
-        }
-    }
-
-    bool ReconstructionApp::SaveMesh3D()
-    {
-        std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
-        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
-        MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
-
-        return true;
-    }
-
-    void ReconstructionApp::SmoothMesh3D()
-    {
-        MagicDGP::Filter::SimpleMeshSmooth(mpMesh);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("ScannerDepth", "MyCookTorrance", mpMesh);
-    }
 }

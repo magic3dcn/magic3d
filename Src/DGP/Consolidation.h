@@ -10,6 +10,7 @@ namespace MagicDGP
         ~Consolidation();
 
         static void CalPointSetNormal(Point3DSet* pPointSet);
+        static bool RedressPointSetNormal(Point3DSet* pPointSet);
 
     private:
 

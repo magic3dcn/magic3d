@@ -243,7 +243,7 @@ namespace MagicApp
                 pMObj = pSceneMgr->createManualObject(psName);
                 pSceneMgr->getRootSceneNode()->attachObject(pMObj);
             }
-            pMObj->begin("SimplePoint", Ogre::RenderOperation::OT_POINT_LIST);
+            pMObj->begin("MyCookTorrancePoint", Ogre::RenderOperation::OT_POINT_LIST);
             int pointNum = posList.size();
             for (int i = 0; i < pointNum; i++)
             {
@@ -255,6 +255,7 @@ namespace MagicApp
                 MagicDGP::Vector3 nor = norList.at(i);
                 pMObj->position(pos[0], pos[1], pos[2]);
                 pMObj->normal(nor[0], nor[1], nor[2]);
+                pMObj->colour(0.86, 0.86, 0.86);
             }
             pMObj->end();
         }

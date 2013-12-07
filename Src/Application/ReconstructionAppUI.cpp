@@ -22,9 +22,6 @@ namespace MagicApp
     {
         InfoLog << "ReconstructionUI::Setup" << std::endl;
         SetupRecordPlayback();
-        //SetupReconstructProgress();
-        //SetupReconstructing();
-        //SetupMeshProcessing();
     }
 
     void ReconstructionAppUI::Shutdown()
@@ -78,36 +75,6 @@ namespace MagicApp
         mRoot.at(0)->findWidget("Slider_FrameEnd")->castType<MyGUI::ScrollBar>()->setVisible(false);
     }
 
-    void ReconstructionAppUI::SetupReconstructing()
-    {
-        InfoLog << "ReconstructionAppUI::SetupReconstructing" << std::endl;
-        MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("Reconstruct.layout");
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SavePointSet);
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_PointSetFilter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::RemovePointSetOutlier);
-        mRoot.at(0)->findWidget("But_PointSetFilter")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Reconstruction);
-        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        pRA->SetupPointSetProcessing();
-    }
-
-    void ReconstructionAppUI::SetupMeshProcessing()
-    {
-        InfoLog << "ReconstructionAppUI::SetupMeshProcessing" << std::endl;
-        MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
-        mRoot = MyGUI::LayoutManager::getInstance().loadLayout("MeshProcessing.layout");
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SaveMesh3D);
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::SmoothMesh3D);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(86, 87);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
-    }
-
     void ReconstructionAppUI::SetProgressBarPosition(int pos)
     {
         mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setProgressPosition(pos);
@@ -116,12 +83,6 @@ namespace MagicApp
     void ReconstructionAppUI::SetProgressBarRange(int range)
     {
         mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
-    }
-
-    void ReconstructionAppUI::StartPostProcess()
-    {
-        Shutdown();
-        SetupReconstructing();
     }
 
     void ReconstructionAppUI::OpenScanRecord(MyGUI::Widget* pSender)
@@ -182,9 +143,7 @@ namespace MagicApp
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionAppUI::PointSetAlign" << std::endl;
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        //pRA->PointSetRegistration();
-        pRA->PointSetRegistrationEnhance();
-        //pRA->PointSetRegistrationEnhance2();
+        pRA->PointSetRegistration();
     }
 
     void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)
@@ -223,46 +182,4 @@ namespace MagicApp
         pRA->ChangeBackRange(rel);
     }
 
-    void ReconstructionAppUI::SavePointSet(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        if (pRA->SavePointSet())
-        {
-            mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(true);
-        }
-    }
-
-    void ReconstructionAppUI::Reconstruction(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        if (pRA->ReconstructPointSet())
-        {
-            Shutdown();
-            SetupMeshProcessing();
-        }
-    }
-
-    void ReconstructionAppUI::RemovePointSetOutlier(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        if (pRA != NULL)
-        {
-            pRA->FilterPointSetOutliers();
-        }
-    }
-
-    void ReconstructionAppUI::SaveMesh3D(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        if (pRA->SaveMesh3D())
-        {
-            mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setVisible(true);
-        }
-    }
-
-    void ReconstructionAppUI::SmoothMesh3D(MyGUI::Widget* pSender)
-    {
-        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
-        pRA->SmoothMesh3D();
-    }
 }

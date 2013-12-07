@@ -5,48 +5,51 @@
         <Widget type="Button" skin="But_Save" position="15 85 60 60" align="Left Top" name="But_Save">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="14 155 60 60" align="Left Top" name="But_CalNormal">
+        <Widget type="Button" skin="But_Normal" position="15 155 60 60" align="Left Top" name="But_CalNormal">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Smooth" position="15 230 57 60" align="Left Top" name="But_Filter">
+        <Widget type="Button" skin="But_Smooth" position="15 295 57 60" align="Left Top" name="But_Filter">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 300 60 60" align="Left Top" name="But_Reconstruction">
+        <Widget type="Button" skin="But_Reconstruction" position="15 365 60 60" align="Left Top" name="But_Reconstruction">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 370 60 60" align="Left Top" name="But_AddNoise">
+        <Widget type="Button" skin="But_Noise" position="15 435 60 60" align="Left Top" name="But_AddNoise">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 445 60 60" align="Left Top" name="But_Select">
+        <Widget type="Button" skin="But_Select" position="15 505 60 60" align="Left Top" name="But_Select">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 520 60 60" align="Left Top" name="But_Deform">
+        <Widget type="Button" skin="But_Deform" position="15 575 60 60" align="Left Top" name="But_Deform">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Home" position="15 590 60 60" align="Left Bottom" name="But_Home"/>
-        <Widget type="Button" skin="Button" position="80 265 25 25" align="Left Top" name="But_Sampling">
+        <Widget type="Button" skin="But_Home" position="15 645 60 60" align="Left Bottom" name="But_Home"/>
+        <Widget type="Button" skin="But_Sampling" position="80 330 25 25" align="Left Top" name="But_Sampling">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="110 230 25 25" align="Left Top" name="But_Smooth">
+        <Widget type="Button" skin="But_Smooth" position="110 295 25 25" align="Left Top" name="But_Smooth">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="80 230 25 25" align="Left Top" name="But_Outlier">
+        <Widget type="Button" skin="But_Outlier" position="80 295 25 25" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="80 460 25 25" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="But_Rectangle" position="80 540 25 25" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="110 460 25 25" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="But_Cycle" position="110 540 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="140 460 25 25" align="Left Top" name="But_Select_Intelligent">
+        <Widget type="Button" skin="But_Brush" position="140 540 25 25" align="Left Top" name="But_Select_Intelligent">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="80 170 25 25" align="Left Top" name="But_FlipNormal">
-            <Property key="Visible" value="false"/>
+        <Widget type="Button" skin="But_Flip" position="15 225 60 60" align="Left Top" name="But_FlipNormal">
+            <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="EditBox" skin="EditBox" position="110 265 60 25" align="Left Top" name="Edit_SampleNumber">
+        <Widget type="EditBox" skin="EditBox" position="110 330 60 25" align="Left Top" name="Edit_SampleNumber">
             <Property key="TextColour" value="0.286275 0.254902 0.4"/>
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="ProgressBar" skin="ProgressBar" position="15 715 140 20" align="Left Top" name="Progress_General">
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>

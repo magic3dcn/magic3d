@@ -13,13 +13,13 @@ namespace MagicApp
         void Shutdown();
         void SetProgressBarPosition(int pos);
         void SetProgressBarRange(int range);
-        void StartPostProcess();
+        //void StartPostProcess();
 
     private:
         void SetupRecordPlayback();
         void SetupReconstructProgress();
-        void SetupReconstructing();
-        void SetupMeshProcessing();
+        //void SetupReconstructing();
+        //void SetupMeshProcessing();
 
         void OpenScanRecord(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
@@ -32,11 +32,11 @@ namespace MagicApp
         void ChangeDownRange(MyGUI::Widget* pSender, int rel);
         void ChangeFrontRange(MyGUI::Widget* pSender, int rel);
         void ChangeBackRange(MyGUI::Widget* pSender, int rel);
-        void SavePointSet(MyGUI::Widget* pSender);
+        /*void SavePointSet(MyGUI::Widget* pSender);
         void Reconstruction(MyGUI::Widget* pSender);
         void RemovePointSetOutlier(MyGUI::Widget* pSender);
         void SaveMesh3D(MyGUI::Widget* pSender);
-        void SmoothMesh3D(MyGUI::Widget* pSender);
+        void SmoothMesh3D(MyGUI::Widget* pSender);*/
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

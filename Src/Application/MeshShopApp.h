@@ -30,7 +30,7 @@ namespace MagicApp
         void IntelligentSelect();
         void DeformMesh();
 
-        void SetupFromPointShopApp(MagicDGP::Mesh3D* pMesh);
+        void SetupFromMeshInput(MagicDGP::Mesh3D* pMesh);
 
     private:
         void SetupScene(void);

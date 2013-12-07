@@ -110,7 +110,14 @@ namespace MagicApp
 
     void PointShopApp::CalPointSetNormal()
     {
-        MagicDGP::Consolidation::CalPointSetNormal(mpPointSet);
+        if (mpPointSet->HasNormal() == true)
+        {
+            MagicDGP::Consolidation::RedressPointSetNormal(mpPointSet);
+        }
+        else
+        {
+            MagicDGP::Consolidation::CalPointSetNormal(mpPointSet);
+        }
         UpdatePointSetRendering();
     }
 
@@ -180,7 +187,7 @@ namespace MagicApp
             MeshShopApp* pMSApp = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
             if (pMSApp != NULL)
             {
-                pMSApp->SetupFromPointShopApp(pNewMesh);
+                pMSApp->SetupFromMeshInput(pNewMesh);
             }
             else
             {
@@ -247,5 +254,17 @@ namespace MagicApp
         {
             MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
         }
+    }
+
+    void PointShopApp::SetupFromPointsetInput(MagicDGP::Point3DSet* pPS)
+    {
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+        }
+        mpPointSet = pPS;
+        mpPointSet->UnifyPosition(2);
+        UpdatePointSetRendering();
+        mUI.SetupFromPointsetInput(mpPointSet->HasNormal(), mpPointSet->GetPointNumber());
     }
 }
