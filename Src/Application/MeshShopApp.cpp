@@ -154,7 +154,19 @@ namespace MagicApp
 
     void MeshShopApp::AddNoise()
     {
-
+        int vertNum = mpMesh->GetVertexNumber();
+        int maxNum = 100;
+        MagicDGP::Real epsilon = 0.001;
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            int randNum = rand();
+            randNum = randNum % (2 * maxNum) - maxNum;
+            MagicDGP::Real scale = MagicDGP::Real(randNum) / maxNum * epsilon;
+            MagicDGP::Vector3 newPos = mpMesh->GetVertex(vid)->GetPosition() + mpMesh->GetVertex(vid)->GetNormal() * scale;
+            mpMesh->GetVertex(vid)->SetPosition(newPos);
+        }
+        mpMesh->UpdateNormal();
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
     }
 
     void MeshShopApp::RectangleSelect()

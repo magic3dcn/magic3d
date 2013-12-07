@@ -198,7 +198,18 @@ namespace MagicApp
 
     void PointShopApp::AddNoise()
     {
-
+        int pointNum = mpPointSet->GetPointNumber();
+        int maxNum = 100;
+        MagicDGP::Real epsilon = 0.001;
+        for (int pid = 0; pid < pointNum; pid++)
+        {
+            int randNum = rand();
+            randNum = randNum % (2 * maxNum) - maxNum;
+            MagicDGP::Real scale = MagicDGP::Real(randNum) / maxNum * epsilon;
+            MagicDGP::Vector3 newPos = mpPointSet->GetPoint(pid)->GetPosition() + mpPointSet->GetPoint(pid)->GetNormal() * scale;
+            mpPointSet->GetPoint(pid)->SetPosition(newPos);
+        }
+        UpdatePointSetRendering();
     }
 
     void PointShopApp::RectangleSelect()

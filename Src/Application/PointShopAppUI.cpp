@@ -194,7 +194,11 @@ namespace MagicApp
 
     void PointShopAppUI::AddNoise(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->AddNoise();
+        }
     }
 
     void PointShopAppUI::SelectPointSet(MyGUI::Widget* pSender)
