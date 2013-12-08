@@ -5,7 +5,8 @@
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../DGP/Curvature.h"
-#include "../DGP/Filter.h"
+#include "../DGP/Consolidation.h"
+#include "../DGP/Sampling.h"
 #include "../Tool/PickPointTool.h"
 #include "../DGP/HomoMatrix4.h"
 
@@ -74,7 +75,7 @@ namespace MagicApp
             {
                 MagicDGP::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
-                int pickIndex = MagicTool::PickPointTool::PickMeshVertex(mpMesh, mousePos);
+                int pickIndex = MagicTool::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos);
                 if (pickIndex != -1)
                 {
                     PrimitiveSelection(pickIndex);
@@ -370,7 +371,7 @@ namespace MagicApp
         std::vector<MagicDGP::Real> gaussianCurvList(vertNum, 0);
         for (int filterIdx = 0; filterIdx < filterNum; filterIdx++)
         {
-            MagicDGP::Filter::SimpleMeshSmooth(mpMesh);
+            MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
             std::vector<MagicDGP::Real> localGaussianCurvList;
             MagicDGP::Curvature::CalGaussianCurvature(mpMesh, localGaussianCurvList);
             for (int vid = 0; vid < vertNum; vid++)
@@ -515,7 +516,7 @@ namespace MagicApp
         if (mpMesh != NULL)
         {
             std::vector<int> sampleIndex;
-            MagicDGP::Filter::MeshVertexSampling(mpMesh, 200, sampleIndex);
+            MagicDGP::Sampling::MeshVertexUniformSampling(mpMesh, 200, sampleIndex);
             MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(0.2);
             for (int sid = 0; sid < sampleIndex.size(); sid++)
             {
@@ -527,7 +528,7 @@ namespace MagicApp
 
     void PrimitiveDetectionApp::FilterMesh3D()
     {
-        MagicDGP::Filter::SimpleMeshSmooth(mpMesh);
+        MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 }

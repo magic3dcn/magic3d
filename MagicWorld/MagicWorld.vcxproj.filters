@@ -28,9 +28,6 @@
     <Filter Include="Application\Homepage">
       <UniqueIdentifier>{b7f8674e-b833-4d1a-9fc4-fe675a0f6db2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\PointSetViewer">
-      <UniqueIdentifier>{cc4254f7-6be8-4419-8a8e-32d56179262e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dependence">
       <UniqueIdentifier>{5fdd45a4-5b04-4543-8226-83725c7f2b52}</UniqueIdentifier>
     </Filter>
@@ -123,16 +120,7 @@
     <ClInclude Include="..\Src\Application\Homepage.h">
       <Filter>Application\Homepage</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Application\PointSetViewer.h">
-      <Filter>Application\PointSetViewer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Application\PointSetViewerUI.h">
-      <Filter>Application\PointSetViewer</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\DGP\Mesh3D.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DGP\Filter.h">
       <Filter>DGP</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\DGP\Registration.h">
@@ -341,16 +329,7 @@
     <ClCompile Include="..\Src\Application\HomepageUI.cpp">
       <Filter>Application\Homepage</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Application\PointSetViewer.cpp">
-      <Filter>Application\PointSetViewer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp">
-      <Filter>Application\PointSetViewer</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp">
-      <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DGP\Filter.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Registration.cpp">

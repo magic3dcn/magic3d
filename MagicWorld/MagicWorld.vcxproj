@@ -120,8 +120,6 @@
     <ClInclude Include="..\Src\Application\LeapMotionAppUI.h" />
     <ClInclude Include="..\Src\Application\MeshShopApp.h" />
     <ClInclude Include="..\Src\Application\MeshShopAppUI.h" />
-    <ClInclude Include="..\Src\Application\PointSetViewer.h" />
-    <ClInclude Include="..\Src\Application\PointSetViewerUI.h" />
     <ClInclude Include="..\Src\Application\PointShopApp.h" />
     <ClInclude Include="..\Src\Application\PointShopAppUI.h" />
     <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h" />
@@ -146,7 +144,6 @@
     <ClInclude Include="..\Src\DGP\Consolidation.h" />
     <ClInclude Include="..\Src\DGP\Curvature.h" />
     <ClInclude Include="..\Src\DGP\DGPDefines.h" />
-    <ClInclude Include="..\Src\DGP\Filter.h" />
     <ClInclude Include="..\Src\DGP\HomoMatrix4.h" />
     <ClInclude Include="..\Src\DGP\HomoVector4.h" />
     <ClInclude Include="..\Src\DGP\Mesh3D.h" />
@@ -196,8 +193,6 @@
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\MeshShopApp.cpp" />
     <ClCompile Include="..\Src\Application\MeshShopAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\PointSetViewer.cpp" />
-    <ClCompile Include="..\Src\Application\PointSetViewerUI.cpp" />
     <ClCompile Include="..\Src\Application\PointShopApp.cpp" />
     <ClCompile Include="..\Src\Application\PointShopAppUI.cpp" />
     <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp" />
@@ -228,7 +223,6 @@
     <ClCompile Include="..\Src\DGP\Consolidation.cpp" />
     <ClCompile Include="..\Src\DGP\Curvature.cpp" />
     <ClCompile Include="..\Src\DGP\DGPDefines.cpp" />
-    <ClCompile Include="..\Src\DGP\Filter.cpp" />
     <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp" />
     <ClCompile Include="..\Src\DGP\HomoVector4.cpp" />
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp" />

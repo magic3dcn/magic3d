@@ -5,6 +5,12 @@
 
 namespace MagicDGP
 {
+    enum BoundaryType
+    {
+        BT_Inner = 0,
+        BT_Boundary
+    };
+
     class Edge3D;
     class Vertex3D
     {
@@ -29,6 +35,8 @@ namespace MagicDGP
         void    SetId(int id);
         void    SetValid(bool valid);
         bool    IsValid() const;
+        void    SetBoundaryType(BoundaryType bt);
+        BoundaryType GetBoundaryType() const;
 
     private:
         Vector3 mPosition;
@@ -38,6 +46,7 @@ namespace MagicDGP
         Edge3D* mpEdge;
         int     mId;
         bool    mValid;
+        BoundaryType mBoundaryType;
     };
 
     class Face3D;
@@ -66,6 +75,8 @@ namespace MagicDGP
         void      SetId(int id);
         void      SetValid(bool valid);
         bool      IsValid() const;
+        void      SetBoundaryType(BoundaryType bt);
+        BoundaryType GetBoundaryType() const;
 
     private:
         Vertex3D* mpVertex;
@@ -75,6 +86,7 @@ namespace MagicDGP
         Face3D*   mpFace;
         int       mId;
         bool      mValid;
+        BoundaryType mBoundaryType;
     };
 
 
@@ -130,6 +142,7 @@ namespace MagicDGP
 
         void UnifyPosition(Real size);
         void UpdateNormal();
+        void UpdateBoundaryFlag();
         void GetBBox(Vector3& bboxMin, Vector3& bboxMax) const;
         void CalculateBBox();
         void CalculateFaceArea();

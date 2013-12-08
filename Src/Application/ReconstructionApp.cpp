@@ -7,7 +7,6 @@
 #include "../DGP/Parser.h"
 #include "../DGP/MeshReconstruction.h"
 #include "../DGP/Sampling.h"
-#include "../DGP/Filter.h"
 #include "../Common/AppManager.h"
 #include "PointShopApp.h"
 

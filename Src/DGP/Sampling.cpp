@@ -16,9 +16,9 @@ namespace MagicDGP
     {
     }
 
-    Point3DSet* Sampling::WLOPSampling(const Point3DSet* pPS, int sampleNum)
+    Point3DSet* Sampling::PointSetWLOPSampling(const Point3DSet* pPS, int sampleNum)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::WLOPSampling" << std::endl;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::PointSetWLOPSampling" << std::endl;
         std::vector<Vector3> samplePosList;
         InitialSampling(pPS, sampleNum, samplePosList);
         sampleNum = samplePosList.size();
@@ -466,5 +466,152 @@ namespace MagicDGP
             pDist = NULL;
         }
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::NormalSmooth: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+    }
+
+    Point3DSet* Sampling::PointSetUniformSampling(Point3DSet* pPS, int sampleNum)
+    {
+        float timeStart = MagicCore::ToolKit::GetTime();
+        int psNum = pPS->GetPointNumber();
+        if (sampleNum > psNum)
+        {
+            DebugLog << "Error: sampleNum > pointNum" << std::endl;
+            return NULL;
+        }
+        std::vector<bool> sampleFlag(psNum, 0);
+        std::vector<int> sampleIndex(sampleNum);
+        sampleFlag.at(0) = true;
+        sampleIndex.at(0) = 0;
+        std::vector<Real> minDist(psNum, 1.0e10);
+        int curIndex = 0;
+        for (int sid = 1; sid < sampleNum; ++sid)
+        {
+            Vector3 curPos = pPS->GetPoint(curIndex)->GetPosition();
+            Real maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < psNum; ++vid)
+            {
+                if (sampleFlag.at(vid) == 1)
+                {
+                    continue;
+                }
+                Real dist = (pPS->GetPoint(vid)->GetPosition() - curPos).LengthSquared();
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        DebugLog << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        MagicDGP::Point3DSet* pNewPS = new MagicDGP::Point3DSet;
+        for (int sid = 0; sid < sampleNum; ++sid)
+        {
+            MagicDGP::Point3D* pPoint = pPS->GetPoint(sampleIndex.at(sid));
+            MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
+            pNewPS->InsertPoint(pNewPoint);
+        }
+
+        return pNewPS;
+    }
+
+    int Sampling::MeshVertexUniformSampling(const Mesh3D* pMesh, int sampleNum, std::vector<int>& sampleIndex)
+    {
+        float timeStart = MagicCore::ToolKit::GetTime();
+        int vertNum = pMesh->GetVertexNumber();
+        if (sampleNum > vertNum)
+        {
+            sampleNum = vertNum;
+        }
+        std::vector<bool> sampleFlag(vertNum, 0);
+        sampleFlag.at(0) = true;
+        sampleIndex = std::vector<int>(sampleNum);
+        sampleIndex.at(0) = 0;
+        std::vector<Real> minDist(vertNum, 1.0e10);
+        int curIndex = 0;
+        for (int sid = 1; sid < sampleNum; ++sid)
+        {
+            Vector3 curPos = pMesh->GetVertex(curIndex)->GetPosition();
+            Real maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < vertNum; ++vid)
+            {
+                if (sampleFlag.at(vid) == 1)
+                {
+                    continue;
+                }
+                Real dist = (pMesh->GetVertex(vid)->GetPosition() - curPos).LengthSquared();
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        DebugLog << "Sampling time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        return sampleNum;
+    }
+
+    bool Sampling::SimplifyMesh(Mesh3D* pMesh, int targetNum)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        if (targetNum >= vertNum)
+        {
+            InfoLog << "Consolidation::SimplifyMesh target vertex number is less than vertex number." << std::endl;
+            return false;
+        }
+        std::vector<HomoMatrix4> quadricMatList;
+        CalQuadricMatrix(pMesh, quadricMatList);
+        int collapseNum = vertNum - targetNum;
+        for (int collapseId = 0; collapseId < collapseNum; collapseId++)
+        {
+            int colEdgeId = ChooseCollapseEdge(pMesh, quadricMatList);
+            CollapseEdge(pMesh, colEdgeId, quadricMatList);
+        }
+        //Update mesh structure
+
+    }
+
+    void Sampling::CalQuadricMatrix(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatList)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        int faceNum = pMesh->GetFaceNumber();
+        quadricMatList.clear();
+        quadricMatList = std::vector<HomoMatrix4>(vertNum);
+        std::vector<std::vector<Real> > faceQuadricMat = std::vector<std::vector<Real> >(faceNum);
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
+            Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+            Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+            Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            nor.Normalise();
+            Real d = nor * pos0 * (-1.0);
+
+        }
+    }
+
+    int Sampling::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatrix)
+    {
+        return 0;
+    }
+
+    void Sampling::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<HomoMatrix4>& quadricMatList)
+    {
+
     }
 }

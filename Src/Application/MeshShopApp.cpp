@@ -3,6 +3,7 @@
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
+#include "../DGP/Consolidation.h"
 
 namespace MagicApp
 {
@@ -139,7 +140,8 @@ namespace MagicApp
 
     void MeshShopApp::SmoothMesh()
     {
-
+        MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
     }
 
     void MeshShopApp::SimplifyMesh()
@@ -149,7 +151,17 @@ namespace MagicApp
 
     void MeshShopApp::RemoveOutlier()
     {
-
+        MagicDGP::Mesh3D* pNewMesh = MagicDGP::Consolidation::RemoveSmallMeshPatch(mpMesh, 0.1);
+        if (pNewMesh != NULL)
+        {
+            delete mpMesh;
+            mpMesh = pNewMesh;
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        }
+        else
+        {
+            DebugLog << "MeshShopApp::RemoveOutlier:: failed" << std::endl;
+        }
     }
 
     void MeshShopApp::AddNoise()

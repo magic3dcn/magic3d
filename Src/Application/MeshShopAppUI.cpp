@@ -112,7 +112,11 @@ namespace MagicApp
 
     void MeshShopAppUI::SmoothMesh(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->SmoothMesh();
+        }
     }
 
     void MeshShopAppUI::SimplifyMesh(MyGUI::Widget* pSender)
@@ -122,7 +126,11 @@ namespace MagicApp
 
     void MeshShopAppUI::RemoveOutlier(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->RemoveOutlier();
+        }
     }
 
     void MeshShopAppUI::AddNoise(MyGUI::Widget* pSender)

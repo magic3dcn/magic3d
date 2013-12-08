@@ -3,7 +3,11 @@
 
 namespace MagicTool
 {
-    PickPointTool::PickPointTool()
+    PickPointTool::PickPointTool() :
+        mPickMode(PM_Point),
+        mMousePos(0, 0),
+        mpMesh(NULL),
+        mpPointSet(NULL)
     {
     }
 
@@ -11,7 +15,7 @@ namespace MagicTool
     {
     }
 
-    int PickPointTool::PickMeshVertex(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 mousePos)
+    int PickPointTool::PickMeshVertexByPoint(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 mousePos)
     {
         MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->_getFullTransform();
@@ -44,5 +48,74 @@ namespace MagicTool
         }
 
         return pickIndex;
+    }
+
+    void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 pos0, 
+            MagicDGP::Vector2 pos1, std::vector<int>& pickIndex)
+    {
+
+    }
+
+    void PickPointTool::PickMeshVertexByCycle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 centerPos, 
+            MagicDGP::Real radius, std::vector<int>& pickIndex)
+    {
+
+    }
+
+    int PickPointTool::PickPointSetByPoint(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 mousePos)
+    {
+
+    }
+
+    void PickPointTool::PickPointSetByRectangle(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 pos0,
+            MagicDGP::Vector2 pos1, std::vector<int>& pickIndex)
+    {
+
+    }
+
+    void PickPointTool::PickPointSetByCycle(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 centerPos, 
+            MagicDGP::Real radius, std::vector<int>& pickIndex)
+    {
+
+    }
+
+    void PickPointTool::SetPickParameter(PickMode pm, MagicDGP::Mesh3D* pMesh, MagicDGP::Point3DSet* pPS)
+    {
+
+    }
+
+    void PickPointTool::MousePressed(const OIS::MouseEvent& arg)
+    {
+
+    }
+
+    void PickPointTool::MouseMoved(const OIS::MouseEvent& arg)
+    {
+
+    }
+
+    void PickPointTool::MouseReleased(const OIS::MouseEvent& arg)
+    {
+
+    }
+
+    void PickPointTool::GetPickMeshIndex(std::vector<int>& pickIndex)
+    {
+
+    }
+
+    void PickPointTool::GetPickPointsetIndex(std::vector<int>& pickIndex)
+    {
+
+    }
+
+    void PickPointTool::UpdateMarkObject()
+    {
+
+    }
+
+    void PickPointTool::ClearMarkObject()
+    {
+
     }
 }

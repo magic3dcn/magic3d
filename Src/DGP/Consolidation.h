@@ -1,5 +1,6 @@
 #pragma once
 #include "PointCloud3D.h"
+#include "Mesh3D.h"
 
 namespace MagicDGP
 {
@@ -11,6 +12,12 @@ namespace MagicDGP
 
         static void CalPointSetNormal(Point3DSet* pPointSet);
         static bool RedressPointSetNormal(Point3DSet* pPointSet);
+
+        static Mesh3D* RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion);
+        static Point3DSet* RemovePointSetOutlier(Point3DSet* pPS, Real proportion);
+
+        static void SimpleMeshSmooth(Mesh3D* pMesh);
+        static void MeanCurvatureFlowFairing(Mesh3D* pMesh); 
 
     private:
 

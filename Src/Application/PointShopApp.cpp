@@ -4,7 +4,7 @@
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../DGP/Consolidation.h"
-#include "../DGP/Filter.h"
+#include "../DGP/Sampling.h"
 #include "../DGP/MeshReconstruction.h"
 #include "../Common/AppManager.h"
 #include "../Application/MeshShopApp.h"
@@ -140,7 +140,7 @@ namespace MagicApp
 
     bool PointShopApp::SamplePointSet(int sampleNum)
     {
-        MagicDGP::Point3DSet* pSamplePointSet = MagicDGP::Filter::PointSetSampling(mpPointSet, sampleNum);
+        MagicDGP::Point3DSet* pSamplePointSet = MagicDGP::Sampling::PointSetUniformSampling(mpPointSet, sampleNum);
         if (pSamplePointSet != NULL)
         {
             //transfer property
@@ -161,7 +161,7 @@ namespace MagicApp
     {
         if (mpPointSet != NULL)
         {
-            MagicDGP::Point3DSet* pNewPS = MagicDGP::Filter::RemovePointSetOutlier(mpPointSet, 0.02);
+            MagicDGP::Point3DSet* pNewPS = MagicDGP::Consolidation::RemovePointSetOutlier(mpPointSet, 0.02);
             if (pNewPS != NULL)
             {
                 //transfer property

@@ -7,7 +7,8 @@ namespace MagicDGP
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
         mId(-1),
-        mValid(true)
+        mValid(true), 
+        mBoundaryType(BT_Inner)
     {
     }
 
@@ -16,7 +17,8 @@ namespace MagicDGP
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
         mId(-1),
-        mValid(true)
+        mValid(true),
+        mBoundaryType(BT_Inner)
     {
 
     }
@@ -27,7 +29,8 @@ namespace MagicDGP
         mColor(0.9, 0.9, 0.9),
         mpEdge(NULL),
         mId(-1),
-        mValid(true)
+        mValid(true),
+        mBoundaryType(BT_Inner)
     {
 
     }
@@ -111,6 +114,16 @@ namespace MagicDGP
         return mValid;
     }
 
+    void Vertex3D::SetBoundaryType(BoundaryType bt)
+    {
+        mBoundaryType = bt;
+    }
+
+    BoundaryType Vertex3D::GetBoundaryType() const
+    {
+        return mBoundaryType;
+    }
+
     Edge3D::Edge3D() :
         mpVertex(NULL),
         mpPair(NULL),
@@ -118,7 +131,8 @@ namespace MagicDGP
         mpPre(NULL),
         mpFace(NULL),
         mId(-1),
-        mValid(true)
+        mValid(true),
+        mBoundaryType(BT_Inner)
     {
     }
 
@@ -219,6 +233,16 @@ namespace MagicDGP
     bool Edge3D::IsValid() const
     {
         return mValid;
+    }
+
+    void Edge3D::SetBoundaryType(BoundaryType bt)
+    {
+        mBoundaryType = bt;
+    }
+
+    BoundaryType Edge3D::GetBoundaryType() const
+    {
+        return mBoundaryType;
     }
 
     Face3D::Face3D() : 
@@ -485,6 +509,40 @@ namespace MagicDGP
             }
             pVert->SetNormal(nor);
         }
+    }
+
+    void Mesh3D::UpdateBoundaryFlag()
+    {
+        //Set boundary flag
+        for (std::vector<Edge3D* >::iterator edgeItr = mEdgeList.begin(); edgeItr != mEdgeList.end(); ++edgeItr)
+        {
+            if ((*edgeItr)->GetFace() == NULL)
+            {
+                (*edgeItr)->SetBoundaryType(BT_Boundary);
+                (*edgeItr)->GetVertex()->SetBoundaryType(BT_Boundary);
+                (*edgeItr)->GetPair()->GetVertex()->SetBoundaryType(BT_Boundary);
+            }
+        }
+        //adjust vertex edge
+        for (std::vector<Vertex3D* >::iterator vertItr = mVertexList.begin(); vertItr != mVertexList.end(); ++vertItr)
+        {
+            if ((*vertItr)->GetBoundaryType() == BT_Boundary)
+            {
+                Edge3D* pEdge = (*vertItr)->GetEdge();
+                while (pEdge->GetFace() != NULL)
+                {
+                    pEdge = pEdge->GetPre()->GetPair();
+                }
+                (*vertItr)->SetEdge(pEdge);
+                while (pEdge->GetPair()->GetFace() != NULL)
+                {
+                    pEdge = pEdge->GetPair()->GetNext();
+                }
+                pEdge->GetPair()->SetNext((*vertItr)->GetEdge());
+                (*vertItr)->GetEdge()->SetPre(pEdge->GetPair());
+            }
+        }
+        DebugLog << "Mesh3D::UpdateBoundaryFlag" << std::endl; 
     }
 
     void Mesh3D::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const

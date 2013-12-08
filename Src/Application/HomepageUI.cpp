@@ -5,7 +5,6 @@
 #include "../Common/LogSystem.h"
 #include "PointShopApp.h"
 #include "MeshShopApp.h"
-#include "PointSetViewer.h"
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
 #include "LeapMotionApp.h"
