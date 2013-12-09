@@ -132,7 +132,9 @@ namespace MagicTool
 
     void PickPointTool::SetPickParameter(PickMode pm, MagicDGP::Mesh3D* pMesh, MagicDGP::Point3DSet* pPS)
     {
-
+        mPickMode = pm;
+        mpMesh = pMesh;
+        mpPointSet = pPS;
     }
 
     void PickPointTool::MousePressed(const OIS::MouseEvent& arg)
@@ -147,6 +149,7 @@ namespace MagicTool
         {
             MagicDGP::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
+            DebugLog << "Mouse move: " << mMousePos[0] << " " << mMousePos[1] << " " << curPos[0] << " " << curPos[1] << std::endl;
             UpdateMarkObject(mMousePos, curPos);
         }
     }
@@ -171,12 +174,56 @@ namespace MagicTool
 
     void PickPointTool::UpdateMarkObject(MagicDGP::Vector2& pos0, MagicDGP::Vector2& pos1)
     {
-
+        if (mPickMode != PM_Point)
+        {
+            Ogre::ManualObject* pMObj = NULL;
+            Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+            if (pSceneMgr->hasManualObject("PickObj"))
+            {
+                pMObj = pSceneMgr->getManualObject("PickObj");
+                pMObj->clear();
+            }
+            else
+            {
+                pMObj = pSceneMgr->createManualObject("PickObj");
+                pMObj->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY);
+                pMObj->setUseIdentityProjection(true);
+                pMObj->setUseIdentityView(true);
+                pSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            }
+            if (mPickMode == PM_Rectangle)
+            {
+                pMObj->begin("", Ogre::RenderOperation::OT_LINE_STRIP);
+                pMObj->position(pos0[0], pos0[1], -1);
+                pMObj->position(pos0[0], pos1[1], -1);
+                pMObj->position(pos1[0], pos1[1], -1);
+                pMObj->position(pos1[0], pos0[1], -1);
+                pMObj->position(pos0[0], pos0[1], -1);
+                pMObj->end();
+            }
+            else if (mPickMode == PM_Cycle)
+            {
+                pMObj->begin("", Ogre::RenderOperation::OT_LINE_STRIP);
+                float twoPi = 8.0f * atan( 1.0f );
+                MagicDGP::Real len = (pos0 - pos1).Length();
+                for (int i = 0; i < 41; i++)
+                {
+                    MagicDGP::Real theta = twoPi * i / 40.f;
+                    MagicDGP::Real x = pos0[0] + len * cos(theta);
+                    MagicDGP::Real y = pos0[1] + len * sin(theta);
+                    pMObj->position(x, y, -1);
+                }
+                pMObj->end();
+            }
+        }
     }
 
     void PickPointTool::ClearMarkObject()
     {
-
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasManualObject("PickObj"))
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->destroyManualObject("PickObj");
+        }
     }
 
     void PickPointTool::Pick(MagicDGP::Vector2& curPos)

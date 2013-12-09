@@ -211,12 +211,20 @@ namespace MagicApp
 
     void PointShopAppUI::RectangleSelect(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->RectangleSelect();
+        }
     }
 
     void PointShopAppUI::CycleSelect(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->CycleSelect();
+        }
     }
 
     void PointShopAppUI::IntelligentSelect(MyGUI::Widget* pSender)
