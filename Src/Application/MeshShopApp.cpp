@@ -140,7 +140,8 @@ namespace MagicApp
 
     void MeshShopApp::SmoothMesh()
     {
-        MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
+        //MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
+        MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
     }
 

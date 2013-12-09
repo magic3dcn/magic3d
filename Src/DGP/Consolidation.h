@@ -18,8 +18,7 @@ namespace MagicDGP
 
         static void SimpleMeshSmooth(Mesh3D* pMesh);
         static void MeanCurvatureFlowFairing(Mesh3D* pMesh); 
-
-    private:
+        static void SimplePointsetSmooth(Point3DSet* pPS);
 
     };
 

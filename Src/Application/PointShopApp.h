@@ -2,6 +2,7 @@
 #include "../Common/AppBase.h"
 #include "PointShopAppUI.h"
 #include "../Tool/ViewTool.h"
+#include "../Tool/PickPointTool.h"
 #include "../DGP/PointCloud3D.h"
 
 namespace MagicApp
@@ -9,6 +10,13 @@ namespace MagicApp
     class PointShopApp : public MagicCore::AppBase
     {
     public:
+        enum MouseMode
+        {
+            MM_None = 0,
+            MM_View,
+            MM_Pick
+        };
+
         PointShopApp();
         ~PointShopApp();
 
@@ -17,6 +25,7 @@ namespace MagicApp
         virtual bool Exit(void);
         virtual bool MouseMoved( const OIS::MouseEvent &arg );
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+        virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
         bool OpenPointSet(bool& hasNormal, int& pointNum);
@@ -31,7 +40,6 @@ namespace MagicApp
         void RectangleSelect();
         void CycleSelect();
         void IntelligentSelect();
-        void DeformPointSet();
 
         void SetupFromPointsetInput(MagicDGP::Point3DSet* pPS);
 
@@ -42,7 +50,9 @@ namespace MagicApp
 
     private:
         PointShopAppUI mUI;
-        MagicTool::ViewTool mViewTool;
         MagicDGP::Point3DSet* mpPointSet;
+        MagicTool::ViewTool mViewTool;
+        MagicTool::PickPointTool mPickTool;
+        MouseMode mMouseMode;
     };
 }

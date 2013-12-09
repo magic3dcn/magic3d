@@ -20,10 +20,7 @@
         <Widget type="Button" skin="But_Select" position="15 505 60 60" align="Left Top" name="But_Select">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Deform" position="15 575 60 60" align="Left Top" name="But_Deform">
-            <Property key="Enabled" value="false"/>
-        </Widget>
-        <Widget type="Button" skin="But_Home" position="15 645 60 60" align="Left Bottom" name="But_Home"/>
+        <Widget type="Button" skin="But_Home" position="15 580 60 60" align="Left Bottom" name="But_Home"/>
         <Widget type="Button" skin="But_Sampling" position="80 330 25 25" align="Left Top" name="But_Sampling">
             <Property key="Visible" value="false"/>
         </Widget>

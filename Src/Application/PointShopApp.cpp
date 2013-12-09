@@ -12,7 +12,8 @@
 namespace MagicApp
 {
     PointShopApp::PointShopApp() :
-        mpPointSet(NULL)
+        mpPointSet(NULL),
+        mMouseMode(MM_View)
     {
     }
 
@@ -48,13 +49,39 @@ namespace MagicApp
 
     bool PointShopApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        mViewTool.MouseMoved(arg);
+        if (mMouseMode == MM_View)
+        {
+            mViewTool.MouseMoved(arg);
+        }
+        else if (mMouseMode == MM_Pick)
+        {
+            mPickTool.MouseMoved(arg);
+        }
+        
         return true;
     }
 
     bool PointShopApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        mViewTool.MousePressed(arg);
+        if (mMouseMode == MM_View)
+        {
+            mViewTool.MousePressed(arg);
+        }
+        else if (mMouseMode == MM_Pick)
+        {
+            mPickTool.MousePressed(arg);
+        }
+
+        return true;
+    }
+
+    bool PointShopApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+    {
+        if (mMouseMode == MM_Pick)
+        {
+            mPickTool.MouseReleased(arg);
+        }
+
         return true;
     }
 
@@ -135,7 +162,8 @@ namespace MagicApp
 
     void PointShopApp::SmoothPointSet()
     {
-
+        MagicDGP::Consolidation::SimplePointsetSmooth(mpPointSet);
+        UpdatePointSetRendering();
     }
 
     bool PointShopApp::SamplePointSet(int sampleNum)
@@ -214,20 +242,17 @@ namespace MagicApp
 
     void PointShopApp::RectangleSelect()
     {
-
+        mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, mpPointSet);
+        mMouseMode = MM_Pick;
     }
 
     void PointShopApp::CycleSelect()
     {
-
+        mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, mpPointSet);
+        mMouseMode = MM_Pick;
     }
 
     void PointShopApp::IntelligentSelect()
-    {
-
-    }
-
-    void PointShopApp::DeformPointSet()
     {
 
     }

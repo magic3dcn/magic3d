@@ -30,7 +30,6 @@ namespace MagicApp
         void RectangleSelect(MyGUI::Widget* pSender);
         void CycleSelect(MyGUI::Widget* pSender);
         void IntelligentSelect(MyGUI::Widget* pSender);
-        void DeformPointSet(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
 
     private:

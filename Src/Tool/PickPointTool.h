@@ -9,7 +9,7 @@ namespace MagicTool
     enum PickMode
     {
         PM_Point = 0,
-        PM_Retangle,
+        PM_Rectangle,
         PM_Cycle
     };
 
@@ -39,8 +39,9 @@ namespace MagicTool
         void GetPickPointsetIndex(std::vector<int>& pickIndex);
 
     private:
-        void UpdateMarkObject();
+        void UpdateMarkObject(MagicDGP::Vector2& pos0, MagicDGP::Vector2& pos1);
         void ClearMarkObject();
+        void Pick(MagicDGP::Vector2& curPos);
 
     private:
         PickMode mPickMode;

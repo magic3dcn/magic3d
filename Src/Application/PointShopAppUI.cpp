@@ -49,8 +49,6 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::IntelligentSelect);
         mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setSize(25, 25);
-        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::DeformPointSet);
-        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::BackToHome);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(60, 60);
     }
@@ -71,7 +69,6 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
         mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
         mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
-        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
         std::stringstream ss;
         std::string textString;
         ss << pointNum;
@@ -105,7 +102,6 @@ namespace MagicApp
                 mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setEnabled(hasNormal);
                 mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->setEnabled(true);
 
                 std::stringstream ss;
                 std::string textString;
@@ -156,7 +152,11 @@ namespace MagicApp
 
     void PointShopAppUI::SmoothPointSet(MyGUI::Widget* pSender)
     {
-
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->SmoothPointSet();
+        }
     }
 
     void PointShopAppUI::SamplePointSet(MyGUI::Widget* pSender)
@@ -220,11 +220,6 @@ namespace MagicApp
     }
 
     void PointShopAppUI::IntelligentSelect(MyGUI::Widget* pSender)
-    {
-
-    }
-
-    void PointShopAppUI::DeformPointSet(MyGUI::Widget* pSender)
     {
 
     }
