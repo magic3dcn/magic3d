@@ -95,7 +95,10 @@ namespace MagicApp
         pSceneMgr->destroyLight("frontLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("ScannerDepth");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
+        } 
         mUsingViewTool = false;
     }
 

@@ -17,8 +17,12 @@ namespace MagicTool
 
     int PickPointTool::PickMeshVertexByPoint(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 mousePos)
     {
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode") == false)
+        {
+            return -1;
+        }
         MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
-        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->_getFullTransform();
+        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
         Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
         Ogre::Matrix4 wvpM   = projM * viewM * worldM;
@@ -64,8 +68,12 @@ namespace MagicTool
 
     int PickPointTool::PickPointSetByPoint(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 mousePos)
     {
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode") == false)
+        {
+            return -1;
+        }
         MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
-        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->_getFullTransform();
+        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
         Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
         Ogre::Matrix4 wvpM   = projM * viewM * worldM;
@@ -189,21 +197,33 @@ namespace MagicTool
                 pMObj->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY);
                 pMObj->setUseIdentityProjection(true);
                 pMObj->setUseIdentityView(true);
-                pSceneMgr->getRootSceneNode()->attachObject(pMObj);
+                if (pSceneMgr->hasSceneNode("PickMarkNode"))
+                {
+                    pSceneMgr->getSceneNode("PickMarkNode")->attachObject(pMObj);
+                }
+                else
+                {
+                    pSceneMgr->getRootSceneNode()->createChildSceneNode("PickMarkNode")->attachObject(pMObj);
+                }
             }
             if (mPickMode == PM_Rectangle)
             {
-                pMObj->begin("", Ogre::RenderOperation::OT_LINE_STRIP);
+                pMObj->begin("SimpleLine", Ogre::RenderOperation::OT_LINE_STRIP);
                 pMObj->position(pos0[0], pos0[1], -1);
+                pMObj->colour(0.615, 0.16, 0.196);
                 pMObj->position(pos0[0], pos1[1], -1);
+                pMObj->colour(0.615, 0.16, 0.196);
                 pMObj->position(pos1[0], pos1[1], -1);
+                pMObj->colour(0.615, 0.16, 0.196);
                 pMObj->position(pos1[0], pos0[1], -1);
+                pMObj->colour(0.615, 0.16, 0.196);
                 pMObj->position(pos0[0], pos0[1], -1);
+                pMObj->colour(0.615, 0.16, 0.196);
                 pMObj->end();
             }
             else if (mPickMode == PM_Cycle)
             {
-                pMObj->begin("", Ogre::RenderOperation::OT_LINE_STRIP);
+                pMObj->begin("SimpleLine", Ogre::RenderOperation::OT_LINE_STRIP);
                 float twoPi = 8.0f * atan( 1.0f );
                 MagicDGP::Real len = (pos0 - pos1).Length();
                 for (int i = 0; i < 41; i++)
@@ -212,6 +232,7 @@ namespace MagicTool
                     MagicDGP::Real x = pos0[0] + len * cos(theta);
                     MagicDGP::Real y = pos0[1] + len * sin(theta);
                     pMObj->position(x, y, -1);
+                    pMObj->colour(0.615, 0.16, 0.196);
                 }
                 pMObj->end();
             }

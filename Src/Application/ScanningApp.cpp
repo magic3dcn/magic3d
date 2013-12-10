@@ -241,7 +241,14 @@ namespace MagicApp
             else
             {
                 pMObj = pSceneMgr->createManualObject(psName);
-                pSceneMgr->getRootSceneNode()->attachObject(pMObj);
+                if (pSceneMgr->hasSceneNode("ModelNode"))
+                {
+                    pSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+                }
+                else
+                {
+                    pSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+                }
             }
             pMObj->begin("MyCookTorrancePoint", Ogre::RenderOperation::OT_POINT_LIST);
             int pointNum = posList.size();

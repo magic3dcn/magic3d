@@ -91,7 +91,10 @@ namespace MagicApp
         pSceneMgr->destroyLight("SimpleLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderMesh");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
+        } 
     }
 
     bool MeshShopApp::OpenMesh(int& vertNum)

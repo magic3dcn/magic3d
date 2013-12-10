@@ -109,7 +109,14 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(psName);
-            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            if (mpSceneMgr->hasSceneNode("ModelNode"))
+            {
+                mpSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+            }
+            else
+            {
+                mpSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+            }
         }
         if (pPS->HasNormal())
         {
@@ -163,7 +170,14 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(psName);
-            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            if (mpSceneMgr->hasSceneNode("ModelNode"))
+            {
+                mpSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+            }
+            else
+            {
+                mpSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+            }
         }
         pMObj->begin(psMaterialName, Ogre::RenderOperation::OT_POINT_LIST);
         int pointNum = pPS->GetPointNumber();
@@ -195,7 +209,14 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(lsName);
-            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            if (mpSceneMgr->hasSceneNode("ModelNode"))
+            {
+                mpSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+            }
+            else
+            {
+                mpSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+            }
         }
         pMObj->begin(materialName, Ogre::RenderOperation::OT_LINE_LIST);
         int lineNum = startPos.size();
@@ -221,7 +242,14 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(meshName);
-            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            if (mpSceneMgr->hasSceneNode("ModelNode"))
+            {
+                mpSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+            }
+            else
+            {
+                mpSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+            }
         }
         pMObj->begin(materialName, Ogre::RenderOperation::OT_TRIANGLE_LIST);
         int vertNum = pMesh->GetVertexNumber();
@@ -259,7 +287,14 @@ namespace MagicCore
         else
         {
             pMObj = mpSceneMgr->createManualObject(meshName);
-            mpSceneMgr->getRootSceneNode()->attachObject(pMObj);
+            if (mpSceneMgr->hasSceneNode("ModelNode"))
+            {
+                mpSceneMgr->getSceneNode("ModelNode")->attachObject(pMObj);
+            }
+            else
+            {
+                mpSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(pMObj);
+            }
         }
         pMObj->begin(materialName, Ogre::RenderOperation::OT_TRIANGLE_LIST);
         int vertNum = pMesh->GetVertexNumber();

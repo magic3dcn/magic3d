@@ -4,8 +4,9 @@ material SimpleLine
 	{
 		pass
 		{
-		  //lighting off
-                    diffuse 1 0 0 1
+		    lighting off
+                    
+                    //diffuse 1 0 0 1
 		}
 	}
 }

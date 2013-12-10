@@ -149,7 +149,10 @@ namespace MagicApp
         }
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Mesh3D");
         MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("Primitive");
-        MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
+        } 
     }
 
     bool PrimitiveDetectionApp::ImportMesh3D()
