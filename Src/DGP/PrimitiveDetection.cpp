@@ -1781,7 +1781,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Mesh vertex number: " << pMesh->GetVertexNumber() << " face number: " << pMesh->GetFaceNumber() << std::endl;
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         //Find init best candidates
-        int scanNum = 3;
+        int scanNum = 4;
         for (int scanId = 0; scanId < scanNum; scanId++)
         {
             int maxIterCount = 15;
