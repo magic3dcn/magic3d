@@ -28,6 +28,7 @@ namespace MagicApp
         void IntelligentSelect(MyGUI::Widget* pSender);
         void DeformMesh(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
+        void Contact(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

@@ -3,6 +3,7 @@
 #include "../Common/AppManager.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
+#include "../Common/ToolKit.h"
 #include "PointShopApp.h"
 #include "MeshShopApp.h"
 #include "ScanningApp.h"
@@ -37,6 +38,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReliefApp);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setSize(86, 86);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::Contact);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->setSize(60, 60);
     }
 
     void HomepageUI::Shutdown()
@@ -77,4 +80,8 @@ namespace MagicApp
         MagicCore::AppManager::GetSingleton()->EnterApp(new ReliefApp, "ReliefApp");
     }
 
+    void HomepageUI::Contact(MyGUI::Widget* pSender)
+    {
+        MagicCore::ToolKit::OpenWebsite(std::string("http://magic3dcn.wix.com/magic3d#!form__map/c24vq"));
+    }
 }

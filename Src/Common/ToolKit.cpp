@@ -157,6 +157,11 @@ namespace MagicCore
         return colorV;
     }
 
+    void ToolKit::OpenWebsite(std::string& address)
+    {
+        ShellExecute(NULL, "open", address.c_str(), NULL, NULL, SW_SHOW);
+    }
+
     void ToolKit::SetMousePressLocked(bool locked)
     {
         mMousePressLocked = locked;

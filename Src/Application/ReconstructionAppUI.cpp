@@ -39,7 +39,9 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::OpenScanRecord);
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(40, 40);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Contact);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->setSize(40, 40);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::PointSetAlign);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeDownRange);
@@ -112,6 +114,11 @@ namespace MagicApp
     void ReconstructionAppUI::BackHome(MyGUI::Widget* pSender)
     {
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+    }
+
+    void ReconstructionAppUI::Contact(MyGUI::Widget* pSender)
+    {
+        MagicCore::ToolKit::OpenWebsite(std::string("http://magic3dcn.wix.com/magic3d#!form__map/c24vq"));
     }
 
     void ReconstructionAppUI::ChangeFrameStart(MyGUI::ScrollBar* pSender, size_t pos)

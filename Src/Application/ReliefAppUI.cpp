@@ -2,6 +2,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/AppManager.h"
+#include "../Common/ToolKit.h"
 #include "ReliefApp.h"
 
 namespace MagicApp
@@ -19,13 +20,10 @@ namespace MagicApp
         MagicCore::ResourceManager::LoadResource("../../Media/ReliefApp", "FileSystem", "ReliefApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReliefApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::OpenPointCloud);
-        mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::GenerateRelief);
-        mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::ExportReliefMesh);
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::BackHome);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(86, 86);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::Contact);
     }
 
     void ReliefAppUI::Shutdown()
@@ -43,8 +41,8 @@ namespace MagicApp
         {
             if (pRelief->ImportPointSet())
             {
-                mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setVisible(true);
-                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(false);
+                mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(false);
             }
         }
     }
@@ -55,8 +53,8 @@ namespace MagicApp
         if (pRelief != NULL)
         {
             pRelief->GenerateRelief();
-            mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setVisible(false);
-            mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setEnabled(false);
+            mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
         }
     }
 
@@ -72,5 +70,10 @@ namespace MagicApp
     void ReliefAppUI::BackHome(MyGUI::Widget* pSender)
     {
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+    }
+
+    void ReliefAppUI::Contact(MyGUI::Widget* pSender)
+    {
+        MagicCore::ToolKit::OpenWebsite(std::string("http://magic3dcn.wix.com/magic3d#!form__map/c24vq"));
     }
 }

@@ -18,6 +18,7 @@ namespace MagicApp
         void EnterScan3D(MyGUI::Widget* pSender);
         void EnterReconstruction(MyGUI::Widget* pSender);
         void EnterReliefApp(MyGUI::Widget* pSender);
+        void Contact(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

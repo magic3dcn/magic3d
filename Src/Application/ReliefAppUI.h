@@ -17,6 +17,7 @@ namespace MagicApp
         void GenerateRelief(MyGUI::Widget* pSender);
         void ExportReliefMesh(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
+        void Contact(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;

@@ -40,5 +40,6 @@
             <Property key="Visible" value="false"/>
             <Property key="TextColour" value="0.286275 0.254902 0.4"/>
         </Widget>
+        <Widget type="Button" skin="Button" position="15 555 60 60" align="Left Top" name="But_Contact"/>
     </Widget>
 </MyGUI>

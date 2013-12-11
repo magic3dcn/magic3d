@@ -23,6 +23,7 @@ namespace MagicApp
 
         void OpenScanRecord(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
+        void Contact(MyGUI::Widget* pSender);
         void ChangeFrameStart(MyGUI::ScrollBar* pSender, size_t pos);
         void ChangeFrameEnd(MyGUI::ScrollBar* pSender, size_t pos);
         void PointSetAlign(MyGUI::Widget* pSender);

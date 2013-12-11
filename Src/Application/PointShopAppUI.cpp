@@ -38,6 +38,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::ClearSelect);
         mRoot.at(0)->findWidget("But_Select_Delete")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::DeleteSelect);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::BackToHome);
+        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::Contact);
     }
 
     void PointShopAppUI::Shutdown()
@@ -244,5 +245,10 @@ namespace MagicApp
     void PointShopAppUI::BackToHome(MyGUI::Widget* pSender)
     {
         MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+    }
+
+    void PointShopAppUI::Contact(MyGUI::Widget* pSender)
+    {
+        MagicCore::ToolKit::OpenWebsite(std::string("http://magic3dcn.wix.com/magic3d#!form__map/c24vq"));
     }
 }

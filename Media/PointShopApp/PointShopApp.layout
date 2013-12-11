@@ -52,5 +52,6 @@
         <Widget type="Button" skin="Button" position="110 505 25 25" align="Left Top" name="But_Select_Delete">
             <Property key="Visible" value="false"/>
         </Widget>
+        <Widget type="Button" skin="Button" position="15 655 60 60" align="Left Top" name="But_Contact"/>
     </Widget>
 </MyGUI>
