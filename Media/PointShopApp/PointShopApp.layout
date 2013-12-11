@@ -46,12 +46,12 @@
         <Widget type="Button" skin="But_Viewer" position="80 505 25 25" align="Left Top" name="But_View">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="140 540 25 25" align="Left Top" name="But_Select_Clear">
+        <Widget type="Button" skin="But_Erase" position="140 540 25 25" align="Left Top" name="But_Select_Clear">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="110 505 25 25" align="Left Top" name="But_Select_Delete">
+        <Widget type="Button" skin="But_Delete" position="110 505 25 25" align="Left Top" name="But_Select_Delete">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 655 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Contact" position="15 655 60 60" align="Left Top" name="But_Contact"/>
     </Widget>
 </MyGUI>

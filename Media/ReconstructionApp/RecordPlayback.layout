@@ -39,6 +39,6 @@
             <Property key="Visible" value="false"/>
             <Property key="MoveToClick" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position_real="0.951172 0.9375 0.0390625 0.0507813" align="Right Bottom" name="But_Contact"/>
+        <Widget type="Button" skin="But_Contact" position_real="0.951172 0.9375 0.0390625 0.0507813" align="Right Bottom" name="But_Contact"/>
     </Widget>
 </MyGUI>

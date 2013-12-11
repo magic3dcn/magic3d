@@ -249,4 +249,28 @@
             <State name="pushed" offset="775 610 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_Contact" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="861 349 86 86"/>
+            <State name="normal" offset="861 436 86 86"/>
+            <State name="highlighted" offset="861 523 86 86"/>
+            <State name="pushed" offset="861 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Delete" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="947 349 86 86"/>
+            <State name="normal" offset="947 436 86 86"/>
+            <State name="highlighted" offset="947 523 86 86"/>
+            <State name="pushed" offset="947 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Erase" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1033 349 86 86"/>
+            <State name="normal" offset="1033 436 86 86"/>
+            <State name="highlighted" offset="1033 523 86 86"/>
+            <State name="pushed" offset="1033 610 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

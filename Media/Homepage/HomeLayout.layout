@@ -7,6 +7,6 @@
         <Widget type="Button" skin="But_Relief" position_real="0.730469 0.59375 0.0839844 0.109375" align="Right Top" name="But_Relief"/>
         <Widget type="Button" skin="But_PointShop" position_real="0.348633 0.403646 0.0839844 0.109375" align="Left Top" name="But_PointShop"/>
         <Widget type="Button" skin="But_MeshTool" position_real="0.56543 0.403646 0.0839844 0.109375" align="Right Top" name="But_MeshShop"/>
-        <Widget type="Button" skin="Button" position_real="0.927734 0.898438 0.0585938 0.078125" align="Right Bottom" name="But_Contact"/>
+        <Widget type="Button" skin="But_Contact" position_real="0.927734 0.898438 0.0585938 0.078125" align="Right Bottom" name="But_Contact"/>
     </Widget>
 </MyGUI>

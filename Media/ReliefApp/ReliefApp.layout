@@ -9,6 +9,6 @@
         <Widget type="Button" skin="But_Save" position="15 215 86 86" align="Left Top" name="But_Save">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 435 85 85" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Contact" position="15 435 85 85" align="Left Top" name="But_Contact"/>
     </Widget>
 </MyGUI>

@@ -8,13 +8,10 @@
         <Widget type="Button" skin="But_Smooth" position="15 165 60 60" align="Left Top" name="But_Filter">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Smooth" position="80 165 25 25" align="Left Top" name="But_Smooth">
+        <Widget type="Button" skin="But_Smooth" position="80 200 25 25" align="Left Top" name="But_Smooth">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Sampling" position="80 200 25 25" align="Left Top" name="But_Simplify">
-            <Property key="Visible" value="false"/>
-        </Widget>
-        <Widget type="Button" skin="But_Outlier" position="110 165 25 25" align="Left Top" name="But_Outlier">
+        <Widget type="Button" skin="But_Outlier" position="110 200 25 25" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Noise" position="15 240 60 60" align="Left Top" name="But_AddNoise">
@@ -29,17 +26,16 @@
         <Widget type="Button" skin="But_Cycle" position="110 350 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Brush" position="140 350 25 25" align="Left Top" name="But_Select_Intelligent">
+        <Widget type="Button" skin="But_Erase" position="140 350 25 25" align="Left Top" name="But_Select_Clear">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Deform" position="15 395 60 60" align="Left Top" name="But_Deform">
-            <Property key="Enabled" value="false"/>
-        </Widget>
-        <Widget type="Button" skin="But_Home" position="15 475 60 60" align="Left Top" name="But_Home"/>
-        <Widget type="EditBox" skin="EditBox" position="110 200 60 25" align="Left Top" name="Edit_SimplifyNumber">
+        <Widget type="Button" skin="But_Home" position="15 390 60 60" align="Left Top" name="But_Home"/>
+        <Widget type="Button" skin="But_Contact" position="15 465 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Viewer" position="80 315 25 25" align="Left Top" name="But_View">
             <Property key="Visible" value="false"/>
-            <Property key="TextColour" value="0.286275 0.254902 0.4"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="15 555 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Delete" position="110 315 25 25" align="Left Top" name="But_Delete">
+            <Property key="Visible" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>

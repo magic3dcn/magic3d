@@ -19,14 +19,14 @@ namespace MagicApp
         void SaveMesh(MyGUI::Widget* pSender);
         void FilterMesh(MyGUI::Widget* pSender);
         void SmoothMesh(MyGUI::Widget* pSender);
-        void SimplifyMesh(MyGUI::Widget* pSender);
         void RemoveOutlier(MyGUI::Widget* pSender);
         void AddNoise(MyGUI::Widget* pSender);
+        void ViewMesh(MyGUI::Widget* pSender);
         void SelectMesh(MyGUI::Widget* pSender);
         void RectangleSelect(MyGUI::Widget* pSender);
         void CycleSelect(MyGUI::Widget* pSender);
-        void IntelligentSelect(MyGUI::Widget* pSender);
-        void DeformMesh(MyGUI::Widget* pSender);
+        void ClearSelect(MyGUI::Widget* pSender);
+        void DeleteSelect(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 
