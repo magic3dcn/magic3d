@@ -136,14 +136,21 @@ namespace MagicDGP
         return mPointSet.at(index);
     }
 
-    void Point3DSet::SetPoint(Point3D* pPoint)
+    bool Point3DSet::SetPoint(int index, Point3D* pPoint)
     {
-        int index = pPoint->GetId();
-        if (mPointSet.at(index) != NULL)
+        if (index >=0 && index < mPointSet.size())
         {
-            delete mPointSet[index];
+            if (mPointSet.at(index) != NULL)
+            {
+                delete mPointSet[index];
+            }
+            mPointSet[index] = pPoint;
+            return true;
         }
-        mPointSet[index] = pPoint;
+        else
+        {
+            return false;
+        }
     }
 
     void Point3DSet::UnifyPosition(Real size)

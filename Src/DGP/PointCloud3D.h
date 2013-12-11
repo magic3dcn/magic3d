@@ -42,7 +42,7 @@ namespace MagicDGP
         std::vector<Point3D* >& GetPointSet();
         Point3D* GetPoint(int index);
         const Point3D* GetPoint(int index) const;
-        void SetPoint(Point3D* pPoint);
+        bool SetPoint(int index, Point3D* pPoint);
         void UnifyPosition(Real size);
         void InsertPoint(Point3D* pPoint);
         int  GetPointNumber() const;

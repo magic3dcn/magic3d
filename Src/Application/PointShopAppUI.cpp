@@ -22,35 +22,22 @@ namespace MagicApp
         MagicCore::ResourceManager::LoadResource("../../Media/PointShopApp", "FileSystem", "PointShopApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("PointShopApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::OpenPointSet);
-        mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SavePointSet);
-        mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::CalPointSetNormal);
-        mRoot.at(0)->findWidget("But_CalNormal")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FlipPointSetNormal);
-        mRoot.at(0)->findWidget("But_FlipNormal")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::FilterPointSet);
-        mRoot.at(0)->findWidget("But_Filter")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SmoothPointSet);
-        mRoot.at(0)->findWidget("But_Smooth")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Sampling")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SamplePointSet);
-        mRoot.at(0)->findWidget("But_Sampling")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::RemoveOutlier);
-        mRoot.at(0)->findWidget("But_Outlier")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::Reconstruction);
-        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::AddNoise);
-        mRoot.at(0)->findWidget("But_AddNoise")->castType<MyGUI::Button>()->setSize(60, 60);
+        mRoot.at(0)->findWidget("But_View")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::ViewPointSet);
         mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SelectPointSet);
-        mRoot.at(0)->findWidget("But_Select")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::RectangleSelect);
-        mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setSize(25, 25);
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::CycleSelect);
-        mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setSize(25, 25);
-        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::IntelligentSelect);
-        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setSize(25, 25);
+        mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::ClearSelect);
+        mRoot.at(0)->findWidget("But_Select_Delete")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::DeleteSelect);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::BackToHome);
-        mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(60, 60);
     }
 
     void PointShopAppUI::Shutdown()
@@ -74,16 +61,6 @@ namespace MagicApp
         ss << pointNum;
         ss >> textString;
         mRoot.at(0)->findWidget("Edit_SampleNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
-    }
-
-    void PointShopAppUI::SetProgressBarPosition(int pos)
-    {
-        mRoot.at(0)->findWidget("Progress_General")->castType<MyGUI::ProgressBar>()->setProgressPosition(pos);
-    }
-
-    void PointShopAppUI::SetProgressBarRange(int range)
-    {
-        mRoot.at(0)->findWidget("Progress_General")->castType<MyGUI::ProgressBar>()->setProgressRange(range);
     }
 
     void PointShopAppUI::OpenPointSet(MyGUI::Widget* pSender)
@@ -201,12 +178,31 @@ namespace MagicApp
         }
     }
 
+    void PointShopAppUI::ViewPointSet(MyGUI::Widget* pSender)
+    {
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->ModelViewer();
+        }
+    }
+
     void PointShopAppUI::SelectPointSet(MyGUI::Widget* pSender)
     {
         bool isVisible = mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->isVisible();
         mRoot.at(0)->findWidget("But_Select_Rectangle")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->setVisible(!isVisible);
-        mRoot.at(0)->findWidget("But_Select_Intelligent")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_Select_Delete")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_View")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        if (isVisible == true)
+        {
+            PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+            if (pPSA != NULL)
+            {
+                pPSA->ModelViewer();
+            }
+        }
     }
 
     void PointShopAppUI::RectangleSelect(MyGUI::Widget* pSender)
@@ -227,9 +223,22 @@ namespace MagicApp
         }
     }
 
-    void PointShopAppUI::IntelligentSelect(MyGUI::Widget* pSender)
+    void PointShopAppUI::ClearSelect(MyGUI::Widget* pSender)
     {
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->ClearSelect();
+        }
+    }
 
+    void PointShopAppUI::DeleteSelect(MyGUI::Widget* pSender)
+    {
+        PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
+        if (pPSA != NULL)
+        {
+            pPSA->DeleteSelcetPoints();
+        }
     }
 
     void PointShopAppUI::BackToHome(MyGUI::Widget* pSender)

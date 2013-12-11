@@ -50,5 +50,6 @@ namespace MagicTool
         MagicDGP::Point3DSet* mpPointSet;
         std::vector<int> mPickMeshIndex;
         std::vector<int> mPickPointsetIndex;
+        bool mPickPressed;
     };
 }

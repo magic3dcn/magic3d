@@ -12,8 +12,6 @@ namespace MagicApp
         void Setup();
         void Shutdown();
         void SetupFromPointsetInput(bool hasNormal, int pointNum);
-        void SetProgressBarPosition(int pos);
-        void SetProgressBarRange(int range);
 
     private:
         void OpenPointSet(MyGUI::Widget* pSender);
@@ -26,10 +24,12 @@ namespace MagicApp
         void RemoveOutlier(MyGUI::Widget* pSender);
         void Reconstruction(MyGUI::Widget* pSender);
         void AddNoise(MyGUI::Widget* pSender);
+        void ViewPointSet(MyGUI::Widget* pSender);
         void SelectPointSet(MyGUI::Widget* pSender);
         void RectangleSelect(MyGUI::Widget* pSender);
         void CycleSelect(MyGUI::Widget* pSender);
-        void IntelligentSelect(MyGUI::Widget* pSender);
+        void ClearSelect(MyGUI::Widget* pSender);
+        void DeleteSelect(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
 
     private:

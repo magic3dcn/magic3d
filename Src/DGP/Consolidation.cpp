@@ -612,40 +612,66 @@ namespace MagicDGP
         pMesh->UpdateNormal();
     }
 
-    void Consolidation::SimplePointsetSmooth(Point3DSet* pPS)
+    void Consolidation::SimplePointsetSmooth(Point3DSet* pPS, std::vector<std::vector<int> >& RiemannianGraph, bool needConstructGraph)
     {
         int pointNum = pPS->GetPointNumber();
-
-        int dim = 3;
-        int refNum = pointNum;
-        float* dataSet = new float[refNum * dim];
-        int searchNum = pointNum;
-        float* searchSet = new float[searchNum * dim];
-        for (int pid = 0; pid < pointNum; pid++)
+        if (needConstructGraph)
         {
-            MagicDGP::Vector3 pos = pPS->GetPoint(pid)->GetPosition();
-            dataSet[dim * pid + 0] = pos[0];
-            dataSet[dim * pid + 1] = pos[1];
-            dataSet[dim * pid + 2] = pos[2];
-            searchSet[dim * pid + 0] = pos[0];
-            searchSet[dim * pid + 1] = pos[1];
-            searchSet[dim * pid + 2] = pos[2];
+            int dim = 3;
+            int refNum = pointNum;
+            float* dataSet = new float[refNum * dim];
+            int searchNum = pointNum;
+            float* searchSet = new float[searchNum * dim];
+            for (int pid = 0; pid < pointNum; pid++)
+            {
+                MagicDGP::Vector3 pos = pPS->GetPoint(pid)->GetPosition();
+                dataSet[dim * pid + 0] = pos[0];
+                dataSet[dim * pid + 1] = pos[1];
+                dataSet[dim * pid + 2] = pos[2];
+                searchSet[dim * pid + 0] = pos[0];
+                searchSet[dim * pid + 1] = pos[1];
+                searchSet[dim * pid + 2] = pos[2];
+            }
+            int nn = 20;
+            int* pIndex = new int[searchNum * nn];
+            float* pDist = new float[searchNum * nn];
+            FLANNParameters searchPara;
+            searchPara = DEFAULT_FLANN_PARAMETERS;
+            searchPara.algorithm = FLANN_INDEX_KDTREE;
+            searchPara.trees = 8;
+            searchPara.log_level = FLANN_LOG_INFO;
+            searchPara.checks = 64;
+            float speedup;
+            flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+            flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+            flann_free_index(indexId, &searchPara);
+            delete []dataSet;
+            delete []searchSet;
+
+            RiemannianGraph.clear();
+            RiemannianGraph.resize(pointNum);
+            for (int pid = 0; pid < pointNum; pid++)
+            {
+                std::vector<int> neighbors(nn);
+                int baseIndex = pid * nn;
+                for (int nid = 0; nid < nn; nid++)
+                {
+                    neighbors.at(nid) = pIndex[baseIndex + nid];
+                }
+                RiemannianGraph.at(pid) = neighbors;
+            }
+
+            if (pDist != NULL)
+            {
+                delete []pDist;
+                pDist = NULL;
+            }
+            if (pIndex != NULL)
+            {
+                delete []pIndex;
+                pIndex = NULL;
+            }
         }
-        int nn = 20;
-        int* pIndex = new int[searchNum * nn];
-        float* pDist = new float[searchNum * nn];
-        FLANNParameters searchPara;
-        searchPara = DEFAULT_FLANN_PARAMETERS;
-        searchPara.algorithm = FLANN_INDEX_KDTREE;
-        searchPara.trees = 8;
-        searchPara.log_level = FLANN_LOG_INFO;
-        searchPara.checks = 64;
-        float speedup;
-        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
-        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
-        flann_free_index(indexId, &searchPara);
-        delete []dataSet;
-        delete []searchSet;
 
         Real smoothWeight = 0.75;
         std::vector<Vector3> smoothPos(pointNum);
@@ -653,27 +679,19 @@ namespace MagicDGP
         {
             Vector3 pos = pPS->GetPoint(pid)->GetPosition();
             Vector3 avgPos(0, 0, 0);
-            int baseIndex = pid * nn;
-            for (int j = 0; j < nn; j++)
+            std::vector<int> neighbors = RiemannianGraph.at(pid);
+            int neiSize = neighbors.size();
+            for (int nid = 0; nid < neiSize; nid++)
             {
-                avgPos += pPS->GetPoint(pIndex[baseIndex + j])->GetPosition();
+                avgPos += pPS->GetPoint(neighbors.at(nid))->GetPosition();
             }
-            avgPos /= nn;
+            avgPos /= neiSize;
             smoothPos.at(pid) = avgPos * smoothWeight + pos * (1 - smoothWeight);
         }
         for (int pid = 0; pid < pointNum; pid++)
         {
             pPS->GetPoint(pid)->SetPosition(smoothPos.at(pid));
         }
-        if (pDist != NULL)
-        {
-            delete []pDist;
-            pDist = NULL;
-        }
-        if (pIndex != NULL)
-        {
-            delete []pIndex;
-            pIndex = NULL;
-        }
+        
     }
 }

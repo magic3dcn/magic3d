@@ -36,9 +36,6 @@
         <Widget type="Button" skin="But_Cycle" position="110 540 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Brush" position="140 540 25 25" align="Left Top" name="But_Select_Intelligent">
-            <Property key="Visible" value="false"/>
-        </Widget>
         <Widget type="Button" skin="But_Flip" position="15 225 60 60" align="Left Top" name="But_FlipNormal">
             <Property key="Enabled" value="false"/>
         </Widget>
@@ -46,7 +43,13 @@
             <Property key="TextColour" value="0.286275 0.254902 0.4"/>
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="ProgressBar" skin="ProgressBar" position="15 715 140 20" align="Left Top" name="Progress_General">
+        <Widget type="Button" skin="But_Viewer" position="80 505 25 25" align="Left Top" name="But_View">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="140 540 25 25" align="Left Top" name="But_Select_Clear">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="110 505 25 25" align="Left Top" name="But_Select_Delete">
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>

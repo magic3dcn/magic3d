@@ -31,6 +31,7 @@ namespace MagicApp
         InfoLog << "Enter PointShopApp" << std::endl; 
         mUI.Setup();
         SetupScene();
+        ModelViewer();
 
         return true;
     }
@@ -53,7 +54,7 @@ namespace MagicApp
         {
             mViewTool.MouseMoved(arg);
         }
-        else if (mMouseMode == MM_Pick)
+        else if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
         {
             mPickTool.MouseMoved(arg);
         }
@@ -67,8 +68,14 @@ namespace MagicApp
         {
             mViewTool.MousePressed(arg);
         }
-        else if (mMouseMode == MM_Pick)
+        else if (mMouseMode == MM_Pick_Rectangle)
         {
+            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, mpPointSet);
+            mPickTool.MousePressed(arg);
+        }
+        else if (mMouseMode == MM_Pick_Cycle)
+        {
+            mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, mpPointSet);
             mPickTool.MousePressed(arg);
         }
 
@@ -77,9 +84,18 @@ namespace MagicApp
 
     bool PointShopApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (mMouseMode == MM_Pick)
+        if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
         {
             mPickTool.MouseReleased(arg);
+            std::vector<int> pickIndex;
+            mPickTool.GetPickPointsetIndex(pickIndex);
+            MagicDGP::Vector3 pickColor(1 - mDefaultColor[0], 1 - mDefaultColor[1], 1 - mDefaultColor[2]);
+            for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
+            {
+                mPickIndexSet.insert(*piIter);
+                mpPointSet->GetPoint(*piIter)->SetColor(pickColor);
+            }
+            UpdatePointSetRendering();
         }
 
         return true;
@@ -87,6 +103,10 @@ namespace MagicApp
 
     bool PointShopApp::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (arg.key == OIS::KC_BACK || arg.key == OIS::KC_DELETE)
+        {
+            DeleteSelcetPoints();
+        }
         return true;
     }
 
@@ -99,6 +119,10 @@ namespace MagicApp
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
             if (pPointSet != NULL)
             {
+                if (pPointSet->GetPointNumber() > 0)
+                {
+                    mDefaultColor = pPointSet->GetPoint(0)->GetColor();
+                }
                 hasNormal = pPointSet->HasNormal();
                 pointNum = pPointSet->GetPointNumber();
                 pPointSet->UnifyPosition(2.0);
@@ -108,7 +132,9 @@ namespace MagicApp
                 }
                 mpPointSet = pPointSet;
                 UpdatePointSetRendering();
-                
+                ClearSceneData();
+                ModelViewer();
+
                 return true;
             }
             else
@@ -162,7 +188,15 @@ namespace MagicApp
 
     void PointShopApp::SmoothPointSet()
     {
-        MagicDGP::Consolidation::SimplePointsetSmooth(mpPointSet);
+        if (mRiemannianGraph.size() > 0)
+        {
+            MagicDGP::Consolidation::SimplePointsetSmooth(mpPointSet, mRiemannianGraph, false);
+        }
+        else
+        {
+            MagicDGP::Consolidation::SimplePointsetSmooth(mpPointSet, mRiemannianGraph, true);
+        }
+        
         UpdatePointSetRendering();
     }
 
@@ -209,8 +243,6 @@ namespace MagicApp
         MagicDGP::Mesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
         if (pNewMesh != NULL)
         {
-            //pNewMesh->UnifyPosition(2);
-            //pNewMesh->UpdateNormal();
             MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
             MeshShopApp* pMSApp = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
             if (pMSApp != NULL)
@@ -242,25 +274,32 @@ namespace MagicApp
 
     void PointShopApp::RectangleSelect()
     {
-        mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, mpPointSet);
-        mMouseMode = MM_Pick;
+        mMouseMode = MM_Pick_Rectangle;
     }
 
     void PointShopApp::CycleSelect()
     {
-        mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, mpPointSet);
-        mMouseMode = MM_Pick;
+        mMouseMode = MM_Pick_Cycle;
     }
 
-    void PointShopApp::IntelligentSelect()
+    void PointShopApp::ClearSelect()
     {
+        for (std::set<int>::iterator pickItr = mPickIndexSet.begin(); pickItr != mPickIndexSet.end(); pickItr++)
+        {
+            mpPointSet->GetPoint(*pickItr)->SetColor(mDefaultColor);
+        }
+        mPickIndexSet.clear();
+        UpdatePointSetRendering();
+    }
 
+    void PointShopApp::ModelViewer()
+    {
+        mMouseMode = MM_View;
     }
 
     void PointShopApp::SetupScene(void)
     {
         InfoLog << "PointShopApp::SetupScene" << std::endl;
-        //MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getViewport(0)->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light* sl = pSceneMgr->createLight("SimpleLight");
@@ -295,6 +334,34 @@ namespace MagicApp
         }
     }
 
+    void PointShopApp::DeleteSelcetPoints()
+    {
+        if (mpPointSet != NULL && mPickIndexSet.size() > 0)
+        {
+            for (std::set<int>::iterator pickItr = mPickIndexSet.begin(); pickItr != mPickIndexSet.end(); ++pickItr)
+            {
+                mpPointSet->GetPoint(*pickItr)->SetValid(false);
+            }
+            //Update to new point set
+            MagicDGP::Point3DSet* pNewPointSet = new MagicDGP::Point3DSet;
+            int pointNum = mpPointSet->GetPointNumber();
+            for (int pid = 0; pid < pointNum; pid++)
+            {
+                MagicDGP::Point3D* pPoint = mpPointSet->GetPoint(pid);
+                if (pPoint->IsValid() == true)
+                {
+                    MagicDGP::Point3D* pNewPoint = new MagicDGP::Point3D(pPoint->GetPosition(), pPoint->GetNormal());
+                    pNewPointSet->InsertPoint(pNewPoint);
+                }
+            }
+            pNewPointSet->SetHasNormal(mpPointSet->HasNormal());
+            delete mpPointSet;
+            mpPointSet = pNewPointSet;
+            ClearSceneData();
+            UpdatePointSetRendering();
+        }
+    }
+
     void PointShopApp::SetupFromPointsetInput(MagicDGP::Point3DSet* pPS)
     {
         if (mpPointSet != NULL)
@@ -304,6 +371,13 @@ namespace MagicApp
         mpPointSet = pPS;
         mpPointSet->UnifyPosition(2);
         UpdatePointSetRendering();
+        ClearSceneData();
         mUI.SetupFromPointsetInput(mpPointSet->HasNormal(), mpPointSet->GetPointNumber());
+    }
+
+    void PointShopApp::ClearSceneData()
+    {
+        mPickIndexSet.clear();
+        mRiemannianGraph.clear();
     }
 }

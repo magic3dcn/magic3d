@@ -4,7 +4,7 @@
 namespace MagicDGP
 {
     Vertex3D::Vertex3D() : 
-        mColor(0.9, 0.9, 0.9),
+        mColor(0.86, 0.86, 0.86),
         mpEdge(NULL),
         mId(-1),
         mValid(true), 
@@ -14,7 +14,7 @@ namespace MagicDGP
 
     Vertex3D::Vertex3D(const Vector3& pos) :
         mPosition(pos), 
-        mColor(0.9, 0.9, 0.9),
+        mColor(0.86, 0.86, 0.86),
         mpEdge(NULL),
         mId(-1),
         mValid(true),
@@ -26,7 +26,7 @@ namespace MagicDGP
     Vertex3D::Vertex3D(const Vector3& pos, const Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
-        mColor(0.9, 0.9, 0.9),
+        mColor(0.86, 0.86, 0.86),
         mpEdge(NULL),
         mId(-1),
         mValid(true),

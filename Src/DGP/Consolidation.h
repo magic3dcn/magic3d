@@ -18,7 +18,7 @@ namespace MagicDGP
 
         static void SimpleMeshSmooth(Mesh3D* pMesh);
         static void MeanCurvatureFlowFairing(Mesh3D* pMesh); 
-        static void SimplePointsetSmooth(Point3DSet* pPS);
+        static void SimplePointsetSmooth(Point3DSet* pPS, std::vector<std::vector<int> >& RiemannianGraph, bool needConstructGraph);
 
     };
 

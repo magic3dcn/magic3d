@@ -14,7 +14,8 @@ namespace MagicApp
         {
             MM_None = 0,
             MM_View,
-            MM_Pick
+            MM_Pick_Rectangle,
+            MM_Pick_Cycle
         };
 
         PointShopApp();
@@ -39,7 +40,9 @@ namespace MagicApp
         void AddNoise();
         void RectangleSelect();
         void CycleSelect();
-        void IntelligentSelect();
+        void ClearSelect();
+        void DeleteSelcetPoints();
+        void ModelViewer();
 
         void SetupFromPointsetInput(MagicDGP::Point3DSet* pPS);
 
@@ -47,6 +50,7 @@ namespace MagicApp
         void SetupScene(void);
         void ShutdownScene(void);
         void UpdatePointSetRendering();
+        void ClearSceneData();
 
     private:
         PointShopAppUI mUI;
@@ -54,5 +58,8 @@ namespace MagicApp
         MagicTool::ViewTool mViewTool;
         MagicTool::PickPointTool mPickTool;
         MouseMode mMouseMode;
+        MagicDGP::Vector3 mDefaultColor;
+        std::set<int> mPickIndexSet;
+        std::vector<std::vector<int> > mRiemannianGraph;
     };
 }
