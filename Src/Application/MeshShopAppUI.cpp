@@ -104,7 +104,7 @@ namespace MagicApp
 
     void MeshShopAppUI::AddNoise(MyGUI::Widget* pSender)
     {
-         MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
         if (pMSA != NULL)
         {
             pMSA->AddNoise();
@@ -113,7 +113,11 @@ namespace MagicApp
 
     void MeshShopAppUI::ViewMesh(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->ModelViewer();
+        }
     }
 
     void MeshShopAppUI::SelectMesh(MyGUI::Widget* pSender)
@@ -124,26 +128,50 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Delete")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_View")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        if (isVisible == true)
+        {
+            MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+            if (pMSA != NULL)
+            {
+                pMSA->ModelViewer();
+            }
+        }
     }
 
     void MeshShopAppUI::RectangleSelect(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->RectangleSelect();
+        }
     }
 
     void MeshShopAppUI::CycleSelect(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->CycleSelect();
+        }
     }
 
     void MeshShopAppUI::ClearSelect(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->ClearSelect();
+        }
     }
 
     void MeshShopAppUI::DeleteSelect(MyGUI::Widget* pSender)
     {
-
+        MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
+        if (pMSA != NULL)
+        {
+            pMSA->DeleteSelcetVertex();
+        }
     }
 
     void MeshShopAppUI::BackToHome(MyGUI::Widget* pSender)

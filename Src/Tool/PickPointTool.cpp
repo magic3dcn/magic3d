@@ -58,13 +58,61 @@ namespace MagicTool
     void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 pos0, 
             MagicDGP::Vector2 pos1, std::vector<int>& pickIndex)
     {
+        pickIndex.clear();
+        MagicDGP::Real minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
+		MagicDGP::Real maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
+		MagicDGP::Real minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
+		MagicDGP::Real maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
 
+        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
+        Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
+        Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
+        Ogre::Matrix4 wvpM   = projM * viewM * worldM;
+
+        int vertNum = pMesh->GetVertexNumber();
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+            Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
+            ogreVPos = wvpM * ogreVPos;
+            if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
+            {
+                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
+                ogreVNor = worldM * ogreVNor;
+                if (ogreVNor.z > 0)
+                {
+                    pickIndex.push_back(vid);
+                }
+            }
+        }
     }
 
     void PickPointTool::PickMeshVertexByCycle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 centerPos, 
             MagicDGP::Real radius, std::vector<int>& pickIndex)
     {
-
+        Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
+        Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
+        Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
+        Ogre::Matrix4 wvpM   = projM * viewM * worldM;
+        int vertNum = pMesh->GetVertexNumber();
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+            Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
+            ogreVPos = wvpM * ogreVPos;
+            MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+            if ((screenPos - centerPos).Length() < radius)
+            {
+                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
+                ogreVNor = worldM * ogreVNor;
+                if (ogreVNor.z > 0)
+                {
+                    pickIndex.push_back(vid);
+                }
+            }
+        }
     }
 
     int PickPointTool::PickPointSetByPoint(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 mousePos)
@@ -241,7 +289,6 @@ namespace MagicTool
         {
             MagicDGP::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
-            DebugLog << "Mouse move: " << mMousePos[0] << " " << mMousePos[1] << " " << curPos[0] << " " << curPos[1] << std::endl;
             UpdateMarkObject(mMousePos, curPos);
         }
     }

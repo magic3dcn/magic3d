@@ -320,6 +320,7 @@ namespace MagicApp
         {
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
         } 
+        ClearSceneData();
     }
 
     void PointShopApp::UpdatePointSetRendering()

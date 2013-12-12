@@ -8,7 +8,8 @@
 namespace MagicApp
 {
     MeshShopApp::MeshShopApp() :
-        mpMesh(NULL)
+        mpMesh(NULL),
+        mMouseMode(MM_View)
     {
     }
 
@@ -44,14 +45,55 @@ namespace MagicApp
 
     bool MeshShopApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        mViewTool.MouseMoved(arg);
+        if (mMouseMode == MM_View)
+        {
+            mViewTool.MouseMoved(arg);
+        }
+        else if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
+        {
+            mPickTool.MouseMoved(arg);
+        }
+
         return true;
     }
 
     bool MeshShopApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        mViewTool.MousePressed(arg);
+        if (mMouseMode == MM_View)
+        {
+            mViewTool.MousePressed(arg);
+        }
+        else if (mMouseMode == MM_Pick_Rectangle)
+        {
+            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, mpMesh, NULL);
+            mPickTool.MousePressed(arg);
+        }
+        else if (mMouseMode == MM_Pick_Cycle)
+        {
+            mPickTool.SetPickParameter(MagicTool::PM_Cycle, mpMesh, NULL);
+            mPickTool.MousePressed(arg);
+        }
+
         return true;
+    }
+
+    bool MeshShopApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+    {
+        if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
+        {
+            mPickTool.MouseReleased(arg);
+            std::vector<int> pickIndex;
+            mPickTool.GetPickMeshIndex(pickIndex);
+            MagicDGP::Vector3 pickColor(1 - mDefaultColor[0], 1 - mDefaultColor[1], 1 - mDefaultColor[2]);
+            for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
+            {
+                mPickIndexSet.insert(*piIter);
+                mpMesh->GetVertex(*piIter)->SetColor(pickColor);
+            }
+            UpdateMeshRendering();
+        }
+
+        return  true;
     }
 
     bool MeshShopApp::KeyPressed( const OIS::KeyEvent &arg )
@@ -94,7 +136,18 @@ namespace MagicApp
         if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
         {
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
-        } 
+        }
+        ClearSceneData();
+    }
+
+    void MeshShopApp::UpdateMeshRendering()
+    {
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+    }
+
+    void MeshShopApp::ClearSceneData()
+    {
+        mPickIndexSet.clear();
     }
 
     bool MeshShopApp::OpenMesh(int& vertNum)
@@ -106,6 +159,10 @@ namespace MagicApp
             MagicDGP::Mesh3D* pMesh = MagicDGP::Parser::ParseMesh3D(fileName);
             if (pMesh != NULL)
             {
+                if (pMesh->GetVertexNumber() > 0)
+                {
+                    mDefaultColor = pMesh->GetVertex(0)->GetColor();
+                }
                 vertNum = pMesh->GetVertexNumber();
                 pMesh->UnifyPosition(2.0);
                 pMesh->UpdateNormal();
@@ -114,7 +171,10 @@ namespace MagicApp
                     delete mpMesh;
                 }
                 mpMesh = pMesh;
-                MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+                UpdateMeshRendering();
+                ClearSceneData();
+                ModelViewer();
+
                 return true;
             }
             else
@@ -145,12 +205,7 @@ namespace MagicApp
     {
         //MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
         MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
-    }
-
-    void MeshShopApp::SimplifyMesh()
-    {
-
+        UpdateMeshRendering();
     }
 
     void MeshShopApp::RemoveOutlier()
@@ -160,7 +215,7 @@ namespace MagicApp
         {
             delete mpMesh;
             mpMesh = pNewMesh;
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+            UpdateMeshRendering();
         }
         else
         {
@@ -182,27 +237,89 @@ namespace MagicApp
             mpMesh->GetVertex(vid)->SetPosition(newPos);
         }
         mpMesh->UpdateNormal();
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        UpdateMeshRendering();
     }
 
     void MeshShopApp::RectangleSelect()
     {
-
+        mMouseMode = MM_Pick_Rectangle;
     }
 
     void MeshShopApp::CycleSelect()
     {
-
+        mMouseMode = MM_Pick_Cycle;
     }
 
-    void MeshShopApp::IntelligentSelect()
+    void MeshShopApp::ClearSelect()
     {
-
+        for (std::set<int>::iterator pickItr = mPickIndexSet.begin(); pickItr != mPickIndexSet.end(); pickItr++)
+        {
+            mpMesh->GetVertex(*pickItr)->SetColor(mDefaultColor);
+        }
+        mPickIndexSet.clear();
+        UpdateMeshRendering();
     }
 
-    void MeshShopApp::DeformMesh()
+    void MeshShopApp::DeleteSelcetVertex()
     {
+        if (mpMesh != NULL && mPickIndexSet.size() > 0)
+        {
+            for (std::set<int>::iterator pickItr = mPickIndexSet.begin(); pickItr != mPickIndexSet.end(); ++pickItr)
+            {
+                mpMesh->GetVertex(*pickItr)->SetValid(false);
+            }
+            //Update to new mesh
+            MagicDGP::Mesh3D* pNewMesh = new MagicDGP::Mesh3D;
+            int vertNum = mpMesh->GetVertexNumber();
+            std::vector<bool> visitFlag(vertNum, 0);
+            std::map<int, int> vertIndexMap;
+            int faceNum = mpMesh->GetFaceNumber();
+            for (int fid = 0; fid < faceNum; fid++)
+            {
+                MagicDGP::Edge3D* pEdge = mpMesh->GetFace(fid)->GetEdge();
+                MagicDGP::Vertex3D* pVert[3];
+                pVert[0] = pEdge->GetVertex();
+                if (pVert[0]->IsValid() == false)
+                {
+                    continue;
+                }
+                pVert[1] = pEdge->GetNext()->GetVertex();
+                if (pVert[1]->IsValid() == false)
+                {
+                    continue;
+                }
+                pVert[2] = pEdge->GetPre()->GetVertex();
+                if (pVert[2]->IsValid() == false)
+                {
+                    continue;
+                }
+                std::vector<MagicDGP::Vertex3D* > vertList(3);
+                for (int k = 0; k < 3; k++)
+                {
+                    if (visitFlag.at(pVert[k]->GetId()) == true)
+                    {
+                        vertList.at(k) = pNewMesh->GetVertex(vertIndexMap[pVert[k]->GetId()]);
+                    }
+                    else
+                    {
+                        visitFlag.at(pVert[k]->GetId()) = true;
+                        vertList.at(k) = pNewMesh->InsertVertex(pVert[k]->GetPosition());
+                        vertIndexMap[pVert[k]->GetId()] = pNewMesh->GetVertexNumber() - 1;
+                    }
+                }
+                pNewMesh->InsertFace(vertList);
+            }
+            pNewMesh->UpdateNormal();
+            delete mpMesh;
+            mpMesh = pNewMesh;
+            ClearSceneData();
+            UpdateMeshRendering();
+        }
+    }
 
+    void MeshShopApp::ModelViewer()
+    {
+        mMouseMode = MM_View;
     }
 
     void MeshShopApp::SetupFromMeshInput(MagicDGP::Mesh3D* pMesh)
@@ -212,7 +329,8 @@ namespace MagicApp
             delete mpMesh;
         }
         mpMesh = pMesh;
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        UpdateMeshRendering();
+        ClearSceneData();
         mUI.SetupFromMeshInput(mpMesh->GetVertexNumber());
     }
 }
