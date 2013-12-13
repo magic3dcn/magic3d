@@ -4,6 +4,7 @@
 #include "../Common/ResourceManager.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
+#include "../Common/RenderSystem.h"
 #include "PointShopApp.h"
 #include "MeshShopApp.h"
 #include "ScanningApp.h"
@@ -27,19 +28,18 @@ namespace MagicApp
     {
         MagicCore::ResourceManager::LoadResource("../../Media/Homepage", "FileSystem", "Homepage");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("HomeLayout.layout");
+        int winWidth  = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth();
+        int winHeight = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight();
+        int root0Width = mRoot.at(0)->getWidth();
+        int root0Height = mRoot.at(0)->getHeight();
+        mRoot.at(0)->setPosition((winWidth - root0Width) / 2, (winHeight - root0Height) / 2);
         mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(406, 110);
         mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointShopApp);
-        mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterMeshShopApp);
-        mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
-        mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
-        mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->setSize(86, 87);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReliefApp);
-        mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setSize(86, 86);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::Contact);
-        mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->setSize(60, 60);
     }
 
     void HomepageUI::Shutdown()
