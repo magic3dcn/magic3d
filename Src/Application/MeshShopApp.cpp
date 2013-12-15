@@ -27,7 +27,7 @@ namespace MagicApp
         InfoLog << "Enter MeshShopApp" << std::endl; 
         mUI.Setup();
         SetupScene();
-
+        ModelViewer();
         return true;
     }
 
@@ -84,7 +84,7 @@ namespace MagicApp
             mPickTool.MouseReleased(arg);
             std::vector<int> pickIndex;
             mPickTool.GetPickMeshIndex(pickIndex);
-            MagicDGP::Vector3 pickColor(1 - mDefaultColor[0], 1 - mDefaultColor[1], 1 - mDefaultColor[2]);
+            MagicDGP::Vector3 pickColor(0.663, 0.506, 0.459);
             for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
             {
                 mPickIndexSet.insert(*piIter);

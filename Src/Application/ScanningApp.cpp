@@ -118,14 +118,15 @@ namespace MagicApp
 
     void ScanningApp::ReleaseDevice()
     {
+        InfoLog << "ScanningApp::ReleaseDevice" << std::endl;
         mColorStream.destroy();
         mDepthStream.destroy();
         mDevice.close();
-        InfoLog << "ScanningApp::ReleaseDevice" << std::endl;
     }
 
     void ScanningApp::ReleaseRenderScene()
     {
+        InfoLog << "ScanningApp::ReleaseRenderScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         if (pSceneMgr->hasManualObject("ScannerDepth"))
         {
@@ -133,7 +134,6 @@ namespace MagicApp
         }
         pSceneMgr->destroyLight("frontLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-        InfoLog << "ScanningApp::ReleaseRenderScene" << std::endl;
     }
 
     void ScanningApp::StartRecord()

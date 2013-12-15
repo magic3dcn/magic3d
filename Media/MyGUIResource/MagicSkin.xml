@@ -31,7 +31,10 @@
     </Resource>
     <Resource type="ResourceSkin" name="But_RecordDepth" size="86 86" texture="MagicSkin.png">
         <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
-            <State name="normal" offset="774 1 86 86"/>
+            <State name="disabled" offset="774 1 86 86"/>
+            <State name="normal" offset="774 88 86 86"/>
+            <State name="highlighted" offset="774 175 86 86"/>
+            <State name="pushed" offset="774 262 86 86"/>
         </BasisSkin>
     </Resource>
     <Resource type="ResourceSkin" name="But_Save" size="86 86" texture="MagicSkin.png">
