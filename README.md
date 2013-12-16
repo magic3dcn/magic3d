@@ -3,7 +3,7 @@ With the development of hardware technology, people can get affordable depth sca
 
 If you have any questions and advices about this software, or you want to join to design the software together, please feel free to contact magic3d.cn@gmail.com or magic3d@163.com. 
 
-In this software, I use several resources:
+In the software, I use several resources:
 Ogre3d: http://www.ogre3d.org/
 FLANN: http://www.cs.ubc.ca/research/flann/
 MyGUI: http://mygui.info/
