@@ -9,6 +9,7 @@ namespace MagicApp
 {
     MeshShopApp::MeshShopApp() :
         mpMesh(NULL),
+        mpLightMesh(NULL),
         mMouseMode(MM_View)
     {
     }
@@ -142,7 +143,8 @@ namespace MagicApp
 
     void MeshShopApp::UpdateMeshRendering()
     {
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        //MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderMesh", "MyCookTorrance", mpMesh);
+        MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3D("RenderMesh", "MyCookTorrance", mpLightMesh);
     }
 
     void MeshShopApp::ClearSceneData()
@@ -150,7 +152,7 @@ namespace MagicApp
         mPickIndexSet.clear();
     }
 
-    bool MeshShopApp::OpenMesh(int& vertNum)
+    /*bool MeshShopApp::OpenMesh(int& vertNum)
     {
         std::string fileName;
         char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
@@ -186,9 +188,47 @@ namespace MagicApp
         {
             return false;
         }
+    }*/
+
+    bool MeshShopApp::OpenMesh(int& vertNum)
+    {
+        std::string fileName;
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            MagicDGP::LightMesh3D* pLightMesh = MagicDGP::Parser::ParseLightMesh3D(fileName);
+            if (pLightMesh != NULL)
+            {
+                if (pLightMesh->GetVertexNumber() > 0)
+                {
+                    mDefaultColor = pLightMesh->GetVertex(0)->GetColor();
+                }
+                vertNum = pLightMesh->GetVertexNumber();
+                pLightMesh->UnifyPosition(2.0);
+                pLightMesh->UpdateNormal();
+                if (mpLightMesh != NULL)
+                {
+                    delete mpLightMesh;
+                }
+                mpLightMesh = pLightMesh;
+                UpdateMeshRendering();
+                ClearSceneData();
+                ModelViewer();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    void MeshShopApp::SaveMesh()
+    /*void MeshShopApp::SaveMesh()
     {
         if (mpMesh != NULL)
         {
@@ -199,16 +239,35 @@ namespace MagicApp
                 MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
             }
         }
+    }*/
+
+    void MeshShopApp::SaveMesh()
+    {
+        if (mpLightMesh != NULL)
+        {
+            std::string fileName;
+            char filterName[] = "Support format(*.obj, *.stl, *.off)\0*.*\0";
+            if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+            {
+                MagicDGP::Parser::ExportLightMesh3D(fileName, mpLightMesh);
+            }
+        }
     }
+
+    //void MeshShopApp::SmoothMesh()
+    //{
+    //    //MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
+    //    MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
+    //    UpdateMeshRendering();
+    //}
 
     void MeshShopApp::SmoothMesh()
     {
-        //MagicDGP::Consolidation::MeanCurvatureFlowFairing(mpMesh);
-        MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
+        MagicDGP::Consolidation::SimpleMeshSmooth(mpLightMesh);
         UpdateMeshRendering();
     }
 
-    void MeshShopApp::RemoveOutlier()
+    /*void MeshShopApp::RemoveOutlier()
     {
         MagicDGP::Mesh3D* pNewMesh = MagicDGP::Consolidation::RemoveSmallMeshPatch(mpMesh, 0.1);
         if (pNewMesh != NULL)
@@ -221,11 +280,26 @@ namespace MagicApp
         {
             DebugLog << "MeshShopApp::RemoveOutlier:: failed" << std::endl;
         }
+    }*/
+
+    void MeshShopApp::RemoveOutlier()
+    {
+        MagicDGP::LightMesh3D* pNewMesh = MagicDGP::Consolidation::RemoveSmallMeshPatch(mpLightMesh, 0.1);
+        if (pNewMesh != NULL)
+        {
+            delete mpLightMesh;
+            mpLightMesh = pNewMesh;
+            UpdateMeshRendering();
+        }
+        else
+        {
+            DebugLog << "MeshShopApp::RemoveOutlier:: failed" << std::endl;
+        }
     }
 
     void MeshShopApp::AddNoise()
     {
-        int vertNum = mpMesh->GetVertexNumber();
+        int vertNum = mpLightMesh->GetVertexNumber();
         int maxNum = 100;
         MagicDGP::Real epsilon = 0.001;
         for (int vid = 0; vid < vertNum; vid++)
@@ -233,10 +307,10 @@ namespace MagicApp
             int randNum = rand();
             randNum = randNum % (2 * maxNum) - maxNum;
             MagicDGP::Real scale = MagicDGP::Real(randNum) / maxNum * epsilon;
-            MagicDGP::Vector3 newPos = mpMesh->GetVertex(vid)->GetPosition() + mpMesh->GetVertex(vid)->GetNormal() * scale;
-            mpMesh->GetVertex(vid)->SetPosition(newPos);
+            MagicDGP::Vector3 newPos = mpLightMesh->GetVertex(vid)->GetPosition() + mpLightMesh->GetVertex(vid)->GetNormal() * scale;
+            mpLightMesh->GetVertex(vid)->SetPosition(newPos);
         }
-        mpMesh->UpdateNormal();
+        mpLightMesh->UpdateNormal();
         UpdateMeshRendering();
     }
 

@@ -52,6 +52,7 @@ namespace MagicApp
         MeshShopAppUI mUI;
         MagicTool::ViewTool mViewTool;
         MagicDGP::Mesh3D* mpMesh;
+        MagicDGP::LightMesh3D* mpLightMesh;
         MouseMode mMouseMode;
         MagicTool::PickPointTool mPickTool;
         MagicDGP::Vector3 mDefaultColor;
