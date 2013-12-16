@@ -66,12 +66,12 @@ namespace MagicApp
         }
         else if (mMouseMode == MM_Pick_Rectangle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, mpMesh, NULL);
+            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, mpLightMesh, NULL, NULL);
             mPickTool.MousePressed(arg);
         }
         else if (mMouseMode == MM_Pick_Cycle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Cycle, mpMesh, NULL);
+            mPickTool.SetPickParameter(MagicTool::PM_Cycle, mpLightMesh, NULL, NULL);
             mPickTool.MousePressed(arg);
         }
 
@@ -84,12 +84,12 @@ namespace MagicApp
         {
             mPickTool.MouseReleased(arg);
             std::vector<int> pickIndex;
-            mPickTool.GetPickMeshIndex(pickIndex);
+            mPickTool.GetPickLightMeshIndex(pickIndex);
             MagicDGP::Vector3 pickColor(0.663, 0.506, 0.459);
             for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
             {
                 mPickIndexSet.insert(*piIter);
-                mpMesh->GetVertex(*piIter)->SetColor(pickColor);
+                mpLightMesh->GetVertex(*piIter)->SetColor(pickColor);
             }
             UpdateMeshRendering();
         }

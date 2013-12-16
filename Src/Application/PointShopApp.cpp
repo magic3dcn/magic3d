@@ -70,12 +70,12 @@ namespace MagicApp
         }
         else if (mMouseMode == MM_Pick_Rectangle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, mpPointSet);
+            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, NULL, mpPointSet);
             mPickTool.MousePressed(arg);
         }
         else if (mMouseMode == MM_Pick_Cycle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, mpPointSet);
+            mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, NULL, mpPointSet);
             mPickTool.MousePressed(arg);
         }
 
