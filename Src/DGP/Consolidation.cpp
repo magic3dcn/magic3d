@@ -271,6 +271,7 @@ namespace MagicDGP
         std::vector<std::vector<int> > vertGroups;
         while (1)
         {
+            DebugLog << "Group collection" << std::endl;
             int startIndex = -1;
             for (int i = 0; i < vertNum; i++)
             {
