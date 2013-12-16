@@ -454,27 +454,44 @@ namespace MagicDGP
                 fread(&yy, sizeof(yy), 1, fp);
                 fread(&zz, sizeof(zz), 1, fp);
                 //read face position
-                std::vector<Vertex3D* > vertList(3);
+                Vector3 pos[3];
+                std::set<Vector3> validVertex;
                 for (int vid = 0; vid < 3; vid++)
                 {
                     fread(&xx, sizeof(xx), 1, fp);
                     fread(&yy, sizeof(yy), 1, fp);
                     fread(&zz, sizeof(zz), 1, fp);
-                    Vector3 pos(xx, yy, zz);
-                    std::pair<std::map<Vector3, int>::iterator, bool> mapRes 
-                        = vertPosMap.insert( std::pair<Vector3, int>(pos, currentVertId) );
-                    if (mapRes.second)
-                    {
-                        vertList.at(vid) = pMesh->InsertVertex(pos);
-                        currentVertId++;
-                    }
-                    else
-                    {
-                        vertList.at(vid) = pMesh->GetVertex(vertPosMap[pos]);
-                    }
-                    //vertList.at(vid) = pMesh->InsertVertex(pos);
+                    pos[vid] = Vector3(xx, yy, zz);
+                    validVertex.insert(pos[vid]);
                 }
-                pMesh->InsertFace(vertList);
+                if (validVertex.size() != 3)
+                {
+                    InfoLog << "Degenerate triangle detect" << std::endl;
+                }
+                else
+                {
+                    std::vector<Vertex3D* > vertList(3);
+                    for (int vid = 0; vid < 3; vid++)
+                    {
+                        /*fread(&xx, sizeof(xx), 1, fp);
+                        fread(&yy, sizeof(yy), 1, fp);
+                        fread(&zz, sizeof(zz), 1, fp);
+                        Vector3 pos(xx, yy, zz);*/
+                        std::pair<std::map<Vector3, int>::iterator, bool> mapRes 
+                            = vertPosMap.insert( std::pair<Vector3, int>(pos[vid], currentVertId) );
+                        if (mapRes.second)
+                        {
+                            vertList.at(vid) = pMesh->InsertVertex(pos[vid]);
+                            currentVertId++;
+                        }
+                        else
+                        {
+                            vertList.at(vid) = pMesh->GetVertex(vertPosMap[pos[vid]]);
+                        }
+                    }
+                    pMesh->InsertFace(vertList);
+                }
+                
                 fread(&attr,sizeof(unsigned short),1,fp);
             }
             fclose(fp);
@@ -526,41 +543,50 @@ namespace MagicDGP
                     return pMesh;
                 }
                 Vector3 pos2(xx, yy, zz);
-                std::vector<Vertex3D* > vertList(3);
-                std::pair<std::map<Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos0, currentVertId) );
-                if (mapRes.second)
+                //judge whether it is a valid face.
+                std::set<Vector3> validVertex;
+                validVertex.insert(pos0);
+                validVertex.insert(pos1);
+                validVertex.insert(pos2);
+                if (validVertex.size() != 3)
                 {
-                    vertList.at(0) = pMesh->InsertVertex(pos0);
-                    currentVertId++;
-                }
+                    InfoLog << "Degenerate triangle detect" << std::endl;
+                }//
                 else
                 {
-                    vertList.at(0) = pMesh->GetVertex(vertPosMap[pos0]);
-                }
-                mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos1, currentVertId) );
-                if (mapRes.second)
-                {
-                    vertList.at(1) = pMesh->InsertVertex(pos1);
-                    currentVertId++;
-                }
-                else
-                {
-                    vertList.at(1) = pMesh->GetVertex(vertPosMap[pos1]);
-                }
-                mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos2, currentVertId) );
-                if (mapRes.second)
-                {
-                    vertList.at(2) = pMesh->InsertVertex(pos2);
-                    currentVertId++;
-                }
-                else
-                {
-                    vertList.at(2) = pMesh->GetVertex(vertPosMap[pos2]);
-                }
-                //vertList.at(0) = pMesh->InsertVertex(pos0);
-                //vertList.at(1) = pMesh->InsertVertex(pos1);
-                //vertList.at(2) = pMesh->InsertVertex(pos2);
-                pMesh->InsertFace(vertList);
+                    std::vector<Vertex3D* > vertList(3);
+                    std::pair<std::map<Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos0, currentVertId) );
+                    if (mapRes.second)
+                    {
+                        vertList.at(0) = pMesh->InsertVertex(pos0);
+                        currentVertId++;
+                    }
+                    else
+                    {
+                        vertList.at(0) = pMesh->GetVertex(vertPosMap[pos0]);
+                    }
+                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos1, currentVertId) );
+                    if (mapRes.second)
+                    {
+                        vertList.at(1) = pMesh->InsertVertex(pos1);
+                        currentVertId++;
+                    }
+                    else
+                    {
+                        vertList.at(1) = pMesh->GetVertex(vertPosMap[pos1]);
+                    }
+                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos2, currentVertId) );
+                    if (mapRes.second)
+                    {
+                        vertList.at(2) = pMesh->InsertVertex(pos2);
+                        currentVertId++;
+                    }
+                    else
+                    {
+                        vertList.at(2) = pMesh->GetVertex(vertPosMap[pos2]);
+                    }
+                    pMesh->InsertFace(vertList);
+                }   
                 ret = fscanf(fp, "%*s");
                 ret = fscanf(fp, "%*s");
                 if (feof(fp))
@@ -779,6 +805,7 @@ namespace MagicDGP
             fout << "    endloop" << "\n";
             fout << "  endfacet" << "\n";
         }
+        fout << "endsolid magic3d" << std::endl;
         fout.close();
     }
 
