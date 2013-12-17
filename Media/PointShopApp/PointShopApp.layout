@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position="0 0 180 768" align="Left Top" layer="Back">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 200 768" align="Left Top" layer="Back">
         <Widget type="Button" skin="But_Open" position="15 15 60 60" align="Left Top" name="But_Open"/>
         <Widget type="Button" skin="But_Save" position="15 85 60 60" align="Left Top" name="But_Save">
             <Property key="Enabled" value="false"/>
@@ -53,11 +53,11 @@
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Contact" position="15 655 60 60" align="Left Top" name="But_Contact"/>
-        <Widget type="Button" skin="Button" position="140 505 25 25" align="Left Top" name="But_IgnoreBack">
+        <Widget type="Button" skin="But_CheckOff" position="140 505 25 25" align="Left Top" name="But_IgnoreBack">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position="135 485 35 15" align="Left Top" name="Tex_Back">
-            <Property key="Caption" value="Back"/>
+        <Widget type="TextBox" skin="TextBox" position="125 485 65 15" align="Left Top" name="Tex_Back">
+            <Property key="Caption" value="Back Off"/>
             <Property key="TextColour" value="0.466667 0.568627 0.384314"/>
             <Property key="Visible" value="false"/>
         </Widget>

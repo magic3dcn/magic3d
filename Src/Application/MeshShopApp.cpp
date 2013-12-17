@@ -344,27 +344,27 @@ namespace MagicApp
     {
         DebugLog << "ExtractDepthDataTest" << std::endl;
         Ogre::TexturePtr depthTex = Ogre::TextureManager::getSingleton().createManual(  
-			"DepthTexture",      // name   
-			Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,  
-			Ogre::TEX_TYPE_2D,   // type   
-			512,  // width   
-			512,  // height   
-			0,                   // number of mipmaps   
-			//Ogre::PF_B8G8R8A8,   // pixel format
+            "DepthTexture",      // name   
+            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,  
+            Ogre::TEX_TYPE_2D,   // type   
+            512,  // width   
+            512,  // height   
+            0,                   // number of mipmaps   
+            //Ogre::PF_B8G8R8A8,   // pixel format
             Ogre::PF_FLOAT32_R,
-		    Ogre::TU_RENDERTARGET
-			); 
+            Ogre::TU_RENDERTARGET
+            ); 
         Ogre::RenderTarget* pTarget = depthTex->getBuffer()->getRenderTarget();
-		//Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->createCamera("RTTCamera");
+        //Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->createCamera("RTTCamera");
         Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetMainCamera();
-		pOrthCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
-		pOrthCam->setOrthoWindow(3, 3);
-		pOrthCam->setPosition(0, 0, 4);
-		pOrthCam->lookAt(0, 0, 0);
-		pOrthCam->setNearClipDistance(0.05);
+        pOrthCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+        pOrthCam->setOrthoWindow(3, 3);
+        pOrthCam->setPosition(0, 0, 4);
+        pOrthCam->lookAt(0, 0, 0);
+        pOrthCam->setNearClipDistance(0.05);
         pOrthCam->setFarClipDistance(6);
-		Ogre::Viewport* pViewport = pTarget->addViewport(pOrthCam);
-		pViewport->setDimensions(0, 0, 1, 1);
+        Ogre::Viewport* pViewport = pTarget->addViewport(pOrthCam);
+        pViewport->setDimensions(0, 0, 1, 1);
 
         DebugLog << "Render light mesh" << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3D("RenderMesh", "Depth", mpLightMesh);
@@ -373,12 +373,12 @@ namespace MagicApp
 
         DebugLog << "Convert image" << std::endl;
         Ogre::Image img;
-		depthTex->convertToImage(img);
+        depthTex->convertToImage(img);
         MagicDGP::Point3DSet* pPS = new MagicDGP::Point3DSet;
         for(int y = 0; y < 512; y++)  
-		{  
-			for(int x = 0; x < 512; x++)  
-			{
+        {  
+            for(int x = 0; x < 512; x++)  
+            {
                 MagicDGP::Vector3 pos(x / 512.0, y / 512.0, 0);
                 pos[2] = (img.getColourAt(x, y, 0))[1] * (6 - 0.05);
                 MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
@@ -386,7 +386,7 @@ namespace MagicApp
             }
         }
         MagicDGP::Parser::ExportPointSet("depth.obj", pPS);
-		img.save("depth.bmp");
+        img.save("depth.bmp");
         DebugLog << "End" << std::endl;
     }
 }

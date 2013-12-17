@@ -276,4 +276,14 @@
             <State name="pushed" offset="1033 610 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_CheckOn" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="normal" offset="1634 175 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_CheckOff" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="normal" offset="1634 87 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

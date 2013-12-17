@@ -251,6 +251,14 @@ namespace MagicApp
     void PointShopAppUI::SetPickIgnoreBack(MyGUI::Widget* pSender)
     {
         mPickIgnoreBack = !mPickIgnoreBack;
+        if (mPickIgnoreBack == true)
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOn");
+        }
+        else
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOff");
+        }
     }
 
     void PointShopAppUI::BackToHome(MyGUI::Widget* pSender)

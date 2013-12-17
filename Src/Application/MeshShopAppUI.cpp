@@ -183,6 +183,14 @@ namespace MagicApp
     void MeshShopAppUI::SetPickIgnoreBack(MyGUI::Widget* pSender)
     {
         mPickIgnoreBack = !mPickIgnoreBack;
+        if (mPickIgnoreBack == true)
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOn");
+        }
+        else
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOff");
+        }
     }
 
     void MeshShopAppUI::BackToHome(MyGUI::Widget* pSender)
