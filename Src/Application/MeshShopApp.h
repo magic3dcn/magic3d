@@ -49,6 +49,8 @@ namespace MagicApp
         void UpdateMeshRendering();
         void ClearSceneData(void);
 
+        void ExtractDepthDataTest();
+
     private:
         MeshShopAppUI mUI;
         MagicTool::ViewTool mViewTool;

@@ -1,0 +1,21 @@
+material Depth
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref VDepth 
+            {
+                param_named_auto worldViewProj worldviewproj_matrix
+                param_named_auto worldMatrix      world_matrix
+            }
+            
+            fragment_program_ref FDepth 
+            {
+                param_named_auto fNear near_clip_distance
+                param_named_auto fFar far_clip_distance
+            }
+
+        }
+    }
+}

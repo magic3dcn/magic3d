@@ -1,0 +1,9 @@
+void depth_v(float4 position	:	POSITION,
+	     out   float4 oPosition : POSITION,
+      	out	float3 worldPos	:	TEXCOORD0,
+		uniform	float4x4 worldMatrix,
+		uniform	float4x4 worldViewProj)
+{
+	oPosition = mul(worldViewProj, position);
+	worldPos = mul(worldMatrix,	position).xyz;
+}

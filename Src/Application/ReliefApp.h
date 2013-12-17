@@ -28,6 +28,7 @@ namespace MagicApp
         void SetupScene(void);
         void ShutdownScene(void);
 
+
     private:
         ReliefAppUI mUI;
         MagicTool::ViewTool mViewTool;

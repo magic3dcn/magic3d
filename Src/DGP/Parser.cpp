@@ -1023,13 +1023,25 @@ namespace MagicDGP
         DebugLog << "Parser::ExportPointSetByOBJ" << std::endl;
         std::ofstream fout(fileName);
         int pcNum = pPC->GetPointNumber();
-        for (int i = 0; i < pcNum; i++)
+        if (pPC->HasNormal() == true)
         {
-            const Point3D* pPoint = pPC->GetPoint(i);
-            Vector3 pos = pPoint->GetPosition();
-            Vector3 nor = pPoint->GetNormal();
-            fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
-            fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+            for (int i = 0; i < pcNum; i++)
+            {
+                const Point3D* pPoint = pPC->GetPoint(i);
+                Vector3 pos = pPoint->GetPosition();
+                Vector3 nor = pPoint->GetNormal();
+                fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+                fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < pcNum; i++)
+            {
+                const Point3D* pPoint = pPC->GetPoint(i);
+                Vector3 pos = pPoint->GetPosition();
+                fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
+            }
         }
         fout.close();
     }
