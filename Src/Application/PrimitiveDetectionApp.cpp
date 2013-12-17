@@ -75,7 +75,7 @@ namespace MagicApp
             {
                 MagicDGP::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
-                int pickIndex = MagicTool::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos);
+                int pickIndex = MagicTool::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos, true);
                 if (pickIndex != -1)
                 {
                     PrimitiveSelection(pickIndex);

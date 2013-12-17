@@ -7,7 +7,8 @@
 
 namespace MagicApp
 {
-    MeshShopAppUI::MeshShopAppUI()
+    MeshShopAppUI::MeshShopAppUI() :
+        mPickIgnoreBack(false)
     {
     }
 
@@ -32,6 +33,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::CycleSelect);
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::ClearSelect);
         mRoot.at(0)->findWidget("But_Delete")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::DeleteSelect);
+        mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::SetPickIgnoreBack);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::BackToHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MeshShopAppUI::Contact);
     }
@@ -128,6 +130,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Delete")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_View")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("Tex_Back")->castType<MyGUI::TextBox>()->setVisible(!isVisible);
         if (isVisible == true)
         {
             MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
@@ -143,6 +147,7 @@ namespace MagicApp
         MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
         if (pMSA != NULL)
         {
+            pMSA->SetPickIgnoreBack(mPickIgnoreBack);
             pMSA->RectangleSelect();
         }
     }
@@ -152,6 +157,7 @@ namespace MagicApp
         MeshShopApp* pMSA = dynamic_cast<MeshShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MeshShopApp"));
         if (pMSA != NULL)
         {
+            pMSA->SetPickIgnoreBack(mPickIgnoreBack);
             pMSA->CycleSelect();
         }
     }
@@ -172,6 +178,11 @@ namespace MagicApp
         {
             pMSA->DeleteSelcetVertex();
         }
+    }
+
+    void MeshShopAppUI::SetPickIgnoreBack(MyGUI::Widget* pSender)
+    {
+        mPickIgnoreBack = !mPickIgnoreBack;
     }
 
     void MeshShopAppUI::BackToHome(MyGUI::Widget* pSender)

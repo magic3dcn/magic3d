@@ -10,7 +10,7 @@ namespace MagicDGP
         MeshReconstruction();
         ~MeshReconstruction();
 
-        static Mesh3D* ScreenPoissonReconstruction(const Point3DSet* pPC);
+        static LightMesh3D* ScreenPoissonReconstruction(const Point3DSet* pPC);
 
     private:
 

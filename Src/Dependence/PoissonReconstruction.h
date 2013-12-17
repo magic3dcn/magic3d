@@ -15,12 +15,13 @@ namespace MagicDependence
     {
     public:
         PoissonReconstruction();
-        static MagicDGP::Mesh3D* ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC);
-        static void PoissonRecon(int argc , char* argv[], const MagicDGP::Point3DSet* pPC, std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons);
-        static MagicDGP::Mesh3D* SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons);
+        //static MagicDGP::Mesh3D* ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC);
+        static MagicDGP::LightMesh3D* ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC);
         ~PoissonReconstruction();
 
     private:
+        static void PoissonRecon(int argc , char* argv[], const MagicDGP::Point3DSet* pPC, std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons);
+        static MagicDGP::LightMesh3D* SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons);
         template< class Real >
         static void SmoothValues( std::vector< PlyValueVertex< Real > >& vertices , const std::vector< std::vector< int > >& polygons )
         {

@@ -30,10 +30,10 @@
         <Widget type="Button" skin="But_Outlier" position="80 295 25 25" align="Left Top" name="But_Outlier">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Rectangle" position="80 540 25 25" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="But_Rectangle" position="80 505 25 25" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Cycle" position="110 540 25 25" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="But_Cycle" position="110 505 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Flip" position="15 225 60 60" align="Left Top" name="But_FlipNormal">
@@ -43,15 +43,23 @@
             <Property key="TextColour" value="0.286275 0.254902 0.4"/>
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Viewer" position="80 505 25 25" align="Left Top" name="But_View">
+        <Widget type="Button" skin="But_Viewer" position="80 540 25 25" align="Left Top" name="But_View">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Erase" position="140 540 25 25" align="Left Top" name="But_Select_Clear">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Delete" position="110 505 25 25" align="Left Top" name="But_Select_Delete">
+        <Widget type="Button" skin="But_Delete" position="110 540 25 25" align="Left Top" name="But_Select_Delete">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Contact" position="15 655 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="Button" position="140 505 25 25" align="Left Top" name="But_IgnoreBack">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="135 485 35 15" align="Left Top" name="Tex_Back">
+            <Property key="Caption" value="Back"/>
+            <Property key="TextColour" value="0.466667 0.568627 0.384314"/>
+            <Property key="Visible" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>

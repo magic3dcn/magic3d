@@ -42,6 +42,7 @@ namespace MagicApp
         void CycleSelect();
         void ClearSelect();
         void DeleteSelcetPoints();
+        void SetPickIgnoreBack(bool ignore);
         void ModelViewer();
 
         void SetupFromPointsetInput(MagicDGP::Point3DSet* pPS);
@@ -58,6 +59,7 @@ namespace MagicApp
         MagicTool::ViewTool mViewTool;
         MagicTool::PickPointTool mPickTool;
         MouseMode mMouseMode;
+        bool mPickIgnoreBack;
         MagicDGP::Vector3 mDefaultColor;
         std::set<int> mPickIndexSet;
         std::vector<std::vector<int> > mRiemannianGraph;

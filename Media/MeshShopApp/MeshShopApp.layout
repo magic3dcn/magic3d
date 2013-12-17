@@ -20,10 +20,10 @@
         <Widget type="Button" skin="But_Select" position="15 315 60 60" align="Left Top" name="But_Select">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Rectangle" position="80 350 25 25" align="Left Top" name="But_Select_Rectangle">
+        <Widget type="Button" skin="But_Rectangle" position="80 315 25 25" align="Left Top" name="But_Select_Rectangle">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Cycle" position="110 350 25 25" align="Left Top" name="But_Select_Cycle">
+        <Widget type="Button" skin="But_Cycle" position="110 315 25 25" align="Left Top" name="But_Select_Cycle">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Erase" position="140 350 25 25" align="Left Top" name="But_Select_Clear">
@@ -31,11 +31,19 @@
         </Widget>
         <Widget type="Button" skin="But_Home" position="15 390 60 60" align="Left Top" name="But_Home"/>
         <Widget type="Button" skin="But_Contact" position="15 465 60 60" align="Left Top" name="But_Contact"/>
-        <Widget type="Button" skin="But_Viewer" position="80 315 25 25" align="Left Top" name="But_View">
+        <Widget type="Button" skin="But_Viewer" position="80 350 25 25" align="Left Top" name="But_View">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Delete" position="110 315 25 25" align="Left Top" name="But_Delete">
+        <Widget type="Button" skin="But_Delete" position="110 350 25 25" align="Left Top" name="But_Delete">
             <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="140 315 25 25" align="Left Top" name="But_IgnoreBack">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="TextBox" skin="TextBox" position="135 295 35 15" align="Left Top" name="Tex_Back">
+            <Property key="Caption" value="Back"/>
+            <Property key="Visible" value="false"/>
+            <Property key="TextColour" value="0.470588 0.572549 0.384314"/>
         </Widget>
     </Widget>
 </MyGUI>
