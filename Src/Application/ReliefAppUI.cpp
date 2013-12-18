@@ -53,7 +53,6 @@ namespace MagicApp
         if (pRelief != NULL)
         {
             pRelief->GenerateRelief();
-            mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setEnabled(false);
         }
     }
 
