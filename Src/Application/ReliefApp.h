@@ -2,7 +2,6 @@
 #include "../Common/AppBase.h"
 #include "ReliefAppUI.h"
 #include "../Tool/ViewTool.h"
-#include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
 
 namespace MagicApp
@@ -20,7 +19,7 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
-        bool ImportPointSet();
+        bool ImportMesh3D();
         void GenerateRelief();
         void ExportReliefMesh();
 
@@ -32,7 +31,6 @@ namespace MagicApp
     private:
         ReliefAppUI mUI;
         MagicTool::ViewTool mViewTool;
-        MagicDGP::Point3DSet* mpPointSet;
-        MagicDGP::Mesh3D* mpMesh;
+        MagicDGP::LightMesh3D* mpLightMesh;
     };
 }

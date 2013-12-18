@@ -113,6 +113,20 @@ namespace MagicApp
         {
             ExtractDepthDataTest();
         }
+        else if (arg.key == OIS::KC_O && mpLightMesh !=NULL)
+        {
+            Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetMainCamera();
+            pOrthCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+            pOrthCam->setOrthoWindow(3, 3);
+            pOrthCam->setPosition(0, 0, 3);
+            pOrthCam->lookAt(0, 0, 0);
+            pOrthCam->setNearClipDistance(0.5);
+            pOrthCam->setFarClipDistance(5);
+        }
+        else if (arg.key == OIS::KC_P && mpLightMesh !=NULL)
+        {
+            MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        }
         return true;
     }
 
@@ -355,14 +369,14 @@ namespace MagicApp
             Ogre::TU_RENDERTARGET
             ); 
         Ogre::RenderTarget* pTarget = depthTex->getBuffer()->getRenderTarget();
-        //Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->createCamera("RTTCamera");
         Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetMainCamera();
         pOrthCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
         pOrthCam->setOrthoWindow(3, 3);
-        pOrthCam->setPosition(0, 0, 4);
+        pOrthCam->setPosition(0, 0, 3);
         pOrthCam->lookAt(0, 0, 0);
-        pOrthCam->setNearClipDistance(0.05);
-        pOrthCam->setFarClipDistance(6);
+        pOrthCam->setAspectRatio(1.0);
+        pOrthCam->setNearClipDistance(0.5);
+        pOrthCam->setFarClipDistance(5);
         Ogre::Viewport* pViewport = pTarget->addViewport(pOrthCam);
         pViewport->setDimensions(0, 0, 1, 1);
 
@@ -380,7 +394,7 @@ namespace MagicApp
             for(int x = 0; x < 512; x++)  
             {
                 MagicDGP::Vector3 pos(x / 512.0, y / 512.0, 0);
-                pos[2] = (img.getColourAt(x, y, 0))[1] * (6 - 0.05);
+                pos[2] = (img.getColourAt(x, y, 0))[1];
                 MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
                 pPS->InsertPoint(pPoint);
             }

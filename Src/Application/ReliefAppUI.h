@@ -13,7 +13,7 @@ namespace MagicApp
         void Shutdown();
 
     private:
-        void OpenPointCloud(MyGUI::Widget* pSender);
+        void ImportMesh3D(MyGUI::Widget* pSender);
         void GenerateRelief(MyGUI::Widget* pSender);
         void ExportReliefMesh(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);

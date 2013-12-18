@@ -73,9 +73,12 @@ namespace MagicCore
 
     void RenderSystem::SetupCameraDefaultParameter()
     {
-        mpMainCam->setPosition(Ogre::Vector3(0,0,4));
-        mpMainCam->lookAt(Ogre::Vector3(0,0,0));
+        mpMainCam->setProjectionType(Ogre::PT_PERSPECTIVE);
+        mpMainCam->setPosition(0, 0, 4);
+        mpMainCam->lookAt(0, 0, 0);
         mpMainCam->setNearClipDistance(0.05);
+        mpMainCam->setFarClipDistance(10);
+        mpMainCam->setAspectRatio((Ogre::Real)mpRenderWin->getWidth() / (Ogre::Real)mpRenderWin->getHeight());
     }
 
     void RenderSystem::Update()

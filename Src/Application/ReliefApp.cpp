@@ -8,22 +8,16 @@
 namespace MagicApp
 {
     ReliefApp::ReliefApp() : 
-        mpPointSet(NULL),
-        mpMesh(NULL)
+        mpLightMesh(NULL)
     {
     }
 
     ReliefApp::~ReliefApp()
     {
-        if (mpPointSet != NULL)
+        if (mpLightMesh != NULL)
         {
-            delete mpPointSet;
-            mpPointSet = NULL;
-        }
-        if (mpMesh != NULL)
-        {
-            delete mpMesh;
-            mpMesh = NULL;
+            delete mpLightMesh;
+            mpLightMesh = NULL;
         }
     }
 
@@ -66,15 +60,15 @@ namespace MagicApp
 
     bool ReliefApp::KeyPressed( const OIS::KeyEvent &arg )
     {
-        if (arg.key == OIS::KC_V && mpMesh !=NULL)
+        if (arg.key == OIS::KC_V && mpLightMesh !=NULL)
         {
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_POINTS);
         }
-        if (arg.key == OIS::KC_E && mpMesh !=NULL)
+        if (arg.key == OIS::KC_E && mpLightMesh !=NULL)
         {
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_WIREFRAME);
         }
-        if (arg.key == OIS::KC_F && mpMesh !=NULL)
+        if (arg.key == OIS::KC_F && mpLightMesh !=NULL)
         {
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->setPolygonMode(Ogre::PolygonMode::PM_SOLID);
         }
@@ -99,31 +93,27 @@ namespace MagicApp
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderOBJ");
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderMesh");
         MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->resetToInitialState();
     }
 
-    bool ReliefApp::ImportPointSet()
+    bool ReliefApp::ImportMesh3D()
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
-            if (pPointSet != NULL)
+            MagicDGP::LightMesh3D* pLightMesh = MagicDGP::Parser::ParseLightMesh3D(fileName);
+            if (pLightMesh != NULL)
             {
-                pPointSet->UnifyPosition(2.0);
-                if (mpPointSet != NULL)
+                pLightMesh->UnifyPosition(2.0);
+                pLightMesh->UpdateNormal();
+                if (mpLightMesh != NULL)
                 {
-                    delete mpPointSet;
+                    delete mpLightMesh;
                 }
-                mpPointSet = pPointSet;
-                MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderOBJ", "MyCookTorrancePoint", mpPointSet);
-                if (mpMesh != NULL)
-                {
-                    delete mpMesh;
-                    mpMesh = NULL;
-                }
+                mpLightMesh = pLightMesh;
+                MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3D("RenderMesh", "MyCookTorrance", mpLightMesh);
                 return true;
             }
             else
@@ -139,32 +129,67 @@ namespace MagicApp
 
     void ReliefApp::GenerateRelief()
     {
-        MagicDGP::ReliefGeneration reliefGen(512, 512, -1, 1, -1, 1);
-        MagicDGP::Mesh3D* pMesh = reliefGen.PlaneReliefFromPointCloud(mpPointSet);
-        //MagicDGP::Mesh3D* pMesh = reliefGen.CylinderReliefFromPointCloud(mpPointSet);
-        if (pMesh != NULL)
-        {
-            if (mpMesh != NULL)
+        //Get depth data
+        Ogre::TexturePtr depthTex = Ogre::TextureManager::getSingleton().createManual(  
+            "DepthTexture",      // name   
+            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,  
+            Ogre::TEX_TYPE_2D,   // type   
+            512,  // width   
+            512,  // height   
+            0,                   // number of mipmaps   
+            //Ogre::PF_B8G8R8A8,   // pixel format
+            Ogre::PF_FLOAT32_R,
+            Ogre::TU_RENDERTARGET
+            ); 
+        Ogre::RenderTarget* pTarget = depthTex->getBuffer()->getRenderTarget();
+        Ogre::Camera* pOrthCam = MagicCore::RenderSystem::GetSingleton()->GetMainCamera();
+        pOrthCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+        pOrthCam->setOrthoWindow(3, 3);
+        pOrthCam->setPosition(0, 0, 3);
+        pOrthCam->lookAt(0, 0, 0);
+        pOrthCam->setAspectRatio(1.0);
+        pOrthCam->setNearClipDistance(0.5);
+        pOrthCam->setFarClipDistance(5);
+        Ogre::Viewport* pViewport = pTarget->addViewport(pOrthCam);
+        pViewport->setDimensions(0, 0, 1, 1);
+        MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3D("RenderMesh", "Depth", mpLightMesh);
+        MagicCore::RenderSystem::GetSingleton()->Update();
+        Ogre::Image img;
+        depthTex->convertToImage(img);
+        std::vector<MagicDGP::Real> heightField(512 * 512);
+        for(int x = 0; x < 512; x++)  
+        {  
+            for(int y = 0; y < 512; y++)  
             {
-                delete mpMesh;
+                heightField.at(x * 512 + y) = (img.getColourAt(x, 511 - y, 0))[1];
             }
-            mpMesh = pMesh;
-            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("RenderOBJ", "MyCookTorrance", mpMesh);
         }
+        Ogre::TextureManager::getSingleton().remove("DepthTexture");
+        //
+        MagicDGP::LightMesh3D* pReliefMesh = MagicDGP::ReliefGeneration::PlaneReliefFromHeightField(heightField, 511, 511);
+        //MagicDGP::LightMesh3D* pReliefMesh = MagicDGP::ReliefGeneration::CylinderReliefFromHeightField(heightField, 511, 511);
+        if (pReliefMesh != NULL)
+        {
+            delete mpLightMesh;
+            mpLightMesh = pReliefMesh;
+            mpLightMesh->UnifyPosition(2);
+            mpLightMesh->UpdateNormal();
+        }
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3D("RenderMesh", "MyCookTorrance", mpLightMesh);
     }
 
     void ReliefApp::ExportReliefMesh()
     {
-        if (mpMesh != NULL)
+        if (mpLightMesh != NULL)
         {
             std::string fileName;
-            char filterName[] = "OBJ Files(*.obj)\0*.obj\0";
+            char filterName[] = "Support format(*.obj, *.stl, *.off)\0*.*\0";
             if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
             {
-                MagicDGP::Parser::ExportMesh3D(fileName, mpMesh);
+                MagicDGP::Parser::ExportLightMesh3D(fileName, mpLightMesh);
             }
         }
     }
 
-    
 }

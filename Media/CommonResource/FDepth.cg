@@ -1,8 +1,6 @@
 void depth_f(float3 position : TEXCOORD0, 
-		out float4 color : COLOR,
-           uniform float fNear,
-           uniform float fFar)
+		out float4 color : COLOR)
 {
-     float fColor = smoothstep(fNear, fFar, position.z);
+     float fColor = 1 - position.z;
      color = vec4(vec3(fColor), 1.0);    
 }

@@ -19,7 +19,7 @@ namespace MagicApp
     {
         MagicCore::ResourceManager::LoadResource("../../Media/ReliefApp", "FileSystem", "ReliefApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("ReliefApp.layout");
-        mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::OpenPointCloud);
+        mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::ImportMesh3D);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::GenerateRelief);
         mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::ExportReliefMesh);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReliefAppUI::BackHome);
@@ -34,15 +34,15 @@ namespace MagicApp
         MagicCore::ResourceManager::UnloadResource("ReliefApp");
     }
 
-    void ReliefAppUI::OpenPointCloud(MyGUI::Widget* pSender)
+    void ReliefAppUI::ImportMesh3D(MyGUI::Widget* pSender)
     {
         ReliefApp* pRelief = dynamic_cast<ReliefApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReliefApp"));
         if (pRelief != NULL)
         {
-            if (pRelief->ImportPointSet())
+            if (pRelief->ImportMesh3D())
             {
                 mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setEnabled(true);
-                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(false);
+                mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
             }
         }
     }
@@ -54,7 +54,6 @@ namespace MagicApp
         {
             pRelief->GenerateRelief();
             mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->setEnabled(false);
-            mRoot.at(0)->findWidget("But_Save")->castType<MyGUI::Button>()->setEnabled(true);
         }
     }
 
