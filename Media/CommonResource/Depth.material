@@ -1,0 +1,18 @@
+material Depth
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref VDepth 
+            {
+                param_named_auto worldViewProj worldviewproj_matrix
+            }
+            
+            fragment_program_ref FDepth 
+            {
+            }
+
+        }
+    }
+}

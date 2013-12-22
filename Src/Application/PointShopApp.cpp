@@ -13,7 +13,8 @@ namespace MagicApp
 {
     PointShopApp::PointShopApp() :
         mpPointSet(NULL),
-        mMouseMode(MM_View)
+        mMouseMode(MM_View),
+        mPickIgnoreBack(true)
     {
     }
 
@@ -70,12 +71,12 @@ namespace MagicApp
         }
         else if (mMouseMode == MM_Pick_Rectangle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, NULL, mpPointSet);
+            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, mPickIgnoreBack, NULL, NULL, mpPointSet);
             mPickTool.MousePressed(arg);
         }
         else if (mMouseMode == MM_Pick_Cycle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Cycle, NULL, mpPointSet);
+            mPickTool.SetPickParameter(MagicTool::PM_Cycle, mPickIgnoreBack, NULL, NULL, mpPointSet);
             mPickTool.MousePressed(arg);
         }
 
@@ -227,6 +228,7 @@ namespace MagicApp
             if (pNewPS != NULL)
             {
                 //transfer property
+                pNewPS->UnifyPosition(2);
                 pNewPS->SetHasNormal(mpPointSet->HasNormal());
                 //
                 delete mpPointSet;
@@ -240,7 +242,7 @@ namespace MagicApp
     {
         mpPointSet->CalculateBBox();
         mpPointSet->CalculateDensity();
-        MagicDGP::Mesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
+        MagicDGP::LightMesh3D* pNewMesh = MagicDGP::MeshReconstruction::ScreenPoissonReconstruction(mpPointSet);
         if (pNewMesh != NULL)
         {
             MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
@@ -355,12 +357,18 @@ namespace MagicApp
                     pNewPointSet->InsertPoint(pNewPoint);
                 }
             }
+            pNewPointSet->UnifyPosition(2);
             pNewPointSet->SetHasNormal(mpPointSet->HasNormal());
             delete mpPointSet;
             mpPointSet = pNewPointSet;
             ClearSceneData();
             UpdatePointSetRendering();
         }
+    }
+
+    void PointShopApp::SetPickIgnoreBack(bool ignore)
+    {
+        mPickIgnoreBack = ignore;
     }
 
     void PointShopApp::SetupFromPointsetInput(MagicDGP::Point3DSet* pPS)

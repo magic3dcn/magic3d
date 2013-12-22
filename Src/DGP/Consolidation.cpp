@@ -258,6 +258,128 @@ namespace MagicDGP
         }
     }
 
+    //Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion)
+    //{
+    //    DebugLog << "Consolidation::RemoveSmallMeshPatch" << std::endl;
+    //    int vertNum = pMesh->GetVertexNumber();
+    //    int smallNum = vertNum * proportion;
+    //    if (smallNum < 10)
+    //    {
+    //        return NULL;
+    //    }
+    //    std::vector<bool> visitFlag(vertNum, 0);
+    //    std::vector<std::vector<int> > vertGroups;
+    //    while (1)
+    //    {
+    //        int startIndex = -1;
+    //        for (int i = 0; i < vertNum; i++)
+    //        {
+    //            if (visitFlag.at(i) == 0)
+    //            {
+    //                startIndex = i;
+    //                break;
+    //            }
+    //        }
+    //        if (startIndex == -1)
+    //        {
+    //            break;
+    //        }
+    //        else
+    //        {
+    //            std::vector<int> vertOneGroup;
+    //            std::vector<int> visitStack;
+    //            visitStack.push_back(startIndex);
+    //            vertOneGroup.push_back(startIndex);
+    //            visitFlag.at(startIndex) = 1;
+    //            while (visitStack.size() > 0)
+    //            {
+    //                std::vector<int> visitStackNext;
+    //                for (std::vector<int>::iterator itr = visitStack.begin(); itr != visitStack.end(); ++itr)
+    //                {
+    //                    Vertex3D* pVert = pMesh->GetVertex(*itr);
+    //                    Edge3D* pEdge = pVert->GetEdge();
+    //                    do
+    //                    {
+    //                        if (pEdge != NULL)
+    //                        {
+    //                            int newVertId = pEdge->GetVertex()->GetId();
+    //                            if (visitFlag.at(newVertId) == 0)
+    //                            {
+    //                                visitStackNext.push_back(newVertId);
+    //                                vertOneGroup.push_back(newVertId);
+    //                                visitFlag.at(newVertId) = 1;
+    //                            }
+    //                            pEdge = pEdge->GetPair()->GetNext();
+    //                        }
+    //                        else
+    //                        {
+    //                            break;
+    //                        }
+    //                    } while (pEdge != pVert->GetEdge());
+    //                }//end for visitStack
+    //                visitStack = visitStackNext;
+    //            }//end While
+    //            vertGroups.push_back(vertOneGroup);
+    //        }
+    //    }
+    //    //Remove small patch
+    //    std::map<int, int> vertMapOld2New;
+    //    //Mesh3D* pNewMesh = new Mesh3D;
+    //    int newMeshVertIndex = 0;
+    //    std::vector<bool> vertValidFlag(vertNum, 0);
+    //    for (int i = 0; i < vertGroups.size(); i++)
+    //    {
+    //        int oneGroupNum = vertGroups.at(i).size();
+    //        if (oneGroupNum > smallNum)
+    //        {
+    //            for (int j = 0; j < oneGroupNum; j++)
+    //            {
+    //                int vertIndex = vertGroups.at(i).at(j);
+    //                //pNewMesh->InsertVertex(pMesh->GetVertex(vertIndex)->GetPosition());
+    //                vertMapOld2New[vertIndex] = newMeshVertIndex;
+    //                newMeshVertIndex++;
+    //                vertValidFlag.at(vertIndex) = 1;
+    //            }
+    //        }
+    //    }
+
+    //    DebugLog << "Parser::ExportMesh3DBySTL: " << std::endl;
+    //    std::ofstream fout("ourlier.stl");
+    //    fout << "solid magic3d" << std::endl;
+    //    int faceNum = pMesh->GetFaceNumber();
+    //    for (int fid = 0; fid < faceNum; fid++)
+    //    {
+    //        const Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
+    //        if (vertValidFlag.at(pEdge->GetVertex()->GetId()) == 0)
+    //        {
+    //            continue;
+    //        }
+    //        if (vertValidFlag.at(pEdge->GetPre()->GetVertex()->GetId()) == 0)
+    //        {
+    //            continue;
+    //        }
+    //        if (vertValidFlag.at(pEdge->GetNext()->GetVertex()->GetId()) == 0)
+    //        {
+    //            continue;
+    //        }
+    //        Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+    //        Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+    //        Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+    //        Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+    //        nor.Normalise();
+    //        fout << "  facet normal " << nor[0] << " " << nor[1] << " " << nor[2] << "\n";
+    //        fout << "    outer loop" << "\n";
+    //        fout << "      vertex " << pos0[0] << " " << pos0[1] << " " << pos0[2] << "\n";
+    //        fout << "      vertex " << pos1[0] << " " << pos1[1] << " " << pos1[2] << "\n"; 
+    //        fout << "      vertex " << pos2[0] << " " << pos2[1] << " " << pos2[2] << "\n";
+    //        fout << "    endloop" << "\n";
+    //        fout << "  endfacet" << "\n";
+    //    }
+    //    fout.close();
+
+    //    return NULL;
+    //}
+
     Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion)
     {
         DebugLog << "Consolidation::RemoveSmallMeshPatch" << std::endl;
@@ -320,6 +442,7 @@ namespace MagicDGP
                     visitStack = visitStackNext;
                 }//end While
                 vertGroups.push_back(vertOneGroup);
+                DebugLog << "vertOneGroup size: " << vertOneGroup.size() << std::endl;
             }
         }
         //Remove small patch
@@ -345,15 +468,36 @@ namespace MagicDGP
         int faceNum = pMesh->GetFaceNumber();
         for (int i = 0; i < faceNum; i++)
         {
-            Edge3D* pEdge = pMesh->GetFace(i)->GetEdge();
+            Face3D* pFace = pMesh->GetFace(i);
+            if (pFace == NULL)
+            {
+                DebugLog << "face " << i << " is NULL" << std::endl;
+                continue;
+            }
+            Edge3D* pEdge = pFace->GetEdge();
+            if (pEdge == NULL)
+            {
+                DebugLog << "pEdge == NULL" << std::endl;
+                continue;
+            }
             int vertId0 = pEdge->GetVertex()->GetId();
             if (vertValidFlag.at(vertId0) == 0)
             {
                 continue;
             }
+            if (pEdge->GetNext() == NULL)
+            {
+                DebugLog << "pEdge->GetNext() == NULL" << std::endl;
+                continue;
+            }
             int vertId1 = pEdge->GetNext()->GetVertex()->GetId();
             if (vertValidFlag.at(vertId1) == 0)
             {
+                continue;
+            }
+            if (pEdge->GetPre() == NULL)
+            {
+                DebugLog << "pEdge->GetPre() == NULL" << std::endl;
                 continue;
             }
             int vertId2 = pEdge->GetPre()->GetVertex()->GetId();
@@ -366,6 +510,118 @@ namespace MagicDGP
             newVertList.push_back( pNewMesh->GetVertex(vertMapOld2New[vertId1]) );
             newVertList.push_back( pNewMesh->GetVertex(vertMapOld2New[vertId2]) );
             pNewMesh->InsertFace(newVertList);
+        }
+        pNewMesh->UpdateNormal();
+        return pNewMesh;
+    }
+
+    LightMesh3D* Consolidation::RemoveSmallMeshPatch(LightMesh3D* pMesh, Real proportion)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        int smallNum = vertNum * proportion;
+        if (smallNum < 10)
+        {
+            return NULL;
+        }
+        std::vector<std::set<int> > neighList(vertNum);
+        int faceNum = pMesh->GetFaceNumber();
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            FaceIndex faceIdx = pMesh->GetFace(fid);
+            neighList.at(faceIdx.mIndex[0]).insert(faceIdx.mIndex[1]);
+            neighList.at(faceIdx.mIndex[0]).insert(faceIdx.mIndex[2]);
+            neighList.at(faceIdx.mIndex[1]).insert(faceIdx.mIndex[2]);
+            neighList.at(faceIdx.mIndex[1]).insert(faceIdx.mIndex[0]);
+            neighList.at(faceIdx.mIndex[2]).insert(faceIdx.mIndex[0]);
+            neighList.at(faceIdx.mIndex[2]).insert(faceIdx.mIndex[1]);
+        }
+        std::vector<bool> visitFlag(vertNum, 0);
+        std::vector<std::vector<int> > vertGroups;
+        while (1)
+        {
+            int startIndex = -1;
+            for (int i = 0; i < vertNum; i++)
+            {
+                if (visitFlag.at(i) == 0)
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+            if (startIndex == -1)
+            {
+                break;
+            }
+            else
+            {
+                std::vector<int> vertOneGroup;
+                std::vector<int> visitStack;
+                visitStack.push_back(startIndex);
+                vertOneGroup.push_back(startIndex);
+                visitFlag.at(startIndex) = 1;
+                while (visitStack.size() > 0)
+                {
+                    std::vector<int> visitStackNext;
+                    for (std::vector<int>::iterator itr = visitStack.begin(); itr != visitStack.end(); ++itr)
+                    {
+                        std::set<int> neighbors = neighList.at(*itr);
+                        for (std::set<int>::iterator nItr = neighbors.begin(); nItr != neighbors.end(); ++nItr)
+                        {
+                            if (visitFlag.at(*nItr) == 0)
+                            {
+                                visitStackNext.push_back(*nItr);
+                                vertOneGroup.push_back(*nItr);
+                                visitFlag.at(*nItr) = 1;
+                            }
+                        }
+                    }//end for visitStack
+                    visitStack = visitStackNext;
+                }//end While
+                vertGroups.push_back(vertOneGroup);
+                DebugLog << "vertOneGroup size: " << vertOneGroup.size() << std::endl;
+            }
+        }
+        //Remove small patch
+        std::map<int, int> vertMapOld2New;
+        LightMesh3D* pNewMesh = new LightMesh3D;
+        int newMeshVertIndex = 0;
+        std::vector<bool> vertValidFlag(vertNum, 0);
+        for (int i = 0; i < vertGroups.size(); i++)
+        {
+            int oneGroupNum = vertGroups.at(i).size();
+            if (oneGroupNum > smallNum)
+            {
+                for (int j = 0; j < oneGroupNum; j++)
+                {
+                    int vertIndex = vertGroups.at(i).at(j);
+                    pNewMesh->InsertVertex(pMesh->GetVertex(vertIndex)->GetPosition());
+                    vertMapOld2New[vertIndex] = newMeshVertIndex;
+                    newMeshVertIndex++;
+                    vertValidFlag.at(vertIndex) = 1;
+                }
+            }
+        }
+        //
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            FaceIndex faceIdx = pMesh->GetFace(fid);
+            if (vertValidFlag.at(faceIdx.mIndex[0]) == 0)
+            {
+                continue;
+            }
+            if (vertValidFlag.at(faceIdx.mIndex[1]) == 0)
+            {
+                continue;
+            }
+            if (vertValidFlag.at(faceIdx.mIndex[2]) == 0)
+            {
+                continue;
+            }
+            FaceIndex newFaceIdx;
+            newFaceIdx.mIndex[0] = vertMapOld2New[faceIdx.mIndex[0]];
+            newFaceIdx.mIndex[1] = vertMapOld2New[faceIdx.mIndex[1]];
+            newFaceIdx.mIndex[2] = vertMapOld2New[faceIdx.mIndex[2]];
+            pNewMesh->InsertFace(newFaceIdx);
         }
         pNewMesh->UpdateNormal();
         return pNewMesh;
@@ -499,6 +755,53 @@ namespace MagicDGP
                 continue;
             }
             pVert->SetPosition(smoothPos.at(vid));
+        }
+        pMesh->UpdateNormal();
+    }
+
+    void Consolidation::SimpleMeshSmooth(LightMesh3D* pMesh)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        std::vector<std::set<int> > neighVertList(vertNum);
+        std::vector<int> neighFaceNum(vertNum, 0);
+        int faceNum = pMesh->GetFaceNumber();
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            FaceIndex faceIdx = pMesh->GetFace(fid);
+            neighVertList.at(faceIdx.mIndex[0]).insert(faceIdx.mIndex[1]);
+            neighVertList.at(faceIdx.mIndex[0]).insert(faceIdx.mIndex[2]);
+            neighVertList.at(faceIdx.mIndex[1]).insert(faceIdx.mIndex[2]);
+            neighVertList.at(faceIdx.mIndex[1]).insert(faceIdx.mIndex[0]);
+            neighVertList.at(faceIdx.mIndex[2]).insert(faceIdx.mIndex[0]);
+            neighVertList.at(faceIdx.mIndex[2]).insert(faceIdx.mIndex[1]);
+            neighFaceNum.at(faceIdx.mIndex[0])++;
+            neighFaceNum.at(faceIdx.mIndex[1])++;
+            neighFaceNum.at(faceIdx.mIndex[2])++;
+        }
+        Real smoothWeight = 0.75;
+        std::vector<Vector3> smoothPos(vertNum);
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            std::set<int> neighbors = neighVertList.at(vid);
+            if (neighbors.size() != neighFaceNum.at(vid))
+            {
+                continue;
+            }
+            Vector3 avgPos(0, 0, 0);
+            for (std::set<int>::iterator nItr = neighbors.begin(); nItr != neighbors.end(); ++nItr)
+            {
+                avgPos += pMesh->GetVertex(*nItr)->GetPosition();
+            }
+            avgPos /= neighFaceNum.at(vid);
+            smoothPos.at(vid) = avgPos * smoothWeight + pMesh->GetVertex(vid)->GetPosition() * (1 - smoothWeight);
+        }
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            if (neighVertList.at(vid).size() != neighFaceNum.at(vid))
+            {
+                continue;
+            }
+            pMesh->GetVertex(vid)->SetPosition(smoothPos.at(vid));
         }
         pMesh->UpdateNormal();
     }

@@ -616,4 +616,129 @@ namespace MagicDGP
         mFaceList.clear();
         mEdgeMap.clear();
     }
+
+    LightMesh3D::LightMesh3D()
+    {
+    }
+
+    LightMesh3D::~LightMesh3D()
+    {
+        ClearData();
+    }
+
+    Vertex3D* LightMesh3D::GetVertex(int index)
+    {
+        return mVertexList.at(index);
+    }
+
+    const Vertex3D* LightMesh3D::GetVertex(int index) const
+    {
+        return mVertexList.at(index);
+    }
+
+    const FaceIndex LightMesh3D::GetFace(int index) const
+    {
+        return mFaceList.at(index);
+    }
+
+    int LightMesh3D::GetVertexNumber() const
+    {
+        return mVertexList.size();
+    }
+
+    int LightMesh3D::GetFaceNumber() const
+    {
+        return mFaceList.size();
+    }
+
+    Vertex3D* LightMesh3D::InsertVertex(const Vector3& pos)
+    {
+        Vertex3D* pVert = new Vertex3D(pos);
+        pVert->SetId(mVertexList.size());
+        mVertexList.push_back(pVert);
+        return pVert;
+    }
+
+    void LightMesh3D::InsertFace(const FaceIndex& fi)
+    {
+        mFaceList.push_back(fi);
+    }
+
+    void LightMesh3D::UnifyPosition(Real size)
+    {
+        DebugLog << "LightMesh3D::UnifyPosition" << std::endl;
+        Vector3 posMin(10e10, 10e10, 10e10);
+        Vector3 posMax(-10e10, -10e10, -10e10);
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+        {
+            Vector3 pos = (*itr)->GetPosition();
+            posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
+            posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
+            posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
+            posMax[0] = posMax[0] > pos[0] ? posMax[0] : pos[0];
+            posMax[1] = posMax[1] > pos[1] ? posMax[1] : pos[1];
+            posMax[2] = posMax[2] > pos[2] ? posMax[2] : pos[2];
+        }
+        Vector3 scale3 = posMax - posMin;
+        Real scaleMax = scale3[0];
+        if (scaleMax < scale3[1])
+        {
+            scaleMax = scale3[1];
+        }
+        if (scaleMax < scale3[2])
+        {
+            scaleMax = scale3[2];
+        }
+        if (scaleMax > Epsilon)
+        {
+            Real scaleV = size / scaleMax;
+            Vector3 centerPos = (posMin + posMax) / 2.0;
+            for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+            {
+                (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
+            }
+        }
+    }
+
+    void LightMesh3D::UpdateNormal()
+    {
+        int vertNum = mVertexList.size();
+        std::vector<Vector3> normList(vertNum, Vector3(0, 0, 0));
+        int faceNum = mFaceList.size();
+        for (int fid = 0; fid < faceNum; fid++)
+        {
+            FaceIndex faceIdx = mFaceList.at(fid);
+            Vector3 pos0 = mVertexList.at(faceIdx.mIndex[0])->GetPosition();
+            Vector3 pos1 = mVertexList.at(faceIdx.mIndex[1])->GetPosition();
+            Vector3 pos2 = mVertexList.at(faceIdx.mIndex[2])->GetPosition();
+            Vector3 faceNorm = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            normList.at(faceIdx.mIndex[0]) += faceNorm;
+            normList.at(faceIdx.mIndex[1]) += faceNorm;
+            normList.at(faceIdx.mIndex[2]) += faceNorm;
+        }
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            Real norLen = normList.at(vid).Normalise();
+            if (norLen < Epsilon)
+            {
+                DebugLog << "normal lenth too small" << std::endl;
+                normList.at(vid)[0] = 1.0;
+            }
+            mVertexList.at(vid)->SetNormal(normList.at(vid));
+        }
+    }
+
+    void LightMesh3D::ClearData()
+    {
+        for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
+        {
+            if (*itr != NULL)
+            {
+                delete *itr;
+                *itr = NULL;
+            }
+        }
+        mVertexList.clear();
+        mFaceList.clear();
+    }
 }

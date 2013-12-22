@@ -18,8 +18,7 @@ material MyCookTorrance
                 param_named_auto    lightPosition  light_position 0
                 param_named_auto    lightColor     light_diffuse_colour 0
                 param_named         Ka             float3    0.3 0.3 0.3 
-                param_named         Kd             float3    0.72 0.86 0.48
-                param_named         Ks             float3    0.1 0.1 0.1
+                param_named         Ks             float3    0.0005 0.0005 0.0005
                 param_named         f              float     0.5
                 param_named         m              float     0.03
             }
@@ -50,7 +49,6 @@ material MyCookTorrancePoint
                 param_named_auto    lightPosition  light_position 0
                 param_named_auto    lightColor     light_diffuse_colour 0
                 param_named         Ka             float3    0.3 0.3 0.3 
-                param_named         Kd             float3    0.72 0.86 0.48
                 param_named         Ks             float3    0.0001 0.0001 0.0001
                 param_named         f              float     0.5
                 param_named         m              float     0.03

@@ -8,18 +8,14 @@ namespace MagicDGP
     class ReliefGeneration
     {
     public:
-        ReliefGeneration(int resX, int resY, Real minX, Real maxX, Real minY, Real maxY);
-        Mesh3D* PlaneReliefFromPointCloud(const Point3DSet* pPC);
-        Mesh3D* CylinderReliefFromPointCloud(const Point3DSet* pPC);
+        ReliefGeneration();
+        static LightMesh3D* PlaneReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY);
+        static LightMesh3D* CylinderReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY);
         ~ReliefGeneration();
 
     private:
-        void InitHeightField(const Point3DSet* pPC);
-        void CompressHeightField();
-    private:
-        std::vector<Real> mHeightField;
-        int mResolutionX, mResolutionY;
-        Real mMinX, mMaxX, mMinY, mMaxY;
+        static void CompressHeightField(std::vector<Real>& heightField, int resX, int resY);
+
     };
 
 }

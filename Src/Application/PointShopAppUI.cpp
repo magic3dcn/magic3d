@@ -8,7 +8,8 @@
 
 namespace MagicApp
 {
-    PointShopAppUI::PointShopAppUI()
+    PointShopAppUI::PointShopAppUI() :
+        mPickIgnoreBack(false)
     {
     }
 
@@ -37,6 +38,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Cycle")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::CycleSelect);
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::ClearSelect);
         mRoot.at(0)->findWidget("But_Select_Delete")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::DeleteSelect);
+        mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::SetPickIgnoreBack);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::BackToHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &PointShopAppUI::Contact);
     }
@@ -196,6 +198,8 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_Select_Clear")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_Select_Delete")->castType<MyGUI::Button>()->setVisible(!isVisible);
         mRoot.at(0)->findWidget("But_View")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->setVisible(!isVisible);
+        mRoot.at(0)->findWidget("Tex_Back")->castType<MyGUI::TextBox>()->setVisible(!isVisible);
         if (isVisible == true)
         {
             PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
@@ -211,6 +215,7 @@ namespace MagicApp
         PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
         if (pPSA != NULL)
         {
+            pPSA->SetPickIgnoreBack(mPickIgnoreBack);
             pPSA->RectangleSelect();
         }
     }
@@ -220,6 +225,7 @@ namespace MagicApp
         PointShopApp* pPSA = dynamic_cast<PointShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("PointShopApp"));
         if (pPSA != NULL)
         {
+            pPSA->SetPickIgnoreBack(mPickIgnoreBack);
             pPSA->CycleSelect();
         }
     }
@@ -239,6 +245,19 @@ namespace MagicApp
         if (pPSA != NULL)
         {
             pPSA->DeleteSelcetPoints();
+        }
+    }
+
+    void PointShopAppUI::SetPickIgnoreBack(MyGUI::Widget* pSender)
+    {
+        mPickIgnoreBack = !mPickIgnoreBack;
+        if (mPickIgnoreBack == true)
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOn");
+        }
+        else
+        {
+            mRoot.at(0)->findWidget("But_IgnoreBack")->castType<MyGUI::Button>()->changeWidgetSkin("But_CheckOff");
         }
     }
 

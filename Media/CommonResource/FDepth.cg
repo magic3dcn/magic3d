@@ -1,0 +1,6 @@
+void depth_f(float3 position : TEXCOORD0, 
+		out float4 color : COLOR)
+{
+     float fColor = 1 - position.z;
+     color = vec4(vec3(fColor), 1.0);    
+}

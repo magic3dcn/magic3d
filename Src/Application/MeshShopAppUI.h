@@ -27,11 +27,13 @@ namespace MagicApp
         void CycleSelect(MyGUI::Widget* pSender);
         void ClearSelect(MyGUI::Widget* pSender);
         void DeleteSelect(MyGUI::Widget* pSender);
+        void SetPickIgnoreBack(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 
     private:
         MyGUI::VectorWidgetPtr mRoot;
+        bool mPickIgnoreBack;
     };
 
 

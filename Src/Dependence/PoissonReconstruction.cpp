@@ -30,7 +30,33 @@ namespace MagicDependence
     {
     }
 
-    MagicDGP::Mesh3D* PoissonReconstruction::ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC)
+    /*MagicDGP::Mesh3D* PoissonReconstruction::ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC)
+    {
+        std::vector< PlyValueVertex< float > > vertices;
+        std::vector< std::vector< int > > polygons;
+        char* argv1[] = {"--in", "pc.psr", "--out", "pc.ply", "--depth", "10", "--density"};
+        PoissonRecon(7, argv1, pPC, vertices, polygons);
+
+        Real pcDensity = pPC->GetDensity();
+        MagicDGP::Vector3 bboxMin, bboxMax;
+        pPC->GetBBox(bboxMin, bboxMax);
+        Real pcLen = (bboxMax - bboxMin).Length();
+        Real relativeDensity = pcDensity / pcLen;
+        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relative density: " << relativeDensity << std::endl;
+        if (relativeDensity > 1.0e-4)
+        {
+            char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
+            return SurfaceTrimmer(8, argv2, vertices, polygons);    
+        }
+        else
+        {
+            char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "7", "--aRatio", "0"};
+            return SurfaceTrimmer(8, argv2, vertices, polygons);
+        }
+        
+    }*/
+
+    MagicDGP::LightMesh3D* PoissonReconstruction::ScreenPoissonRecon(const MagicDGP::Point3DSet* pPC)
     {
         std::vector< PlyValueVertex< float > > vertices;
         std::vector< std::vector< int > > polygons;
@@ -335,7 +361,7 @@ namespace MagicDependence
         }
     }
 
-    MagicDGP::Mesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)
+    MagicDGP::LightMesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)
     {
         cmdLineString In( "in" ) , Out( "out" );
         cmdLineInt Smooth( "smooth" , 5 );
@@ -437,21 +463,8 @@ namespace MagicDependence
             }
 
             RemoveHangingVertices( vertices , gtPolygons );
-            //sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
-            //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
-            //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , 1 , NULL , 0 );
-            //std::ofstream fout("pc.obj");
-            //for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
-            //{
-            //    PlyValueVertex< float > vert = vertices.at(pIndex);
-            //    fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
-            //}
-            //for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
-            //{
-            //    fout << "f " << gtPolygons.at(pIndex).at(0) + 1 << " " << gtPolygons.at(pIndex).at(1) + 1 << " " << gtPolygons.at(pIndex).at(2) + 1 << std::endl;
-            //}
-            //fout.close();
-            MagicDGP::Mesh3D* pExportMesh = new MagicDGP::Mesh3D;
+
+            MagicDGP::LightMesh3D* pExportMesh = new MagicDGP::LightMesh3D;
             for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
             {
                 PlyValueVertex< float > vert = vertices.at(pIndex);
@@ -460,13 +473,12 @@ namespace MagicDependence
             }
             for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
             {
-                std::vector<MagicDGP::Vertex3D* > vertList;
+                MagicDGP::FaceIndex faceIdx;
                 for (int k = 0; k < 3; k++)
                 {
-                    MagicDGP::Vertex3D* pVert = pExportMesh->GetVertex(gtPolygons.at(pIndex).at(k));
-                    vertList.push_back(pVert);
+                    faceIdx.mIndex[k] = gtPolygons.at(pIndex).at(k);
                 }
-                pExportMesh->InsertFace(vertList);
+                pExportMesh->InsertFace(faceIdx);
             }
             pExportMesh->UpdateNormal();
             
@@ -483,6 +495,155 @@ namespace MagicDependence
 
         return NULL;
     }
+
+    //MagicDGP::Mesh3D* PoissonReconstruction::SurfaceTrimmer(int argc , char* argv[], std::vector< PlyValueVertex< float > >& vertices, std::vector< std::vector< int > >& polygons)
+    //{
+    //    cmdLineString In( "in" ) , Out( "out" );
+    //    cmdLineInt Smooth( "smooth" , 5 );
+    //    cmdLineFloat Trim( "trim" ) , IslandAreaRatio( "aRatio" , 0.001f );
+    //    cmdLineFloatArray< 2 > ColorRange( "color" );
+    //    cmdLineReadable PolygonMesh( "polygonMesh" );
+
+    //    cmdLineReadable* params[] =
+    //    {
+    //        &In , &Out , &Trim , &PolygonMesh , &ColorRange , &Smooth , &IslandAreaRatio
+    //    };
+
+    //    int paramNum = sizeof(params)/sizeof(cmdLineReadable*);
+    //    cmdLineParse( argc , argv, paramNum , params , 0 );
+
+    //    float min , max;
+    //    //std::vector< PlyValueVertex< float > > vertices;
+    //    //std::vector< std::vector< int > > polygons;
+
+    //    //int ft , commentNum = paramNum+2;
+    //    //char** comments;
+    //    //bool readFlags[ PlyValueVertex< float >::Components ];
+    //    //PlyReadPolygons( In.value , vertices , polygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , &comments , &commentNum , readFlags );
+    //    //if( !readFlags[3] ){ fprintf( stderr , "[ERROR] vertices do not have value flag\n" ) ; return EXIT_FAILURE; }
+
+    //    for( int i=0 ; i<Smooth.value ; i++ ) SmoothValues( vertices , polygons );
+
+    //    min = max = vertices[0].value;
+    //    for( size_t i=0 ; i<vertices.size() ; i++ ) min = std::min< float >( min , vertices[i].value ) , max = std::max< float >( max , vertices[i].value );
+    //    printf( "Value Range: [%f,%f]\n" , min , max );
+
+
+    //    if( Trim.set )
+    //    {
+    //        hash_map< long long , int > vertexTable;
+    //        std::vector< std::vector< int > > ltPolygons , gtPolygons;
+    //        std::vector< bool > ltFlags , gtFlags;
+
+    //        /*for( int i=0 ; i<paramNum+2 ; i++ ) comments[i+commentNum]=new char[1024];
+    //        sprintf( comments[commentNum++] , "Running Surface Trimmer (V5)" );
+    //        if(              In.set ) sprintf(comments[commentNum++],"\t--%s %s" , In.name , In.value );
+    //        if(             Out.set ) sprintf(comments[commentNum++],"\t--%s %s" , Out.name , Out.value );
+    //        if(            Trim.set ) sprintf(comments[commentNum++],"\t--%s %f" , Trim.name , Trim.value );
+    //        if(          Smooth.set ) sprintf(comments[commentNum++],"\t--%s %d" , Smooth.name , Smooth.value );
+    //        if( IslandAreaRatio.set ) sprintf(comments[commentNum++],"\t--%s %f" , IslandAreaRatio.name , IslandAreaRatio.value );
+    //        if(     PolygonMesh.set ) sprintf(comments[commentNum++],"\t--%s" , PolygonMesh.name );*/
+
+    //        double t=Time();
+    //        for( size_t i=0 ; i<polygons.size() ; i++ ) SplitPolygon( polygons[i] , vertices , &ltPolygons , &gtPolygons , &ltFlags , &gtFlags , vertexTable , Trim.value );
+    //        if( IslandAreaRatio.value>0 )
+    //        {
+    //            std::vector< std::vector< int > > _ltPolygons , _gtPolygons;
+    //            std::vector< std::vector< int > > ltComponents , gtComponents;
+    //            SetConnectedComponents( ltPolygons , ltComponents );
+    //            SetConnectedComponents( gtPolygons , gtComponents );
+    //            std::vector< double > ltAreas( ltComponents.size() , 0. ) , gtAreas( gtComponents.size() , 0. );
+    //            std::vector< bool > ltComponentFlags( ltComponents.size() , false ) , gtComponentFlags( gtComponents.size() , false );
+    //            double area = 0.;
+    //            for( size_t i=0 ; i<ltComponents.size() ; i++ )
+    //            {
+    //                for( size_t j=0 ; j<ltComponents[i].size() ; j++ )
+    //                {
+    //                    ltAreas[i] += PolygonArea( vertices , ltPolygons[ ltComponents[i][j] ] );
+    //                    ltComponentFlags[i] = ( ltComponentFlags[i] || ltFlags[ ltComponents[i][j] ] );
+    //                }
+    //                area += ltAreas[i];
+    //            }
+    //            for( size_t i=0 ; i<gtComponents.size() ; i++ )
+    //            {
+    //                for( size_t j=0 ; j<gtComponents[i].size() ; j++ )
+    //                {
+    //                    gtAreas[i] += PolygonArea( vertices , gtPolygons[ gtComponents[i][j] ] );
+    //                    gtComponentFlags[i] = ( gtComponentFlags[i] || gtFlags[ gtComponents[i][j] ] );
+    //                }
+    //                area += gtAreas[i];
+    //            }
+    //            for( size_t i=0 ; i<ltComponents.size() ; i++ )
+    //            {
+    //                if( ltAreas[i]<area*IslandAreaRatio.value && ltComponentFlags[i] ) for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _gtPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+    //                else                                                               for( size_t j=0 ; j<ltComponents[i].size() ; j++ ) _ltPolygons.push_back( ltPolygons[ ltComponents[i][j] ] );
+    //            }
+    //            for( size_t i=0 ; i<gtComponents.size() ; i++ )
+    //            {
+    //                if( gtAreas[i]<area*IslandAreaRatio.value && gtComponentFlags[i] ) for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _ltPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+    //                else                                                               for( size_t j=0 ; j<gtComponents[i].size() ; j++ ) _gtPolygons.push_back( gtPolygons[ gtComponents[i][j] ] );
+    //            }
+    //            ltPolygons = _ltPolygons , gtPolygons = _gtPolygons;
+    //        }
+    //        if( !PolygonMesh.set )
+    //        {
+    //            {
+    //                std::vector< std::vector< int > > polys = ltPolygons;
+    //                Triangulate( vertices , ltPolygons , polys ) , ltPolygons = polys;
+    //            }
+    //            {
+    //                std::vector< std::vector< int > > polys = gtPolygons;
+    //                Triangulate( vertices , gtPolygons , polys ) , gtPolygons = polys;
+    //            }
+    //        }
+
+    //        RemoveHangingVertices( vertices , gtPolygons );
+    //        //sprintf( comments[commentNum++] , "#Trimmed In: %9.1f (s)" , Time()-t );
+    //        //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , ft , comments , commentNum );
+    //        //if( Out.set ) PlyWritePolygons( Out.value , vertices , gtPolygons , PlyValueVertex< float >::Properties , PlyValueVertex< float >::Components , 1 , NULL , 0 );
+    //        //std::ofstream fout("pc.obj");
+    //        //for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
+    //        //{
+    //        //    PlyValueVertex< float > vert = vertices.at(pIndex);
+    //        //    fout << "v " << vert.point[0] << " " << vert.point[1] << " " << vert.point[2] << std::endl;
+    //        //}
+    //        //for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
+    //        //{
+    //        //    fout << "f " << gtPolygons.at(pIndex).at(0) + 1 << " " << gtPolygons.at(pIndex).at(1) + 1 << " " << gtPolygons.at(pIndex).at(2) + 1 << std::endl;
+    //        //}
+    //        //fout.close();
+    //        MagicDGP::Mesh3D* pExportMesh = new MagicDGP::Mesh3D;
+    //        for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
+    //        {
+    //            PlyValueVertex< float > vert = vertices.at(pIndex);
+    //            MagicDGP::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
+    //            pExportMesh->InsertVertex(vertPos);
+    //        }
+    //        for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
+    //        {
+    //            std::vector<MagicDGP::Vertex3D* > vertList;
+    //            for (int k = 0; k < 3; k++)
+    //            {
+    //                MagicDGP::Vertex3D* pVert = pExportMesh->GetVertex(gtPolygons.at(pIndex).at(k));
+    //                vertList.push_back(pVert);
+    //            }
+    //            pExportMesh->InsertFace(vertList);
+    //        }
+    //        pExportMesh->UpdateNormal();
+    //        
+    //        return pExportMesh;
+    //    }
+    //    else
+    //    {
+    //        //if( ColorRange.set ) min = ColorRange.values[0] , max = ColorRange.values[1];
+    //        //std::vector< PlyColorVertex< float > > outVertices;
+    //        //ColorVertices( vertices , outVertices , min , max );
+    //        ////if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , ft , comments , commentNum );
+    //        //if( Out.set ) PlyWritePolygons( Out.value , outVertices , polygons , PlyColorVertex< float >::Properties , PlyColorVertex< float >::Components , 1 , NULL , 0 );
+    //    }
+
+    //    return NULL;
+    //}
 
     void PoissonReconstruction::SetConnectedComponents( const std::vector< std::vector< int > >& polygons , std::vector< std::vector< int > >& components )
     {

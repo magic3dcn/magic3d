@@ -155,4 +155,33 @@ namespace MagicDGP
         std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap; //Only used in construct mesh
         Vector3 mBBoxMin, mBBoxMax;
     };
+
+    struct FaceIndex
+    {
+        int mIndex[3];
+    };
+
+    class LightMesh3D
+    {
+    public:
+        LightMesh3D();
+        ~LightMesh3D();
+
+        Vertex3D* GetVertex(int index);
+        const Vertex3D* GetVertex(int index) const;
+        const FaceIndex GetFace(int index) const;
+        int GetVertexNumber() const;
+        int GetFaceNumber() const;
+
+        Vertex3D* InsertVertex(const Vector3& pos);
+        void InsertFace(const FaceIndex& fi);
+
+        void UnifyPosition(Real size);
+        void UpdateNormal();
+        void ClearData();
+
+    private:
+        std::vector<Vertex3D*> mVertexList;
+        std::vector<FaceIndex> mFaceList;
+    };
 }

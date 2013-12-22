@@ -1,0 +1,23 @@
+vertex_program VDepth cg
+{
+	source VDepth.cg
+	entry_point depth_v
+	profiles arbvp1
+
+	default_params
+	{
+		
+	}
+}
+
+fragment_program FDepth cg
+{
+    source FDepth.cg
+    entry_point depth_f
+    profiles arbfp1
+    
+    default_params
+    {
+        
+    }
+}

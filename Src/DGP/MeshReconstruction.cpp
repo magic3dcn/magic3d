@@ -12,7 +12,7 @@ namespace MagicDGP
     {
     }
 
-    Mesh3D* MeshReconstruction::ScreenPoissonReconstruction(const Point3DSet* pPC)
+    LightMesh3D* MeshReconstruction::ScreenPoissonReconstruction(const Point3DSet* pPC)
     {
         return MagicDependence::PoissonReconstruction::ScreenPoissonRecon(pPC);
     }

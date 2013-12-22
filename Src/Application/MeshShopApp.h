@@ -38,9 +38,10 @@ namespace MagicApp
         void CycleSelect();
         void ClearSelect();
         void DeleteSelcetVertex();
+        void SetPickIgnoreBack(bool ignore);
         void ModelViewer();
 
-        void SetupFromMeshInput(MagicDGP::Mesh3D* pMesh);
+        void SetupFromMeshInput(MagicDGP::LightMesh3D* pMesh);
 
     private:
         void SetupScene(void);
@@ -48,11 +49,14 @@ namespace MagicApp
         void UpdateMeshRendering();
         void ClearSceneData(void);
 
+        void ExtractDepthDataTest();
+
     private:
         MeshShopAppUI mUI;
         MagicTool::ViewTool mViewTool;
-        MagicDGP::Mesh3D* mpMesh;
+        MagicDGP::LightMesh3D* mpLightMesh;
         MouseMode mMouseMode;
+        bool mPickIgnoreBack;
         MagicTool::PickPointTool mPickTool;
         MagicDGP::Vector3 mDefaultColor;
         std::set<int> mPickIndexSet;
