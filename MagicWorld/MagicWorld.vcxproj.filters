@@ -55,6 +55,9 @@
     <Filter Include="Application\MeshShopApp">
       <UniqueIdentifier>{bf1b4d9f-7ec0-41c7-af71-3b635eb3cc52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\AugmentedRealityApp">
+      <UniqueIdentifier>{444bdf4a-460e-4899-9c61-76d355bb11e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -270,6 +273,12 @@
     <ClInclude Include="..\Src\DGP\Consolidation.h">
       <Filter>DGP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\AugmentedRealityApp.h">
+      <Filter>Application\AugmentedRealityApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\AugmentedRealityAppUI.h">
+      <Filter>Application\AugmentedRealityApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -430,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Consolidation.cpp">
       <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\AugmentedRealityApp.cpp">
+      <Filter>Application\AugmentedRealityApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\AugmentedRealityAppUI.cpp">
+      <Filter>Application\AugmentedRealityApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
