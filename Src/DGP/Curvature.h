@@ -10,5 +10,6 @@ namespace MagicDGP
         ~Curvature();
 
         static void CalGaussianCurvature(const Mesh3D* pMesh, std::vector<Real>& curvList);
+        static void CalMeanCurvature(const Mesh3D* pMesh, std::vector<Real>& curvList);
     };
 }

@@ -32,6 +32,7 @@ namespace MagicDGP
     public:
         ShapeCandidate();
         virtual ~ShapeCandidate();
+        virtual bool IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex) = 0;
         virtual bool IsValid() = 0;
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag) = 0;
@@ -62,6 +63,7 @@ namespace MagicDGP
         PlaneCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~PlaneCandidate();
         virtual bool IsValid();
+        virtual bool IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex);
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
@@ -81,6 +83,7 @@ namespace MagicDGP
         SphereCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~SphereCandidate();
         virtual bool IsValid();
+        virtual bool IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex);
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
@@ -99,6 +102,7 @@ namespace MagicDGP
         CylinderCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1);
         virtual ~CylinderCandidate();
         virtual bool IsValid();
+        virtual bool IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex);
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
@@ -119,6 +123,7 @@ namespace MagicDGP
         ConeCandidate(const Vertex3D* pVert0, const Vertex3D* pVert1, const Vertex3D* pVert2);
         virtual ~ConeCandidate();
         virtual bool IsValid();
+        virtual bool IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex);
         virtual int CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
@@ -144,6 +149,7 @@ namespace MagicDGP
         static void Primitive2DDetectionEnhance(Mesh3D* pMesh, std::vector<int>& res);
         static void Primitive2DDetectionByScore(Mesh3D* pMesh, std::vector<int>& res);
         static ShapeCandidate* Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
+        static ShapeCandidate* Primitive2DSelectionByVertexPatch(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);

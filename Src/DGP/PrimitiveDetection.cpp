@@ -134,6 +134,17 @@ namespace MagicDGP
         }
     }
 
+    bool PlaneCandidate::IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex)
+    {
+        mSupportVertex = supportVertex;
+        if (FitParameter(pMesh) == false)
+        {
+            mSupportVertex.clear();
+            return false;
+        }
+        return true;
+    }
+
     int PlaneCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
@@ -383,6 +394,17 @@ namespace MagicDGP
         return true;
     }
 
+    bool SphereCandidate::IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex)
+    {
+        mSupportVertex = supportVertex;
+        if (FitParameter(pMesh) == false)
+        {
+            mSupportVertex.clear();
+            return false;
+        }
+        return true;
+    }
+
     int SphereCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
@@ -626,6 +648,17 @@ namespace MagicDGP
         return true;
     }
 
+    bool CylinderCandidate::IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex)
+    {
+        mSupportVertex = supportVertex;
+        if (FitParameter(pMesh) == false)
+        {
+            mSupportVertex.clear();
+            return false;
+        }
+        return true;
+    }
+
     int CylinderCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
@@ -824,6 +857,7 @@ namespace MagicDGP
         }
         if (rightEigenIndex != 0)
         {
+            //DebugLog << "Cylinder is not the right index" << std::endl;
             return false;
         }
         mDir = Vector3(dirVec[rightEigenIndex](0), dirVec[rightEigenIndex](1), dirVec[rightEigenIndex](2));
@@ -1059,6 +1093,17 @@ namespace MagicDGP
         }
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone: " << mApex[0] << " " << mApex[1] << " " << mApex[2] << " " << mAngle << " " << mDir[0] << " " << mDir[1] << " " << mDir[2] << std::endl;
 
+        return true;
+    }
+
+    bool ConeCandidate::IsValidFromPatch(const Mesh3D* pMesh, std::vector<int>& supportVertex)
+    {
+        mSupportVertex = supportVertex;
+        if (FitParameter(pMesh) == false)
+        {
+            mSupportVertex.clear();
+            return false;
+        }
         return true;
     }
 
@@ -2897,6 +2942,263 @@ namespace MagicDGP
             }
             //delete bestCand;
         }
+        return bestCand;
+    }
+
+    ShapeCandidate* PrimitiveDetection::Primitive2DSelectionByVertexPatch(Mesh3D* pMesh, int selectIndex, std::vector<int>& res)
+    {
+        int vertNum = pMesh->GetVertexNumber();
+        res = std::vector<int>(vertNum, PrimitiveType::None);
+
+        static Mesh3D* pLastMesh = NULL;
+        static std::vector<int> sampleFlag;
+        static std::vector<Real> vertWeightList;
+        if (pMesh != pLastMesh)
+        {
+            pLastMesh = pMesh;
+            sampleFlag = std::vector<int>(vertNum, 0);
+            std::vector<Real> featureScores;
+            CalFeatureScore(pMesh, sampleFlag, featureScores);
+            pMesh->CalculateFaceArea();
+            CalVertexWeight(pMesh, vertWeightList);
+            pMesh->CalculateBBox();
+            Vector3 bboxMin, bboxMax;
+            pMesh->GetBBox(bboxMin, bboxMax);
+            Real bboxSize = (bboxMax - bboxMin).Length();
+            scoreDeviation = bboxSize * 0.0001;
+            maxDistDeviation = bboxSize * 0.004;
+            maxSphereRadius = bboxSize / 2;
+            maxCylinderRadius = bboxSize / 2;
+            minSupportArea = 0;
+            UpdateAcceptableAreaEnhance(pMesh, res, true); //need change to new
+        }
+        //Find the best candidate
+        int neighborRadius = 5;
+        int minNeigborNum = 6;
+        int neigborSampleNum = 5;
+        std::vector<int> neighborList;
+        std::vector<bool> visitFlag(vertNum, 0);
+        std::vector<int> tranStack;
+        tranStack.push_back(selectIndex);
+        visitFlag[selectIndex] = 1;
+        for (int k = 0; k < neighborRadius; k++)
+        {
+            std::vector<int> tranStackNext;
+            for (std::vector<int>::iterator itr = tranStack.begin(); itr != tranStack.end(); ++itr)
+            {
+                const Vertex3D* pVertNeig = pMesh->GetVertex(*itr);
+                const Edge3D* pEdgeNeig = pVertNeig->GetEdge();
+                do
+                {
+                    if (pEdgeNeig == NULL)
+                    {
+                        break;
+                    }
+                    int newId = pEdgeNeig->GetVertex()->GetId();
+                    if (visitFlag[newId] != 1)
+                    {
+                        visitFlag[newId] = 1;
+                        if (sampleFlag.at(newId) == 0 && res.at(newId) == PrimitiveType::None)
+                        {
+                            tranStackNext.push_back(newId);
+                            neighborList.push_back(newId);
+                        }
+                    }
+                    pEdgeNeig = pEdgeNeig->GetPair()->GetNext();
+                } while (pEdgeNeig != pVertNeig->GetEdge());
+            }
+            tranStack = tranStackNext;
+        }
+        int neighborSize = neighborList.size();
+        ShapeCandidate* bestCand = NULL;
+        std::vector<int> supportCand;
+        //Add Plane Candidate
+        ShapeCandidate* planeCand = new PlaneCandidate(NULL, NULL, NULL);
+        if (planeCand->IsValidFromPatch(pMesh, neighborList))
+        {
+            //planeCand->Refitting(pMesh, res);
+            if (planeCand->Refitting(pMesh, res) > minInitSupportNum)
+            {
+                planeCand->UpdateScore(pMesh, vertWeightList);
+                planeCand->UpdateSupportArea(pMesh, vertWeightList);
+                supportCand = planeCand->GetSupportVertex();
+                DebugLog << "plane score: " << planeCand->GetScore() << " area: " << planeCand->GetSupportArea() 
+                    << " score proportion: " << planeCand->GetSupportArea() / planeCand->GetScore() << std::endl;
+                if (planeCand->GetSupportArea() < (planeCand->GetScore() * minScoreProportion))
+                {
+                    if (bestCand == NULL)
+                    {
+                        bestCand = planeCand;
+                    }
+                    else if (bestCand->GetScore() < planeCand->GetScore())
+                    {
+                        delete bestCand;
+                        bestCand = planeCand;
+                    }
+                    else
+                    {
+                        delete planeCand;
+                    }
+                }
+                else
+                {
+                    delete planeCand;
+                }
+            }
+            else
+            {
+                delete planeCand;
+            }
+        }
+        else
+        {
+            delete planeCand;
+        }
+        //Add Sphere Candidate
+        /*ShapeCandidate* sphereCand = new SphereCandidate(NULL, NULL);
+        if (sphereCand->IsValidFromPatch(pMesh, neighborList))
+        {
+            sphereCand->Refitting(pMesh, res);
+            if (sphereCand->Refitting(pMesh, res) > minInitSupportNum)
+            {
+                sphereCand->UpdateScore(pMesh, vertWeightList);
+                sphereCand->UpdateSupportArea(pMesh, vertWeightList);
+                DebugLog << "sphere score: " << sphereCand->GetScore() << " area: " << sphereCand->GetSupportArea() 
+                    << " score proportion: " << sphereCand->GetSupportArea() / sphereCand->GetScore() << std::endl;
+                if (sphereCand->GetSupportArea() < (sphereCand->GetScore() * minScoreProportion))
+                {
+                    if (bestCand == NULL)
+                    {
+                        bestCand = sphereCand;
+                    }
+                    else if (bestCand->GetScore() < sphereCand->GetScore())
+                    {
+                        delete bestCand;
+                        bestCand = sphereCand;
+                    }
+                    else
+                    {
+                        delete sphereCand;
+                    }
+                }
+                else
+                {
+                    delete sphereCand;
+                }
+            }
+            else
+            {
+                delete sphereCand;
+            }
+        }
+        else
+        {
+            delete sphereCand;
+        }*/
+        //Add Cylinder Candidate
+        //ShapeCandidate* cylinderCand = new CylinderCandidate(NULL, NULL);
+        ////if (cylinderCand->IsValidFromPatch(pMesh, neighborList))
+        //if (cylinderCand->IsValidFromPatch(pMesh, supportCand))
+        //{
+        //    cylinderCand->Refitting(pMesh, res);
+        //    if (cylinderCand->Refitting(pMesh, res) > minInitSupportNum)
+        //    {
+        //        cylinderCand->UpdateScore(pMesh, vertWeightList);
+        //        cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
+        //        DebugLog << "cylinder score: " << cylinderCand->GetScore() << " area: " << cylinderCand->GetSupportArea() 
+        //            << " score proportion: " << cylinderCand->GetSupportArea() / cylinderCand->GetScore() << std::endl;
+        //        if (cylinderCand->GetSupportArea() < (cylinderCand->GetScore() * minScoreProportion))
+        //        {
+        //            if (bestCand == NULL)
+        //            {
+        //                bestCand = cylinderCand;
+        //            }
+        //            else if (bestCand->GetScore() < cylinderCand->GetScore())
+        //            {
+        //                delete bestCand;
+        //                bestCand = cylinderCand;
+        //            }
+        //            else
+        //            {
+        //                delete cylinderCand;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            delete cylinderCand;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        delete cylinderCand;
+        //    }
+        //}
+        //else
+        //{
+        //    delete cylinderCand;
+        //}
+        //Add Cone Candidate
+        ShapeCandidate* coneCand = new ConeCandidate(NULL, NULL, NULL);
+        //if (coneCand->IsValidFromPatch(pMesh, neighborList))
+        if (coneCand->IsValidFromPatch(pMesh, supportCand))
+        {
+            coneCand->Refitting(pMesh, res);
+            if (coneCand->Refitting(pMesh, res) > minInitSupportNum)
+            {
+                coneCand->UpdateScore(pMesh, vertWeightList);
+                coneCand->UpdateSupportArea(pMesh, vertWeightList);
+                DebugLog << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
+                    << " score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
+                if (coneCand->GetScore() > 0)
+                //if (coneCand->GetSupportArea() < (coneCand->GetScore() * minScoreProportion))
+                {
+                    DebugLog << "cone score: " << coneCand->GetScore() << " area: " << coneCand->GetSupportArea() 
+                    << " score proportion: " << coneCand->GetSupportArea() / coneCand->GetScore() << std::endl;
+                    if (bestCand == NULL)
+                    {
+                        bestCand = coneCand;
+                    }
+                    else if (bestCand->GetScore() < coneCand->GetScore())
+                    {
+                        delete bestCand;
+                        bestCand = coneCand;
+                    }
+                    else
+                    {
+                        delete coneCand;
+                    }
+                }
+                else
+                {
+                    delete coneCand;
+                }
+            }
+            else
+            {
+                delete coneCand;
+            }
+        }
+        else
+        {
+            delete coneCand;
+        }
+        if (bestCand != NULL)
+        {
+            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "best score: " << bestCand->GetScore() << " area: " << bestCand->GetSupportArea() << std::endl;
+            int candType = bestCand->GetType();
+            std::vector<int> supportVert = bestCand->GetSupportVertex();
+            for (std::vector<int>::iterator supportItr = supportVert.begin(); supportItr != supportVert.end(); ++supportItr)
+            {
+                res.at(*supportItr) = candType;
+            }
+            //delete bestCand;
+        }
+        //
+        for (int nid = 0; nid < neighborList.size(); nid++)
+        {
+            res.at(neighborList.at(nid)) = PrimitiveType::Other;
+        }
+        //
         return bestCand;
     }
 
