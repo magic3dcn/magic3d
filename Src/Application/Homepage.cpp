@@ -4,6 +4,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "PrimitiveDetectionApp.h"
+#include "AugmentedRealityApp.h"
 #include "../Common/AppManager.h"
 
 namespace MagicApp
@@ -40,6 +41,11 @@ namespace MagicApp
         {
             InfoLog << "EnterPrimitiveDetection" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
+        }
+        else if (arg.key == OIS::KC_V)
+        {
+            InfoLog << "EnterAugmentedRealityApp" << std::endl;
+            MagicCore::AppManager::GetSingleton()->EnterApp(new AugmentedRealityApp, "AugmentedRealityApp");
         }
 
         return true;
