@@ -207,25 +207,28 @@ namespace MagicApp
         std::vector<int> res;
         MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
         //MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertexPatch(mpMesh, sampleId, res);
-        for (int i = 0; i < vertNum; i++)
-        {
-            if (res.at(i) == MagicDGP::PrimitiveType::None)
-            {
-                mpMesh->GetVertex(i)->SetColor(MagicDGP::Vector3(0.9, 0.9, 0.9));
-            }
-            else
-            {
-                float cv = res.at(i) * 0.2f;
-                MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
-                mpMesh->GetVertex(i)->SetColor(color);
-            }
-        }
-        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
-        DrawPrimitive(pCand);
         if (pCand != NULL)
         {
-            delete pCand;
-        }
+            for (int i = 0; i < vertNum; i++)
+            {
+                if (res.at(i) == MagicDGP::PrimitiveType::None)
+                {
+                    mpMesh->GetVertex(i)->SetColor(MagicDGP::Vector3(0.9, 0.9, 0.9));
+                }
+                else
+                {
+                    float cv = res.at(i) * 0.2f;
+                    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
+                    mpMesh->GetVertex(i)->SetColor(color);
+                }
+            }
+            MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+            DrawPrimitive(pCand);
+            if (pCand != NULL)
+            {
+                delete pCand;
+            }
+        }  
     }
 
     void PrimitiveDetectionApp::DrawPrimitive(MagicDGP::ShapeCandidate* pCand)
@@ -556,8 +559,8 @@ namespace MagicApp
         }
         std::vector<MagicDGP::Vector3> norGrad;
         CalScaleGradient(norDev, norGrad, mpMesh);
-        static int smoothNum = 3;
-        //smoothNum = smoothNum % 5;
+        static int smoothNum = 0;
+        smoothNum = smoothNum % 2;
         for (int sid = 0; sid < smoothNum; sid++)
         {
             std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
@@ -589,7 +592,7 @@ namespace MagicApp
             }
             norGrad = smoothNorGrad;
         }
-        //smoothNum++;
+        smoothNum++;
         //smooth
         /*std::vector<MagicDGP::Real> norGradValue(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
@@ -603,7 +606,7 @@ namespace MagicApp
             MagicDGP::Real v = norGrad.at(vid).Length() / 10 + 0.2;
             if (v < 0.6)
             {
-                v = 0.3;
+                v = 0.25;
             }
             MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(v);
             //DebugLog << "norGrad: " << norGrad.at(vid).Length() / 10 << std::endl;

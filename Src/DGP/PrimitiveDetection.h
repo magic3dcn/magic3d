@@ -172,6 +172,9 @@ namespace MagicDGP
         static bool UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, Real scoreScale);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
         static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
+        static void CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
+            const MagicDGP::Mesh3D* pMesh);
+        static void CalFeatureScoreByGradient(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
         static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
             Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<Real>& vertWeightList);
     };
