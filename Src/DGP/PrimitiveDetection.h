@@ -150,11 +150,13 @@ namespace MagicDGP
         static void Primitive2DDetectionByScore(Mesh3D* pMesh, std::vector<int>& res);
         static ShapeCandidate* Primitive2DSelectionByVertex(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
         static ShapeCandidate* Primitive2DSelectionByVertexPatch(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
+        static ShapeCandidate* Primitive2DSelectionByVertexSampling(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
         static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
         static bool SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& featureScores,
             std::vector<int>& sampleIndex, int sampleNum, Real validProportion);
+        static void SampleNeighborVertex(const Mesh3D* pMesh, std::vector<int>& neighborList, std::vector<int>& sampleNeigbors);
         static bool AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
             std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
         static bool AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 

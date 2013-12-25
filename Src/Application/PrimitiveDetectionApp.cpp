@@ -205,8 +205,8 @@ namespace MagicApp
     {
         int vertNum = mpMesh->GetVertexNumber();
         std::vector<int> res;
-        MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
-        //MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertexPatch(mpMesh, sampleId, res);
+        //MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertex(mpMesh, sampleId, res);
+        MagicDGP::ShapeCandidate* pCand = MagicDGP::PrimitiveDetection::Primitive2DSelectionByVertexSampling(mpMesh, sampleId, res);
         if (pCand != NULL)
         {
             for (int i = 0; i < vertNum; i++)
@@ -559,8 +559,8 @@ namespace MagicApp
         }
         std::vector<MagicDGP::Vector3> norGrad;
         CalScaleGradient(norDev, norGrad, mpMesh);
-        static int smoothNum = 0;
-        smoothNum = smoothNum % 2;
+        static int smoothNum = 1;
+        //smoothNum = smoothNum % 2;
         for (int sid = 0; sid < smoothNum; sid++)
         {
             std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
@@ -592,7 +592,7 @@ namespace MagicApp
             }
             norGrad = smoothNorGrad;
         }
-        smoothNum++;
+        //smoothNum++;
         //smooth
         /*std::vector<MagicDGP::Real> norGradValue(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
@@ -604,7 +604,7 @@ namespace MagicApp
         for (int vid  = 0; vid  < vertNum; vid ++)
         {
             MagicDGP::Real v = norGrad.at(vid).Length() / 10 + 0.2;
-            if (v < 0.6)
+            if (v < 0.8)
             {
                 v = 0.25;
             }
