@@ -27,6 +27,7 @@ namespace MagicCore
         bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         bool KeyPressed( const OIS::KeyEvent &arg );
         bool KeyReleased( const OIS::KeyEvent &arg );
+        void WindowResized( Ogre::RenderWindow* rw );
 
         virtual ~AppManager(void);
 

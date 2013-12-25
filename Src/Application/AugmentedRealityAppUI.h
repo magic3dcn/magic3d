@@ -13,6 +13,9 @@ namespace MagicApp
         void Shutdown();
 
     private:
+        void OpenVideo(MyGUI::Widget* pSender);
+        void CameraCapture(MyGUI::Widget* pSender);
+        void CameraRecord(MyGUI::Widget* pSender);
         void BackToHome(MyGUI::Widget* pSender);
 
     private:

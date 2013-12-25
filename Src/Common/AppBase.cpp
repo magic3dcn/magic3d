@@ -56,6 +56,11 @@ namespace MagicCore
     {
         return true;
     }
+
+    void AppBase::WindowResized( Ogre::RenderWindow* rw )
+    {
+
+    }
  
     AppBase::~AppBase(void)
     {

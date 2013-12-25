@@ -176,6 +176,14 @@ namespace MagicCore
         }
     }
 
+    void AppManager::WindowResized( Ogre::RenderWindow* rw )
+    {
+        if (mpCurrentApp != NULL)
+        {
+            mpCurrentApp->WindowResized(rw);
+        }
+    }
+
     AppManager::~AppManager(void)
     {
         for (std::map<std::string, AppBase* >::iterator itr = mAppSet.begin(); itr != mAppSet.end(); itr++)

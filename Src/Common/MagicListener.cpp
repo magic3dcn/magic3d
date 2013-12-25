@@ -100,6 +100,7 @@ namespace MagicCore
     void MagicListener::windowFocusChange(Ogre::RenderWindow* rw)
     {
         ToolKit::GetSingleton()->SetMousePressLocked(true);
+        AppManager::GetSingleton()->WindowResized(rw);
     }
 
     MagicListener::~MagicListener()

@@ -2,5 +2,8 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 150 768" align="Left Top" layer="Back">
         <Widget type="Button" skin="But_Home" position="15 630 86 86" align="Left Top" name="But_Home"/>
+        <Widget type="Button" skin="But_Open" position="15 15 86 86" align="Left Top" name="But_OpenVideo"/>
+        <Widget type="Button" skin="Button" position="15 220 86 86" align="Left Top" name="But_CameraRecord"/>
+        <Widget type="Button" skin="Button" position="15 115 86 86" align="Left Top" name="But_CameraCapture"/>
     </Widget>
 </MyGUI>

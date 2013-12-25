@@ -3057,7 +3057,7 @@ namespace MagicDGP
             {
                 if (planeCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                 {
-                    if (planeCand->Refitting(pMesh, res) > minInitSupportNum)
+                    //if (planeCand->Refitting(pMesh, res) > minInitSupportNum)
                     {
                         planeCand->UpdateScore(pMesh, vertWeightList);
                         planeCand->UpdateSupportArea(pMesh, vertWeightList);
@@ -3084,10 +3084,10 @@ namespace MagicDGP
                             delete planeCand;
                         }
                     }
-                    else
+                    /*else
                     {
                         delete planeCand;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -3104,7 +3104,7 @@ namespace MagicDGP
             {
                 if (sphereCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                 {
-                    if (sphereCand->Refitting(pMesh, res) > minInitSupportNum)
+                    //if (sphereCand->Refitting(pMesh, res) > minInitSupportNum)
                     {
                         sphereCand->UpdateScore(pMesh, vertWeightList);
                         sphereCand->UpdateSupportArea(pMesh, vertWeightList);
@@ -3131,10 +3131,10 @@ namespace MagicDGP
                             delete sphereCand;
                         }
                     }
-                    else
+                    /*else
                     {
                         delete sphereCand;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -3151,7 +3151,7 @@ namespace MagicDGP
             {
                 if (cylinderCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                 {
-                    if (cylinderCand->Refitting(pMesh, res) > minInitSupportNum)
+                    //if (cylinderCand->Refitting(pMesh, res) > minInitSupportNum)
                     {
                         cylinderCand->UpdateScore(pMesh, vertWeightList);
                         cylinderCand->UpdateSupportArea(pMesh, vertWeightList);
@@ -3178,10 +3178,10 @@ namespace MagicDGP
                             delete cylinderCand;
                         }
                     }
-                    else
+                    /*else
                     {
                         delete cylinderCand;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -3199,7 +3199,7 @@ namespace MagicDGP
                 if (coneCand->CalSupportVertex(pMesh, res) > minInitSupportNum)
                 {
                     //coneCand->Refitting(pMesh, res);
-                    if (coneCand->Refitting(pMesh, res) > minInitSupportNum)
+                    //if (coneCand->Refitting(pMesh, res) > minInitSupportNum)
                     {
                         coneCand->UpdateScore(pMesh, vertWeightList);
                         coneCand->UpdateSupportArea(pMesh, vertWeightList);
@@ -3228,10 +3228,10 @@ namespace MagicDGP
                             delete coneCand;
                         }
                     }
-                    else
+                    /*else
                     {
                         delete coneCand;
-                    }
+                    }*/
                 }
                 else
                 {
