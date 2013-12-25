@@ -86,9 +86,9 @@ namespace MagicCore
 
     void MagicListener::windowResized(Ogre::RenderWindow* rw)
     {
-        //rw->windowMovedOrResized();
         RenderSystem::GetSingleton()->GetMainCamera()->setAspectRatio((Ogre::Real)rw->getWidth() / (Ogre::Real)rw->getHeight());
         InputSystem::GetSingleton()->UpdateMouseState(rw->getWidth(), rw->getHeight());
+        AppManager::GetSingleton()->WindowResized(rw);
     }
 
     bool MagicListener::windowClosing(Ogre::RenderWindow* rw)
@@ -100,7 +100,6 @@ namespace MagicCore
     void MagicListener::windowFocusChange(Ogre::RenderWindow* rw)
     {
         ToolKit::GetSingleton()->SetMousePressLocked(true);
-        AppManager::GetSingleton()->WindowResized(rw);
     }
 
     MagicListener::~MagicListener()

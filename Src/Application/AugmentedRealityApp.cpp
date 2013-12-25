@@ -66,7 +66,16 @@ namespace MagicApp
 
     void AugmentedRealityApp::WindowResized( Ogre::RenderWindow* rw )
     {
-
+        DebugLog << "AugmentedRealityApp::WindowResized" << std::endl;
+        if (mVideoCapture.isOpened() && mpVideoCanvas != NULL)
+        {
+            DebugLog << "Resize Canvas" << std::endl;
+            int videoW = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+            int videoH = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+            int winW = rw->getWidth();
+            int winH = rw->getHeight();
+            UpdateCanvasSize(winW, winH, videoW, videoH);
+        }
     }
 
     void AugmentedRealityApp::SetupScene(void)
@@ -112,9 +121,12 @@ namespace MagicApp
         mpVCMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 
         mpVideoCanvas = new Ogre::Rectangle2D(true);
-        mpVideoCanvas->setCorners(-0.8, 0.6, 0.8, -0.6);
         mpVideoCanvas->setBoundingBox(Ogre::AxisAlignedBox(-100000.0f * Ogre::Vector3::UNIT_SCALE, 100000.0f * Ogre::Vector3::UNIT_SCALE));
         mpVideoCanvas->setMaterial("VCMat");
+        Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
+        int winW = rw->getWidth();
+        int winH = rw->getHeight();
+        UpdateCanvasSize(winW, winH, 1, 1);
 
         if (pSceneMgr->hasSceneNode("ModelNode"))
         {
@@ -138,8 +150,6 @@ namespace MagicApp
         cv::Size vcSize(mVCWidth, mVCHeight);
         cv::Mat newFrame(vcSize, CV_8UC3);
         cv::resize(newFrameOrigin, newFrame, vcSize);
-        /*cv::Mat newFrame;
-        mVideoCapture >> newFrame;*/
         int nChannel = newFrame.channels();
         DebugLog << "nChannel: " << nChannel << std::endl;
         if (nChannel == 1)
@@ -213,30 +223,46 @@ namespace MagicApp
         }
         if (winW > winH)
         {
-            canvasW *= float(videoH) / float(videoW);
+            canvasW *= float(winH) / float(winW);
         }
         else
         {
-            canvasH *= float(videoW) / float(videoH);
+            canvasH *= float(winW) / float(winH);
         }
         mpVideoCanvas->setCorners(-canvasW, canvasH, canvasW, -canvasH);
     }
 
     bool AugmentedRealityApp::OpenVideo()
     {
-        std::string fileName;
+        /*std::string fileName;
         char filterName[] = "AVI Files(*.avi)\0*.avi\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             if (mVideoCapture.open(fileName))
             {
+                DebugLog << "Open video: " << fileName.c_str() << std::endl;
                 mIsUpdateVideoCanvas = true;
+                int videoW = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+                int videoH = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+                Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
+                int winW = rw->getWidth();
+                int winH = rw->getHeight();
+                UpdateCanvasSize(winW, winH, videoW, videoH);
                 return true;
             }
         }
         else
         {
             return false;
-        }
+        }*/
+        mVideoCapture.open(0);
+        mIsUpdateVideoCanvas = true;
+        int videoW = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+        int videoH = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+        Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
+        int winW = rw->getWidth();
+        int winH = rw->getHeight();
+        UpdateCanvasSize(winW, winH, videoW, videoH);
+        return true;
     }
 }
