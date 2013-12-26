@@ -1,11 +1,11 @@
-#include "AugmentedRealityApp.h"
+#include "VideoRecordingApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 
 namespace MagicApp
 {
-    AugmentedRealityApp::AugmentedRealityApp() :
+    VideoRecordingApp::VideoRecordingApp() :
         mpVideoCanvas(NULL),
         mpVCTex(NULL),
         mpVCMat(NULL),
@@ -16,73 +16,44 @@ namespace MagicApp
         mVideoWidth(1),
         mVideoHeight(1),
         mOneFrameTime(0),
-        mTimeAccumulate(0)
+        mTimeAccumulate(0),
+        mIsRecording(false)
     {
     }
 
-    AugmentedRealityApp::~AugmentedRealityApp()
+    VideoRecordingApp::~VideoRecordingApp()
     {
     }
 
-    bool AugmentedRealityApp::Enter(void)
+    bool VideoRecordingApp::Enter(void)
     {
-        InfoLog << "Enter AugmentedRealityApp" << std::endl; 
+        InfoLog << "Enter VideoRecordingApp" << std::endl; 
         mUI.Setup();
         SetupScene();
+        
         return true;
     }
 
-    bool AugmentedRealityApp::Update(float timeElapsed)
+    bool VideoRecordingApp::Update(float timeElapsed)
     {
-        if (mIsUpdateVideoCanvas)
-        {
-            mTimeAccumulate += timeElapsed;
-            while (mTimeAccumulate > mOneFrameTime)
-            {
-                UpdateCanvas();
-                mTimeAccumulate -= mOneFrameTime;
-            }
-        }
         return true;
     }
-    
-    bool AugmentedRealityApp::Exit(void)
+
+    bool VideoRecordingApp::Exit(void)
     {
         ShutdownScene();
         mUI.Shutdown();
         return true;
     }
 
-    bool AugmentedRealityApp::MouseMoved( const OIS::MouseEvent &arg )
+    void VideoRecordingApp::WindowResized( Ogre::RenderWindow* rw )
     {
-        return true;
+
     }
 
-    bool AugmentedRealityApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+    void VideoRecordingApp::SetupScene(void)
     {
-        return true;
-    }
-
-    bool AugmentedRealityApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
-    {
-        return true;
-    }
-
-    bool AugmentedRealityApp::KeyPressed( const OIS::KeyEvent &arg )
-    {
-        return true;
-    }
-
-    void AugmentedRealityApp::WindowResized( Ogre::RenderWindow* rw )
-    {
-        int winW = rw->getWidth();
-        int winH = rw->getHeight();
-        UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
-    }
-
-    void AugmentedRealityApp::SetupScene(void)
-    {
-        InfoLog << "AugmentedRealityApp::SetupScene" << std::endl;
+        InfoLog << "VideoRecordingApp::SetupScene" << std::endl;
         Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
         pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
         Ogre::Light* sl = pSceneMgr->createLight("SimpleLight");
@@ -92,7 +63,7 @@ namespace MagicApp
 
         //Setup Video Canvas
         mpVCTex = Ogre::TextureManager::getSingleton().createManual(
-            "VCTex",
+            "VideoRecordingTex",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
             Ogre::TEX_TYPE_2D,
             mTexWidth,
@@ -117,14 +88,14 @@ namespace MagicApp
         pVCPixelBuffer->unlock();
 
         mpVCMat = Ogre::MaterialManager::getSingleton().create(
-            "VCMat",
+            "VideoRecordingMat",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        mpVCMat->getTechnique(0)->getPass(0)->createTextureUnitState("VCTex");
+        mpVCMat->getTechnique(0)->getPass(0)->createTextureUnitState("VideoRecordingTex");
         mpVCMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 
         mpVideoCanvas = new Ogre::Rectangle2D(true);
         mpVideoCanvas->setBoundingBox(Ogre::AxisAlignedBox(-100000.0f * Ogre::Vector3::UNIT_SCALE, 100000.0f * Ogre::Vector3::UNIT_SCALE));
-        mpVideoCanvas->setMaterial("VCMat");
+        mpVideoCanvas->setMaterial("VideoRecordingMat");
         Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
         int winW = rw->getWidth();
         int winH = rw->getHeight();
@@ -140,21 +111,21 @@ namespace MagicApp
         }
     }
 
-    void AugmentedRealityApp::ShutdownScene(void)
+    void VideoRecordingApp::ShutdownScene(void)
     {
 
     }
 
-    void AugmentedRealityApp::UpdateCanvas(void)
+    void VideoRecordingApp::UpdateCanvas(float timeElapsed)
     {
         cv::Mat newFrameOrigin;
-        //mVideoCapture >> newFrameOrigin;
-        if (mVideoCapture.read(newFrameOrigin) == false)
+        mVideoCapture >> newFrameOrigin;
+        /*if (mVideoCapture.read(newFrameOrigin) == false)
         {
             DebugLog << "Video Begin Again" << std::endl;
             mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, 0);
             mVideoCapture.read(newFrameOrigin);
-        }
+        }*/
         cv::Size vcSize(mTexWidth, mTexHeight);
         cv::Mat newFrame(vcSize, CV_8UC3);
         cv::resize(newFrameOrigin, newFrame, vcSize);
@@ -214,9 +185,18 @@ namespace MagicApp
             }
             pVCPixelBuffer->unlock();
         }
+        if (mIsRecording == true)
+        {
+            mTimeAccumulate += timeElapsed;
+            if (mTimeAccumulate > mOneFrameTime)
+            {
+                mVideoWriter << newFrameOrigin;
+                mTimeAccumulate -= mOneFrameTime;
+            }
+        }
     }
 
-    void AugmentedRealityApp::UpdateCanvasSize(int winW, int winH, int videoW, int videoH)
+    void VideoRecordingApp::UpdateCanvasSize(int winW, int winH, int videoW, int videoH)
     {
         float canvasW, canvasH;
         float maxSize = 0.8;
@@ -232,7 +212,6 @@ namespace MagicApp
         }
         if (winW > winH)
         {
-            //canvasW *= float(winH) / float(winW);
             canvasH *= float(winW) / float(winH);
             if (canvasH > maxSize)
             {
@@ -242,7 +221,6 @@ namespace MagicApp
         }
         else
         {
-            //canvasH *= float(winW) / float(winH);
             canvasW *= float(winH) / float(winW);
             if (canvasW > maxSize)
             {
@@ -251,37 +229,5 @@ namespace MagicApp
             }
         }
         mpVideoCanvas->setCorners(-canvasW, canvasH, canvasW, -canvasH);
-    }
-
-    bool AugmentedRealityApp::OpenVideo()
-    {
-        std::string fileName;
-        char filterName[] = "AVI Files(*.avi)\0*.avi\0All Files(*.*)\0*.*\0";
-        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
-        {
-            if (mVideoCapture.open(fileName))
-            {
-                DebugLog << "Open video: " << fileName.c_str() << std::endl;
-                mIsUpdateVideoCanvas = true;
-                int frameRate = mVideoCapture.get(CV_CAP_PROP_FPS);
-                mOneFrameTime = 1.f / frameRate;
-                mTimeAccumulate = 0.f;
-                mVideoWidth = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
-                mVideoHeight = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-                Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
-                int winW = rw->getWidth();
-                int winH = rw->getHeight();
-                UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
-                return true;
-            }
-            else
-            {
-                DebugLog << "Fail to open " << fileName.c_str() << std::endl;
-            }
-        }
-        else
-        {
-            return false;
-        }
     }
 }

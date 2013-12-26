@@ -34,9 +34,6 @@
     <Filter Include="Dependence\PoissonReconstruction">
       <UniqueIdentifier>{a5f1fc3b-c8c8-4bfa-9a54-872eb1db66cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Application\Scanning">
-      <UniqueIdentifier>{babddef3-9485-4dad-8e66-88136239c9b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Application\PrimitiveDetection">
       <UniqueIdentifier>{380de826-900c-4cb2-9b50-71edd78f25ac}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,12 @@
     </Filter>
     <Filter Include="Application\AugmentedRealityApp">
       <UniqueIdentifier>{444bdf4a-460e-4899-9c61-76d355bb11e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\VideoRecordingApp">
+      <UniqueIdentifier>{ee010987-bc16-428b-8f04-beaced6cdecb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\ScanningApp">
+      <UniqueIdentifier>{babddef3-9485-4dad-8e66-88136239c9b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -208,10 +211,10 @@
       <Filter>Dependence</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\ScanningApp.h">
-      <Filter>Application\Scanning</Filter>
+      <Filter>Application\ScanningApp</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\ScanningAppUI.h">
-      <Filter>Application\Scanning</Filter>
+      <Filter>Application\ScanningApp</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\PrimitiveDetectionApp.h">
       <Filter>Application\PrimitiveDetection</Filter>
@@ -278,6 +281,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Application\AugmentedRealityAppUI.h">
       <Filter>Application\AugmentedRealityApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\VideoRecordingAppUI.h">
+      <Filter>Application\VideoRecordingApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\VideoRecordingApp.h">
+      <Filter>Application\VideoRecordingApp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -375,10 +384,10 @@
       <Filter>Dependence</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\ScanningApp.cpp">
-      <Filter>Application\Scanning</Filter>
+      <Filter>Application\ScanningApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\ScanningAppUI.cpp">
-      <Filter>Application\Scanning</Filter>
+      <Filter>Application\ScanningApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp">
       <Filter>Application\PrimitiveDetection</Filter>
@@ -445,6 +454,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\AugmentedRealityAppUI.cpp">
       <Filter>Application\AugmentedRealityApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\VideoRecordingAppUI.cpp">
+      <Filter>Application\VideoRecordingApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\VideoRecordingApp.cpp">
+      <Filter>Application\VideoRecordingApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
