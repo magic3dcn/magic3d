@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Widget" skin="PanelEmpty" position="0 0 115 768" layer="Back">
+        <Widget type="Button" skin="But_RecordDepth" position="15 15 86 86" align="Left Top" name="But_Record"/>
+        <Widget type="Button" skin="But_Home" position="15 115 86 86" align="Left Top" name="But_Home"/>
+    </Widget>
+</MyGUI>

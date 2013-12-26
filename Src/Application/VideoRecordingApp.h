@@ -17,9 +17,16 @@ namespace MagicApp
         virtual bool Exit(void);
         virtual void WindowResized( Ogre::RenderWindow* rw );
 
+        void StartRecord();
+        void StopRecord();
+
     private:
         void SetupScene(void);
         void ShutdownScene(void);
+
+        bool SetupDevice(void);
+        void ReleaseDevice(void);
+
         void UpdateCanvas(float timeElapsed);
         void UpdateCanvasSize(int winW, int winH, int videoW, int videoH);
 

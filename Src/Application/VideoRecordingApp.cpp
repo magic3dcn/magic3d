@@ -2,6 +2,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+#include "../Common/AppManager.h"
 
 namespace MagicApp
 {
@@ -28,25 +29,54 @@ namespace MagicApp
     bool VideoRecordingApp::Enter(void)
     {
         InfoLog << "Enter VideoRecordingApp" << std::endl; 
-        mUI.Setup();
-        SetupScene();
-        
-        return true;
+        if (SetupDevice() == true)
+        {
+            mUI.Setup();
+            SetupScene();
+            return true;
+        }
+        else
+        {
+            MagicCore::AppManager::GetSingleton()->SwitchCurrentApp("Homepage");
+            return false;
+        }
     }
 
     bool VideoRecordingApp::Update(float timeElapsed)
     {
+        if (mIsUpdateVideoCanvas == true)
+        {
+            UpdateCanvas(timeElapsed);
+        }
         return true;
     }
 
     bool VideoRecordingApp::Exit(void)
     {
-        ShutdownScene();
-        mUI.Shutdown();
+        if (mIsUpdateVideoCanvas == true)
+        {
+            mIsUpdateVideoCanvas = false;
+            ReleaseDevice();
+            ShutdownScene();
+            mUI.Shutdown();
+        }
+        
         return true;
     }
 
     void VideoRecordingApp::WindowResized( Ogre::RenderWindow* rw )
+    {
+        int winW = rw->getWidth();
+        int winH = rw->getHeight();
+        UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
+    }
+
+    void VideoRecordingApp::StartRecord()
+    {
+
+    }
+
+    void VideoRecordingApp::StopRecord()
     {
 
     }
@@ -81,7 +111,7 @@ namespace MagicApp
             {
                 pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = 220;
                 pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = 220;
-                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = 220;
+                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = 0;
                 pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
             }
         }
@@ -113,24 +143,63 @@ namespace MagicApp
 
     void VideoRecordingApp::ShutdownScene(void)
     {
+        Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+        pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
+        pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        if (pSceneMgr->hasSceneNode("ModelNode"))
+        {
+            pSceneMgr->getSceneNode("ModelNode")->detachObject(mpVideoCanvas);
+            if (mpVideoCanvas != NULL)
+            {
+                delete mpVideoCanvas;
+                mpVideoCanvas = NULL;
+            }
+        }
+        Ogre::MaterialManager::getSingleton().remove("VideoRecordingMat");
+        mpVCMat.setNull();
+        Ogre::TextureManager::getSingleton().remove("VideoRecordingTex");
+        mpVCTex.setNull();
+    }
 
+    bool VideoRecordingApp::SetupDevice(void)
+    {
+        if (mVideoCapture.open(0) == true)
+        {
+            DebugLog << "Video Camera Setup Successed" << std::endl;
+            mIsUpdateVideoCanvas = true;
+            int frameRate = 30;// mVideoCapture.get(CV_CAP_PROP_FPS);
+            //DebugLog << "fps: " << frameRate << std::endl;
+            mOneFrameTime = 1.f / frameRate;
+            mTimeAccumulate = 0.f;
+            mVideoWidth = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+            mVideoHeight = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+            //DebugLog << "Video width: " << mVideoWidth << " video height: " << mVideoHeight << std::endl;
+            return true;
+        }
+        else
+        {
+            DebugLog << "Video Camera Setup Failed" << std::endl;
+            return false;
+        }
+    }
+
+    void VideoRecordingApp::ReleaseDevice(void)
+    {
+        if (mVideoCapture.isOpened() == true)
+        {
+            mVideoCapture.release();
+        }
     }
 
     void VideoRecordingApp::UpdateCanvas(float timeElapsed)
     {
         cv::Mat newFrameOrigin;
         mVideoCapture >> newFrameOrigin;
-        /*if (mVideoCapture.read(newFrameOrigin) == false)
-        {
-            DebugLog << "Video Begin Again" << std::endl;
-            mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, 0);
-            mVideoCapture.read(newFrameOrigin);
-        }*/
         cv::Size vcSize(mTexWidth, mTexHeight);
         cv::Mat newFrame(vcSize, CV_8UC3);
         cv::resize(newFrameOrigin, newFrame, vcSize);
         int nChannel = newFrame.channels();
-        //DebugLog << "nChannel: " << nChannel << std::endl;
         if (nChannel == 1)
         {
             Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
