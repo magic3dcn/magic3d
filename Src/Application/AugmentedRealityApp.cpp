@@ -16,7 +16,12 @@ namespace MagicApp
         mVideoWidth(1),
         mVideoHeight(1),
         mOneFrameTime(0),
-        mTimeAccumulate(0)
+        mTimeAccumulate(0),
+        mCurrentFrame(0),
+        mFrameCount(0),
+        mIsCaptureFrame(false),
+        mDisplayIndex(0),
+        mImageNeedNumber(8)
     {
     }
 
@@ -50,6 +55,7 @@ namespace MagicApp
     {
         ShutdownScene();
         mUI.Shutdown();
+        ResetParameter();
         return true;
     }
 
@@ -142,22 +148,46 @@ namespace MagicApp
 
     void AugmentedRealityApp::ShutdownScene(void)
     {
-
+        Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+        pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
+        pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        if (pSceneMgr->hasSceneNode("ModelNode"))
+        {
+            pSceneMgr->getSceneNode("ModelNode")->detachObject(mpVideoCanvas);
+            if (mpVideoCanvas != NULL)
+            {
+                delete mpVideoCanvas;
+                mpVideoCanvas = NULL;
+            }
+        }
+        Ogre::MaterialManager::getSingleton().remove("VCMat");
+        mpVCMat.setNull();
+        Ogre::TextureManager::getSingleton().remove("VCTex");
+        mpVCTex.setNull();
+        mVideoCapture.release();
     }
 
-    void AugmentedRealityApp::UpdateCanvas(void)
+    void AugmentedRealityApp::ResetParameter(void)
     {
-        cv::Mat newFrameOrigin;
-        //mVideoCapture >> newFrameOrigin;
-        if (mVideoCapture.read(newFrameOrigin) == false)
-        {
-            DebugLog << "Video Begin Again" << std::endl;
-            mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, 0);
-            mVideoCapture.read(newFrameOrigin);
-        }
+        mIsUpdateVideoCanvas = false;
+        mVideoWidth = 1;
+        mVideoHeight = 1;
+        mOneFrameTime = 0;
+        mTimeAccumulate = 0;
+        mCurrentFrame = 0;
+        mFrameCount = 0;
+        mIsCaptureFrame = false;
+        mDisplayIndex = 0;
+        mSelectedImages.clear();
+        mSelectedIndex.clear();
+    }
+
+    void AugmentedRealityApp::UpdateImageToCanvas(cv::Mat& image)
+    {
         cv::Size vcSize(mTexWidth, mTexHeight);
         cv::Mat newFrame(vcSize, CV_8UC3);
-        cv::resize(newFrameOrigin, newFrame, vcSize);
+        cv::resize(image, newFrame, vcSize);
         int nChannel = newFrame.channels();
         //DebugLog << "nChannel: " << nChannel << std::endl;
         if (nChannel == 1)
@@ -216,10 +246,42 @@ namespace MagicApp
         }
     }
 
+    void AugmentedRealityApp::UpdateCanvas(void)
+    {
+        cv::Mat newFrameOrigin;
+        //mVideoCapture >> newFrameOrigin;
+        if (mVideoCapture.read(newFrameOrigin) == false)
+        {
+            DebugLog << "Video Begin Again" << std::endl;
+            mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, 0);
+            mVideoCapture.read(newFrameOrigin);
+            mCurrentFrame = 0;
+        }
+        UpdateImageToCanvas(newFrameOrigin);
+        //
+        if (mIsCaptureFrame)
+        {
+            mSelectedImages.push_back(newFrameOrigin);
+            mSelectedIndex.push_back(mCurrentFrame);
+            mIsCaptureFrame = false;
+            if (mSelectedImages.size() == mImageNeedNumber)
+            {
+                mDisplayIndex = 0;
+                UpdateImageToCanvas(mSelectedImages.at(mDisplayIndex));
+                mIsUpdateVideoCanvas = false;
+                mUI.SetupImageBrowsing();
+                mUI.SetSliderPosition(mSelectedIndex.at(mDisplayIndex));
+            }
+        }
+        mUI.SetSliderPosition(mCurrentFrame);
+        mCurrentFrame++;
+        //
+    }
+
     void AugmentedRealityApp::UpdateCanvasSize(int winW, int winH, int videoW, int videoH)
     {
         float canvasW, canvasH;
-        float maxSize = 0.8;
+        float maxSize = 0.7;
         if (videoW > videoH)
         {
             canvasW = maxSize;
@@ -262,12 +324,17 @@ namespace MagicApp
             if (mVideoCapture.open(fileName))
             {
                 DebugLog << "Open video: " << fileName.c_str() << std::endl;
+                ResetParameter();
                 mIsUpdateVideoCanvas = true;
                 int frameRate = mVideoCapture.get(CV_CAP_PROP_FPS);
                 mOneFrameTime = 1.f / frameRate;
                 mTimeAccumulate = 0.f;
                 mVideoWidth = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
                 mVideoHeight = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+                mCurrentFrame = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES);
+                mFrameCount = mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT);
+                mUI.SetSliderRange(mFrameCount);
+                mUI.SetSliderPosition(mCurrentFrame);
                 Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
                 int winW = rw->getWidth();
                 int winH = rw->getHeight();
@@ -277,11 +344,40 @@ namespace MagicApp
             else
             {
                 DebugLog << "Fail to open " << fileName.c_str() << std::endl;
+                return false;
             }
         }
         else
         {
             return false;
         }
+    }
+
+    void AugmentedRealityApp::SetFramePosition(int pos)
+    {
+        mCurrentFrame = pos;
+        mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, pos);
+    }
+
+    void AugmentedRealityApp::CaptureFrame()
+    {
+        mIsCaptureFrame = true;
+    }
+
+    void AugmentedRealityApp::ClearCapture()
+    {
+        mSelectedImages.clear();
+        mSelectedIndex.clear();
+    }
+
+    void AugmentedRealityApp::NextImage()
+    {
+        mDisplayIndex++;
+        if (mDisplayIndex == mImageNeedNumber)
+        {
+            mDisplayIndex = 0;
+        }
+        UpdateImageToCanvas( mSelectedImages.at(mDisplayIndex) );
+        mUI.SetSliderPosition(mSelectedIndex.at(mDisplayIndex));
     }
 }

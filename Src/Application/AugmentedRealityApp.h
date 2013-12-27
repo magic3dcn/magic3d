@@ -22,10 +22,16 @@ namespace MagicApp
         virtual void WindowResized( Ogre::RenderWindow* rw );
 
         bool OpenVideo();
+        void SetFramePosition(int pos);
+        void CaptureFrame();
+        void ClearCapture();
+        void NextImage();
 
     private:
         void SetupScene(void);
         void ShutdownScene(void);
+        void ResetParameter(void);
+        void UpdateImageToCanvas(cv::Mat& image);
         void UpdateCanvas(void);
         void UpdateCanvasSize(int winW, int winH, int videoW, int videoH);
 
@@ -42,6 +48,13 @@ namespace MagicApp
         int mVideoHeight;
         float mOneFrameTime;
         float mTimeAccumulate;
+        int mCurrentFrame;
+        int mFrameCount;
+        bool mIsCaptureFrame;
+        std::vector<cv::Mat> mSelectedImages;
+        std::vector<int> mSelectedIndex;
+        int mDisplayIndex;
+        int mImageNeedNumber;
     };
 
 }
