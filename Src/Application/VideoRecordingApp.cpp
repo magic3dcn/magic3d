@@ -10,15 +10,16 @@ namespace MagicApp
         mpVideoCanvas(NULL),
         mpVCTex(NULL),
         mpVCMat(NULL),
-        mTexWidth(1024),
-        mTexHeight(1024),
+        mTexWidth(640),
+        mTexHeight(480),
         mVideoCapture(),
         mIsUpdateVideoCanvas(false),
         mVideoWidth(1),
         mVideoHeight(1),
         mOneFrameTime(0),
         mTimeAccumulate(0),
-        mIsRecording(false)
+        mIsRecording(false),
+        mRecordFPS(10)
     {
     }
 
@@ -46,6 +47,10 @@ namespace MagicApp
     {
         if (mIsUpdateVideoCanvas == true)
         {
+            if (timeElapsed > mOneFrameTime * 2)
+            {
+                return true;
+            }
             UpdateCanvas(timeElapsed);
         }
         return true;
@@ -73,12 +78,18 @@ namespace MagicApp
 
     void VideoRecordingApp::StartRecord()
     {
-
+        std::string fileName;
+        char filterName[] = "AVI Files(*.avi)\0*.avi\0";
+        MagicCore::ToolKit::FileSaveDlg(fileName, filterName);
+        cv::Size frameSize(mVideoWidth, mVideoHeight);
+        mVideoWriter.open(fileName, -1, mRecordFPS, frameSize);
+        mIsRecording = true;
     }
 
     void VideoRecordingApp::StopRecord()
     {
-
+        mIsRecording = false;
+        mVideoWriter.release();
     }
 
     void VideoRecordingApp::SetupScene(void)
@@ -167,10 +178,13 @@ namespace MagicApp
         if (mVideoCapture.open(0) == true)
         {
             DebugLog << "Video Camera Setup Successed" << std::endl;
+            if (mVideoCapture.set(CV_CAP_PROP_FPS, mRecordFPS) == false)
+            {
+                DebugLog << "fps set failed" << std::endl;
+            }
+
             mIsUpdateVideoCanvas = true;
-            int frameRate = 30;// mVideoCapture.get(CV_CAP_PROP_FPS);
-            //DebugLog << "fps: " << frameRate << std::endl;
-            mOneFrameTime = 1.f / frameRate;
+            mOneFrameTime = 1.f / mRecordFPS;
             mTimeAccumulate = 0.f;
             mVideoWidth = mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
             mVideoHeight = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -194,74 +208,80 @@ namespace MagicApp
 
     void VideoRecordingApp::UpdateCanvas(float timeElapsed)
     {
-        cv::Mat newFrameOrigin;
-        mVideoCapture >> newFrameOrigin;
-        cv::Size vcSize(mTexWidth, mTexHeight);
-        cv::Mat newFrame(vcSize, CV_8UC3);
-        cv::resize(newFrameOrigin, newFrame, vcSize);
-        int nChannel = newFrame.channels();
-        if (nChannel == 1)
+        mTimeAccumulate += timeElapsed;
+        //DebugLog << "mTimeAccumulate: " << mTimeAccumulate << " mOneFrameTime: " << mOneFrameTime 
+          //  << " timeElapsed: " << timeElapsed << std::endl; 
+        if (mTimeAccumulate > mOneFrameTime)
         {
-            Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
-            unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
-            {
-                for (int xid = 0; xid < mTexWidth; xid++)
-                {
-                    unsigned char* pixel = newFrame.ptr(xid, yid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
-                }
-            }
-            pVCPixelBuffer->unlock();
-        }
-        else if (nChannel == 3)
-        {
-            Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
-            unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
-            {
-                for (int xid = 0; xid < mTexWidth; xid++)
-                {
-                    unsigned char* pixel = newFrame.ptr(yid, xid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
-                }
-            }
-            pVCPixelBuffer->unlock();
-        }
-        else if (nChannel >= 4)
-        {
-            Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
-            unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
-            {
-                for (int xid = 0; xid < mTexWidth; xid++)
-                {
-                    unsigned char* pixel = newFrame.ptr(xid, yid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = pixel[3];
-                }
-            }
-            pVCPixelBuffer->unlock();
-        }
-        if (mIsRecording == true)
-        {
-            mTimeAccumulate += timeElapsed;
-            if (mTimeAccumulate > mOneFrameTime)
+            mTimeAccumulate -= mOneFrameTime;
+
+            cv::Mat newFrameOrigin;
+            mVideoCapture >> newFrameOrigin;
+            if (mIsRecording == true)
             {
                 mVideoWriter << newFrameOrigin;
-                mTimeAccumulate -= mOneFrameTime;
             }
+            //else
+            //{
+            cv::Size vcSize(mTexWidth, mTexHeight);
+            cv::Mat newFrame(vcSize, CV_8UC3);
+            cv::resize(newFrameOrigin, newFrame, vcSize);
+            int nChannel = newFrame.channels();
+            if (nChannel == 1)
+            {
+                Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
+                unsigned char* pVCBuffer = static_cast<unsigned char*>(
+                    pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+                for (int yid = 0; yid < mTexHeight; yid++)
+                {
+                    for (int xid = 0; xid < mTexWidth; xid++)
+                    {
+                        unsigned char* pixel = newFrame.ptr(xid, yid);
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[0];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[0];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
+                    }
+                }
+                pVCPixelBuffer->unlock();
+            }
+            else if (nChannel == 3)
+            {
+                Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
+                unsigned char* pVCBuffer = static_cast<unsigned char*>(
+                    pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+                for (int yid = 0; yid < mTexHeight; yid++)
+                {
+                    for (int xid = 0; xid < mTexWidth; xid++)
+                    {
+                        unsigned char* pixel = newFrame.ptr(yid, xid);
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
+                    }
+                }
+                pVCPixelBuffer->unlock();
+            }
+            else if (nChannel >= 4)
+            {
+                Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
+                unsigned char* pVCBuffer = static_cast<unsigned char*>(
+                    pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+                for (int yid = 0; yid < mTexHeight; yid++)
+                {
+                    for (int xid = 0; xid < mTexWidth; xid++)
+                    {
+                        unsigned char* pixel = newFrame.ptr(xid, yid);
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
+                        pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = pixel[3];
+                    }
+                }
+                pVCPixelBuffer->unlock();
+            }
+            //}
         }
     }
 

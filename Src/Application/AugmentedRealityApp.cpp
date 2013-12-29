@@ -41,6 +41,11 @@ namespace MagicApp
     {
         if (mIsUpdateVideoCanvas)
         {
+            //DebugLog << "mTimeAccumulate: " << mTimeAccumulate << " timeElapsed: " << timeElapsed << std::endl; 
+            if (timeElapsed > mOneFrameTime * 2)
+            {
+                return true;
+            }
             mTimeAccumulate += timeElapsed;
             while (mTimeAccumulate > mOneFrameTime)
             {
@@ -261,6 +266,7 @@ namespace MagicApp
         //
         if (mIsCaptureFrame)
         {
+            DebugLog << "Capture a Frame" << std::endl;
             mSelectedImages.push_back(newFrameOrigin);
             mSelectedIndex.push_back(mCurrentFrame);
             mIsCaptureFrame = false;
@@ -333,6 +339,7 @@ namespace MagicApp
                 mVideoHeight = mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
                 mCurrentFrame = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES);
                 mFrameCount = mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT);
+                DebugLog << "fps: " << frameRate << " frameCount: " << mFrameCount << std::endl;
                 mUI.SetSliderRange(mFrameCount);
                 mUI.SetSliderPosition(mCurrentFrame);
                 Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();

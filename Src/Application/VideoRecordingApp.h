@@ -45,6 +45,7 @@ namespace MagicApp
         float mTimeAccumulate;
         cv::VideoWriter mVideoWriter;
         bool mIsRecording;
+        int mRecordFPS;
     };
 
 }
