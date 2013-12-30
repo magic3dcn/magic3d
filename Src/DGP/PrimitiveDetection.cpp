@@ -229,15 +229,31 @@ namespace MagicDGP
     int PlaneCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         mHasRefit = true;
-        
         //refit supprot vertex
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
-        std::vector<int> searchIndex = mSupportVertex;
-        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             visitFlag[*itr] = 1;
         }
-        mSupportVertex.clear();
+        std::vector<int> searchIndex;
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+            const Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                int newId = pEdge->GetVertex()->GetId();
+                if (visitFlag[newId] != 1)
+                {
+                    visitFlag[newId] = 1;
+                    if (resFlag.at(newId) == PrimitiveType::None)
+                    {
+                        searchIndex.push_back(newId);
+                    }
+                }
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+        }
         //mScore = 0;
         while (searchIndex.size() > 0)
         {
@@ -287,6 +303,68 @@ namespace MagicDGP
 
         return mSupportVertex.size();
     }
+
+    //int PlaneCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
+    //{
+    //    mHasRefit = true;
+    //    
+    //    //refit supprot vertex
+    //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
+    //    std::vector<int> searchIndex = mSupportVertex;
+    //    for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //    {
+    //        visitFlag[*itr] = 1;
+    //    }
+    //    mSupportVertex.clear();
+    //    //mScore = 0;
+    //    while (searchIndex.size() > 0)
+    //    {
+    //        std::vector<int> searchIndexNext;
+    //        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //        {
+    //            //first check current vertex
+    //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+    //            Vector3 pos = pVert->GetPosition();
+    //            Real distDev = fabs( (pos - mCenter) * mNormal );
+    //            if (distDev > maxDistDeviation)
+    //            {
+    //                continue;
+    //            }
+    //            Vector3 nor = pVert->GetNormal();
+    //            Real angleDev = fabs( nor * mNormal );
+    //            if (angleDev < maxAngleDeviation)
+    //            {
+    //                continue;
+    //            }
+    //            //mScore += angleDev - baseScore;
+    //            mSupportVertex.push_back(*itr);
+    //            //if current vertex pass, push its neighbors into searchIndexNext
+    //            const Edge3D* pEdge = pVert->GetEdge();
+    //            do
+    //            {
+    //                int newId = pEdge->GetVertex()->GetId();
+    //                if (visitFlag[newId] != 1)
+    //                {
+    //                    visitFlag[newId] = 1;
+    //                    if (resFlag.at(newId) == PrimitiveType::None)
+    //                    {
+    //                        searchIndexNext.push_back(newId);
+    //                    }
+    //                }
+    //                pEdge = pEdge->GetPair()->GetNext();
+    //            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+    //        }
+    //        searchIndex = searchIndexNext;
+    //    }
+
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+    //    if (FitParameter(pMesh) == false)
+    //    {
+    //        mSupportVertex.clear();
+    //    }
+
+    //    return mSupportVertex.size();
+    //}
 
     bool PlaneCandidate::FitParameter(const Mesh3D* pMesh)
     {
@@ -468,17 +546,33 @@ namespace MagicDGP
     int SphereCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         mHasRefit = true;
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl;
         //Refit support vertex
         Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
         //std::map<int, int> visitFlag;
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
-        std::vector<int> searchIndex = mSupportVertex;
-        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             visitFlag[*itr] = 1;
         }
-        mSupportVertex.clear();
+        std::vector<int> searchIndex;
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+            const Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                int newId = pEdge->GetVertex()->GetId();
+                if (visitFlag[newId] != 1)
+                {
+                    visitFlag[newId] = 1;
+                    if (resFlag.at(newId) == PrimitiveType::None)
+                    {
+                        searchIndex.push_back(newId);
+                    }
+                }
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+        }
         //mScore = 0;
         while (searchIndex.size() > 0)
         {
@@ -526,6 +620,68 @@ namespace MagicDGP
 
         return mSupportVertex.size();
     }
+
+    //int SphereCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
+    //{
+    //    mHasRefit = true;
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl;
+    //    //Refit support vertex
+    //    Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
+    //    //std::map<int, int> visitFlag;
+    //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
+    //    std::vector<int> searchIndex = mSupportVertex;
+    //    for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //    {
+    //        visitFlag[*itr] = 1;
+    //    }
+    //    mSupportVertex.clear();
+    //    //mScore = 0;
+    //    while (searchIndex.size() > 0)
+    //    {
+    //        std::vector<int> searchIndexNext;
+    //        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //        {
+    //            //first check current vertex
+    //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+    //            Vector3 pos = pVert->GetPosition();
+    //            Vector3 nor = pVert->GetNormal();
+    //            Vector3 dir = pos - mCenter;
+    //            Real length = dir.Normalise();
+    //            Real angleDev = fabs(dir * nor);
+    //            if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
+    //            {
+    //                continue;
+    //            }
+    //           // mScore += (angleDev - baseScore);
+    //            mSupportVertex.push_back(*itr);
+    //            //if current vertex pass, push its neighbors into searchIndexNext
+    //            const Edge3D* pEdge = pVert->GetEdge();
+    //            do
+    //            {
+    //                int newId = pEdge->GetVertex()->GetId();
+    //                if (visitFlag[newId] != 1)
+    //                {
+    //                    visitFlag[newId] = 1;
+    //                    if (resFlag.at(newId) == PrimitiveType::None)
+    //                    {
+    //                        searchIndexNext.push_back(newId);
+    //                    }
+    //                }
+    //                pEdge = pEdge->GetPair()->GetNext();
+    //            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+    //        }
+    //        searchIndex = searchIndexNext;
+    //    }
+
+    //    if (FitParameter(pMesh) == false)
+    //    {
+    //        mSupportVertex.clear();
+    //    }
+
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+
+    //    return mSupportVertex.size();
+    //}
 
     bool SphereCandidate::FitParameter(const Mesh3D* pMesh)
     {
@@ -717,7 +873,7 @@ namespace MagicDGP
         }
 
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetTime() - timeStart 
+        //DebugLog << "Cylinder Support Vertex time: " << MagicCore::ToolKit::GetTime() - timeStart
         //    << " SupportVertexSize: " << mSupportVertex.size() << std::endl;
         return mSupportVertex.size();
     }
@@ -732,12 +888,29 @@ namespace MagicDGP
         Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
         //std::map<int, int> visitFlag;
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
-        std::vector<int> searchIndex = mSupportVertex;
-        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             visitFlag[*itr] = 1;
         }
-        mSupportVertex.clear();
+        std::vector<int> searchIndex;
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+            const Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                int newId = pEdge->GetVertex()->GetId();
+                if (visitFlag[newId] != 1)
+                {
+                    visitFlag[newId] = 1;
+                    if (resFlag.at(newId) == PrimitiveType::None)
+                    {
+                        searchIndex.push_back(newId);
+                    }
+                }
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+        }
         //mScore = 0;
         while (searchIndex.size() > 0)
         {
@@ -783,12 +956,80 @@ namespace MagicDGP
         }
 
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder refitting time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder refitting time: " << MagicCore::ToolKit::GetTime() - timeStart 
+        //    << " SupportVertexSize: " << mSupportVertex.size() << std::endl;
         return mSupportVertex.size();
     }
 
+    //int CylinderCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
+    //{
+    //    mHasRefit = true;
+    //    float timeStart = MagicCore::ToolKit::GetTime();
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Cylinder: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
+    //    //    << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << std::endl;
+    //    //Refit support vertex
+    //    Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
+    //    //std::map<int, int> visitFlag;
+    //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
+    //    std::vector<int> searchIndex = mSupportVertex;
+    //    for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //    {
+    //        visitFlag[*itr] = 1;
+    //    }
+    //    mSupportVertex.clear();
+    //    //mScore = 0;
+    //    while (searchIndex.size() > 0)
+    //    {
+    //        std::vector<int> searchIndexNext;
+    //        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //        {
+    //            //first check current vertex
+    //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+    //            Vector3 pos = pVert->GetPosition();
+    //            Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
+    //            Vector3 nor = pVert->GetNormal();
+    //            Vector3 dir = projectPos - mCenter;
+    //            Real length = dir.Normalise();
+    //            Real angleDev = fabs(dir * nor);
+    //            if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
+    //            {
+    //                continue;
+    //            }
+    //            //mScore += (angleDev - baseScore);
+    //            mSupportVertex.push_back(*itr);
+    //            //if current vertex pass, push its neighbors into searchIndexNext
+    //            const Edge3D* pEdge = pVert->GetEdge();
+    //            do
+    //            {
+    //                int newId = pEdge->GetVertex()->GetId();
+    //                if (visitFlag[newId] != 1)
+    //                {
+    //                    visitFlag[newId] = 1;
+    //                    if (resFlag.at(newId) == PrimitiveType::None)
+    //                    {
+    //                        searchIndexNext.push_back(newId);
+    //                    }
+    //                }
+    //                pEdge = pEdge->GetPair()->GetNext();
+    //            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+    //        }
+    //        searchIndex = searchIndexNext;
+    //    }
+
+    //    if (FitParameter(pMesh) == false)
+    //    {
+    //        mSupportVertex.clear();
+    //    }
+
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Support vertex size: " << mSupportVertex.size() << std::endl;
+    //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cylinder refitting time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+    //    return mSupportVertex.size();
+    //}
+
     bool CylinderCandidate::FitParameter(const Mesh3D* pMesh)
     {
+        float timeStart = MagicCore::ToolKit::GetTime();
+
         if (mSupportVertex.size() < 4)
         {
             return false;
@@ -897,6 +1138,7 @@ namespace MagicDGP
         }
         Rectify(pMesh);
 
+        //DebugLog << "Cylinder FitParameter time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;;
         return true;
     }
 
@@ -1195,12 +1437,29 @@ namespace MagicDGP
         mHasRefit = true;
         //Refit support vertex
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
-        std::vector<int> searchIndex = mSupportVertex;
-        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             visitFlag[*itr] = 1;
         }
-        mSupportVertex.clear();
+        std::vector<int> searchIndex;
+        for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
+        {
+            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+            const Edge3D* pEdge = pVert->GetEdge();
+            do
+            {
+                int newId = pEdge->GetVertex()->GetId();
+                if (visitFlag[newId] != 1)
+                {
+                    visitFlag[newId] = 1;
+                    if (resFlag.at(newId) == PrimitiveType::None)
+                    {
+                        searchIndex.push_back(newId);
+                    }
+                }
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+        }
         //mScore = 0;
         while (searchIndex.size() > 0)
         {
@@ -1264,6 +1523,81 @@ namespace MagicDGP
         
         return mSupportVertex.size();
     }
+
+    //int ConeCandidate::Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag)
+    //{
+    //    mHasRefit = true;
+    //    //Refit support vertex
+    //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
+    //    std::vector<int> searchIndex = mSupportVertex;
+    //    for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //    {
+    //        visitFlag[*itr] = 1;
+    //    }
+    //    mSupportVertex.clear();
+    //    //mScore = 0;
+    //    while (searchIndex.size() > 0)
+    //    {
+    //        std::vector<int> searchIndexNext;
+    //        for (std::vector<int>::iterator itr = searchIndex.begin(); itr != searchIndex.end(); ++itr)
+    //        {
+    //            //first check current vertex
+    //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
+    //            Vector3 pos = pVert->GetPosition();
+    //            Vector3 posDir = pos - mApex;
+    //            if (posDir.Normalise() <  Epsilon)
+    //            {
+    //                continue;
+    //            }
+    //            Real cosAngle = posDir * mDir;
+    //            cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
+    //            Real angle = acos(cosAngle);
+    //            if (fabs(angle - mAngle) > maxConeAngleDeviation)
+    //            {
+    //                continue;
+    //            }
+    //            Vector3 dirTemp = mDir.CrossProduct(posDir);
+    //            if (dirTemp.Normalise() < Epsilon)
+    //            {
+    //                continue;
+    //            }
+    //            Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+    //            ideaNor.Normalise();
+    //            Vector3 nor = pVert->GetNormal();
+    //            Real angleDev = fabs(nor * ideaNor);
+    //            if (angleDev < maxAngleDeviation)
+    //            {
+    //                continue;
+    //            }
+    //            //mScore += (angleDev - baseScore);
+    //            mSupportVertex.push_back(*itr);
+    //            //if current vertex pass, push its neighbors into searchIndexNext
+    //            const Edge3D* pEdge = pVert->GetEdge();
+    //            do
+    //            {
+    //                int newId = pEdge->GetVertex()->GetId();
+    //                if (visitFlag[newId] != 1)
+    //                {
+    //                    visitFlag[newId] = 1;
+    //                    if (resFlag.at(newId) == PrimitiveType::None)
+    //                    {
+    //                        searchIndexNext.push_back(newId);
+    //                    }
+    //                }
+    //                pEdge = pEdge->GetPair()->GetNext();
+    //            } while (pEdge != pVert->GetEdge() && pEdge != NULL);
+    //        }
+    //        searchIndex = searchIndexNext;
+    //    }
+
+    //    //Refit parameter
+    //    if (FitParameter(pMesh) == false)
+    //    {
+    //        mSupportVertex.clear();
+    //    }
+    //    
+    //    return mSupportVertex.size();
+    //}
 
     bool ConeCandidate::FitParameter(const Mesh3D* pMesh)
     {
@@ -1840,6 +2174,7 @@ namespace MagicDGP
             {
                 //SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 100, 0.5);
                 SampleVertex(pMesh, res, sampleFlag, featureScores, sampleIndex, 100, 1); //change
+                //maxIterCount = 3;
             }
             else if (scanId == 1)
             {
@@ -3000,7 +3335,7 @@ namespace MagicDGP
         //Find the best candidate
         //selectIndex = 4738;
         DebugLog << "select index: " << selectIndex << std::endl;
-        int neighborRadius = 10;
+        int neighborRadius = 15;
         int minNeigborNum = 6;
         int neigborSampleNum = 1;
         std::vector<int> neighborList;
@@ -4084,11 +4419,12 @@ namespace MagicDGP
     {
         //neigborNum >= 10
         int neigborNum = neighborList.size();
-        int sampleNum = 15;
-        if (neigborNum < 20)
+        //int sampleNum = 15;
+        int sampleNum = 6;
+        /*if (neigborNum < 20)
         {
             sampleNum = 9;
-        }
+        }*/
         //sample
         std::vector<bool> validSampleFlag(neigborNum, 0);
         validSampleFlag.at(0) = true;
@@ -4747,6 +5083,7 @@ namespace MagicDGP
         for (int vid  = 0; vid  < vertNum; vid ++)
         {
             Real gradLen = norGrad.at(vid).Length();
+            scores.at(vid) = gradLen;
             if (gradLen > 6)
             {
                 //features.at(vid) = PrimitiveType::Other;

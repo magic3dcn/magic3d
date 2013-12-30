@@ -557,63 +557,57 @@ namespace MagicApp
             }
             norDev.at(vid) = nDev;
         }
-        std::vector<MagicDGP::Vector3> norGrad;
-        CalScaleGradient(norDev, norGrad, mpMesh);
-        static int smoothNum = 1;
-        //smoothNum = smoothNum % 2;
-        for (int sid = 0; sid < smoothNum; sid++)
-        {
-            std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
-            for (int vid = 0; vid < vertNum; vid++)
-            {
-                MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
-                MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-                MagicDGP::Vector3 avgGrad(0, 0, 0);
-                int neigNum = 0;
-                do
-                {
-                    if (pEdge == NULL)
-                    {
-                        break;
-                    }
-                    avgGrad += norGrad.at(pEdge->GetVertex()->GetId());
-                    neigNum++;
-                    pEdge = pEdge->GetPair()->GetNext();
-                } while (pEdge != pVert->GetEdge());
-                if (neigNum > 0)
-                {
-                    avgGrad /= neigNum;
-                    smoothNorGrad.at(vid) = avgGrad;
-                }
-                else
-                {
-                    smoothNorGrad.at(vid) = norGrad.at(vid);
-                }
-            }
-            norGrad = smoothNorGrad;
-        }
-        //smoothNum++;
-        //smooth
-        /*std::vector<MagicDGP::Real> norGradValue(vertNum);
-        for (int vid = 0; vid < vertNum; vid++)
-        {
-            norGradValue.at(vid) = norGrad.at(vid).Length();
-        }
-        std::vector<MagicDGP::Vector3> norGradGrad;
-        CalScaleGradient(norGradValue, norGradGrad, mpMesh);*/
-        for (int vid  = 0; vid  < vertNum; vid ++)
-        {
-            MagicDGP::Real v = norGrad.at(vid).Length() / 10 + 0.2;
-            if (v < 0.8)
-            {
-                v = 0.25;
-            }
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(v);
-            //DebugLog << "norGrad: " << norGrad.at(vid).Length() / 10 << std::endl;
-            mpMesh->GetVertex(vid)->SetColor(color);
-        }
+        //std::vector<MagicDGP::Vector3> norGrad;
+        //CalScaleGradient(norDev, norGrad, mpMesh);
+        //static int smoothNum = 1;
+        ////smoothNum = smoothNum % 2;
+        //for (int sid = 0; sid < smoothNum; sid++)
+        //{
+        //    std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
+        //    for (int vid = 0; vid < vertNum; vid++)
+        //    {
+        //        MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+        //        MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+        //        MagicDGP::Vector3 avgGrad(0, 0, 0);
+        //        int neigNum = 0;
+        //        do
+        //        {
+        //            if (pEdge == NULL)
+        //            {
+        //                break;
+        //            }
+        //            avgGrad += norGrad.at(pEdge->GetVertex()->GetId());
+        //            neigNum++;
+        //            pEdge = pEdge->GetPair()->GetNext();
+        //        } while (pEdge != pVert->GetEdge());
+        //        if (neigNum > 0)
+        //        {
+        //            avgGrad /= neigNum;
+        //            smoothNorGrad.at(vid) = avgGrad;
+        //        }
+        //        else
+        //        {
+        //            smoothNorGrad.at(vid) = norGrad.at(vid);
+        //        }
+        //    }
+        //    norGrad = smoothNorGrad;
+        //}
+        ////smoothNum++;
+        ////smooth
+        //for (int vid  = 0; vid  < vertNum; vid ++)
+        //{
+        //    MagicDGP::Real v = norGrad.at(vid).Length() / 10 + 0.2;
+        //    /*if (v < 0.8)
+        //    {
+        //        v = 0.25;
+        //    }*/
+        //    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(v);
+        //    //DebugLog << "norGrad: " << norGrad.at(vid).Length() / 10 << std::endl;
+        //    mpMesh->GetVertex(vid)->SetColor(color);
+        //}
 
-        /*std::map<MagicDGP::Real, int> scoreMap;
+        double scale = 5;
+        //std::map<MagicDGP::Real, int> scoreMap;
         for (int vid = 0; vid < vertNum; vid++)
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
@@ -635,18 +629,18 @@ namespace MagicApp
                 devGrad /= neigNum;
             }
             devGrad = devGrad * scale + 0.2;
-            if (devGrad > 0.4)
+            /*if (devGrad > 0.4)
             {
                 devGrad = 1.2;
             }
             else
             {
                 devGrad = 0.4;
-            }
-            scoreMap[devGrad] = vid;
+            }*/
+            //scoreMap[devGrad] = vid;
             MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
-        }*/
+        }
         /*int validNum = vertNum / 2;
         int validIndex = 0;
         MagicDGP::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
