@@ -15,6 +15,8 @@ namespace MagicTool
 
     private:
         CRITICAL_SECTION mCS;
+
+        friend class ConditionVariable;
     };
 
     class ScopedLock
@@ -27,25 +29,49 @@ namespace MagicTool
         Mutex& mMutex;
     };
 
+    class ConditionVariable
+    {
+    public:
+        ConditionVariable();
+        void Sleep(Mutex& mutex);
+        void WakeSingle();
+        void WakeAll();
+        ~ ConditionVariable();
+
+    private:
+        CONDITION_VARIABLE mCV;
+    };
+
+    enum TaskType
+    {
+        TP_Exit = 0,
+        TP_Normal
+    };
+
     class ITask
     {
     public:
-        ITask();
-        virtual void Run() = 0;
-        virtual void OnComplete(void) = 0;
+        ITask(TaskType tp = TP_Normal);
+        virtual void Run();
+        virtual void OnComplete(void);
+        TaskType GetType() const;
         virtual ~ITask();
+
+    private:
+        TaskType mTP;
     };
 
+    class ThreadPool;
     class Thread
     {
     public:
-        Thread();
+        Thread(ThreadPool* pTP);
         void Start();
         unsigned Run();
         ~Thread();
 
     private:
-        void* mHandle;
+        ThreadPool* mpThreadPool;
     };
 
     class ThreadPool
@@ -53,6 +79,8 @@ namespace MagicTool
     public:
         ThreadPool(int threadCount);
         void InsertTask(ITask* pTask);
+        ITask* GetTask(void);
+        void FinishATask(void);
         void WaitUntilAllDone();
         ~ThreadPool();
 
@@ -60,6 +88,9 @@ namespace MagicTool
         int mThreadCount;
         std::vector<Thread*> mThreadList;
         std::list<ITask*> mTaskList;
-        Mutex mLock;
+        Mutex mMutex;
+        ConditionVariable mGetTaskCV;
+        ConditionVariable mFinishTaskCV;
+        int mTaskLeftCount;
     };
 }
