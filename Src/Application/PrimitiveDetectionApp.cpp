@@ -9,6 +9,69 @@
 #include "../DGP/Sampling.h"
 #include "../Tool/PickPointTool.h"
 #include "../DGP/HomoMatrix4.h"
+#include "../Tool/ThreadPool.h"
+
+namespace
+{
+    class NormalDeviationTask : public MagicTool::ITask
+    {
+    public:
+        NormalDeviationTask(int taskId, int taskCount, MagicDGP::Mesh3D* pMesh, std::vector<MagicDGP::Real>& normDeviation) : 
+            mTaskId(taskId),
+            mTaskCount(taskCount),
+            mpMesh(pMesh),
+            mNormDeviation(normDeviation)
+        {
+        }
+
+        virtual void Run()
+        {
+            DebugLog << "NormalDeviationTask::Run" << std::endl;
+            int vertNum = mpMesh->GetVertexNumber();
+            for (int vid = mTaskId; vid < vertNum; vid += mTaskCount)
+            {
+                std::vector<int> neighborList;
+                neighborList.reserve(10);
+                MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+                MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+                do
+                {
+                    if (pEdge == NULL)
+                    {
+                        break;
+                    }
+                    neighborList.push_back(pEdge->GetVertex()->GetId());
+                    pEdge = pEdge->GetPair()->GetNext();
+                } while (pEdge != pVert->GetEdge());
+
+                MagicDGP::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
+                MagicDGP::Real nDev = 0;
+                for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
+                {
+                    MagicDGP::Real cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
+                    cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
+                    nDev += acos(cosA);
+                }
+                if (neighborList.size() > 0)
+                {
+                    nDev /= neighborList.size();
+                }
+                mNormDeviation.at(vid) = nDev;
+            }
+        }
+
+        ~NormalDeviationTask()
+        {
+        }
+
+    private:
+        int mTaskId;
+        int mTaskCount;
+        MagicDGP::Mesh3D* mpMesh;
+        std::vector<MagicDGP::Real>& mNormDeviation;
+    };
+
+}
 
 namespace MagicApp
 {
@@ -112,7 +175,8 @@ namespace MagicApp
         }
         else if (arg.key == OIS::KC_N && mpMesh != NULL)
         {
-            CalNormalDeviation();
+            //CalNormalDeviation();
+            CalNormalDeviationByMT();
         }
         else if (arg.key == OIS::KC_A && mpMesh != NULL)
         {
@@ -657,6 +721,50 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 
+    void PrimitiveDetectionApp::CalNormalDeviationByMT()
+    {
+        float timeStart = MagicCore::ToolKit::GetTime();
+        int vertNum = mpMesh->GetVertexNumber();
+        std::vector<MagicDGP::Real> norDev(vertNum);
+        int threadCount = MagicTool::GetNumberOfProcessors();
+        DebugLog << "Processor number: " << threadCount << std::endl;
+        MagicTool::ThreadPool threadPool(threadCount);
+        for (int tid = 0; tid < threadCount; tid++)
+        {
+            NormalDeviationTask* pTask = new NormalDeviationTask(tid, threadCount, mpMesh, norDev);
+            threadPool.InsertTask(pTask);
+        }
+        threadPool.WaitUntilAllDone();
+        DebugLog << "Finish multi-thread normal deviation" << std::endl;
+        double scale = 5;
+        for (int vid = 0; vid < vertNum; vid++)
+        {
+            MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+            MagicDGP::Real devGrad = 0;
+            int neigNum = 0;
+            do
+            {
+                if (pEdge == NULL)
+                {
+                    break;
+                }
+                devGrad += fabs(norDev.at(vid) - norDev.at(pEdge->GetVertex()->GetId()));
+                neigNum++;
+                pEdge = pEdge->GetPair()->GetNext();
+            } while (pEdge != pVert->GetEdge());
+            if (neigNum > 0)
+            {
+                devGrad /= neigNum;
+            }
+            devGrad = devGrad * scale + 0.2;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
+            mpMesh->GetVertex(vid)->SetColor(color);
+        }
+        DebugLog << "CalNormalDeviationByMT: total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
+    }
+
     void PrimitiveDetectionApp::SampleVertex()
     {
         if (mpMesh != NULL)
@@ -677,4 +785,6 @@ namespace MagicApp
         MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
+
 }
+

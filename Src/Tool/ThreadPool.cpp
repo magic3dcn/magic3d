@@ -3,8 +3,17 @@
 
 namespace MagicTool
 {
-    Mutex::Mutex()
+    int GetNumberOfProcessors()
     {
+        SYSTEM_INFO sysInfo;
+        GetSystemInfo(&sysInfo);
+        return sysInfo.dwNumberOfProcessors;
+    }
+
+    Mutex::Mutex() :
+        mCS()
+    {
+        InitializeCriticalSection(&mCS);
     }
 
     void Mutex::Lock()
@@ -63,7 +72,7 @@ namespace MagicTool
 
     void ITask::Run()
     {
-
+        DebugLog << "ITask::Run" << std::endl;
     }
 
     void ITask::OnComplete(void)
@@ -82,6 +91,7 @@ namespace MagicTool
 
     static unsigned __stdcall RunThread(void *arg)
     {
+        DebugLog << "RunThread" << std::endl;
         Thread *thread = (Thread *)arg;
         unsigned result = thread->Run();
         _endthreadex(0);
@@ -95,16 +105,24 @@ namespace MagicTool
 
     void Thread::Start()
     {
+        DebugLog << "Start thread...." << std::endl;
         _beginthreadex(NULL, 0, RunThread, (void *)this, 0, NULL);
+        DebugLog << "Start thread success" << std::endl;
     }
 
     unsigned Thread::Run()
     {
+        DebugLog << "Thread::Run" << std::endl;
         while (true)
         {
+            if (mpThreadPool == NULL)
+            {
+                DebugLog << "mpThreadPool == NULL" << std::endl;
+            }
             ITask* pTask = mpThreadPool->GetTask();
             if (pTask != NULL)
             {
+                DebugLog << "Get a valid task" << std::endl;
                 if (pTask->GetType() == TP_Exit)
                 {
                     pTask->OnComplete();
@@ -117,6 +135,10 @@ namespace MagicTool
                     pTask->OnComplete();
                     mpThreadPool->FinishATask();
                 }
+            }
+            else
+            {
+                DebugLog << "Get an invalid task" << std::endl;
             }
         }
         return 0;
@@ -178,6 +200,7 @@ namespace MagicTool
             mGetTaskCV.Sleep(mMutex);
         }
         ITask* pTask = mTaskList.front();
+        DebugLog << "ThreadPool::GetTask::Get Front Task" << std::endl;
         mTaskList.pop_front();
         return pTask;
     }
