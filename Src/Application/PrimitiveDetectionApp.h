@@ -27,6 +27,7 @@ namespace MagicApp
         void CalMeshCurvature();
         void FilterMesh3D();
         void CalNormalDeviation();
+        void CalNormalDeviationByMT();
         void CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
             const MagicDGP::Mesh3D* pMesh);
         void SampleVertex();
