@@ -81,6 +81,10 @@ namespace MagicApp
 
     bool AugmentedRealityApp::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (arg.key == OIS::KC_D)
+        {
+            DetectCorners();
+        }
         return true;
     }
 
@@ -386,5 +390,22 @@ namespace MagicApp
         }
         UpdateImageToCanvas( mSelectedImages.at(mDisplayIndex) );
         mUI.SetSliderPosition(mSelectedIndex.at(mDisplayIndex));
+    }
+
+    void AugmentedRealityApp::DetectCorners()
+    {
+        std::vector<cv::Point2f> imageCorners;
+        cv::Size boardSize(4,4);
+        bool found = cv::findChessboardCorners(mSelectedImages.at(mDisplayIndex), boardSize, imageCorners);
+        if (found)
+        {
+            DebugLog << "Find corners" << std::endl;
+            cv::drawChessboardCorners(mSelectedImages.at(mDisplayIndex), boardSize, imageCorners, found);
+            UpdateImageToCanvas( mSelectedImages.at(mDisplayIndex) );
+        }
+        else
+        {
+            DebugLog << "Can not find corners" << std::endl;
+        }
     }
 }

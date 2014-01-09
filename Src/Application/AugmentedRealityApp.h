@@ -26,6 +26,7 @@ namespace MagicApp
         void CaptureFrame();
         void ClearCapture();
         void NextImage();
+        void DetectCorners();
 
     private:
         void SetupScene(void);
