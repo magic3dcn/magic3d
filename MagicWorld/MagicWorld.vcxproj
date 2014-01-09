@@ -49,6 +49,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\release</OutDir>
     <IntDir>..\obj\release</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -77,6 +78,7 @@
       <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

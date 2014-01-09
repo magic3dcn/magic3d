@@ -4,7 +4,7 @@
 namespace MagicTool
 {
     int GetNumberOfProcessors()
-    {
+    { 
         SYSTEM_INFO sysInfo;
         GetSystemInfo(&sysInfo);
         return sysInfo.dwNumberOfProcessors;
