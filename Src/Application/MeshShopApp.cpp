@@ -1,9 +1,11 @@
+#include "stdafx.h"
 #include "MeshShopApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../DGP/Consolidation.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {

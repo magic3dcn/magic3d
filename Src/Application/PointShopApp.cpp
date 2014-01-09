@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PointShopApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
@@ -8,6 +9,7 @@
 #include "../DGP/MeshReconstruction.h"
 #include "../Common/AppManager.h"
 #include "../Application/MeshShopApp.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {

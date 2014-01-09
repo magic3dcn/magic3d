@@ -79,6 +79,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
+      <AdditionalOptions>-Zm152 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +144,7 @@
     <ClInclude Include="..\Src\Common\LogSystem.h" />
     <ClInclude Include="..\Src\Common\MagicFramework.h" />
     <ClInclude Include="..\Src\Common\MagicListener.h" />
+    <ClInclude Include="..\Src\Common\MagicOgre.h" />
     <ClInclude Include="..\Src\Common\RenderSystem.h" />
     <ClInclude Include="..\Src\Common\ResourceManager.h" />
     <ClInclude Include="..\Src\Common\ToolKit.h" />
@@ -198,20 +200,32 @@
     <ClCompile Include="..\Src\Application\AugmentedRealityAppUI.cpp" />
     <ClCompile Include="..\Src\Application\Homepage.cpp" />
     <ClCompile Include="..\Src\Application\HomepageUI.cpp" />
-    <ClCompile Include="..\Src\Application\LeapMotionApp.cpp" />
+    <ClCompile Include="..\Src\Application\LeapMotionApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\MeshShopApp.cpp" />
+    <ClCompile Include="..\Src\Application\MeshShopApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\MeshShopAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\PointShopApp.cpp" />
+    <ClCompile Include="..\Src\Application\PointShopApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\PointShopAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp" />
+    <ClCompile Include="..\Src\Application\PrimitiveDetectionApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\PrimitiveDetectionAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\ReconstructionApp.cpp" />
+    <ClCompile Include="..\Src\Application\ReconstructionApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\ReconstructionAppUI.cpp" />
-    <ClCompile Include="..\Src\Application\ReliefApp.cpp" />
+    <ClCompile Include="..\Src\Application\ReliefApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Application\ReliefAppUI.cpp" />
     <ClCompile Include="..\Src\Application\ScanningApp.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\Application\ScanningAppUI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -225,7 +239,9 @@
     <ClCompile Include="..\Src\Common\LogSystem.cpp" />
     <ClCompile Include="..\Src\Common\MagicFramework.cpp" />
     <ClCompile Include="..\Src\Common\MagicListener.cpp" />
-    <ClCompile Include="..\Src\Common\RenderSystem.cpp" />
+    <ClCompile Include="..\Src\Common\RenderSystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Common\ResourceManager.cpp" />
     <ClCompile Include="..\Src\Common\ToolKit.cpp" />
     <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
@@ -247,9 +263,13 @@
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
     <ClCompile Include="..\Src\DGP\Vector2.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
-    <ClCompile Include="..\Src\Tool\PickPointTool.cpp" />
+    <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\Tool\ThreadPool.cpp" />
-    <ClCompile Include="..\Src\Tool\ViewTool.cpp" />
+    <ClCompile Include="..\Src\Tool\ViewTool.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

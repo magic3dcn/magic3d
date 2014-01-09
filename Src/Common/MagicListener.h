@@ -1,6 +1,16 @@
 #pragma once
 #include "OIS.h"
-#include "Ogre.h"
+#include "OgreFrameListener.h"
+#include "OgreWindowEventUtilities.h"
+//#include "../Common/MagicOgre.h"
+
+namespace Ogre
+{
+    //class FrameListener;
+    //class WindowEventListener;
+    class FrameEvent;
+    class RenderWindow;
+}
 
 namespace MagicCore
 {

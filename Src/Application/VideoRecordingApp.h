@@ -1,7 +1,7 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "VideoRecordingAppUI.h"
-#include "Ogre.h"
+#include "../Common/MagicOgre.h"
 #include "opencv2/opencv.hpp"
 
 namespace MagicApp

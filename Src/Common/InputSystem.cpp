@@ -2,6 +2,8 @@
 #include "InputSystem.h"
 #include "LogSystem.h"
 #include "MagicListener.h"
+//#include "../Common/MagicOgre.h"
+#include "OgreRenderWindow.h"
 
 namespace MagicCore
 {

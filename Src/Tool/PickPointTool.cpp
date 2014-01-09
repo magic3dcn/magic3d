@@ -1,5 +1,7 @@
+#include "stdafx.h"
 #include "PickPointTool.h"
 #include "../Common/RenderSystem.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicTool
 {

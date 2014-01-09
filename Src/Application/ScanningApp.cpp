@@ -1,8 +1,10 @@
+#include "stdafx.h"
 #include "ScanningApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {

@@ -1,6 +1,11 @@
 #pragma once
 #include "OIS.h"
-#include "Ogre.h"
+//#include "../Common/MagicOgre.h"
+
+namespace Ogre
+{
+    class RenderWindow;
+}
 
 namespace MagicCore
 {

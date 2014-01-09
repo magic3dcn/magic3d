@@ -1,8 +1,14 @@
 #pragma once
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
-#include "Ogre.h"
+//#include "../Common/MagicOgre.h"
 #include <string>
+
+namespace Ogre
+{
+    class SceneManager;
+    class RenderWindow;
+}
 
 namespace MagicCore
 {

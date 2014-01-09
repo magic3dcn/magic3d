@@ -1,9 +1,16 @@
 #pragma once
-#include "Ogre.h"
 #include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
 #include "../DGP/HomoMatrix4.h"
 #include <string>
+
+namespace Ogre
+{
+    class RenderWindow;
+    class SceneManager;
+    class Camera;
+    class Root;
+}
 
 namespace MagicCore
 {

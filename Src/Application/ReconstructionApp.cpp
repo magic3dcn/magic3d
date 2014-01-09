@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ReconstructionApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
@@ -9,6 +10,7 @@
 #include "../DGP/Sampling.h"
 #include "../Common/AppManager.h"
 #include "PointShopApp.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {

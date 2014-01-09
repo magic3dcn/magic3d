@@ -291,6 +291,9 @@
     <ClInclude Include="..\Src\Tool\ThreadPool.h">
       <Filter>Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Common\MagicOgre.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

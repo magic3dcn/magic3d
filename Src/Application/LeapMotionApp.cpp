@@ -1,8 +1,10 @@
+#include "stdafx.h"
 #include "LeapMotionApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../Common/RenderSystem.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {

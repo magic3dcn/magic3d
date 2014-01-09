@@ -2,6 +2,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+//#include "OgreSceneManager.h"
 
 namespace MagicApp
 {
@@ -84,6 +85,10 @@ namespace MagicApp
         if (arg.key == OIS::KC_D)
         {
             DetectCorners();
+        }
+        if (arg.key == OIS::KC_T)
+        {
+            GetValidImages();
         }
         return true;
     }
@@ -407,5 +412,97 @@ namespace MagicApp
         {
             DebugLog << "Can not find corners" << std::endl;
         }
+    }
+
+    void AugmentedRealityApp::GetValidImages()
+    {
+        DebugLog << "GetValidImages" << std::endl;
+        std::vector<bool> visitFlag(mFrameCount, 0);
+        int delta = 11;
+        int currentFrame = 0; 
+        std::vector<std::vector<cv::Point3f> > objectPoints;
+        std::vector<cv::Point3f> objectCorners;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                objectCorners.push_back(cv::Point3f(i, j, 0.0f));
+            }
+        }
+        std::vector<std::vector<cv::Point2f> > imagePoints;
+        while(1)
+        {
+            if (!(visitFlag.at(currentFrame)))
+            {
+                visitFlag.at(currentFrame) = 1;
+                std::vector<cv::Point2f> imageCorners;
+                cv::Size boardSize(4, 4);
+                cv::Mat newFrame;
+                mVideoCapture.read(newFrame);
+                bool found = cv::findChessboardCorners(newFrame, boardSize, imageCorners);
+                if (found)
+                {
+                    /*cv::cornerSubPix(newFrame, imageCorners, cv::Size(5, 5), cv::Size(-1,-1), cv::TermCriteria(cv::TermCriteria::MAX_ITER +
+                        cv::TermCriteria::EPS, 30, 0.1));*/ 
+                    cv::drawChessboardCorners(newFrame, boardSize, imageCorners, found);
+                    mSelectedImages.push_back(newFrame);
+                    mSelectedIndex.push_back(currentFrame);
+                    imagePoints.push_back(imageCorners);
+                    objectPoints.push_back(objectCorners);
+                }
+                if (mSelectedImages.size() == mImageNeedNumber)
+                {
+                    break;
+                }
+            }
+            currentFrame += delta;
+            currentFrame = currentFrame % mFrameCount;
+        }
+        //
+        DebugLog << "calibreateCamera......" << std::endl;
+        std::vector<cv::Mat> rvecs, tvecs;
+        cv::Mat cameraMatrix;
+        cv::Mat distCoeffs;
+        int flag;
+        cv::Size imageSize(640, 480);
+        calibrateCamera(objectPoints, // the 3D points
+              imagePoints, // the image points
+              imageSize,   // image size
+              cameraMatrix,// output camera matrix
+              distCoeffs,  // output distortion matrix
+              rvecs, tvecs,// Rs, Ts
+              flag);       // set options
+        cv::Mat map1,map2;
+        DebugLog << "cv::initUndistortRectifyMap......" << std::endl;
+        cv::initUndistortRectifyMap(
+                cameraMatrix,  // computed camera matrix
+                distCoeffs,    // computed distortion matrix
+                cv::Mat(),     // optional rectification (none)
+                cv::Mat(),     // camera matrix to generate undistorted
+                imageSize,  // size of undistorted
+                CV_32FC1,      // type of output map
+                map1, map2);   // the x and y mapping functions
+        DebugLog << "CameraMatrix: " << cameraMatrix.rows << " * " << cameraMatrix.cols << " type: " << cameraMatrix.type() << std::endl;
+        for (int rid = 0; rid < cameraMatrix.rows; rid++)
+        {
+            for (int cid = 0; cid < cameraMatrix.cols; cid++)
+            {
+                DebugLog << cameraMatrix.at<double>(rid, cid) << " ";
+            }
+            DebugLog << std::endl;
+        }
+        DebugLog << "Rectify selected images" << std::endl;
+        for (int i = 0; i < mSelectedImages.size(); i++)
+        {
+            cv::Mat undistorted;
+            cv::remap(mSelectedImages.at(i), undistorted, map1, map2, cv::INTER_LINEAR);
+            mSelectedImages.at(i) = undistorted;
+        }
+        DebugLog << "SetUp UI" << std::endl;
+        mDisplayIndex = 0;
+        mIsUpdateVideoCanvas = false;
+        mUI.SetupImageBrowsing();
+        mUI.SetSliderPosition(mSelectedIndex.at(mDisplayIndex));
+
     }
 }

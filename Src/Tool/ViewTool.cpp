@@ -1,6 +1,7 @@
-//#include "StdAfx.h"
+#include "StdAfx.h"
 #include "ViewTool.h"
 #include "../Common/RenderSystem.h"
+//#include "../Common/MagicOgre.h"
 
 namespace MagicTool
 {

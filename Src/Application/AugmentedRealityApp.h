@@ -1,7 +1,11 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "AugmentedRealityAppUI.h"
-#include "Ogre.h"
+#include "../Common/MagicOgre.h"
+//#include "OgreTexture.h"
+//#include "OgreMaterial.h"
+//#include "OgreRenderWindow.h"
+//#include "OgreRectangle2D.h"
 #include "opencv2/opencv.hpp"
 
 namespace MagicApp
@@ -35,6 +39,8 @@ namespace MagicApp
         void UpdateImageToCanvas(cv::Mat& image);
         void UpdateCanvas(void);
         void UpdateCanvasSize(int winW, int winH, int videoW, int videoH);
+
+        void GetValidImages();
 
     private:
         AugmentedRealityAppUI mUI;

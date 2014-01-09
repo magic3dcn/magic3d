@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PrimitiveDetectionApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ResourceManager.h"
@@ -10,6 +11,7 @@
 #include "../Tool/PickPointTool.h"
 #include "../DGP/HomoMatrix4.h"
 #include "../Tool/ThreadPool.h"
+//#include "../Common/MagicOgre.h"
 
 namespace
 {

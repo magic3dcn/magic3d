@@ -12,6 +12,7 @@
 #include "LeapMotionApp.h"
 #include "PrimitiveDetectionApp.h"
 #include "ReliefApp.h"
+#include "OgreRenderWindow.h"
 
 namespace MagicApp
 {
