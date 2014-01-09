@@ -256,6 +256,7 @@ namespace MagicDGP
             delete []pIndex;
             pIndex = NULL;
         }
+        return true;
     }
 
     //Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion)

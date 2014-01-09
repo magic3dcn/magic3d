@@ -1,5 +1,7 @@
-//#include "StdAfx.h"
+#include "StdAfx.h"
 #include "GUISystem.h"
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
 
 namespace MagicCore
 {

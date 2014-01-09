@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "VideoRecordingAppUI.h"
 #include "VideoRecordingApp.h"
 #include "../Common/ResourceManager.h"

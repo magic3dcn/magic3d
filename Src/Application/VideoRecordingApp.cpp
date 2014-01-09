@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "VideoRecordingApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"

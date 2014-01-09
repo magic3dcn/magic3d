@@ -1,4 +1,4 @@
-////#include "StdAfx.h"
+#include "StdAfx.h"
 #include "HomepageUI.h"
 #include "../Common/AppManager.h"
 #include "../Common/ResourceManager.h"
@@ -12,7 +12,6 @@
 #include "LeapMotionApp.h"
 #include "PrimitiveDetectionApp.h"
 #include "ReliefApp.h"
-#include "OgreRenderWindow.h"
 
 namespace MagicApp
 {

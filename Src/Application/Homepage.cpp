@@ -1,4 +1,4 @@
-//////#include "StdAfx.h"
+#include "StdAfx.h"
 #include "Homepage.h"
 #include "MyGUI.h"
 #include "../Common/LogSystem.h"

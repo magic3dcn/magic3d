@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "AugmentedRealityAppUI.h"
 #include "AugmentedRealityApp.h"
 #include "../Common/ResourceManager.h"

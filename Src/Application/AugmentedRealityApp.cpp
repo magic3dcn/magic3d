@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "AugmentedRealityApp.h"
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
