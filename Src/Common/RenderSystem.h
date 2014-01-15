@@ -37,6 +37,7 @@ namespace MagicCore
         void RenderMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh);
         void RenderBlendMesh3D(std::string meshName, std::string materialName, const MagicDGP::Mesh3D* pMesh, float alpha);
         void RenderLightMesh3D(std::string meshName, std::string materialName, const MagicDGP::LightMesh3D* pMesh);
+        void RenderLightMesh3DWithTexture(std::string meshName, std::string materialName, const MagicDGP::LightMesh3D* pMesh);
         void HideRenderingObject(std::string psName);
 
     private:

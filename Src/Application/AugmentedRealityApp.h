@@ -1,11 +1,10 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "AugmentedRealityAppUI.h"
-//#include "../Common/MagicOgre.h"
+#include "../DGP/Mesh3D.h"
 #include "OgreTexture.h"
 #include "OgreMaterial.h"
 #include "OgreRenderWindow.h"
-#include "OgreRectangle2D.h"
 #include "opencv2/opencv.hpp"
 
 namespace MagicApp
@@ -23,7 +22,6 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
-        virtual void WindowResized( Ogre::RenderWindow* rw );
 
         bool OpenVideo();
         void SetFramePosition(int pos);
@@ -35,20 +33,18 @@ namespace MagicApp
     private:
         void SetupScene(void);
         void ShutdownScene(void);
+        void SetupBackboard();
+        void UpdateCameraParm();
         void ResetParameter(void);
         void UpdateImageToCanvas(cv::Mat& image);
         void UpdateCanvas(void);
-        void UpdateCanvasSize(int winW, int winH, int videoW, int videoH);
 
         void GetValidImages();
 
     private:
         AugmentedRealityAppUI mUI;
-        Ogre::Rectangle2D* mpVideoCanvas;
         Ogre::TexturePtr mpVCTex;
         Ogre::MaterialPtr mpVCMat;
-        int mTexWidth;
-        int mTexHeight;
         cv::VideoCapture mVideoCapture;
         bool mIsUpdateVideoCanvas;
         int mVideoWidth;
@@ -62,6 +58,9 @@ namespace MagicApp
         std::vector<int> mSelectedIndex;
         int mDisplayIndex;
         int mImageNeedNumber;
+        float mCameraFov;
+        MagicDGP::LightMesh3D* mpBackboardMesh;
+        float mBackboardDepth;
     };
 
 }

@@ -3,16 +3,12 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
-//#include "OgreSceneManager.h"
 
 namespace MagicApp
 {
     AugmentedRealityApp::AugmentedRealityApp() :
-        mpVideoCanvas(NULL),
         mpVCTex(NULL),
         mpVCMat(NULL),
-        mTexWidth(1024),
-        mTexHeight(1024),
         mVideoCapture(),
         mIsUpdateVideoCanvas(false),
         mVideoWidth(1),
@@ -23,7 +19,10 @@ namespace MagicApp
         mFrameCount(0),
         mIsCaptureFrame(false),
         mDisplayIndex(0),
-        mImageNeedNumber(8)
+        mImageNeedNumber(8),
+        mCameraFov(1.570796326794897f),
+        mpBackboardMesh(NULL),
+        mBackboardDepth(100.f)
     {
     }
 
@@ -94,13 +93,6 @@ namespace MagicApp
         return true;
     }
 
-    void AugmentedRealityApp::WindowResized( Ogre::RenderWindow* rw )
-    {
-        int winW = rw->getWidth();
-        int winH = rw->getHeight();
-        UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
-    }
-
     void AugmentedRealityApp::SetupScene(void)
     {
         InfoLog << "AugmentedRealityApp::SetupScene" << std::endl;
@@ -110,55 +102,95 @@ namespace MagicApp
         sl->setPosition(0, 0, 20);
         sl->setDiffuseColour(0.8, 0.8, 0.8);
         sl->setSpecularColour(0.5, 0.5, 0.5);
+    }
 
+    void AugmentedRealityApp::SetupBackboard()
+    {
         //Setup Video Canvas
+        if (!mpVCTex.isNull())
+        {
+            Ogre::TextureManager::getSingleton().remove("VCTex");
+            mpVCTex.setNull();
+        }
         mpVCTex = Ogre::TextureManager::getSingleton().createManual(
             "VCTex",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
             Ogre::TEX_TYPE_2D,
-            mTexWidth,
-            mTexHeight,
+            mVideoWidth,
+            mVideoHeight,
             0,
             Ogre::PF_B8G8R8A8,
             Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE
             );
         Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
         unsigned char* pVCBuffer = static_cast<unsigned char*>(
-            pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-        for (int yid = 0; yid < mTexHeight; yid++)
+            pVCPixelBuffer->lock(0, mVideoWidth * mVideoHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+        for (int yid = 0; yid < mVideoHeight; yid++)
         {
-            for (int xid = 0; xid < mTexWidth; xid++)
+            for (int xid = 0; xid < mVideoWidth; xid++)
             {
-                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = 220;
-                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = 220;
-                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = 220;
-                pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
+                pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 0] = 220;
+                pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 1] = 220;
+                pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 2] = 220;
+                pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 3] = 255;
             }
         }
         pVCPixelBuffer->unlock();
 
+        if (!mpVCMat.isNull())
+        {
+            Ogre::MaterialManager::getSingleton().remove("VCMat");
+            mpVCMat.setNull();
+        }
         mpVCMat = Ogre::MaterialManager::getSingleton().create(
             "VCMat",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         mpVCMat->getTechnique(0)->getPass(0)->createTextureUnitState("VCTex");
         mpVCMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 
-        mpVideoCanvas = new Ogre::Rectangle2D(true);
-        mpVideoCanvas->setBoundingBox(Ogre::AxisAlignedBox(-100000.0f * Ogre::Vector3::UNIT_SCALE, 100000.0f * Ogre::Vector3::UNIT_SCALE));
-        mpVideoCanvas->setMaterial("VCMat");
-        Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
-        int winW = rw->getWidth();
-        int winH = rw->getHeight();
-        UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
+        UpdateCameraParm();
+    }
 
-        if (pSceneMgr->hasSceneNode("ModelNode"))
+    void AugmentedRealityApp::UpdateCameraParm()
+    {
+        Ogre::Camera* pCam = MagicCore::RenderSystem::GetSingleton()->GetMainCamera();
+        pCam->setFOVy(Ogre::Radian(mCameraFov));
+        //pCam->setAspectRatio(640.f / 480.f);
+        pCam->setPosition(0, 0, 0);
+
+        float boardHalfHeight = mBackboardDepth * tan(mCameraFov / 2.f);
+        float boardHalfWidth = boardHalfHeight * mVideoWidth / mVideoHeight;
+
+        if (mpBackboardMesh == NULL)
         {
-            pSceneMgr->getSceneNode("ModelNode")->attachObject(mpVideoCanvas);
+            mpBackboardMesh = new MagicDGP::LightMesh3D;
+            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            MagicDGP::FaceIndex fi;
+            fi.mIndex[0] = 0;
+            fi.mIndex[1] = 1;
+            fi.mIndex[2] = 3;
+            mpBackboardMesh->InsertFace(fi);
+            fi.mIndex[0] = 1;
+            fi.mIndex[1] = 2;
+            fi.mIndex[2] = 3;
+            mpBackboardMesh->InsertFace(fi);
+            mpBackboardMesh->UpdateNormal();
+            mpBackboardMesh->GetVertex(0)->SetTexCord(MagicDGP::Vector3(0, 1, 0));
+            mpBackboardMesh->GetVertex(1)->SetTexCord(MagicDGP::Vector3(1, 1, 0));
+            mpBackboardMesh->GetVertex(2)->SetTexCord(MagicDGP::Vector3(1, 0, 0));
+            mpBackboardMesh->GetVertex(3)->SetTexCord(MagicDGP::Vector3(0, 0, 0));
         }
         else
         {
-            pSceneMgr->getRootSceneNode()->createChildSceneNode("ModelNode")->attachObject(mpVideoCanvas);
+            mpBackboardMesh->GetVertex(0)->SetPosition(MagicDGP::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(1)->SetPosition(MagicDGP::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(2)->SetPosition(MagicDGP::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(3)->SetPosition(MagicDGP::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
         }
+        MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3DWithTexture("BackBoard", "VCMat", mpBackboardMesh);
     }
 
     void AugmentedRealityApp::ShutdownScene(void)
@@ -167,19 +199,18 @@ namespace MagicApp
         pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
         pSceneMgr->destroyLight("SimpleLight");
         MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
-        if (pSceneMgr->hasSceneNode("ModelNode"))
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("BackBoard");
+
+        if (!mpVCMat.isNull())
         {
-            pSceneMgr->getSceneNode("ModelNode")->detachObject(mpVideoCanvas);
-            if (mpVideoCanvas != NULL)
-            {
-                delete mpVideoCanvas;
-                mpVideoCanvas = NULL;
-            }
+            Ogre::MaterialManager::getSingleton().remove("VCMat");
+            mpVCMat.setNull();
         }
-        Ogre::MaterialManager::getSingleton().remove("VCMat");
-        mpVCMat.setNull();
-        Ogre::TextureManager::getSingleton().remove("VCTex");
-        mpVCTex.setNull();
+        if (!mpVCTex.isNull())
+        {
+            Ogre::TextureManager::getSingleton().remove("VCTex");
+            mpVCTex.setNull();
+        }
         mVideoCapture.release();
     }
 
@@ -200,7 +231,7 @@ namespace MagicApp
 
     void AugmentedRealityApp::UpdateImageToCanvas(cv::Mat& image)
     {
-        cv::Size vcSize(mTexWidth, mTexHeight);
+        cv::Size vcSize(mVideoWidth, mVideoHeight);
         cv::Mat newFrame(vcSize, CV_8UC3);
         cv::resize(image, newFrame, vcSize);
         int nChannel = newFrame.channels();
@@ -209,16 +240,16 @@ namespace MagicApp
         {
             Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
             unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
+                pVCPixelBuffer->lock(0, mVideoWidth * mVideoHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+            for (int yid = 0; yid < mVideoHeight; yid++)
             {
-                for (int xid = 0; xid < mTexWidth; xid++)
+                for (int xid = 0; xid < mVideoWidth; xid++)
                 {
                     unsigned char* pixel = newFrame.ptr(xid, yid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 0] = pixel[0];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 1] = pixel[0];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 2] = pixel[0];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 3] = 255;
                 }
             }
             pVCPixelBuffer->unlock();
@@ -227,16 +258,16 @@ namespace MagicApp
         {
             Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
             unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
+                pVCPixelBuffer->lock(0, mVideoWidth * mVideoHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+            for (int yid = 0; yid < mVideoHeight; yid++)
             {
-                for (int xid = 0; xid < mTexWidth; xid++)
+                for (int xid = 0; xid < mVideoWidth; xid++)
                 {
                     unsigned char* pixel = newFrame.ptr(yid, xid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = 255;
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 0] = pixel[0];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 1] = pixel[1];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 2] = pixel[2];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 3] = 255;
                 }
             }
             pVCPixelBuffer->unlock();
@@ -245,16 +276,16 @@ namespace MagicApp
         {
             Ogre::HardwarePixelBufferSharedPtr pVCPixelBuffer = mpVCTex->getBuffer();
             unsigned char* pVCBuffer = static_cast<unsigned char*>(
-                pVCPixelBuffer->lock(0, mTexWidth * mTexHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
-            for (int yid = 0; yid < mTexHeight; yid++)
+                pVCPixelBuffer->lock(0, mVideoWidth * mVideoHeight * 4, Ogre::HardwareBuffer::HBL_DISCARD) );
+            for (int yid = 0; yid < mVideoHeight; yid++)
             {
-                for (int xid = 0; xid < mTexWidth; xid++)
+                for (int xid = 0; xid < mVideoWidth; xid++)
                 {
                     unsigned char* pixel = newFrame.ptr(xid, yid);
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 0] = pixel[0];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 1] = pixel[1];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 2] = pixel[2];
-                    pVCBuffer[ (yid * mTexWidth + xid) * 4 + 3] = pixel[3];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 0] = pixel[0];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 1] = pixel[1];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 2] = pixel[2];
+                    pVCBuffer[ (yid * mVideoWidth + xid) * 4 + 3] = pixel[3];
                 }
             }
             pVCPixelBuffer->unlock();
@@ -294,43 +325,6 @@ namespace MagicApp
         //
     }
 
-    void AugmentedRealityApp::UpdateCanvasSize(int winW, int winH, int videoW, int videoH)
-    {
-        float canvasW, canvasH;
-        float maxSize = 0.7;
-        if (videoW > videoH)
-        {
-            canvasW = maxSize;
-            canvasH = maxSize * videoH / videoW;
-        }
-        else
-        {
-            canvasH = maxSize;
-            canvasW = maxSize * videoW / videoH;
-        }
-        if (winW > winH)
-        {
-            //canvasW *= float(winH) / float(winW);
-            canvasH *= float(winW) / float(winH);
-            if (canvasH > maxSize)
-            {
-                canvasW *= maxSize / canvasH;
-                canvasH = maxSize;
-            }
-        }
-        else
-        {
-            //canvasH *= float(winW) / float(winH);
-            canvasW *= float(winH) / float(winW);
-            if (canvasW > maxSize)
-            {
-                canvasH *= maxSize / canvasW;
-                canvasW = maxSize;
-            }
-        }
-        mpVideoCanvas->setCorners(-canvasW, canvasH, canvasW, -canvasH);
-    }
-
     bool AugmentedRealityApp::OpenVideo()
     {
         std::string fileName;
@@ -352,10 +346,7 @@ namespace MagicApp
                 DebugLog << "fps: " << frameRate << " frameCount: " << mFrameCount << std::endl;
                 mUI.SetSliderRange(mFrameCount);
                 mUI.SetSliderPosition(mCurrentFrame);
-                Ogre::RenderWindow* rw = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow();
-                int winW = rw->getWidth();
-                int winH = rw->getHeight();
-                UpdateCanvasSize(winW, winH, mVideoWidth, mVideoHeight);
+                SetupBackboard();
                 return true;
             }
             else
