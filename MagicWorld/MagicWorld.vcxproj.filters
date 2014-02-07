@@ -61,6 +61,9 @@
     <Filter Include="Application\ScanningApp">
       <UniqueIdentifier>{babddef3-9485-4dad-8e66-88136239c9b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\VisionShopApp">
+      <UniqueIdentifier>{93c995e7-a365-4b13-9b18-6d3a1d62d068}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -294,6 +297,12 @@
     <ClInclude Include="..\Src\Common\MagicOgre.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\VisionShopAppUI.h">
+      <Filter>Application\VisionShopApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\VisionShopApp.h">
+      <Filter>Application\VisionShopApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -469,6 +478,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\Tool\ThreadPool.cpp">
       <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp">
+      <Filter>Application\VisionShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\VisionShopApp.cpp">
+      <Filter>Application\VisionShopApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

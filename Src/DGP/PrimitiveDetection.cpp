@@ -4419,12 +4419,12 @@ namespace MagicDGP
     {
         //neigborNum >= 10
         int neigborNum = neighborList.size();
-        //int sampleNum = 15;
-        int sampleNum = 6;
-        /*if (neigborNum < 20)
+        int sampleNum = 15;
+        //int sampleNum = 6;
+        if (neigborNum < 20)
         {
             sampleNum = 9;
-        }*/
+        }
         //sample
         std::vector<bool> validSampleFlag(neigborNum, 0);
         validSampleFlag.at(0) = true;
