@@ -64,6 +64,9 @@
     <Filter Include="Application\VisionShopApp">
       <UniqueIdentifier>{93c995e7-a365-4b13-9b18-6d3a1d62d068}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DIP">
+      <UniqueIdentifier>{d21a4e2f-fba0-4822-a5a3-e6f548188f76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -303,6 +306,9 @@
     <ClInclude Include="..\Src\Application\VisionShopApp.h">
       <Filter>Application\VisionShopApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\Retargetting.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -484,6 +490,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\VisionShopApp.cpp">
       <Filter>Application\VisionShopApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\Retargetting.cpp">
+      <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

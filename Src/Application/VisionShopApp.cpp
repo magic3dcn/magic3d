@@ -3,6 +3,7 @@
 #include "../Common/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+#include "../DIP/Retargetting.h"
 
 namespace MagicApp
 {
@@ -13,6 +14,7 @@ namespace MagicApp
 
     VisionShopApp::~VisionShopApp()
     {
+        mImage.release();
     }
 
     bool VisionShopApp::Enter(void)
@@ -64,6 +66,33 @@ namespace MagicApp
 
     void VisionShopApp::ShutdownScene(void)
     {
+        mImage.release();
+    }
 
+    bool VisionShopApp::OpenImage(int& w, int& h)
+    {
+        std::string fileName;
+        char filterName[] = "Image Files(*.*)\0*.*\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mImage.release();
+            mImage = cv::imread(fileName);
+            if (mImage.data != NULL)
+            {
+                w = mImage.cols;
+                h = mImage.rows;
+                mUI.UpdateImageTexture(mImage);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void VisionShopApp::ImageResizing(int w, int h)
+    {
+        double startTime = MagicCore::ToolKit::GetTime();
+        cv::Mat resizedImg = MagicDIP::Retargetting::SeamCarvingResizing(mImage, w, h);
+        DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        mUI.UpdateImageTexture(resizedImg);
     }
 }

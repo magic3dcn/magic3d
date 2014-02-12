@@ -1,6 +1,7 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "VisionShopAppUI.h"
+#include "opencv2/opencv.hpp"
 
 namespace MagicApp
 {
@@ -18,11 +19,15 @@ namespace MagicApp
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
 
+        bool OpenImage(int& w, int& h);
+        void ImageResizing(int w, int h);
+
     private:
         void SetupScene(void);
         void ShutdownScene(void);
 
     private:
         VisionShopAppUI mUI;
+        cv::Mat mImage;
     };
 }
