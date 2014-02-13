@@ -19,7 +19,7 @@ namespace MagicApp
         mFrameCount(0),
         mIsCaptureFrame(false),
         mDisplayIndex(0),
-        mImageNeedNumber(8),
+        mImageNeedNumber(3),
         mCameraFov(1.570796326794897f),
         mpBackboardMesh(NULL),
         mBackboardDepth(100.f)
@@ -410,7 +410,7 @@ namespace MagicApp
     {
         DebugLog << "GetValidImages" << std::endl;
         std::vector<bool> visitFlag(mFrameCount, 0);
-        int delta = 11;
+        int delta = 1;
         int currentFrame = 0; 
         std::vector<std::vector<cv::Point3f> > objectPoints;
         std::vector<cv::Point3f> objectCorners;
@@ -441,6 +441,7 @@ namespace MagicApp
                     mSelectedIndex.push_back(currentFrame);
                     imagePoints.push_back(imageCorners);
                     objectPoints.push_back(objectCorners);
+                    DebugLog << "Find valid image: " << mSelectedImages.size() << std::endl;
                 }
                 if (mSelectedImages.size() == mImageNeedNumber)
                 {

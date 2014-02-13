@@ -23,11 +23,32 @@ namespace MagicDIP
             int verticalTime = inputH - targetH;
             if (verticalTime > 0)
             {
-                cv::Mat imgPro = inputImg.clone();
-                SeamCarvingHorizontal(imgPro, inputW, inputH, targetW);
-                SeamCarvingVertical(imgPro, targetW, inputH, targetH);
-                cv::Mat imgRes = imgPro.rowRange(0, targetH - 1).colRange(0, targetW - 1);
-                return imgRes;
+                float wScale = float(targetW) / inputW;
+                float hScale = float(targetH) / inputH;
+                if (wScale > hScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW;
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH - 1);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * hScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW - 1);
+                    return imgRes;
+                }
             }
             else
             {
