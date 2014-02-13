@@ -59,6 +59,15 @@ namespace MagicApp
         return true;
     }
 
+    void VisionShopApp::WindowResized( Ogre::RenderWindow* rw )
+    {
+        if (mImage.data != NULL)
+        {
+            cv::Mat resizedImg = ResizeToViewSuit(mImage);
+            mUI.UpdateImageTexture(resizedImg);
+        }
+    }
+
     void VisionShopApp::SetupScene(void)
     {
 
@@ -81,7 +90,8 @@ namespace MagicApp
             {
                 w = mImage.cols;
                 h = mImage.rows;
-                mUI.UpdateImageTexture(mImage);
+                cv::Mat resizedImg = ResizeToViewSuit(mImage);
+                mUI.UpdateImageTexture(resizedImg);
                 return true;
             }
         }
@@ -92,7 +102,42 @@ namespace MagicApp
     {
         double startTime = MagicCore::ToolKit::GetTime();
         cv::Mat resizedImg = MagicDIP::Retargetting::SeamCarvingResizing(mImage, w, h);
+        mImage = resizedImg.clone();
         DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
-        mUI.UpdateImageTexture(resizedImg);
+        cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
+        mUI.UpdateImageTexture(resizedToViewImg);
+    }
+
+    cv::Mat VisionShopApp::ResizeToViewSuit(const cv::Mat& img) const
+    {
+        int winW = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 200;
+        int winH = MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight() - 20;
+        int imgW = img.cols;
+        int imgH = img.rows;
+        bool resized = false;
+        if (imgW > winW)
+        {
+            imgH = int(imgH * float(winW) / imgW);
+            imgW = winW;
+            resized = true;
+        }
+        if (imgH > winH)
+        {
+            imgW = int(imgW * float(winH) / imgH);
+            imgH = winH;
+            resized = true;
+        }
+        if (resized)
+        {
+            cv::Size vcSize(imgW, imgH);
+            cv::Mat resizedImg(vcSize, CV_8UC3);
+            cv::resize(img, resizedImg, vcSize);
+            return resizedImg;
+        }
+        else
+        {
+            cv::Mat resizedImg = img.clone();
+            return resizedImg;
+        }
     }
 }

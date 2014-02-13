@@ -18,9 +18,11 @@ namespace MagicApp
         virtual bool MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
         virtual bool KeyPressed( const OIS::KeyEvent &arg );
+        virtual void WindowResized( Ogre::RenderWindow* rw );
 
         bool OpenImage(int& w, int& h);
         void ImageResizing(int w, int h);
+        cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
     private:
         void SetupScene(void);
