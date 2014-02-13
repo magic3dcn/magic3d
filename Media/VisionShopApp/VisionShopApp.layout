@@ -2,7 +2,7 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
         <Widget type="Button" skin="But_Open" position="10 10 60 60" align="Left Top" name="But_OpenImage"/>
-        <Widget type="Button" skin="But_Smooth" position="10 80 60 60" align="Left Top" name="But_ImageResizing">
+        <Widget type="Button" skin="But_Resize" position="10 80 60 60" align="Left Top" name="But_ImageResizing">
             <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="ImageBox" skin="ImageBox" position="165 10 250 250" align="Left Top" name="Image_ImageView"/>
@@ -13,7 +13,7 @@
         <Widget type="EditBox" skin="EditBox" position="72 115 40 20" align="Left Top" name="Edit_Height">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="115 95 40 40" align="Left Top" name="But_ImageResizingDo">
+        <Widget type="Button" skin="But_Resize" position="115 95 40 40" align="Left Top" name="But_ImageResizingDo">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Contact" position="10 220 60 60" align="Left Top" name="But_Contact"/>
