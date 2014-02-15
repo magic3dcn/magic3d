@@ -7,6 +7,7 @@
 #include "../Common/RenderSystem.h"
 #include "PointShopApp.h"
 #include "MeshShopApp.h"
+#include "VisionShopApp.h"
 #include "ScanningApp.h"
 #include "ReconstructionApp.h"
 #include "LeapMotionApp.h"
@@ -36,6 +37,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("Title")->castType<MyGUI::ImageBox>()->setSize(406, 110);
         mRoot.at(0)->findWidget("But_PointShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterPointShopApp);
         mRoot.at(0)->findWidget("But_MeshShop")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterMeshShopApp);
+        mRoot.at(0)->findWidget("But_ImageTool")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterVisionShopApp);
         mRoot.at(0)->findWidget("But_Scan3D")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterScan3D);
         mRoot.at(0)->findWidget("But_Reconstruction")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReconstruction);
         mRoot.at(0)->findWidget("But_Relief")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &HomepageUI::EnterReliefApp);
@@ -60,6 +62,12 @@ namespace MagicApp
     {
         InfoLog << "EnterMeshShopApp Clicked" << std::endl;
         MagicCore::AppManager::GetSingleton()->EnterApp(new MeshShopApp, "MeshShopApp");
+    }
+
+    void HomepageUI::EnterVisionShopApp(MyGUI::Widget* pSender)
+    {
+        InfoLog << "EnterVisionShopApp Clicked" << std::endl;
+        MagicCore::AppManager::GetSingleton()->EnterApp(new VisionShopApp, "VisionShopApp");
     }
 
     void HomepageUI::EnterScan3D(MyGUI::Widget* pSender)

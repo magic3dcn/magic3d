@@ -98,6 +98,19 @@ namespace MagicApp
         return false;
     }
 
+    void VisionShopApp::SaveImage()
+    {
+        std::string fileName;
+        char filterName[] = "Support format(*.jpg, *.png, *.bmp, *tif)\0*.*\0";
+        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+        {
+            if (mImage.data != NULL)
+            {
+                cv::imwrite(fileName, mImage);
+            }
+        }
+    }
+
     void VisionShopApp::ImageResizing(int w, int h)
     {
         double startTime = MagicCore::ToolKit::GetTime();

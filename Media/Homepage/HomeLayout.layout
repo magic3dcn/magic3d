@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1024 768" align="Center" layer="Back" name="Background">
-        <Widget type="Button" skin="But_Scan" position="192 456 86 84" align="Left Top" name="But_Scan3D"/>
-        <Widget type="Button" skin="But_Reconstruction" position="469 456 86 84" align="Left Top" name="But_Reconstruction"/>
-        <Widget type="ImageBox" skin="Image_Title" position="309 132 405 108" align="Left Top" name="Title"/>
-        <Widget type="Button" skin="But_Relief" position="748 456 86 84" align="Left Top" name="But_Relief"/>
-        <Widget type="Button" skin="But_PointShop" position="357 310 86 84" align="Left Top" name="But_PointShop"/>
-        <Widget type="Button" skin="But_MeshTool" position="579 310 86 84" align="Left Top" name="But_MeshShop"/>
+        <Widget type="Button" skin="But_Scan" position="355 515 86 84" align="Left Top" name="But_Scan3D"/>
+        <Widget type="Button" skin="But_Reconstruction" position="595 515 86 84" align="Left Top" name="But_Reconstruction"/>
+        <Widget type="ImageBox" skin="Image_Title" position="309 310 405 108" align="Left Top" name="Title"/>
+        <Widget type="Button" skin="But_Relief" position="790 320 86 84" align="Left Top" name="But_Relief"/>
+        <Widget type="Button" skin="But_PointShop" position="355 140 86 84" align="Left Top" name="But_PointShop"/>
+        <Widget type="Button" skin="But_MeshTool" position="595 140 86 84" align="Left Top" name="But_MeshShop"/>
         <Widget type="Button" skin="But_Contact" position="949 690 60 60" align="Right Bottom" name="But_Contact"/>
+        <Widget type="Button" skin="But_ImageTool" position="150 320 86 84" align="Left Top" name="But_ImageTool"/>
     </Widget>
 </MyGUI>

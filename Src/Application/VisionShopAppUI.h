@@ -17,6 +17,7 @@ namespace MagicApp
 
     private:
         void OpenImage(MyGUI::Widget* pSender);
+        void SaveImage(MyGUI::Widget* pSender);
         void ImageResizing(MyGUI::Widget* pSender);
         void DoImageResizing(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);

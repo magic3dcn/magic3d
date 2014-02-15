@@ -294,4 +294,12 @@
             <State name="pushed" offset="1119 610 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_ImageTool" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1205 349 86 86"/>
+            <State name="normal" offset="1205 436 86 86"/>
+            <State name="highlighted" offset="1205 523 86 86"/>
+            <State name="pushed" offset="1205 610 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

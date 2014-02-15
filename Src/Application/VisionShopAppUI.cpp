@@ -26,6 +26,7 @@ namespace MagicApp
         MagicCore::ResourceManager::LoadResource("../../Media/VisionShopApp", "FileSystem", "VisionShopApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("VisionShopApp.layout");
         mRoot.at(0)->findWidget("But_OpenImage")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::OpenImage);
+        mRoot.at(0)->findWidget("But_SaveImage")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SaveImage);
         mRoot.at(0)->findWidget("But_ImageResizing")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::ImageResizing);
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoImageResizing);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BackHome);
@@ -82,6 +83,7 @@ namespace MagicApp
             int w, h;
             if (pVS->OpenImage(w, h))
             {
+                mRoot.at(0)->findWidget("But_SaveImage")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_ImageResizing")->castType<MyGUI::Button>()->setEnabled(true);
                 std::stringstream ss;
                 std::string textString;
@@ -94,6 +96,15 @@ namespace MagicApp
                 ss >> textString;
                 mRoot.at(0)->findWidget("Edit_Height")->castType<MyGUI::EditBox>()->setOnlyText(textString);
             }
+        }
+    }
+
+    void VisionShopAppUI::SaveImage(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            pVS->SaveImage();
         }
     }
 

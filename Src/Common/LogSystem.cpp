@@ -3,7 +3,7 @@
 
 namespace MagicCore
 {
-    const LogLevel gSystemLogLevel = LOGLEVEL_DEBUG;
+    const LogLevel gSystemLogLevel = LOGLEVEL_INFO; //LOGLEVEL_DEBUG;
     LogSystem* LogSystem::mpLogSystem = NULL;
 
     LogSystem::LogSystem(void)

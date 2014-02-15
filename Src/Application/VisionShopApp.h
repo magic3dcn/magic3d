@@ -21,6 +21,7 @@ namespace MagicApp
         virtual void WindowResized( Ogre::RenderWindow* rw );
 
         bool OpenImage(int& w, int& h);
+        void SaveImage(void);
         void ImageResizing(int w, int h);
         cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
