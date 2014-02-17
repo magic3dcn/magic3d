@@ -34,7 +34,7 @@ namespace MagicDIP
                     cv::Mat tempImg(tempSize, CV_8UC3);
                     cv::resize(imgPro, tempImg, tempSize);
                     SeamCarvingVertical(tempImg, tempW, tempH, targetH);
-                    cv::Mat imgRes = tempImg.rowRange(0, targetH - 1);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
                     return imgRes;
                 }
                 else
@@ -46,7 +46,7 @@ namespace MagicDIP
                     cv::Mat tempImg(tempSize, CV_8UC3);
                     cv::resize(imgPro, tempImg, tempSize);
                     SeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
-                    cv::Mat imgRes = tempImg.colRange(0, targetW - 1);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
                     return imgRes;
                 }
             }
@@ -59,7 +59,7 @@ namespace MagicDIP
                 cv::Mat tempImg(tempSize, CV_8UC3);
                 cv::resize(imgPro, tempImg, tempSize);
                 SeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
-                cv::Mat imgRes = tempImg.colRange(0, targetW - 1);
+                cv::Mat imgRes = tempImg.colRange(0, targetW);
                 return imgRes;
             }
         }
@@ -75,7 +75,7 @@ namespace MagicDIP
                 cv::Mat tempImg(tempSize, CV_8UC3);
                 cv::resize(imgPro, tempImg, tempSize);
                 SeamCarvingVertical(tempImg, tempW, tempH, targetH);
-                cv::Mat imgRes = tempImg.rowRange(0, targetH - 1);
+                cv::Mat imgRes = tempImg.rowRange(0, targetH);
                 return imgRes;
             }
             else
@@ -91,7 +91,7 @@ namespace MagicDIP
                     cv::Mat tempImg(tempSize, CV_8UC3);
                     cv::resize(imgPro, tempImg, tempSize);
                     SeamCarvingVertical(tempImg, tempW, tempH, targetH);
-                    cv::Mat imgRes = tempImg.rowRange(0, targetH - 1);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
                     return imgRes;
                 }
                 else
@@ -103,7 +103,7 @@ namespace MagicDIP
                     cv::Mat tempImg(tempSize, CV_8UC3);
                     cv::resize(imgPro, tempImg, tempSize);
                     SeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
-                    cv::Mat imgRes = tempImg.colRange(0, targetW - 1);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
                     return imgRes;
                 }
             }
