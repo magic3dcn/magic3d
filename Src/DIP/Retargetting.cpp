@@ -401,4 +401,194 @@ namespace MagicDIP
             }
         }
     }
+
+    cv::Mat Retargetting::FastSeamCarvingResizing(const cv::Mat& inputImg, int targetW, int targetH)
+    {
+        int inputW = inputImg.cols;
+        int inputH = inputImg.rows;
+        int horizontalTime = inputW - targetW;
+        if (horizontalTime > 0)
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                float wScale = float(targetW) / inputW;
+                float hScale = float(targetH) / inputH;
+                if (wScale > hScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW;
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    FastSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * hScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    FastSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+            else
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = int(inputW * float(targetH) / inputH);
+                int tempH = targetH;
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                FastSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                cv::Mat imgRes = tempImg.colRange(0, targetW);
+                return imgRes;
+            }
+        }
+        else
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = targetW; 
+                int tempH = int(inputH * float(targetW) / inputW);
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                FastSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                return imgRes;
+            }
+            else
+            {
+                float wScale = float(targetW) / inputW;
+                float HScale = float(targetH) / inputH;
+                if (wScale > HScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW; 
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    FastSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * HScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    FastSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+        }
+    }
+
+    void Retargetting::FastSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW)
+    {
+        int cutTimes = originW - targetW;
+        std::vector<std::vector<int> > gradMat(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+            std::vector<int> gradList(originW);
+            for (int wid = 0; wid < originW; wid++)
+            {
+                unsigned char* pixel = img.ptr(hid, wid);
+                unsigned char* pixelWNext = NULL;
+                if (wid == 0)
+                {
+                    pixelWNext = img.ptr(hid, wid + 1);
+                }
+                else
+                {
+                    pixelWNext = img.ptr(hid, wid - 1);
+                }
+                unsigned char* pixelHNext = NULL;
+                if (hid == 0)
+                {
+                    pixelHNext = img.ptr(hid + 1, wid);
+                }
+                else
+                {
+                    pixelHNext = img.ptr(hid - 1, wid);
+                }
+                gradList.at(wid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+            }
+            gradMat.at(hid) = gradList;
+        }
+
+        //calculate M 
+        std::vector<std::vector<int> > mMat(originH);
+        std::vector<int> mRow(originW);
+        mMat.at(originH - 1) = gradMat.at(originH - 1);
+        for (int hid = originH - 2; hid >= 0; hid--)
+        {
+            std::vector<int>& lastMRow = mMat.at(hid + 1);
+            std::vector<int>& gradList = gradMat.at(hid);
+            //wid == 0
+            {
+                if (lastMRow.at(1) < lastMRow.at(0))
+                {
+                    mRow.at(0) = gradList.at(0) + lastMRow.at(1);
+                }
+                else
+                {
+                    mRow.at(0) = gradList.at(0) + lastMRow.at(0);
+                }
+            }
+            for (int wid = 1; wid < originW - 1; wid++)
+            {
+                int minIndex = wid;
+                if (lastMRow.at(wid - 1) < lastMRow.at(minIndex))
+                {
+                    minIndex = wid - 1;
+                }
+                if (lastMRow.at(wid + 1) < lastMRow.at(minIndex))
+                {
+                    minIndex = wid + 1;
+                }
+                mRow.at(wid) = gradList.at(wid) + lastMRow.at(minIndex);
+            }
+            //wid == originW - 1
+            {
+                if (lastMRow.at(originW - 2) < lastMRow.at(originW - 1))
+                {
+                    mRow.at(originW - 1) = gradList.at(originW - 1) + lastMRow.at(originW - 2);
+                }
+                else
+                {
+                    mRow.at(originW - 1) = gradList.at(originW - 1) + lastMRow.at(originW - 1);
+                }
+            }
+            mMat.at(hid) = mRow;
+        }
+
+        //calculate matching relations
+        std::vector<std::vector<int> > matchingRelations(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+
+        }
+    }
+
+    void Retargetting::FastSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH)
+    {
+
+    }
 }
