@@ -501,7 +501,7 @@ namespace MagicDIP
 
     void Retargetting::FastSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW)
     {
-        int cutTimes = originW - targetW;
+        DebugLog << "FastSeamCarvingHorizontal" << std::endl;
         std::vector<std::vector<int> > gradMat(originH);
         for (int hid = 0; hid < originH; hid++)
         {
@@ -533,6 +533,7 @@ namespace MagicDIP
             gradMat.at(hid) = gradList;
         }
 
+        DebugLog << "Calculate M" << std::endl;
         //calculate M 
         std::vector<std::vector<int> > mMat(originH);
         std::vector<int> mRow(originW);
@@ -579,16 +580,138 @@ namespace MagicDIP
             mMat.at(hid) = mRow;
         }
 
+        DebugLog << "Calculate matching relations" << std::endl;
         //calculate matching relations
         std::vector<std::vector<int> > matchingRelations(originH);
+        std::vector<int> matchingList(originW);
+        std::vector<int> aList = gradMat.at(0);
+        for (int hid = 0; hid < originH - 1; hid++)
+        {
+            int wid = originW;
+            std::vector<int>& mList = mMat.at(hid + 1);
+            while (wid >= 1)
+            {
+                int w0 = aList.at(wid) * mList.at(wid);
+                int w1 = aList.at(wid) * mList.at(wid - 1);
+                if (w1 > w0)
+                {
+                    matchingList.at(wid) = wid - 1;
+                    matchingList.at(wid - 1) = wid;
+                    wid -= 2;
+                }
+                else
+                {
+                    matchingList.at(wid) = wid;
+                    wid--;
+                }
+            }
+            if (wid == 0)
+            {
+                matchingList.at(wid) = wid;
+            }
+            matchingRelations.at(hid) = matchingList;
+            //update aList
+            std::vector<int> aListCopy = aList;
+            std::vector<int>& gradList = gradMat.at(hid + 1);
+            for (int wid = 0; wid < originW; wid++)
+            {
+                aList.at(matchingList.at(wid)) = aListCopy.at(wid) + gradList.at(matchingList.at(wid));
+            }
+        }
+        matchingRelations.at(originH - 1) = std::vector<int>(originW, 1);
+
+        DebugLog << "Calculate seam scores" << std::endl; 
+        //Calculate seam scores.
+        std::vector<int> seamScores(originW);
+        for (int wid = 0; wid < originW; wid++)
+        {
+            int score = 0;
+            int curW = wid;
+            for (int hid = 0; hid < originH; hid++)
+            {
+                score += gradMat.at(hid).at(curW);
+                curW = matchingRelations.at(hid).at(curW);
+            }
+        }
+
+        DebugLog << "Find the minimal k seams" << std::endl;
+        //Find the minimal k seams.
+        int cutTimes = originW - targetW;
+        std::vector<int> seams;
+        FindMinimalK(seamScores, cutTimes, seams);
+
+        DebugLog << "Mark seam pixel" << std::endl;
+        //mark seam pixel
+        for (int sid = 0; sid < cutTimes; sid++)
+        {
+            int seamIndex = seams.at(sid);
+            for (int hid = 0; hid < originH; hid++)
+            {
+                seamIndex = matchingRelations.at(hid).at(seamIndex);
+                matchingRelations.at(hid).at(seamIndex) = -1;
+            }
+        }
+
+        DebugLog << "Copy valid pixels" << std::endl;
+        //copy valid pixels
         for (int hid = 0; hid < originH; hid++)
         {
-
+            int validIndex = 0;
+            std::vector<int>& markList = matchingRelations.at(hid);
+            for (int wid = 0; wid < targetW; wid++)
+            {
+                while (markList.at(validIndex) == -1)
+                {
+                    validIndex++;
+                }
+                if (validIndex == wid)
+                {
+                    validIndex++;
+                    continue;
+                }
+                else
+                {
+                    unsigned char* pixel = img.ptr(hid, wid);
+                    unsigned char* pixelValid = img.ptr(hid, validIndex);
+                    pixel[0] = pixelValid[0];
+                    pixel[1] = pixelValid[1];
+                    pixel[2] = pixelValid[2];
+                    validIndex++;
+                }
+            }
         }
+        DebugLog << "end" << std::endl;
     }
 
     void Retargetting::FastSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH)
     {
 
+    }
+
+    void Retargetting::FindMinimalK(const std::vector<int>& scores, int k, std::vector<int>& minimalK)
+    {
+        int vNum = scores.size();
+        minimalK.clear();
+        minimalK.resize(k);
+        std::vector<int> indexList(vNum);
+        for (int i = 0; i < vNum; i++)
+        {
+            indexList.at(i) = i;
+        }
+        for (int kid = 0; kid < k; kid++)
+        {
+            int minIndex = kid;
+            for (int i = kid; i < vNum; i++)
+            {
+                if (scores.at(indexList.at(i)) < scores.at(indexList.at(minIndex)))
+                {
+                    minIndex = i;
+                }
+            }
+            minimalK.at(kid) = indexList.at(minIndex);
+            int temp = indexList.at(minIndex);
+            indexList.at(minIndex) = indexList.at(kid);
+            indexList.at(kid) = temp;
+        }
     }
 }

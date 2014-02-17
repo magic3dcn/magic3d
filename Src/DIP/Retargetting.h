@@ -17,5 +17,6 @@ namespace MagicDIP
         static void SeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH);
         static void FastSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW);
         static void FastSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH);
+        static void FindMinimalK(const std::vector<int>& scores, int k, std::vector<int>& minimalK);
     };
 }
