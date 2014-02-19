@@ -501,7 +501,6 @@ namespace MagicDIP
 
     void Retargetting::FastSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW)
     {
-        DebugLog << "FastSeamCarvingHorizontal" << std::endl;
         std::vector<std::vector<int> > gradMat(originH);
         for (int hid = 0; hid < originH; hid++)
         {
@@ -533,7 +532,6 @@ namespace MagicDIP
             gradMat.at(hid) = gradList;
         }
 
-        DebugLog << "Calculate M" << std::endl;
         //calculate M 
         std::vector<std::vector<int> > mMat(originH);
         std::vector<int> mRow(originW);
@@ -580,14 +578,13 @@ namespace MagicDIP
             mMat.at(hid) = mRow;
         }
 
-        DebugLog << "Calculate matching relations" << std::endl;
         //calculate matching relations
         std::vector<std::vector<int> > matchingRelations(originH);
         std::vector<int> matchingList(originW);
         std::vector<int> aList = gradMat.at(0);
         for (int hid = 0; hid < originH - 1; hid++)
         {
-            int wid = originW;
+            int wid = originW - 1;
             std::vector<int>& mList = mMat.at(hid + 1);
             while (wid >= 1)
             {
@@ -620,7 +617,6 @@ namespace MagicDIP
         }
         matchingRelations.at(originH - 1) = std::vector<int>(originW, 1);
 
-        DebugLog << "Calculate seam scores" << std::endl; 
         //Calculate seam scores.
         std::vector<int> seamScores(originW);
         for (int wid = 0; wid < originW; wid++)
@@ -632,27 +628,26 @@ namespace MagicDIP
                 score += gradMat.at(hid).at(curW);
                 curW = matchingRelations.at(hid).at(curW);
             }
+            seamScores.at(wid) = score;
         }
 
-        DebugLog << "Find the minimal k seams" << std::endl;
         //Find the minimal k seams.
         int cutTimes = originW - targetW;
         std::vector<int> seams;
         FindMinimalK(seamScores, cutTimes, seams);
 
-        DebugLog << "Mark seam pixel" << std::endl;
         //mark seam pixel
         for (int sid = 0; sid < cutTimes; sid++)
         {
-            int seamIndex = seams.at(sid);
-            for (int hid = 0; hid < originH; hid++)
+            int curSeamIndex = seams.at(sid);
+            for (int hid = 0; hid < originH - 1; hid++)
             {
-                seamIndex = matchingRelations.at(hid).at(seamIndex);
-                matchingRelations.at(hid).at(seamIndex) = -1;
+                int nextSeamIndex = matchingRelations.at(hid).at(curSeamIndex);
+                matchingRelations.at(hid).at(curSeamIndex) = -1;
+                curSeamIndex = nextSeamIndex;
             }
         }
 
-        DebugLog << "Copy valid pixels" << std::endl;
         //copy valid pixels
         for (int hid = 0; hid < originH; hid++)
         {
@@ -680,12 +675,184 @@ namespace MagicDIP
                 }
             }
         }
-        DebugLog << "end" << std::endl;
     }
 
     void Retargetting::FastSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH)
     {
+        std::vector<std::vector<int> > gradMat(originW);
+        for (int wid = 0; wid < originW; wid++)
+        {
+            std::vector<int> gradList(originH);
+            for (int hid = 0; hid < originH; hid++)
+            {
+                unsigned char* pixel = img.ptr(hid, wid);
+                unsigned char* pixelWNext = NULL;
+                if (wid == 0)
+                {
+                    pixelWNext = img.ptr(hid, wid + 1);
+                }
+                else
+                {
+                    pixelWNext = img.ptr(hid, wid - 1);
+                }
+                unsigned char* pixelHNext = NULL;
+                if (hid == 0)
+                {
+                    pixelHNext = img.ptr(hid + 1, wid);
+                }
+                else
+                {
+                    pixelHNext = img.ptr(hid - 1, wid);
+                }
+                gradList.at(hid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+            }
+            gradMat.at(wid) = gradList;
+        }
 
+        //calculate M 
+        std::vector<std::vector<int> > mMat(originW);
+        std::vector<int> mRow(originH);
+        mMat.at(originW - 1) = gradMat.at(originW - 1);
+        for (int wid = originW - 2; wid >= 0; wid--)
+        {
+            std::vector<int>& lastMRow = mMat.at(wid + 1);
+            std::vector<int>& gradList = gradMat.at(wid);
+            //wid == 0
+            {
+                if (lastMRow.at(1) < lastMRow.at(0))
+                {
+                    mRow.at(0) = gradList.at(0) + lastMRow.at(1);
+                }
+                else
+                {
+                    mRow.at(0) = gradList.at(0) + lastMRow.at(0);
+                }
+            }
+            for (int hid = 1; hid < originH - 1; hid++)
+            {
+                int minIndex = hid;
+                if (lastMRow.at(hid - 1) < lastMRow.at(minIndex))
+                {
+                    minIndex = hid - 1;
+                }
+                if (lastMRow.at(hid + 1) < lastMRow.at(minIndex))
+                {
+                    minIndex = hid + 1;
+                }
+                mRow.at(hid) = gradList.at(hid) + lastMRow.at(minIndex);
+            }
+            //wid == originW - 1
+            {
+                if (lastMRow.at(originH - 2) < lastMRow.at(originH - 1))
+                {
+                    mRow.at(originH - 1) = gradList.at(originH - 1) + lastMRow.at(originH - 2);
+                }
+                else
+                {
+                    mRow.at(originH - 1) = gradList.at(originH - 1) + lastMRow.at(originH - 1);
+                }
+            }
+            mMat.at(wid) = mRow;
+        }
+
+        //calculate matching relations
+        std::vector<std::vector<int> > matchingRelations(originW);
+        std::vector<int> matchingList(originH);
+        std::vector<int> aList = gradMat.at(0);
+        for (int wid = 0; wid < originW - 1; wid++)
+        {
+            int hid = originH - 1;
+            std::vector<int>& mList = mMat.at(wid + 1);
+            while (hid >= 1)
+            {
+                int w0 = aList.at(hid) * mList.at(hid);
+                int w1 = aList.at(hid) * mList.at(hid - 1);
+                if (w1 > w0)
+                {
+                    matchingList.at(hid) = hid - 1;
+                    matchingList.at(hid - 1) = hid;
+                    hid -= 2;
+                }
+                else
+                {
+                    matchingList.at(hid) = hid;
+                    hid--;
+                }
+            }
+            if (hid == 0)
+            {
+                matchingList.at(hid) = hid;
+            }
+            matchingRelations.at(wid) = matchingList;
+            //update aList
+            std::vector<int> aListCopy = aList;
+            std::vector<int>& gradList = gradMat.at(wid + 1);
+            for (int hid = 0; hid < originH; hid++)
+            {
+                aList.at(matchingList.at(hid)) = aListCopy.at(hid) + gradList.at(matchingList.at(hid));
+            }
+        }
+        matchingRelations.at(originW - 1) = std::vector<int>(originH, 1);
+
+        //Calculate seam scores.
+        std::vector<int> seamScores(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+            int score = 0;
+            int curW = hid;
+            for (int wid = 0; wid < originW; wid++)
+            {
+                score += gradMat.at(wid).at(curW);
+                curW = matchingRelations.at(wid).at(curW);
+            }
+            seamScores.at(hid) = score;
+        }
+
+        //Find the minimal k seams.
+        int cutTimes = originH - targetH;
+        std::vector<int> seams;
+        FindMinimalK(seamScores, cutTimes, seams);
+
+        //mark seam pixel
+        for (int sid = 0; sid < cutTimes; sid++)
+        {
+            int curSeamIndex = seams.at(sid);
+            for (int wid = 0; wid < originW - 1; wid++)
+            {
+                int nextSeamIndex = matchingRelations.at(wid).at(curSeamIndex);
+                matchingRelations.at(wid).at(curSeamIndex) = -1;
+                curSeamIndex = nextSeamIndex;
+            }
+        }
+
+        //copy valid pixels
+        for (int wid = 0; wid < originW; wid++)
+        {
+            int validIndex = 0;
+            std::vector<int>& markList = matchingRelations.at(wid);
+            for (int hid = 0; hid < targetH; hid++)
+            {
+                while (markList.at(validIndex) == -1)
+                {
+                    validIndex++;
+                }
+                if (validIndex == hid)
+                {
+                    validIndex++;
+                    continue;
+                }
+                else
+                {
+                    unsigned char* pixel = img.ptr(hid, wid);
+                    unsigned char* pixelValid = img.ptr(validIndex, wid);
+                    pixel[0] = pixelValid[0];
+                    pixel[1] = pixelValid[1];
+                    pixel[2] = pixelValid[2];
+                    validIndex++;
+                }
+            }
+        }
     }
 
     void Retargetting::FindMinimalK(const std::vector<int>& scores, int k, std::vector<int>& minimalK)
