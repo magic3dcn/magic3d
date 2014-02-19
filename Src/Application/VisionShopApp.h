@@ -23,6 +23,7 @@ namespace MagicApp
         bool OpenImage(int& w, int& h);
         void SaveImage(void);
         void ImageResizing(int w, int h);
+        void FastImageResizing(int w, int h);
         cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
     private:

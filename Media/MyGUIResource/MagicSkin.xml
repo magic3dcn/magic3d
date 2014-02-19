@@ -302,4 +302,12 @@
             <State name="pushed" offset="1205 610 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_Fast" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1377 349 86 86"/>
+            <State name="normal" offset="1377 436 86 86"/>
+            <State name="highlighted" offset="1377 523 86 86"/>
+            <State name="pushed" offset="1377 610 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

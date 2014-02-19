@@ -13,12 +13,15 @@
         <Widget type="EditBox" skin="EditBox" position="72 115 40 20" align="Left Top" name="Edit_Height">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Resize" position="115 95 40 40" align="Left Top" name="But_ImageResizingDo">
+        <Widget type="Button" skin="But_Resize" position="115 112 28 28" align="Left Top" name="But_ImageResizingDo">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Contact" position="10 290 60 60" align="Left Top" name="But_Contact"/>
         <Widget type="Button" skin="But_Save" position="10 150 60 60" align="Left Top" name="But_SaveImage">
             <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="But_Fast" position="115 80 28 28" align="Left Top" name="But_FastImageResizingDo">
+            <Property key="Visible" value="false"/>
         </Widget>
     </Widget>
 </MyGUI>

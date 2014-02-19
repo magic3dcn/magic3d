@@ -29,6 +29,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_SaveImage")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SaveImage);
         mRoot.at(0)->findWidget("But_ImageResizing")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::ImageResizing);
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoImageResizing);
+        mRoot.at(0)->findWidget("But_FastImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::FastImageResizing);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Contact);
     }
@@ -114,6 +115,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("Edit_Width")->castType<MyGUI::EditBox>()->setVisible(!isVisiable);
         mRoot.at(0)->findWidget("Edit_Height")->castType<MyGUI::EditBox>()->setVisible(!isVisiable);
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+        mRoot.at(0)->findWidget("But_FastImageResizingDo")->castType<MyGUI::Button>()->setVisible(!isVisiable);
     }
 
     void VisionShopAppUI::DoImageResizing(MyGUI::Widget* pSender)
@@ -126,6 +128,19 @@ namespace MagicApp
             textString = mRoot.at(0)->findWidget("Edit_Height")->castType<MyGUI::EditBox>()->getOnlyText();
             int h = std::atoi(textString.c_str());
             pVS->ImageResizing(w, h);
+        }
+    }
+
+    void VisionShopAppUI::FastImageResizing(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            std::string textString = mRoot.at(0)->findWidget("Edit_Width")->castType<MyGUI::EditBox>()->getOnlyText();
+            int w = std::atoi(textString.c_str());
+            textString = mRoot.at(0)->findWidget("Edit_Height")->castType<MyGUI::EditBox>()->getOnlyText();
+            int h = std::atoi(textString.c_str());
+            pVS->FastImageResizing(w, h);
         }
     }
 

@@ -114,7 +114,16 @@ namespace MagicApp
     void VisionShopApp::ImageResizing(int w, int h)
     {
         double startTime = MagicCore::ToolKit::GetTime();
-        //cv::Mat resizedImg = MagicDIP::Retargetting::SeamCarvingResizing(mImage, w, h);
+        cv::Mat resizedImg = MagicDIP::Retargetting::SeamCarvingResizing(mImage, w, h);
+        mImage = resizedImg.clone();
+        DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
+        mUI.UpdateImageTexture(resizedToViewImg);
+    }
+
+    void VisionShopApp::FastImageResizing(int w, int h)
+    {
+        double startTime = MagicCore::ToolKit::GetTime();
         cv::Mat resizedImg = MagicDIP::Retargetting::FastSeamCarvingResizing(mImage, w, h);
         mImage = resizedImg.clone();
         DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;

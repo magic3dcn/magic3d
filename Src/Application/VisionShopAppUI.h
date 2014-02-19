@@ -20,6 +20,7 @@ namespace MagicApp
         void SaveImage(MyGUI::Widget* pSender);
         void ImageResizing(MyGUI::Widget* pSender);
         void DoImageResizing(MyGUI::Widget* pSender);
+        void FastImageResizing(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 
