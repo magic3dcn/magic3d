@@ -309,6 +309,9 @@
     <ClInclude Include="..\Src\DIP\Retargetting.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\Saliency.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -492,6 +495,9 @@
       <Filter>Application\VisionShopApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DIP\Retargetting.cpp">
+      <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\Saliency.cpp">
       <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>

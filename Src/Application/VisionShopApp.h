@@ -24,6 +24,7 @@ namespace MagicApp
         void SaveImage(void);
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
+        void SaliencyDetection(void);
         cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
     private:

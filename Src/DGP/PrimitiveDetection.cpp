@@ -3598,14 +3598,14 @@ namespace MagicDGP
             }
             //delete bestCand;
         }
-        for (int nid = 0; nid < neighborList.size(); nid++)
-        {
-            res.at(neighborList.at(nid)) = PrimitiveType::Blend;
-        }
-        for (int nsid = 0; nsid < sampleNeigbors.size(); nsid++)
-        {
-            res.at(sampleNeigbors.at(nsid)) = PrimitiveType::Other;
-        }
+        //for (int nid = 0; nid < neighborList.size(); nid++)
+        //{
+        //    res.at(neighborList.at(nid)) = PrimitiveType::Blend;
+        //}
+        //for (int nsid = 0; nsid < sampleNeigbors.size(); nsid++)
+        //{
+        //    res.at(sampleNeigbors.at(nsid)) = PrimitiveType::Other;
+        //}
 
         return bestCand;
     }

@@ -4,6 +4,7 @@
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DIP/Retargetting.h"
+#include "../DIP/Saliency.h"
 
 namespace MagicApp
 {
@@ -128,6 +129,13 @@ namespace MagicApp
         mImage = resizedImg.clone();
         DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
+        mUI.UpdateImageTexture(resizedToViewImg);
+    }
+
+    void VisionShopApp::SaliencyDetection(void)
+    {
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
+        cv::Mat resizedToViewImg = ResizeToViewSuit(saliencyImg);
         mUI.UpdateImageTexture(resizedToViewImg);
     }
 

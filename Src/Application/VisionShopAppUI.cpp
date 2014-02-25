@@ -30,6 +30,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_ImageResizing")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::ImageResizing);
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoImageResizing);
         mRoot.at(0)->findWidget("But_FastImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::FastImageResizing);
+        mRoot.at(0)->findWidget("But_SaliencyDetection")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SaliencyDetection);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Contact);
     }
@@ -86,6 +87,7 @@ namespace MagicApp
             {
                 mRoot.at(0)->findWidget("But_SaveImage")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_ImageResizing")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_SaliencyDetection")->castType<MyGUI::Button>()->setEnabled(true);
                 std::stringstream ss;
                 std::string textString;
                 ss << w;
@@ -116,6 +118,15 @@ namespace MagicApp
         mRoot.at(0)->findWidget("Edit_Height")->castType<MyGUI::EditBox>()->setVisible(!isVisiable);
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->setVisible(!isVisiable);
         mRoot.at(0)->findWidget("But_FastImageResizingDo")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+    }
+
+    void VisionShopAppUI::SaliencyDetection(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            pVS->SaliencyDetection();
+        }
     }
 
     void VisionShopAppUI::DoImageResizing(MyGUI::Widget* pSender)
