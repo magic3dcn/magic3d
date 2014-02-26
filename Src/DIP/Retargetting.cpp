@@ -881,4 +881,544 @@ namespace MagicDIP
             indexList.at(kid) = temp;
         }
     }
+
+    cv::Mat Retargetting::SaliencyBasedSeamCarvingResizing(const cv::Mat& inputImg, int targetW, int targetH)
+    {
+        int inputW = inputImg.cols;
+        int inputH = inputImg.rows;
+        int horizontalTime = inputW - targetW;
+        if (horizontalTime > 0)
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                float wScale = float(targetW) / inputW;
+                float hScale = float(targetH) / inputH;
+                if (wScale > hScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW;
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SaliencyBasedSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * hScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SaliencyBasedSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+            else
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = int(inputW * float(targetH) / inputH);
+                int tempH = targetH;
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                SaliencyBasedSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                cv::Mat imgRes = tempImg.colRange(0, targetW);
+                return imgRes;
+            }
+        }
+        else
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = targetW; 
+                int tempH = int(inputH * float(targetW) / inputW);
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                SaliencyBasedSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                return imgRes;
+            }
+            else
+            {
+                float wScale = float(targetW) / inputW;
+                float HScale = float(targetH) / inputH;
+                if (wScale > HScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW; 
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SaliencyBasedSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * HScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    SaliencyBasedSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+        }
+    }
+
+    void Retargetting::SaliencyBasedSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW)
+    {
+        //salient value
+        std::vector<std::vector<int> > salientValue(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+            salientValue.at(hid) = std::vector<int>(originW, 0);
+        }
+        float meanPixel[3] = {0.f, 0.f, 0.f};
+        for (int hid = 0; hid < originH; hid++)
+        {
+            for (int wid = 0; wid < originW; wid++)
+            {
+                unsigned char* pixel = img.ptr(hid, wid);
+                meanPixel[0] += pixel[0];
+                meanPixel[1] += pixel[1];
+                meanPixel[2] += pixel[2];
+            }
+        }
+        meanPixel[0] /= (originH * originW);
+        meanPixel[1] /= (originH * originW);
+        meanPixel[2] /= (originH * originW);
+        for (int hid = 2; hid < originH - 2; hid++)
+        {
+            for (int wid = 2; wid < originW - 2; wid++)
+            {
+                float gaussianPixel[3] = {0.f, 0.f, 0.f};
+                for (int i = -2; i <= 2; i++)
+                {
+                    for (int j = -2; j <= 2; j++)
+                    {
+                        if (i == 0 && j == 0)
+                        {
+                            unsigned char* pixel = img.ptr(hid + i, wid + j);
+                            gaussianPixel[0] += pixel[0] * 6;
+                            gaussianPixel[1] += pixel[1] * 6;
+                            gaussianPixel[2] += pixel[2] * 6;
+                        }
+                        if ((abs(i) == 1 && abs(j) <= 1) || (abs(i) <= 1 && abs(j) == 1))
+                        {
+                            unsigned char* pixel = img.ptr(hid + i, wid + j);
+                            gaussianPixel[0] += pixel[0] * 4;
+                            gaussianPixel[1] += pixel[1] * 4;
+                            gaussianPixel[2] += pixel[2] * 4;
+                        }
+                        else
+                        {
+                            unsigned char* pixel = img.ptr(hid + i, wid + j);
+                            gaussianPixel[0] += pixel[0];
+                            gaussianPixel[1] += pixel[1];
+                            gaussianPixel[2] += pixel[2];
+                        }
+                    }
+                }
+                gaussianPixel[0] /= 54.f;
+                gaussianPixel[1] /= 54.f;
+                gaussianPixel[2] /= 54.f;
+                float fTemp = (meanPixel[0] - gaussianPixel[0]) * (meanPixel[0] - gaussianPixel[0]) + 
+                    (meanPixel[1] - gaussianPixel[1]) * (meanPixel[1] - gaussianPixel[1]) + 
+                    (meanPixel[2] - gaussianPixel[2]) * (meanPixel[2] - gaussianPixel[2]);
+                fTemp = sqrt(fTemp);
+                salientValue.at(hid).at(wid) = int(fTemp);
+                //DebugLog << "Saliency: " << int(fTemp) << std::endl;
+            }
+        }
+        //std::vector<std::vector<int> > gradMat(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+            //std::vector<int> gradList(originW);
+            for (int wid = 0; wid < originW; wid++)
+            {
+                unsigned char* pixel = img.ptr(hid, wid);
+                unsigned char* pixelWNext = NULL;
+                if (wid == 0)
+                {
+                    pixelWNext = img.ptr(hid, wid + 1);
+                }
+                else
+                {
+                    pixelWNext = img.ptr(hid, wid - 1);
+                }
+                unsigned char* pixelHNext = NULL;
+                if (hid == 0)
+                {
+                    pixelHNext = img.ptr(hid + 1, wid);
+                }
+                else
+                {
+                    pixelHNext = img.ptr(hid - 1, wid);
+                }
+                int grad = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+                salientValue.at(hid).at(wid) += grad * 10;
+                //DebugLog << "Grad: " << grad << std::endl;
+            }
+            //gradMat.at(hid) = gradList;
+        }
+        //
+
+        int cutTimes = originW - targetW;
+        std::vector<std::vector<int> > traceIndex(originH);
+        std::vector<int> curM(originW);
+        std::vector<int> lastM(originW, 0);
+        std::vector<int> traceLastIndex(originW);
+        for (int cutIndex = 0; cutIndex < cutTimes; cutIndex++)
+        {
+            int curW = originW - cutIndex;
+            for (int hid = 0; hid < originH; hid++)
+            {
+                std::vector<int>& salientList = salientValue.at(hid);
+                //wid == 0
+                {
+                    if (lastM.at(1) < lastM.at(0))
+                    {
+                        curM.at(0) = salientList.at(0) + lastM.at(1);
+                        traceLastIndex.at(0) = 1;
+                    }
+                    else
+                    {
+                        curM.at(0) = salientList.at(0) + lastM.at(0);
+                        traceLastIndex.at(0) = 0;
+                    }
+                }
+                //0 < wid < curW - 1
+                for (int wid = 1; wid < curW - 1; wid++)
+                {
+                    int traceTemp = wid;
+                    if (lastM.at(wid - 1) < lastM.at(traceTemp))
+                    {
+                        traceTemp = wid - 1;
+                    }
+                    if (lastM.at(wid + 1) < lastM.at(traceTemp))
+                    {
+                        traceTemp = wid + 1;
+                    }
+                    curM.at(wid) = salientList.at(wid) + lastM.at(traceTemp);
+                    traceLastIndex.at(wid) = traceTemp;
+                }
+                //wid == curW - 1
+                {
+                    if (lastM.at(curW - 2) < lastM.at(curW - 1))
+                    {
+                        curM.at(curW - 1) = salientList.at(curW - 1) + lastM.at(curW - 2);
+                        traceLastIndex.at(curW - 1) = curW - 2;
+                    }
+                    else
+                    {
+                        curM.at(curW - 1) = salientList.at(curW - 1) + lastM.at(curW - 1);
+                        traceLastIndex.at(curW - 1) = curW - 1;
+                    }
+                }
+                //
+                traceIndex.at(hid) = traceLastIndex;
+                lastM = curM;
+            }
+            //chose the minimal cut index
+            int minimalIndex = 0;
+            for (int wid = 0; wid < curW; wid++)
+            {
+                if (curM.at(wid) < curM.at(minimalIndex))
+                {
+                    minimalIndex = wid;
+                }
+            }
+            //move pixel and gradMat
+            int cutPos = minimalIndex;
+            for (int hid = originH - 1; hid >= 0; hid--)
+            {
+                for (int mid = cutPos; mid < curW - 1; mid++)
+                {
+                    unsigned char* pixel = img.ptr(hid, mid);
+                    unsigned char* pixelNext = img.ptr(hid, mid + 1);
+                    pixel[0] = pixelNext[0];
+                    pixel[1] = pixelNext[1];
+                    pixel[2] = pixelNext[2];
+                    salientValue.at(hid).at(mid) = salientValue.at(hid).at(mid + 1);
+                }
+                cutPos = traceIndex.at(hid).at(cutPos);
+            }
+        }
+    }
+
+    void Retargetting::SaliencyBasedSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH)
+    {
+
+    }
+
+    cv::Mat Retargetting::ImportanceDiffusionSeamCarvingResizing(const cv::Mat& inputImg, int targetW, int targetH)
+    {
+        int inputW = inputImg.cols;
+        int inputH = inputImg.rows;
+        int horizontalTime = inputW - targetW;
+        if (horizontalTime > 0)
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                float wScale = float(targetW) / inputW;
+                float hScale = float(targetH) / inputH;
+                if (wScale > hScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW;
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    ImportanceDiffusionSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * hScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    ImportanceDiffusionSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+            else
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = int(inputW * float(targetH) / inputH);
+                int tempH = targetH;
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                ImportanceDiffusionSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                cv::Mat imgRes = tempImg.colRange(0, targetW);
+                return imgRes;
+            }
+        }
+        else
+        {
+            int verticalTime = inputH - targetH;
+            if (verticalTime > 0)
+            {
+                cv::Mat imgPro = inputImg.clone();
+                int tempW = targetW; 
+                int tempH = int(inputH * float(targetW) / inputW);
+                cv::Size tempSize(tempW, tempH);
+                cv::Mat tempImg(tempSize, CV_8UC3);
+                cv::resize(imgPro, tempImg, tempSize);
+                ImportanceDiffusionSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                return imgRes;
+            }
+            else
+            {
+                float wScale = float(targetW) / inputW;
+                float HScale = float(targetH) / inputH;
+                if (wScale > HScale)
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = targetW; 
+                    int tempH = int(inputH * wScale);
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    ImportanceDiffusionSeamCarvingVertical(tempImg, tempW, tempH, targetH);
+                    cv::Mat imgRes = tempImg.rowRange(0, targetH);
+                    return imgRes;
+                }
+                else
+                {
+                    cv::Mat imgPro = inputImg.clone();
+                    int tempW = int(inputW * HScale);
+                    int tempH = targetH;
+                    cv::Size tempSize(tempW, tempH);
+                    cv::Mat tempImg(tempSize, CV_8UC3);
+                    cv::resize(imgPro, tempImg, tempSize);
+                    ImportanceDiffusionSeamCarvingHorizontal(tempImg, tempW, tempH, targetW);
+                    cv::Mat imgRes = tempImg.colRange(0, targetW);
+                    return imgRes;
+                }
+            }
+        }
+    }
+
+    void Retargetting::ImportanceDiffusionSeamCarvingHorizontal(cv::Mat& img, int originW, int originH, int targetW)
+    {
+        int cutTimes = originW - targetW;
+        std::vector<std::vector<int> > gradMat(originH);
+        for (int hid = 0; hid < originH; hid++)
+        {
+            std::vector<int> gradList(originW);
+            for (int wid = 0; wid < originW; wid++)
+            {
+                unsigned char* pixel = img.ptr(hid, wid);
+                unsigned char* pixelWNext = NULL;
+                if (wid == 0)
+                {
+                    pixelWNext = img.ptr(hid, wid + 1);
+                }
+                else
+                {
+                    pixelWNext = img.ptr(hid, wid - 1);
+                }
+                unsigned char* pixelHNext = NULL;
+                if (hid == 0)
+                {
+                    pixelHNext = img.ptr(hid + 1, wid);
+                }
+                else
+                {
+                    pixelHNext = img.ptr(hid - 1, wid);
+                }
+                gradList.at(wid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+            }
+            gradMat.at(hid) = gradList;
+        }
+        std::vector<std::vector<int> > traceIndex(originH);
+        std::vector<int> curM(originW);
+        std::vector<int> lastM(originW, 0);
+        std::vector<int> traceLastIndex(originW);
+        for (int cutIndex = 0; cutIndex < cutTimes; cutIndex++)
+        {
+            int curW = originW - cutIndex;
+            for (int hid = 0; hid < originH; hid++)
+            {
+                std::vector<int>& gradList = gradMat.at(hid);
+                //wid == 0
+                {
+                    if (lastM.at(1) < lastM.at(0))
+                    {
+                        curM.at(0) = gradList.at(0) + lastM.at(1);
+                        traceLastIndex.at(0) = 1;
+                    }
+                    else
+                    {
+                        curM.at(0) = gradList.at(0) + lastM.at(0);
+                        traceLastIndex.at(0) = 0;
+                    }
+                }
+                //0 < wid < curW - 1
+                for (int wid = 1; wid < curW - 1; wid++)
+                {
+                    int traceTemp = wid;
+                    if (lastM.at(wid - 1) < lastM.at(traceTemp))
+                    {
+                        traceTemp = wid - 1;
+                    }
+                    if (lastM.at(wid + 1) < lastM.at(traceTemp))
+                    {
+                        traceTemp = wid + 1;
+                    }
+                    curM.at(wid) = gradList.at(wid) + lastM.at(traceTemp);
+                    traceLastIndex.at(wid) = traceTemp;
+                }
+                //wid == curW - 1
+                {
+                    if (lastM.at(curW - 2) < lastM.at(curW - 1))
+                    {
+                        curM.at(curW - 1) = gradList.at(curW - 1) + lastM.at(curW - 2);
+                        traceLastIndex.at(curW - 1) = curW - 2;
+                    }
+                    else
+                    {
+                        curM.at(curW - 1) = gradList.at(curW - 1) + lastM.at(curW - 1);
+                        traceLastIndex.at(curW - 1) = curW - 1;
+                    }
+                }
+                //
+                traceIndex.at(hid) = traceLastIndex;
+                lastM = curM;
+            }
+            //chose the minimal cut index
+            int minimalIndex = 0;
+            for (int wid = 0; wid < curW; wid++)
+            {
+                if (curM.at(wid) < curM.at(minimalIndex))
+                {
+                    minimalIndex = wid;
+                }
+            }
+            //move pixel and gradMat
+            int cutPos = minimalIndex;
+            int scale = 1;
+            for (int hid = originH - 1; hid >= 0; hid--)
+            {
+                if (cutPos > 0)
+                {
+                    gradMat.at(hid).at(cutPos - 1) += gradMat.at(hid).at(cutPos) * scale;
+                }
+                if (cutPos < curW -1)
+                {
+                    gradMat.at(hid).at(cutPos + 1) += gradMat.at(hid).at(cutPos) * scale;
+                }
+                for (int mid = cutPos; mid < curW - 1; mid++)
+                {
+                    unsigned char* pixel = img.ptr(hid, mid);
+                    unsigned char* pixelNext = img.ptr(hid, mid + 1);
+                    pixel[0] = pixelNext[0];
+                    pixel[1] = pixelNext[1];
+                    pixel[2] = pixelNext[2];
+                    gradMat.at(hid).at(mid) = gradMat.at(hid).at(mid + 1);
+                }
+                cutPos = traceIndex.at(hid).at(cutPos);
+            }
+            ////re-calculate cut grad
+            //cutPos = minimalIndex;
+            //for (int hid = originH - 1; hid >= 0; hid--)
+            //{
+            //    if (cutPos < curW - 1)
+            //    {
+            //        unsigned char* pixel = img.ptr(hid, cutPos);
+            //        unsigned char* pixelWNext = NULL;
+            //        if (cutPos == 0)
+            //        {
+            //            pixelWNext = img.ptr(hid, cutPos + 1);
+            //        }
+            //        else
+            //        {
+            //            pixelWNext = img.ptr(hid, cutPos - 1);
+            //        }
+            //        unsigned char* pixelHNext = NULL;
+            //        if (hid == 0)
+            //        {
+            //            pixelHNext = img.ptr(hid + 1, cutPos);
+            //        }
+            //        else
+            //        {
+            //            pixelHNext = img.ptr(hid - 1, cutPos);
+            //        }
+            //        gradMat.at(hid).at(cutPos) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+            //            abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+            //    }
+            //    cutPos = traceIndex.at(hid).at(cutPos);
+            //}
+        }
+    }
+
+    void Retargetting::ImportanceDiffusionSeamCarvingVertical(cv::Mat& img, int originW, int originH, int targetH)
+    {
+
+    }
 }

@@ -97,4 +97,59 @@ namespace MagicDIP
         }
         return cvtImg;
     }
+
+    cv::Mat SaliencyDetection::GradientSaliency(const cv::Mat& inputImg)
+    {
+        int inputW = inputImg.cols;
+        int inputH = inputImg.rows;
+        std::vector<std::vector<int> > gradMat(inputH);
+        int maxGrad = 0;
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            std::vector<int> gradList(inputW);
+            for (int wid = 0; wid < inputW; wid++)
+            {
+                const unsigned char* pixel = inputImg.ptr(hid, wid);
+                const unsigned char* pixelWNext = NULL;
+                if (wid == 0)
+                {
+                    pixelWNext = inputImg.ptr(hid, wid + 1);
+                }
+                else
+                {
+                    pixelWNext = inputImg.ptr(hid, wid - 1);
+                }
+                const unsigned char* pixelHNext = NULL;
+                if (hid == 0)
+                {
+                    pixelHNext = inputImg.ptr(hid + 1, wid);
+                }
+                else
+                {
+                    pixelHNext = inputImg.ptr(hid - 1, wid);
+                }
+                gradList.at(wid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+                if (gradList.at(wid) > maxGrad)
+                {
+                    maxGrad = gradList.at(wid);
+                }
+            }
+            gradMat.at(hid) = gradList;
+        }
+        cv::Size imgSize(inputW, inputH);
+        cv::Mat saliencyImg(imgSize, CV_8UC3);
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            for (int wid = 0; wid < inputW; wid++)
+            {
+                unsigned char* pixel = saliencyImg.ptr(hid, wid);
+                pixel[0] = gradMat.at(hid).at(wid) * 255 / maxGrad;
+                pixel[1] = gradMat.at(hid).at(wid) * 255 / maxGrad;
+                pixel[2] = gradMat.at(hid).at(wid) * 255 / maxGrad;
+            }
+        }
+
+        return saliencyImg;
+    }
 }
