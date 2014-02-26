@@ -126,8 +126,8 @@ namespace MagicApp
     {
         double startTime = MagicCore::ToolKit::GetTime();
         //cv::Mat resizedImg = MagicDIP::Retargetting::FastSeamCarvingResizing(mImage, w, h);
-        //cv::Mat resizedImg = MagicDIP::Retargetting::SaliencyBasedSeamCarvingResizing(mImage, w, h);
-        cv::Mat resizedImg = MagicDIP::Retargetting::ImportanceDiffusionSeamCarvingResizing(mImage, w, h);
+        cv::Mat resizedImg = MagicDIP::Retargetting::SaliencyBasedSeamCarvingResizing(mImage, w, h);
+        //cv::Mat resizedImg = MagicDIP::Retargetting::ImportanceDiffusionSeamCarvingResizing(mImage, w, h);
         mImage = resizedImg.clone();
         DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
@@ -137,7 +137,9 @@ namespace MagicApp
     void VisionShopApp::SaliencyDetection(void)
     {
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
-        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGAndGradientSaliency(mImage);
+        mImage = saliencyImg.clone();
         cv::Mat resizedToViewImg = ResizeToViewSuit(saliencyImg);
         mUI.UpdateImageTexture(resizedToViewImg);
     }

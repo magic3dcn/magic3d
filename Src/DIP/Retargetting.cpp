@@ -1001,6 +1001,7 @@ namespace MagicDIP
         meanPixel[0] /= (originH * originW);
         meanPixel[1] /= (originH * originW);
         meanPixel[2] /= (originH * originW);
+        int maxSalientValue = 0;
         for (int hid = 2; hid < originH - 2; hid++)
         {
             for (int wid = 2; wid < originW - 2; wid++)
@@ -1041,13 +1042,25 @@ namespace MagicDIP
                     (meanPixel[2] - gaussianPixel[2]) * (meanPixel[2] - gaussianPixel[2]);
                 fTemp = sqrt(fTemp);
                 salientValue.at(hid).at(wid) = int(fTemp);
+                if (salientValue.at(hid).at(wid) > maxSalientValue)
+                {
+                    maxSalientValue = salientValue.at(hid).at(wid);
+                }
                 //DebugLog << "Saliency: " << int(fTemp) << std::endl;
             }
         }
-        //std::vector<std::vector<int> > gradMat(originH);
         for (int hid = 0; hid < originH; hid++)
         {
-            //std::vector<int> gradList(originW);
+            for (int wid = 0; wid < originW; wid++)
+            {
+                salientValue.at(hid).at(wid) = salientValue.at(hid).at(wid) * 255 / maxSalientValue;
+            }
+        }
+        std::vector<std::vector<int> > gradMat(originH);
+        int maxGrad = 0;
+        for (int hid = 0; hid < originH; hid++)
+        {
+            std::vector<int> gradList(originW);
             for (int wid = 0; wid < originW; wid++)
             {
                 unsigned char* pixel = img.ptr(hid, wid);
@@ -1069,12 +1082,25 @@ namespace MagicDIP
                 {
                     pixelHNext = img.ptr(hid - 1, wid);
                 }
-                int grad = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
+                gradList.at(wid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
                     abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
-                salientValue.at(hid).at(wid) += grad * 10;
-                //DebugLog << "Grad: " << grad << std::endl;
+                if (gradList.at(wid) > maxGrad)
+                {
+                    maxGrad = gradList.at(wid);
+                }
             }
-            //gradMat.at(hid) = gradList;
+            gradMat.at(hid) = gradList;
+        }
+        for (int hid = 0; hid < originH; hid++)
+        {
+            for (int wid = 0; wid < originW; wid++)
+            {
+                gradMat.at(hid).at(wid) = gradMat.at(hid).at(wid) * 255 / maxGrad;
+                if (gradMat.at(hid).at(wid) > salientValue.at(hid).at(wid))
+                {
+                    salientValue.at(hid).at(wid) = gradMat.at(hid).at(wid);
+                }
+            }
         }
         //
 
@@ -1145,8 +1171,17 @@ namespace MagicDIP
             }
             //move pixel and gradMat
             int cutPos = minimalIndex;
+            int scale = 1;
             for (int hid = originH - 1; hid >= 0; hid--)
             {
+                if (cutPos > 0)
+                {
+                    salientValue.at(hid).at(cutPos - 1) += salientValue.at(hid).at(cutPos) * scale;
+                }
+                if (cutPos < curW -1)
+                {
+                    salientValue.at(hid).at(cutPos + 1) += salientValue.at(hid).at(cutPos) * scale;
+                }
                 for (int mid = cutPos; mid < curW - 1; mid++)
                 {
                     unsigned char* pixel = img.ptr(hid, mid);
