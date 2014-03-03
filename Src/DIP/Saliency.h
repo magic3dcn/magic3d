@@ -12,5 +12,6 @@ namespace MagicDIP
         static cv::Mat DoGBandSaliency(const cv::Mat& inputImg);
         static cv::Mat GradientSaliency(const cv::Mat& inputImg);
         static cv::Mat DoGAndGradientSaliency(const cv::Mat& inputImg);
+        static cv::Mat MultiScaleDoGBandSaliency(const cv::Mat& inputImg);
     };
 }

@@ -1,4 +1,5 @@
 #include "Saliency.h"
+#include "../DGP/Vector3.h"
 
 namespace MagicDIP
 {
@@ -229,7 +230,7 @@ namespace MagicDIP
         {
             for (int wid = 0; wid < inputW; wid++)
             {
-                salientValue.at(hid).at(wid) = salientValue.at(hid).at(wid) * 20 / maxSalientValue;
+                salientValue.at(hid).at(wid) = salientValue.at(hid).at(wid) * 255 / maxSalientValue;
             }
         }
         //
@@ -299,5 +300,115 @@ namespace MagicDIP
         }
 
         return saliencyImg;
+    }
+
+    class ImgSubRegion
+    {
+    public:
+        ImgSubRegion(int leftTopX, int leftTopY, int width, int height);
+        ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicDGP::Vector3& avgPixel);
+        ~ImgSubRegion();
+        bool MergeRegion(const ImgSubRegion& imgNeighbor, ImgSubRegion& mergedRegion);
+        void CalculateAvgPixel();
+
+    public:
+        int mLeftTopX, mLeftTopY;
+        int mWidth, mHeight;
+        MagicDGP::Vector3 mAvgPixel;
+    };
+
+    ImgSubRegion::ImgSubRegion(int leftTopX, int leftTopY, int width, int height) :
+        mLeftTopX(leftTopX),
+        mLeftTopY(leftTopY),
+        mWidth(width),
+        mHeight(height),
+        mAvgPixel()
+    {
+    }
+
+    ImgSubRegion::ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicDGP::Vector3& avgPixel) :
+        mLeftTopX(leftTopX),
+        mLeftTopY(leftTopY),
+        mWidth(width),
+        mHeight(height),
+        mAvgPixel(avgPixel)
+    {
+    }
+
+    ImgSubRegion::~ImgSubRegion()
+    {
+    }
+
+    bool ImgSubRegion::MergeRegion(const ImgSubRegion& imgNeighbor, ImgSubRegion& mergedRegion)
+    {
+        return true;
+    }
+
+    void ImgSubRegion::CalculateAvgPixel()
+    {
+
+    }
+
+    cv::Mat SaliencyDetection::MultiScaleDoGBandSaliency(const cv::Mat& inputImg)
+    {
+        cv::Mat cvtImg;
+        cv::cvtColor(inputImg, cvtImg, CV_BGR2Lab);
+        int inputW = inputImg.cols;
+        int inputH = inputImg.rows;
+
+        //calculate pixel average value
+        std::vector<std::vector<MagicDGP::Vector3> > avgImg(inputH);
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            avgImg.at(hid) = std::vector<MagicDGP::Vector3>(inputW);
+        }
+        for (int wid = 0; wid < inputW; wid++)
+        {
+            for (int hid = 1; hid < inputH - 1; hid++)
+            {
+                MagicDGP::Vector3 avgV(0, 0, 0);
+                unsigned char* pixel = cvtImg.ptr(hid, wid);
+                unsigned char* pixelTop  = cvtImg.ptr(hid + 1, wid);
+                unsigned char* pixelDown = cvtImg.ptr(hid - 1, wid);
+                for (int i = 0; i < 3; i++)
+                {
+                    avgV[i] += pixel[i] + pixelTop[i] + pixelDown[i];
+                }
+                avgImg.at(hid).at(wid) = avgV;
+            }
+        }
+        std::vector<MagicDGP::Vector3> avgRowTemp(inputW);
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            for (int wid = 1; wid < inputW - 1; wid++)
+            {
+                avgRowTemp.at(wid) = (avgImg.at(hid).at(wid - 1) + avgImg.at(hid).at(wid) + avgImg.at(hid).at(wid + 1)) / 9.0;
+            }
+            avgImg.at(hid) = avgRowTemp;
+        }
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            for (int wid = 0; wid < inputW; wid++)
+            {
+                if (hid == 0 || hid == inputH - 1 || wid == 0 || wid == inputW - 1)
+                {
+                    unsigned char* pixel = cvtImg.ptr(hid, wid);
+                    avgImg.at(hid).at(wid)[0] = pixel[0];
+                    avgImg.at(hid).at(wid)[1] = pixel[1];
+                    avgImg.at(hid).at(wid)[2] = pixel[2];
+                }
+            }
+        }
+
+        //construct a sub-region matrix
+        int wNum = 10;
+        int hNum = 10;
+
+        //calculate sub-region saliency
+
+        //combine neighbor sub-region
+
+        //
+        
     }
 }

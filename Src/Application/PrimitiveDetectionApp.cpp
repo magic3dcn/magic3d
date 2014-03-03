@@ -177,8 +177,8 @@ namespace MagicApp
         }
         else if (arg.key == OIS::KC_N && mpMesh != NULL)
         {
-            //CalNormalDeviation();
-            CalNormalDeviationByMT();
+            CalNormalDeviation();
+            //CalNormalDeviationByMT();
         }
         else if (arg.key == OIS::KC_A && mpMesh != NULL)
         {
@@ -622,6 +622,10 @@ namespace MagicApp
                 nDev /= neighborList.size();
             }
             norDev.at(vid) = nDev;
+            nDev = nDev * 10 + 0.2;
+            //DebugLog << "nDev: " << nDev << std::endl;
+            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(nDev);
+            mpMesh->GetVertex(vid)->SetColor(color);
         }
         //std::vector<MagicDGP::Vector3> norGrad;
         //CalScaleGradient(norDev, norGrad, mpMesh);
@@ -672,41 +676,42 @@ namespace MagicApp
         //    mpMesh->GetVertex(vid)->SetColor(color);
         //}
 
-        double scale = 5;
-        //std::map<MagicDGP::Real, int> scoreMap;
-        for (int vid = 0; vid < vertNum; vid++)
-        {
-            MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
-            MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-            MagicDGP::Real devGrad = 0;
-            int neigNum = 0;
-            do
-            {
-                if (pEdge == NULL)
-                {
-                    break;
-                }
-                devGrad += fabs(norDev.at(vid) - norDev.at(pEdge->GetVertex()->GetId()));
-                neigNum++;
-                pEdge = pEdge->GetPair()->GetNext();
-            } while (pEdge != pVert->GetEdge());
-            if (neigNum > 0)
-            {
-                devGrad /= neigNum;
-            }
-            devGrad = devGrad * scale + 0.2;
-            /*if (devGrad > 0.4)
-            {
-                devGrad = 1.2;
-            }
-            else
-            {
-                devGrad = 0.4;
-            }*/
-            //scoreMap[devGrad] = vid;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
-            mpMesh->GetVertex(vid)->SetColor(color);
-        }
+        //double scale = 5;
+        ////std::map<MagicDGP::Real, int> scoreMap;
+        //for (int vid = 0; vid < vertNum; vid++)
+        //{
+        //    MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
+        //    MagicDGP::Edge3D* pEdge = pVert->GetEdge();
+        //    MagicDGP::Real devGrad = 0;
+        //    int neigNum = 0;
+        //    do
+        //    {
+        //        if (pEdge == NULL)
+        //        {
+        //            break;
+        //        }
+        //        devGrad += fabs(norDev.at(vid) - norDev.at(pEdge->GetVertex()->GetId()));
+        //        neigNum++;
+        //        pEdge = pEdge->GetPair()->GetNext();
+        //    } while (pEdge != pVert->GetEdge());
+        //    if (neigNum > 0)
+        //    {
+        //        devGrad /= neigNum;
+        //    }
+        //    devGrad = devGrad * scale + 0.2;
+        //    /*if (devGrad > 0.4)
+        //    {
+        //        devGrad = 1.2;
+        //    }
+        //    else
+        //    {
+        //        devGrad = 0.4;
+        //    }*/
+        //    //scoreMap[devGrad] = vid;
+        //    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
+        //    mpMesh->GetVertex(vid)->SetColor(color);
+        //}
+
         /*int validNum = vertNum / 2;
         int validIndex = 0;
         MagicDGP::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
@@ -738,7 +743,7 @@ namespace MagicApp
         }
         threadPool.WaitUntilAllDone();
         DebugLog << "Finish multi-thread normal deviation" << std::endl;
-        double scale = 5;
+        double scale = 10;
         for (int vid = 0; vid < vertNum; vid++)
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
