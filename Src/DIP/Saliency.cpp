@@ -305,17 +305,27 @@ namespace MagicDIP
     class ImgSubRegion
     {
     public:
+        ImgSubRegion();
         ImgSubRegion(int leftTopX, int leftTopY, int width, int height);
         ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicDGP::Vector3& avgPixel);
         ~ImgSubRegion();
         bool MergeRegion(const ImgSubRegion& imgNeighbor, ImgSubRegion& mergedRegion);
-        void CalculateAvgPixel();
+        void CalculateAvgPixel(const cv::Mat& img);
 
     public:
         int mLeftTopX, mLeftTopY;
         int mWidth, mHeight;
         MagicDGP::Vector3 mAvgPixel;
     };
+
+    ImgSubRegion::ImgSubRegion() :
+        mLeftTopX(-1),
+        mLeftTopY(-1),
+        mWidth(-1),
+        mHeight(-1),
+        mAvgPixel()
+    {
+    }
 
     ImgSubRegion::ImgSubRegion(int leftTopX, int leftTopY, int width, int height) :
         mLeftTopX(leftTopX),
@@ -341,15 +351,79 @@ namespace MagicDIP
 
     bool ImgSubRegion::MergeRegion(const ImgSubRegion& imgNeighbor, ImgSubRegion& mergedRegion)
     {
-        return true;
+        if (mLeftTopY == imgNeighbor.mLeftTopY)
+        {
+            if (mLeftTopX + mWidth == imgNeighbor.mLeftTopX)
+            {
+                mergedRegion.mLeftTopX = mLeftTopX;
+                mergedRegion.mLeftTopY = mLeftTopY;
+                mergedRegion.mWidth = mWidth + imgNeighbor.mWidth;
+                mergedRegion.mHeight = mHeight;
+                mergedRegion.mAvgPixel = (mAvgPixel + imgNeighbor.mAvgPixel) / 2.0;
+                return true;
+            }
+            else if (imgNeighbor.mLeftTopX + imgNeighbor.mWidth == mLeftTopX)
+            {
+                mergedRegion.mLeftTopX = imgNeighbor.mLeftTopX;
+                mergedRegion.mLeftTopY = mLeftTopY;
+                mergedRegion.mWidth = mWidth + imgNeighbor.mWidth;
+                mergedRegion.mHeight = mHeight;
+                mergedRegion.mAvgPixel = (mAvgPixel + imgNeighbor.mAvgPixel) / 2.0;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (mLeftTopX == imgNeighbor.mLeftTopX)
+        {
+            if (mLeftTopY + mHeight == imgNeighbor.mLeftTopY)
+            {
+                mergedRegion.mLeftTopX = mLeftTopX;
+                mergedRegion.mLeftTopY = mLeftTopY;
+                mergedRegion.mWidth = mWidth;
+                mergedRegion.mHeight = mHeight + imgNeighbor.mHeight;
+                mergedRegion.mAvgPixel = (mAvgPixel + imgNeighbor.mAvgPixel) / 2.0;
+                return true;
+            }
+            else if (imgNeighbor.mLeftTopY + imgNeighbor.mHeight == mLeftTopY)
+            {
+                mergedRegion.mLeftTopX = mLeftTopX;
+                mergedRegion.mLeftTopY = imgNeighbor.mLeftTopY;
+                mergedRegion.mWidth = mWidth;
+                mergedRegion.mHeight = mHeight + imgNeighbor.mHeight;
+                mergedRegion.mAvgPixel = (mAvgPixel + imgNeighbor.mAvgPixel) / 2.0;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    void ImgSubRegion::CalculateAvgPixel()
+    void ImgSubRegion::CalculateAvgPixel(const cv::Mat& img)
     {
-
+        mAvgPixel = MagicDGP::Vector3(0, 0, 0);
+        for (int hid = mLeftTopY; hid < mLeftTopY + mHeight; hid++)
+        {
+            for (int wid = mLeftTopX; wid < mLeftTopX + mWidth; wid++)
+            {
+                const unsigned char* pixel = img.ptr(hid, wid);
+                mAvgPixel[0] += pixel[0];
+                mAvgPixel[1] += pixel[1];
+                mAvgPixel[2] += pixel[2];
+            }
+        }
+        mAvgPixel /= (mHeight * mWidth);
     }
 
-    cv::Mat SaliencyDetection::MultiScaleDoGBandSaliency(const cv::Mat& inputImg)
+    cv::Mat SaliencyDetection::MultiScaleDoGBandSaliency(const cv::Mat& inputImg, int wNum, int hNum)
     {
         cv::Mat cvtImg;
         cv::cvtColor(inputImg, cvtImg, CV_BGR2Lab);
@@ -401,14 +475,159 @@ namespace MagicDIP
         }
 
         //construct a sub-region matrix
-        int wNum = 10;
-        int hNum = 10;
-
-        //calculate sub-region saliency
-
-        //combine neighbor sub-region
-
-        //
+        int wDelta = inputW / wNum;
+        int hDelta = inputH / hNum;
+        std::vector<std::vector<ImgSubRegion> > subRgnMat(hNum);
+        for (int hid = 0; hid < hNum; hid++)
+        {
+            std::vector<ImgSubRegion> subRgnRow(wNum);
+            for (int wid = 0; wid < wNum; wid++)
+            {
+                int leftTopX = wid * wDelta;
+                int leftTopY = hid * hDelta;
+                int width = wDelta;
+                int height = hDelta;
+                if (wid == wNum - 1)
+                {
+                    width = inputW - wDelta * (wNum - 1);
+                }
+                if (hid == hNum - 1)
+                {
+                    height = inputH - hDelta * (hNum - 1);
+                }
+                ImgSubRegion subRgn(leftTopX, leftTopY, width, height);
+                subRgn.CalculateAvgPixel(cvtImg);
+                subRgnRow.at(wid) = subRgn;
+            }
+            subRgnMat.at(hid) = subRgnRow;
+        }
         
+        int subNumH = subRgnMat.size();
+        int subNumW = subRgnMat.at(0).size();
+        std::vector<std::vector<int> > saliencyMat(inputH);
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            saliencyMat.at(hid) = std::vector<int>(inputW, 0);
+        }
+        while (true)
+        {
+            //calculate sub-region saliency
+            for (int subHid = 0; subHid < subNumH; subHid++)
+            {
+                for (int subWid = 0; subWid < subNumW; subWid++)
+                {
+                    ImgSubRegion& subRgn = subRgnMat.at(subHid).at(subWid);
+                    for (int hid = subRgn.mLeftTopY; hid < subRgn.mLeftTopY + subRgn.mHeight; hid++)
+                    {
+                        for (int wid = subRgn.mLeftTopX; wid < subRgn.mLeftTopX + subRgn.mWidth; wid++)
+                        {
+                            saliencyMat.at(hid).at(wid) += (subRgn.mAvgPixel - avgImg.at(hid).at(wid)).Length();
+                        }
+                    }
+                }
+            }
+
+            //combine neighbor sub-region
+            if (subNumH == 1 && subNumW == 1)
+            {
+                break;
+            }
+
+            int subNumHNext = subNumH / 2 + subNumH % 2;
+            int subNumWNext = subNumW / 2 + subNumW % 2;
+            std::vector<std::vector<ImgSubRegion> > subRgnMatNext(subNumW);
+            int combinedColNum = subNumH - subNumH % 2;
+            for (int subWid = 0; subWid < subNumW; subWid++)
+            {
+                std::vector<ImgSubRegion> subRgnColNext;
+                for (int subHid = 0; subHid < combinedColNum; subHid += 2)
+                {
+                    ImgSubRegion mergedRgn;
+                    if ( subRgnMat.at(subHid).at(subWid).MergeRegion(subRgnMat.at(subHid + 1).at(subWid), mergedRgn) )
+                    {
+                        subRgnColNext.push_back(mergedRgn);
+                    }
+                    else
+                    {
+                        DebugLog << "Merge Col Region Error" << std::endl;
+                    }
+                }
+                if (subNumH % 2)
+                {
+                    subRgnColNext.push_back(subRgnMat.at(subNumH - 1).at(subWid));
+                }
+                subRgnMatNext.at(subWid) = subRgnColNext;
+            }
+            int combinedRowNum = subNumW - subNumW % 2;
+            subRgnMat.clear();
+            subRgnMat = std::vector<std::vector<ImgSubRegion> >(subNumHNext);
+            for (int subHid = 0; subHid < subNumHNext; subHid++)
+            {
+                std::vector<ImgSubRegion> subRgnRowNext;
+                for (int subWid = 0; subWid < combinedRowNum; subWid += 2)
+                {
+                    ImgSubRegion mergedRgn;
+                    if ( subRgnMatNext.at(subWid).at(subHid).MergeRegion(subRgnMatNext.at(subWid + 1).at(subHid), mergedRgn) )
+                    {
+                        subRgnRowNext.push_back(mergedRgn);
+                    }
+                    else
+                    {
+                        DebugLog << "Merge Row Region Error" << std::endl;
+                    }
+                }
+                if (subNumW % 2)
+                {
+                    subRgnRowNext.push_back(subRgnMatNext.at(subNumW - 1).at(subHid));
+                }
+                subRgnMat.at(subHid) = subRgnRowNext;
+            }
+            subNumH = subNumHNext;
+            subNumW = subNumWNext;
+        }
+        
+        //Update Saliency Image
+        int maxSaliency = 0;
+        for (int hid = 0; hid < inputH; hid++)
+        {
+            for (int wid = 0; wid < inputW; wid++)
+            {
+                if (saliencyMat.at(hid).at(wid) > maxSaliency)
+                {
+                    maxSaliency = saliencyMat.at(hid).at(wid);
+                }
+            }
+        }
+        cv::Size imgSize(inputW, inputH);
+        cv::Mat saliencyImg(imgSize, CV_8UC3);
+        if (maxSaliency == 0)
+        {
+            DebugLog << "No Saliency Detected" << std::endl;
+            for (int hid = 0; hid < inputH; hid++)
+            {
+                for (int wid = 0; wid < inputW; wid++)
+                {
+                    unsigned char* pixel = saliencyImg.ptr(hid, wid);
+                    pixel[0] = 0;
+                    pixel[1] = 0;
+                    pixel[2] = 0;
+                }
+            }
+        }
+        else
+        {
+            for (int hid = 0; hid < inputH; hid++)
+            {
+                for (int wid = 0; wid < inputW; wid++)
+                {
+                    unsigned char* pixel = saliencyImg.ptr(hid, wid);
+                    pixel[0] = saliencyMat.at(hid).at(wid) * 255 / maxSaliency;
+                    pixel[1] = saliencyMat.at(hid).at(wid) * 255 / maxSaliency;
+                    pixel[2] = saliencyMat.at(hid).at(wid) * 255 / maxSaliency;
+                }
+            }
+        }
+
+        return saliencyImg;
     }
 }
