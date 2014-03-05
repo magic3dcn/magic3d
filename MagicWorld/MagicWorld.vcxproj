@@ -76,7 +76,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\GraphCut;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
@@ -96,6 +96,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\GraphCut\block.h" />
+    <ClInclude Include="..\Dependencies\GraphCut\graph.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Array.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\BinaryNode.h" />
@@ -177,6 +179,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\GraphCut\graph.cpp" />
+    <ClCompile Include="..\Dependencies\GraphCut\maxflow.cpp" />
     <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -326,6 +330,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Dependencies\GraphCut\instances.inc" />
     <None Include="..\Dependencies\PoissonRecon\Array.inl" />
     <None Include="..\Dependencies\PoissonRecon\BSplineData.inl" />
     <None Include="..\Dependencies\PoissonRecon\CmdLineParser.inl" />

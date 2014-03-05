@@ -67,6 +67,9 @@
     <Filter Include="DIP">
       <UniqueIdentifier>{d21a4e2f-fba0-4822-a5a3-e6f548188f76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependence\GraphCut">
+      <UniqueIdentifier>{62efc01b-5957-4e12-8876-f9319550c582}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -312,6 +315,12 @@
     <ClInclude Include="..\Src\DIP\Saliency.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Dependencies\GraphCut\block.h">
+      <Filter>Dependence\GraphCut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\GraphCut\graph.h">
+      <Filter>Dependence\GraphCut</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -500,6 +509,12 @@
     <ClCompile Include="..\Src\DIP\Saliency.cpp">
       <Filter>DIP</Filter>
     </ClCompile>
+    <ClCompile Include="..\Dependencies\GraphCut\graph.cpp">
+      <Filter>Dependence\GraphCut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\GraphCut\maxflow.cpp">
+      <Filter>Dependence\GraphCut</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dependencies\PoissonRecon\Array.inl">
@@ -540,6 +555,9 @@
     </None>
     <None Include="..\Dependencies\PoissonRecon\Vector.inl">
       <Filter>Dependence\PoissonReconstruction</Filter>
+    </None>
+    <None Include="..\Dependencies\GraphCut\instances.inc">
+      <Filter>Dependence\GraphCut</Filter>
     </None>
   </ItemGroup>
 </Project>

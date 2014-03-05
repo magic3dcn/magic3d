@@ -4,6 +4,8 @@
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
 #include "VisionShopApp.h"
+#include "graph.h"
+
 namespace MagicApp
 {
     VisionShopAppUI::VisionShopAppUI() :
@@ -122,6 +124,36 @@ namespace MagicApp
 
     void VisionShopAppUI::SaliencyDetection(MyGUI::Widget* pSender)
     {
+        //Graph Cut Test
+        typedef Graph<int, int, int> GraphType;
+        GraphType* g = new  GraphType(2, 1);
+        g->add_node();
+        g->add_node();
+        g->add_tweights(0, 1, 5);
+        g->add_tweights(1, 2, 6);
+        g->add_edge(0, 1, 3, 4);
+        
+        int flow = g->maxflow();
+        DebugLog << "Flow = " << flow << std::endl;
+        DebugLog << "Minimum cut: " << std::endl;
+        if (g->what_segment(0) == GraphType::SOURCE)
+        {
+            DebugLog << "Node0 is Source" << std::endl;
+        }
+        else
+        {
+            DebugLog << "Node0 is Sink" << std::endl;
+        }
+        if (g->what_segment(1) == GraphType::SOURCE)
+        {
+            DebugLog << "Node1 is Source" << std::endl;
+        }
+        else
+        {
+            DebugLog << "Node1 is Sink" << std::endl;
+        }
+        delete g;
+        //
         VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
         if (pVS != NULL)
         {
