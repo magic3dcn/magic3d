@@ -9,6 +9,7 @@ namespace MagicDIP
         Segmentation();
         ~Segmentation();
 
+        //return mat: (0, 0, 0) for the front, (255, 0, 0) for the back.
         static cv::Mat SegmentByGraphCut(const cv::Mat& inputImg, const cv::Mat& markImg);
     };
 

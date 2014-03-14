@@ -1,4 +1,5 @@
 #include "Segmentation.h"
+#include "graph.h"
 
 namespace MagicDIP
 {

@@ -4,7 +4,6 @@
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
 #include "VisionShopApp.h"
-#include "graph.h"
 
 namespace MagicApp
 {
