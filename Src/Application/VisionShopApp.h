@@ -8,6 +8,13 @@ namespace MagicApp
     class VisionShopApp : public MagicCore::AppBase
     {
     public:
+        enum MouseMode
+        {
+            MM_View,
+            MM_Paint_Front,
+            MM_Paint_Back
+        };
+
         VisionShopApp();
         ~VisionShopApp();
 
@@ -25,6 +32,9 @@ namespace MagicApp
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
         void SaliencyDetection(void);
+        void BrushFront(void);
+        void BrushBack(void);
+        void SegmentImageDo(void);
         cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
     private:
@@ -33,6 +43,8 @@ namespace MagicApp
 
     private:
         VisionShopAppUI mUI;
+        MouseMode mMouseMode;
         cv::Mat mImage;
+        cv::Mat mMarkImage;
     };
 }

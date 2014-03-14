@@ -5,11 +5,13 @@
 #include "../Common/ToolKit.h"
 #include "../DIP/Retargetting.h"
 #include "../DIP/Saliency.h"
+#include "../DIP/Segmentation.h"
 
 namespace MagicApp
 {
     VisionShopApp::VisionShopApp() :
-        mUI()
+        mUI(),
+        mMouseMode(MM_View)
     {
     }
 
@@ -42,6 +44,41 @@ namespace MagicApp
 
     bool VisionShopApp::MouseMoved( const OIS::MouseEvent &arg )
     {
+        if (arg.state.buttonDown(OIS::MB_Left) )
+        {
+            if (mMouseMode == MM_Paint_Front)
+            {
+                int wPos = arg.state.X.abs - 165;
+                int hPos = arg.state.Y.abs - 10;
+                for (int hid = -2; hid <= 2; hid++)
+                {
+                    for (int wid = -2; wid <= 2; wid++)
+                    {
+                        unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
+                        pixel[0] = 0;
+                        pixel[1] = 0;
+                        pixel[2] = 255;
+                    }
+                }
+                mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+            }
+            else if (mMouseMode == MM_Paint_Back)
+            {
+                int wPos = arg.state.X.abs - 165;
+                int hPos = arg.state.Y.abs - 10;
+                for (int hid = -2; hid <= 2; hid++)
+                {
+                    for (int wid = -2; wid <= 2; wid++)
+                    {
+                        unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
+                        pixel[0] = 255;
+                        pixel[1] = 0;
+                        pixel[2] = 0;
+                    }
+                }
+                mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+            }
+        }
         return true;
     }
 
@@ -89,10 +126,13 @@ namespace MagicApp
             mImage = cv::imread(fileName);
             if (mImage.data != NULL)
             {
+                mImage = ResizeToViewSuit(mImage);
+                mUI.UpdateImageTexture(mImage);
                 w = mImage.cols;
                 h = mImage.rows;
-                cv::Mat resizedImg = ResizeToViewSuit(mImage);
-                mUI.UpdateImageTexture(resizedImg);
+                //update brush image
+                cv::Size imgSize(w, h);
+                mMarkImage = cv::Mat(imgSize, CV_8UC3);
                 return true;
             }
         }
@@ -176,5 +216,22 @@ namespace MagicApp
             cv::Mat resizedImg = img.clone();
             return resizedImg;
         }
+    }
+
+    void VisionShopApp::BrushFront()
+    {
+        mMouseMode = MM_Paint_Front;
+    }
+
+    void VisionShopApp::BrushBack()
+    {
+        mMouseMode = MM_Paint_Back;
+    }
+
+    void VisionShopApp::SegmentImageDo()
+    {
+        mMouseMode = MM_View;
+        cv::Mat segImg = MagicDIP::Segmentation::SegmentByGraphCut(mImage, mMarkImage);
+        mUI.UpdateMarkedImageTexture(mImage, segImg);
     }
 }

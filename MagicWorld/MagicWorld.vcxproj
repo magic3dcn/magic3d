@@ -172,6 +172,7 @@
     <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
+    <ClInclude Include="..\Src\DIP\Segmentation.h" />
     <ClInclude Include="..\Src\Tool\PickPointTool.h" />
     <ClInclude Include="..\Src\Tool\ThreadPool.h" />
     <ClInclude Include="..\Src\Tool\ViewTool.h" />
@@ -314,6 +315,7 @@
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
+    <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
     <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>

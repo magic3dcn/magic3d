@@ -321,6 +321,9 @@
     <ClInclude Include="..\Dependencies\GraphCut\graph.h">
       <Filter>Dependence\GraphCut</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\Segmentation.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -514,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="..\Dependencies\GraphCut\maxflow.cpp">
       <Filter>Dependence\GraphCut</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\Segmentation.cpp">
+      <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
