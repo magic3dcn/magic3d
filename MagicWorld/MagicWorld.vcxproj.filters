@@ -70,6 +70,9 @@
     <Filter Include="Dependence\GraphCut">
       <UniqueIdentifier>{62efc01b-5957-4e12-8876-f9319550c582}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MachineLearning">
+      <UniqueIdentifier>{dfd3f61c-8624-413e-8ff2-40ec2e29fa7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -324,6 +327,9 @@
     <ClInclude Include="..\Src\DIP\Segmentation.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\Clustering.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -520,6 +526,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\DIP\Segmentation.cpp">
       <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\Clustering.cpp">
+      <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
