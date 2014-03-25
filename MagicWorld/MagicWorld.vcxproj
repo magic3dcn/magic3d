@@ -58,7 +58,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\GraphCut;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm159 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

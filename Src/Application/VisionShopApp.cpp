@@ -6,6 +6,7 @@
 #include "../DIP/Retargetting.h"
 #include "../DIP/Saliency.h"
 #include "../DIP/Segmentation.h"
+#include "../MachineLearning/Clustering.h"
 
 namespace MagicApp
 {
@@ -230,8 +231,42 @@ namespace MagicApp
 
     void VisionShopApp::SegmentImageDo()
     {
-        mMouseMode = MM_View;
+        /*mMouseMode = MM_View;
         cv::Mat segImg = MagicDIP::Segmentation::SegmentByGraphCut(mImage, mMarkImage);
-        mUI.UpdateMarkedImageTexture(mImage, segImg);
+        mUI.UpdateMarkedImageTexture(mImage, segImg);*/
+        //do an experiment about clustering
+        cv::Mat cvtImg;
+        cv::cvtColor(mImage, cvtImg, CV_BGR2Lab);
+        int imgW = cvtImg.cols;
+        int imgH = cvtImg.rows;
+        int dim = 3;
+        int k = 4;
+        std::vector<double> inputData;
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* pPixel = cvtImg.ptr(hid, wid);
+                inputData.push_back(pPixel[0]);
+                inputData.push_back(pPixel[1]);
+                inputData.push_back(pPixel[2]);
+            }
+        }
+        std::vector<int> clusterRes;
+        MagicML::Clustering::OrchardBoumanClustering(inputData, dim, k, clusterRes);
+        unsigned char hueDelta = 255 / k;
+        int pixelIndex = 0;
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* pPixel = mImage.ptr(hid, wid);
+                pPixel[0] = clusterRes.at(pixelIndex) * hueDelta; 
+                pPixel[1] = clusterRes.at(pixelIndex) * hueDelta; 
+                pPixel[2] = clusterRes.at(pixelIndex) * hueDelta; 
+                pixelIndex++;
+            }
+        }
+        mUI.UpdateImageTexture(mImage);
     }
 }
