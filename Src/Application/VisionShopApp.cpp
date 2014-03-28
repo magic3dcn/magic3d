@@ -48,13 +48,14 @@ namespace MagicApp
     {
         if (arg.state.buttonDown(OIS::MB_Left) )
         {
+            int mouseWidth = 5;
             if (mMouseMode == MM_Paint_Front)
             {
                 int wPos = arg.state.X.abs - 165;
                 int hPos = arg.state.Y.abs - 10;
-                for (int hid = -2; hid <= 2; hid++)
+                for (int hid = -mouseWidth; hid <= mouseWidth; hid++)
                 {
-                    for (int wid = -2; wid <= 2; wid++)
+                    for (int wid = -mouseWidth; wid <= mouseWidth; wid++)
                     {
                         unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
                         pixel[0] = 0;
@@ -68,9 +69,9 @@ namespace MagicApp
             {
                 int wPos = arg.state.X.abs - 165;
                 int hPos = arg.state.Y.abs - 10;
-                for (int hid = -2; hid <= 2; hid++)
+                for (int hid = -mouseWidth; hid <= mouseWidth; hid++)
                 {
-                    for (int wid = -2; wid <= 2; wid++)
+                    for (int wid = -mouseWidth; wid <= mouseWidth; wid++)
                     {
                         unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
                         pixel[0] = 255;
@@ -232,13 +233,12 @@ namespace MagicApp
 
     void VisionShopApp::SegmentImageDo()
     {
-        /*mMouseMode = MM_View;
+        mMouseMode = MM_View;
         cv::Mat segImg = MagicDIP::Segmentation::SegmentByGraphCut(mImage, mMarkImage);
-        mUI.UpdateMarkedImageTexture(mImage, segImg);*/
+        mUI.UpdateMarkedImageTexture(mImage, segImg);
+        
         //do an experiment about clustering
-        /*cv::Mat cvtImg;
-        cv::cvtColor(mImage, cvtImg, CV_BGR2Lab);*/
-        int imgW = mImage.cols;
+        /*int imgW = mImage.cols;
         int imgH = mImage.rows;
         int dim = 3;
         int k = 10;
@@ -302,18 +302,6 @@ namespace MagicApp
                 vIndex++;
             }
         }
-        /*int matIndex = 0;
-        for (int hid = 0; hid < imgH; hid++)
-        {
-            for (int wid = 0; wid < imgW; wid++)
-            {
-                unsigned char* pPixel = mImage.ptr(hid, wid);
-                pPixel[0] = clusterRes.at(matIndex) * hueDelta; 
-                pPixel[1] = clusterRes.at(matIndex) * hueDelta; 
-                pPixel[2] = clusterRes.at(matIndex) * hueDelta; 
-                matIndex++;
-            }
-        }*/
-        mUI.UpdateImageTexture(mImage);
+        mUI.UpdateImageTexture(mImage);*/
     }
 }
