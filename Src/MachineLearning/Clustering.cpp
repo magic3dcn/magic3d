@@ -1,6 +1,7 @@
 #include "Clustering.h"
 #include "../Common/LogSystem.h"
 #include "Eigen/Eigenvalues"
+#include "flann/flann.h"
 
 namespace MagicML
 {
@@ -171,6 +172,56 @@ namespace MagicML
     void Clustering::MeanshiftValue(const std::vector<double>& sourceData, int dim, double h, 
                                     const std::vector<double>& inputData, std::vector<double>& resData)
     {
+        double radius = h * 7 * 2.3; //according to h
+        //calculate near neighbors by radius
+        double* pSrcData = new double[sourceData.size()];
+        for (int i = 0; i < sourceData.size(); i++)
+        {
+            pSrcData[i] = sourceData.at(i);
+        }
+        /*double* pQueryData = new double[inputData.size()];
+        for (int i = 0; i < inputData.size(); i++)
+        {
+            pQueryData[i] = inputData.at(i);
+        }*/
+        int dataCount = sourceData.size() / dim;
+        int queryCount = inputData.size() / dim;
+        flann::Matrix<double> dataSet(pSrcData, dataCount, dim);
+        //flann::Matrix<double> querySet(pQueryData, queryCount, dim);
+        flann::Index<L2<double> > index(dataSet, flann::KDTreeIndexParams());
+        index.buildIndex();
+        /*std::vector<std::vector<int> > nearIndex;
+        std::vector<std::vector<double> > nearDist;
+        index.radiusSearch(querySet, nearIndex, nearDist, radius, flann::SearchParams());*/
+        delete pSrcData;
+        pSrcData = NULL;
+        /*delete pQueryData;
+        pQueryData = NULL;*/
+        //Mean shift every query
+        resData.clear();
+        double* pQueryData = new double[dim];
+        double epsilon = h * 1.0e-7;
+        for (int qid = 0; qid < queryCount; qid++)
+        {
+            int baseIndex = qid * dim;
+            for (int did = 0; did < dim; did++)
+            {
+                pQueryData[did] = sourceData.at(baseIndex + did);
+            }
+            while (true)
+            {
+                std::vector<std::vector<int> > nearIndex;
+                std::vector<std::vector<double> > nearDist;
+                flann::Matrix<double> querySet(pQueryData, 1, dim);
+                index.radiusSearch(querySet, nearIndex, nearDist, radius, flann::SearchParams());
+                if (nearIndex.size() == 0)
+                {
+                    break;
+                }
+            }
+
+
+        }
 
     }
 }
