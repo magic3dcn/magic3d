@@ -172,7 +172,8 @@ namespace MagicML
     void Clustering::MeanshiftValue(const std::vector<double>& sourceData, int dim, double h, 
                                     const std::vector<double>& inputData, std::vector<double>& resData)
     {
-        double radius = h * 7 * 2.3; //according to h
+        //double radius = h * 7 * 2.3; //according to h
+        double radius = h * h;
         //calculate near neighbors by radius
         double* pSrcData = new double[sourceData.size()];
         for (int i = 0; i < sourceData.size(); i++)
@@ -197,7 +198,7 @@ namespace MagicML
             {
                 pQueryData[did] = inputData.at(baseIndex + did);
             }
-            for (int iterId = 0; iterId < 20; iterId++)
+            for (int iterId = 0; iterId < 5; iterId++)
             {
                 //DebugLog << "pQuery" << iterId << " : " << pQueryData[0] << " " << pQueryData[1] << " " << pQueryData[2] << std::endl;
                 std::vector<std::vector<int> > nearIndex;

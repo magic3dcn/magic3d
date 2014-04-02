@@ -257,7 +257,7 @@ namespace MagicApp
             }
         }
         std::vector<double> resData;
-        MagicML::Clustering::MeanshiftValue(sourceData, dim, 5, inputData, resData);
+        MagicML::Clustering::MeanshiftValue(sourceData, dim, 40, inputData, resData);
         int pixelIndex = 0;
         for (int hid = 0; hid < imgH; hid++)
         {
