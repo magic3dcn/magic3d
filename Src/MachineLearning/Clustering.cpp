@@ -1,6 +1,7 @@
 #include "Clustering.h"
 #include "../Common/LogSystem.h"
 #include "Eigen/Eigenvalues"
+#include "flann/flann.h"
 
 namespace MagicML
 {
@@ -171,6 +172,5 @@ namespace MagicML
     void Clustering::MeanshiftValue(const std::vector<double>& sourceData, int dim, double h, 
                                     const std::vector<double>& inputData, std::vector<double>& resData)
     {
-
     }
 }
