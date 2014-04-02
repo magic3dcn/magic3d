@@ -19,6 +19,7 @@ namespace MagicML
         static void SplitSetByEigenVector(const std::vector<double>& inputData, int dim, const std::vector<int>& inputIndex,
             const std::vector<double>& eigenVector, const std::vector<double>& meanVector,
             std::vector<int>& clusterA, std::vector<int>& clusterB);
+        static double GaussianValue(double dist, double h);
     };
 
 }

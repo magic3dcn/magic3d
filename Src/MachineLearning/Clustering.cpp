@@ -179,49 +179,88 @@ namespace MagicML
         {
             pSrcData[i] = sourceData.at(i);
         }
-        /*double* pQueryData = new double[inputData.size()];
-        for (int i = 0; i < inputData.size(); i++)
-        {
-            pQueryData[i] = inputData.at(i);
-        }*/
         int dataCount = sourceData.size() / dim;
         int queryCount = inputData.size() / dim;
         flann::Matrix<double> dataSet(pSrcData, dataCount, dim);
-        //flann::Matrix<double> querySet(pQueryData, queryCount, dim);
         flann::Index<L2<double> > index(dataSet, flann::KDTreeIndexParams());
         index.buildIndex();
-        /*std::vector<std::vector<int> > nearIndex;
-        std::vector<std::vector<double> > nearDist;
-        index.radiusSearch(querySet, nearIndex, nearDist, radius, flann::SearchParams());*/
-        delete pSrcData;
-        pSrcData = NULL;
-        /*delete pQueryData;
-        pQueryData = NULL;*/
         //Mean shift every query
         resData.clear();
+        resData.resize(sourceData.size());
         double* pQueryData = new double[dim];
-        double epsilon = h * 1.0e-7;
+        double* pMeanData = new double[dim];
+        //double epsilon = h * 1.0e-7;
         for (int qid = 0; qid < queryCount; qid++)
         {
             int baseIndex = qid * dim;
             for (int did = 0; did < dim; did++)
             {
-                pQueryData[did] = sourceData.at(baseIndex + did);
+                pQueryData[did] = inputData.at(baseIndex + did);
             }
-            while (true)
+            for (int iterId = 0; iterId < 20; iterId++)
             {
+                //DebugLog << "pQuery" << iterId << " : " << pQueryData[0] << " " << pQueryData[1] << " " << pQueryData[2] << std::endl;
                 std::vector<std::vector<int> > nearIndex;
                 std::vector<std::vector<double> > nearDist;
                 flann::Matrix<double> querySet(pQueryData, 1, dim);
-                index.radiusSearch(querySet, nearIndex, nearDist, radius, flann::SearchParams());
-                if (nearIndex.size() == 0)
+                index.radiusSearch(querySet, nearIndex, nearDist, radius, flann::SearchParams(-1));
+                int nearCount = nearIndex.at(0).size();
+                if (nearIndex.size () != 1 || nearDist.size() != 1) 
                 {
+                    DebugLog << "error: nearIndex.size () != 1 || nearDist.size() != 1" << std::endl;
+                }
+                if (nearCount == 0)
+                {
+                    DebugLog << "nearCount == 0, iterId: " << iterId << std::endl;
                     break;
                 }
+                /*else 
+                {
+                    DebugLog << "iterId: " << iterId << " count: " << nearCount << std::endl;
+                }*/
+                double coefSum = 0.0;
+                for (int did = 0; did < dim; did++)
+                {
+                    pMeanData[did] = 0.0;
+                }
+                for (int nid = 0; nid < nearCount; nid++)
+                {
+                    double coef = GaussianValue(nearDist.at(0).at(nid), h);
+                    //DebugLog << "nearDist" << nid << ": " << nearDist.at(0).at(nid) << " index: " << nearIndex.at(0).at(nid) << std::endl;
+                    coefSum += coef;
+                    int baseIndex = nearIndex.at(0).at(nid) * dim;
+                    for (int did = 0; did < dim; did++)
+                    {
+                        pMeanData[did] += coef * sourceData.at(baseIndex + did);
+                    }
+                }
+                for (int did = 0; did < dim; did++)
+                {
+                    pMeanData[did] /= coefSum;
+                }
+                //check if pMeanData is near pQueryData enough
+
+                double* pTemp = pMeanData;
+                pMeanData = pQueryData;
+                pQueryData = pTemp;
             }
-
-
+            //copy result
+            for (int did = 0; did < dim; did++)
+            {
+                resData.at(baseIndex + did) = pQueryData[did];
+            }
         }
+        delete []pQueryData;
+        pQueryData = NULL;
+        delete []pMeanData;
+        pMeanData = NULL;
+        delete []pSrcData;
+        pSrcData = NULL;
+    }
 
+    double Clustering::GaussianValue(double dist, double h)
+    {
+        //return 1.0 / exp(dist / h);
+        return 1.0;
     }
 }

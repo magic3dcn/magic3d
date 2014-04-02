@@ -233,75 +233,43 @@ namespace MagicApp
 
     void VisionShopApp::SegmentImageDo()
     {
-        mMouseMode = MM_View;
+        /*mMouseMode = MM_View;
         cv::Mat segImg = MagicDIP::Segmentation::SegmentByGraphCut(mImage, mMarkImage);
-        mUI.UpdateMarkedImageTexture(mImage, segImg);
+        mUI.UpdateMarkedImageTexture(mImage, segImg);*/
         
         //do an experiment about clustering
-        /*int imgW = mImage.cols;
+        int imgW = mImage.cols;
         int imgH = mImage.rows;
         int dim = 3;
-        int k = 10;
+        std::vector<double> sourceData;
         std::vector<double> inputData;
         for (int hid = 0; hid < imgH; hid++)
         {
             for (int wid = 0; wid < imgW; wid++)
             {
                 unsigned char* pPixel = mImage.ptr(hid, wid);
+                sourceData.push_back(pPixel[0]);
+                sourceData.push_back(pPixel[1]);
+                sourceData.push_back(pPixel[2]);
                 inputData.push_back(pPixel[0]);
                 inputData.push_back(pPixel[1]);
                 inputData.push_back(pPixel[2]);
             }
         }
-        std::vector<int> clusterRes;
-        MagicML::Clustering::OrchardBoumanClustering(inputData, dim, k, clusterRes);
-        MagicML::GaussianMixtureModel gmm;
-        gmm.CalParameter(inputData, dim, k, clusterRes);
-        unsigned char hueDelta = 255 / k;
-        std::vector<int> clusterCount(k, 0);
-        std::vector<double> clusterColor(k * dim, 0);
-        std::vector<int> clusterIndex(imgW * imgH);
-        int vIndex = 0;
+        std::vector<double> resData;
+        MagicML::Clustering::MeanshiftValue(sourceData, dim, 5, inputData, resData);
+        int pixelIndex = 0;
         for (int hid = 0; hid < imgH; hid++)
         {
             for (int wid = 0; wid < imgW; wid++)
             {
                 unsigned char* pPixel = mImage.ptr(hid, wid);
-                std::vector<double> color;
-                color.push_back(pPixel[0]);
-                color.push_back(pPixel[1]);
-                color.push_back(pPixel[2]);
-                int cid = gmm.GetClusterId(color);
-                clusterCount.at(cid)++;
-                clusterColor.at(cid * dim + 0) += pPixel[0];
-                clusterColor.at(cid * dim + 1) += pPixel[1];
-                clusterColor.at(cid * dim + 2) += pPixel[2];
-                clusterIndex.at(vIndex) = cid;
-                vIndex++;
+                pPixel[0] = resData.at(pixelIndex * 3 + 0);
+                pPixel[1] = resData.at(pixelIndex * 3 + 1);
+                pPixel[2] = resData.at(pixelIndex * 3 + 2);
+                pixelIndex++;
             }
         }
-        for (int cid = 0; cid < k; cid++)
-        {
-            if (clusterCount.at(cid) > 0)
-            {
-                clusterColor.at(cid * dim + 0) /= clusterCount.at(cid);
-                clusterColor.at(cid * dim + 1) /= clusterCount.at(cid);
-                clusterColor.at(cid * dim + 2) /= clusterCount.at(cid);
-            }
-        }
-        vIndex = 0;
-        for (int hid = 0; hid < imgH; hid++)
-        {
-            for (int wid = 0; wid < imgW; wid++)
-            {
-                int cid = clusterIndex.at(vIndex);
-                unsigned char* pPixel = mImage.ptr(hid, wid);
-                pPixel[0] = clusterColor.at(cid * dim + 0);
-                pPixel[1] = clusterColor.at(cid * dim + 1);
-                pPixel[2] = clusterColor.at(cid * dim + 2);
-                vIndex++;
-            }
-        }
-        mUI.UpdateImageTexture(mImage);*/
+        mUI.UpdateImageTexture(mImage);
     }
 }
