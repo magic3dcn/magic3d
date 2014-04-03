@@ -267,12 +267,45 @@ namespace MagicML
 
     void Clustering::KMeansClustering(const std::vector<double>& sourceData, int dim, int k, std::vector<int>& clusterRes)
     {
+        //computer data bounding box size
+        std::vector<double> BBoxMin(dim);
+        std::vector<double> BBoxMax(dim);
+        for (int did = 0; did < dim; did++)
+        {
+            BBoxMax.at(did) = sourceData.at(did);
+            BBoxMin.at(did) = sourceData.at(did);
+        }
+        int dataCount = sourceData.size() / dim;
+        for (int sid = 1; sid < dataCount; sid++)
+        {
+            int sourceBase = sid * dim;
+            for (int did = 0; did < dim; did++)
+            {
+                int srcIdx = sourceBase + did;
+                if (sourceData.at(srcIdx) > BBoxMax.at(did))
+                {
+                    BBoxMax.at(did) = sourceData.at(srcIdx);
+                }
+                if (sourceData.at(srcIdx) < BBoxMin.at(did))
+                {
+                    BBoxMin.at(did) = sourceData.at(srcIdx);
+                }
+            }
+        }
+        double bboxSize = 0;
+        for (int did = 0; did < dim; did++)
+        {
+            double dTemp = BBoxMax.at(did) - BBoxMin.at(did);
+            bboxSize += dTemp * dTemp;
+        }
+        bboxSize = sqrt(bboxSize);
+        double stopEpsilon = bboxSize * 1.0e-5;
+        //
         std::vector<double> centerData;
         FindKMeansSeeds(sourceData, dim, k, centerData);
-        int dataCount = sourceData.size() / dim;
         clusterRes.clear();
         clusterRes.resize(dataCount);
-        int maxIterCount = 10;
+        int maxIterCount = 100;
         for (int iterId = 0; iterId < maxIterCount; iterId++)
         {
             //Cluster
@@ -319,7 +352,33 @@ namespace MagicML
             }
 
             //Judge whether to stop
-            //add it later
+            double maxDif = 0;
+            for (int cid = 0; cid < k; cid++)
+            {
+                double dif = 0;
+                int baseIndex = cid * dim;
+                for (int did = 0; did < dim; did++)
+                {
+                    double dTemp = newCenterData.at(baseIndex + did) - centerData.at(baseIndex + did);
+                    dif += dTemp * dTemp;
+                }
+                if (maxDif < dif)
+                {
+                    maxDif = dif;
+                }
+            }
+            maxDif = sqrt(maxDif);
+            if (maxDif < stopEpsilon)
+            {
+                DebugLog << "K-Means lucky break at " << iterId << std::endl;
+                break;
+            }
+            //else
+            //{
+            //    DebugLog << "Iter" << iterId << ": " << maxDif << " stopEpsilon: " << stopEpsilon << std::endl;
+            //}
+            //Update centerData
+            centerData = newCenterData;
         }
     }
 
