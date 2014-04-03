@@ -264,4 +264,129 @@ namespace MagicML
         //return 1.0 / exp(dist / h);
         return 1.0;
     }
+
+    void Clustering::KMeansClustering(const std::vector<double>& sourceData, int dim, int k, std::vector<int>& clusterRes)
+    {
+        std::vector<double> centerData;
+        FindKMeansSeeds(sourceData, dim, k, centerData);
+        int dataCount = sourceData.size() / dim;
+        clusterRes.clear();
+        clusterRes.resize(dataCount);
+        int maxIterCount = 10;
+        for (int iterId = 0; iterId < maxIterCount; iterId++)
+        {
+            //Cluster
+            for (int sid = 0; sid < dataCount; sid++)
+            {
+                int nearIndex = 0;
+                double nearDist = KMeansDistance(sourceData, dim, sid, centerData, 0);
+                for (int cid = 1; cid < k; cid++)
+                {
+                    double distTemp = KMeansDistance(sourceData, dim, sid, centerData, cid);
+                    if (distTemp < nearDist)
+                    {
+                        nearDist = distTemp;
+                        nearIndex = cid;
+                    }
+                }
+                clusterRes.at(sid) = nearIndex;
+            }
+
+            //Find new centers
+            std::vector<double> newCenterData(dim * k, 0);
+            std::vector<int> clusterCount(k, 0);
+            for (int sid = 0; sid < dataCount; sid++)
+            {
+                int sourceBase = sid * dim;
+                int centerId = clusterRes.at(sid);
+                int centerBase = centerId * dim;
+                for (int did = 0; did < dim; did++)
+                {
+                    newCenterData.at(centerBase + did) += sourceData.at(sourceBase + did);
+                }
+                clusterCount.at(centerId)++;
+            }
+            for (int cid = 0; cid < k; cid++)
+            {
+                if (clusterCount.at(cid) > 0)
+                {
+                    int centerBase = cid * dim;
+                    for (int did = 0; did < dim; did++)
+                    {
+                        newCenterData.at(centerBase + did) /= clusterCount.at(cid);
+                    }
+                }
+            }
+
+            //Judge whether to stop
+            //add it later
+        }
+    }
+
+    void Clustering::FindKMeansSeeds(const std::vector<double>& sourceData, int dim, int k, std::vector<double>& seedData)
+    {
+        int sourceCount = sourceData.size() / dim;
+        std::vector<bool> sampleFlag(sourceCount, 0);
+        std::vector<int> sampleIndex(k);
+        sampleFlag.at(0) = true;
+        sampleIndex.at(0) = 0;
+        std::vector<double> minDist(sourceCount, 1.0e100);
+        int curIndex = 0;
+        for (int sid = 1; sid < k; ++sid)
+        {
+            double maxDist = -1;
+            int pos = -1;
+            int baseCur = curIndex * dim;
+            for (int vid = 0; vid < sourceCount; ++vid)
+            {
+                if (sampleFlag.at(vid))
+                {
+                    continue;
+                }
+                double dist = 0;
+                int baseVid = vid * dim; 
+                for (int did = 0; did < dim; did++)
+                {
+                    double dTemp = sourceData.at(baseCur + did) - sourceData.at(baseVid + did);
+                    dist += dTemp * dTemp;
+                }
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = true;
+        }
+        seedData.clear();
+        seedData.resize(k * dim);
+        for (int sid = 0; sid < k; sid++)
+        {
+            int baseSource = sampleIndex.at(sid) * dim;
+            int baseSeed = sid * dim;
+            for (int did = 0; did < dim; did++)
+            {
+                seedData.at(baseSeed + did) = sourceData.at(baseSource + did);
+            }
+        }
+    }
+
+    double Clustering::KMeansDistance(const std::vector<double>& sourcedata, int dim, int dataIndex, const std::vector<double>& centerData, int centerIndex)
+    {
+        double dist = 0;
+        int sourceBase = dataIndex * dim;
+        int centerBase = centerIndex * dim;
+        for (int did = 0; did < dim; did++)
+        {
+            double dTemp = sourcedata.at(sourceBase + did) - centerData.at(centerBase + did);
+            dist += dTemp * dTemp;
+        }
+        return dist;
+    }
 }

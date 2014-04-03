@@ -12,6 +12,7 @@ namespace MagicML
         static void OrchardBoumanClustering(const std::vector<double>& inputData, int dim, int k, std::vector<int>& clusterRes);
         static void MeanshiftValue(const std::vector<double>& sourceData, int dim, double h, 
                                    const std::vector<double>& inputData, std::vector<double>& resData);
+        static void KMeansClustering(const std::vector<double>& sourceData, int dim, int k, std::vector<int>& clusterRes);
 
     private:
         static void CalEigenVector(const std::vector<double>& inputData, int dim, const std::vector<int>& inputIndex, 
@@ -20,6 +21,8 @@ namespace MagicML
             const std::vector<double>& eigenVector, const std::vector<double>& meanVector,
             std::vector<int>& clusterA, std::vector<int>& clusterB);
         static double GaussianValue(double dist, double h);
+        static void FindKMeansSeeds(const std::vector<double>& sourceData, int dim, int k, std::vector<double>& seedData);
+        static double KMeansDistance(const std::vector<double>& sourcedata, int dim, int dataIndex, const std::vector<double>& centerData, int centerIndex);
     };
 
 }
