@@ -13,7 +13,9 @@ namespace MagicApp
 {
     VisionShopApp::VisionShopApp() :
         mUI(),
-        mMouseMode(MM_View)
+        mMouseMode(MM_View),
+        mpPointSet(NULL),
+        mIsPointSetMode(false)
     {
     }
 
@@ -82,11 +84,13 @@ namespace MagicApp
                 mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
             }
         }
+        mViewTool.MouseMoved(arg);
         return true;
     }
 
     bool VisionShopApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        mViewTool.MousePressed(arg);
         return true;
     }
 
@@ -111,12 +115,28 @@ namespace MagicApp
 
     void VisionShopApp::SetupScene(void)
     {
-
+        InfoLog << "VisionShopApp::SetupScene" << std::endl;
+        Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+        pSceneMgr->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
+        Ogre::Light* sl = pSceneMgr->createLight("SimpleLight");
+        sl->setPosition(0, 0, 20);
+        sl->setDiffuseColour(0.8, 0.8, 0.8);
+        sl->setSpecularColour(0.5, 0.5, 0.5);
     }
 
     void VisionShopApp::ShutdownScene(void)
     {
+        InfoLog << "PointShopApp::ShutdownScene" << std::endl;
         mImage.release();
+        Ogre::SceneManager* pSceneMgr = MagicCore::RenderSystem::GetSingleton()->GetSceneManager();
+        pSceneMgr->setAmbientLight(Ogre::ColourValue::Black);
+        pSceneMgr->destroyLight("SimpleLight");
+        MagicCore::RenderSystem::GetSingleton()->SetupCameraDefaultParameter();
+        MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderPointSet");
+        if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
+        {
+            MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->resetToInitialState();
+        } 
     }
 
     bool VisionShopApp::OpenImage(int& w, int& h)
@@ -153,6 +173,50 @@ namespace MagicApp
                 cv::imwrite(fileName, mImage);
             }
         }
+    }
+
+    void VisionShopApp::SwitchDisplayMode(void)
+    {
+        mIsPointSetMode = !mIsPointSetMode;
+        if (mIsPointSetMode)
+        {
+            mUI.HideImageTexture();
+            if (mpPointSet == NULL)
+            {
+                UpdatePointSetFromImage();
+            }
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
+        }
+        else
+        {
+            MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderPointSet");
+            mUI.UpdateImageTexture(mImage);
+        }
+    }
+
+    void VisionShopApp::UpdatePointSetFromImage(void)
+    {
+        if (mpPointSet != NULL)
+        {
+            delete mpPointSet;
+            mpPointSet = NULL;
+        }
+        mpPointSet = new MagicDGP::Point3DSet;
+        int imgW = mImage.cols;
+        int imgH = mImage.rows;
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* pixel = mImage.ptr(hid, wid);
+                MagicDGP::Vector3 pos(pixel[0], pixel[1], pixel[2]);
+                MagicDGP::Vector3 color(pixel[0] / 255.0, pixel[1] / 255.0, pixel[2] / 255.0);
+                MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
+                pPoint->SetColor(color);
+                mpPointSet->InsertPoint(pPoint);
+            }
+        }
+        mpPointSet->UnifyPosition(2.0);
     }
 
     void VisionShopApp::ImageResizing(int w, int h)

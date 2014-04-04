@@ -2,6 +2,8 @@
 #include "../Common/AppBase.h"
 #include "VisionShopAppUI.h"
 #include "opencv2/opencv.hpp"
+#include "../DGP/PointCloud3D.h"
+#include "../Tool/ViewTool.h"
 
 namespace MagicApp
 {
@@ -29,6 +31,7 @@ namespace MagicApp
 
         bool OpenImage(int& w, int& h);
         void SaveImage(void);
+        void SwitchDisplayMode(void);
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
         void SaliencyDetection(void);
@@ -40,11 +43,15 @@ namespace MagicApp
     private:
         void SetupScene(void);
         void ShutdownScene(void);
+        void UpdatePointSetFromImage(void);
 
     private:
         VisionShopAppUI mUI;
         MouseMode mMouseMode;
         cv::Mat mImage;
         cv::Mat mMarkImage;
+        MagicDGP::Point3DSet* mpPointSet;
+        bool mIsPointSetMode;
+        MagicTool::ViewTool mViewTool;
     };
 }

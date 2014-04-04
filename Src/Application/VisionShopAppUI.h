@@ -15,10 +15,12 @@ namespace MagicApp
 
         void UpdateImageTexture(const cv::Mat& image);
         void UpdateMarkedImageTexture(const cv::Mat& image, const cv::Mat& mark);
+        void HideImageTexture(void);
 
     private:
         void OpenImage(MyGUI::Widget* pSender);
         void SaveImage(MyGUI::Widget* pSender);
+        void SwitchDisplayMode(MyGUI::Widget* pSender);
         void ImageResizing(MyGUI::Widget* pSender);
         void SaliencyDetection(MyGUI::Widget* pSender);
         void DoImageResizing(MyGUI::Widget* pSender);
@@ -27,6 +29,7 @@ namespace MagicApp
         void BrushFront(MyGUI::Widget* pSender);
         void BrushBack(MyGUI::Widget* pSender);
         void SegmentImageDo(MyGUI::Widget* pSender);
+        void Clustering(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 
