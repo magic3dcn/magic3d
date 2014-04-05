@@ -310,4 +310,28 @@
             <State name="pushed" offset="1377 610 86 86"/>
         </BasisSkin>
     </Resource>
+    <Resource type="ResourceSkin" name="But_Saliency" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1463 349 86 86"/>
+            <State name="normal" offset="1463 435 86 86"/>
+            <State name="highlighted" offset="1463 522 86 86"/>
+            <State name="pushed" offset="1463 610 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Clustering" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1549 349 86 86"/>
+            <State name="normal" offset="1549 435 86 86"/>
+            <State name="highlighted" offset="1549 523 86 86"/>
+            <State name="pushed" offset="1549 609 86 86"/>
+        </BasisSkin>
+    </Resource>
+    <Resource type="ResourceSkin" name="But_Image" size="86 86" texture="MagicSkin.png">
+        <BasisSkin type="SubSkin" offset="0 0 86 86" align="Stretch">
+            <State name="disabled" offset="1634 348 86 86"/>
+            <State name="normal" offset="1634 435 86 86"/>
+            <State name="highlighted" offset="1634 523 86 86"/>
+            <State name="pushed" offset="1634 609 86 86"/>
+        </BasisSkin>
+    </Resource>
 </MyGUI>

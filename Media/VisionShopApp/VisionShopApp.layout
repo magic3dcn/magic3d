@@ -23,31 +23,31 @@
         <Widget type="Button" skin="But_Fast" position="115 150 28 28" align="Left Top" name="But_FastImageResizingDo">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 220 60 60" align="Left Top" name="But_SaliencyDetection">
+        <Widget type="Button" skin="But_Saliency" position="10 220 60 60" align="Left Top" name="But_SaliencyDetection">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 290 60 60" align="Left Top" name="But_Segment">
+        <Widget type="Button" skin="But_Brush" position="10 290 60 60" align="Left Top" name="But_Segment">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="72 290 28 28" align="Left Top" name="But_BrushFront">
+        <Widget type="Button" skin="But_Front" position="72 290 28 28" align="Left Top" name="But_BrushFront">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="72 322 28 28" align="Left Top" name="But_BrushBack">
+        <Widget type="Button" skin="But_Back" position="72 322 28 28" align="Left Top" name="But_BrushBack">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="105 322 28 28" align="Left Top" name="But_SegmentDo">
+        <Widget type="Button" skin="But_Brush" position="105 322 28 28" align="Left Top" name="But_SegmentDo">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 360 60 60" align="Left Top" name="But_Clustering">
+        <Widget type="Button" skin="But_Clustering" position="10 360 60 60" align="Left Top" name="But_Clustering">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_DisplayMode">
+        <Widget type="Button" skin="But_Image" position="10 80 60 60" align="Left Top" name="But_DisplayMode">
             <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="EditBox" skin="EditBox" position="72 385 35 35" align="Left Top" name="Edit_ClusterNumber">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="110 385 35 35" align="Left Top" name="But_ClusteringDo">
+        <Widget type="Button" skin="But_Clustering" position="110 385 35 35" align="Left Top" name="But_ClusteringDo">
             <Property key="Visible" value="false"/>
         </Widget>
     </Widget>

@@ -258,7 +258,15 @@ namespace MagicApp
         VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
         if (pVS != NULL)
         {
-            pVS->SwitchDisplayMode();
+            bool isPointSetMode = pVS->SwitchDisplayMode();
+            if (isPointSetMode)
+            {
+                mRoot.at(0)->findWidget("But_DisplayMode")->castType<MyGUI::Button>()->changeWidgetSkin("But_PointShop");
+            }
+            else
+            {
+                mRoot.at(0)->findWidget("But_DisplayMode")->castType<MyGUI::Button>()->changeWidgetSkin("But_Image");
+            }
         }
     }
 

@@ -57,17 +57,26 @@ namespace MagicApp
             {
                 int wPos = arg.state.X.abs - 165;
                 int hPos = arg.state.Y.abs - 10;
-                for (int hid = -mouseWidth; hid <= mouseWidth; hid++)
+                int imgW = mMarkImage.cols;
+                int imgH = mMarkImage.rows;
+                int hBottom = hPos - mouseWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + mouseWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - mouseWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + mouseWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
                 {
-                    for (int wid = -mouseWidth; wid <= mouseWidth; wid++)
+                    for (int wid = wLeft; wid <= wRight; wid++)
                     {
-                        unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
+                        unsigned char* pixel = mMarkImage.ptr(hid, wid);
                         pixel[0] = 0;
                         pixel[1] = 0;
                         pixel[2] = 255;
                     }
                 }
-                //mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
                 UpdateDisplayImage(mMarkImage);
                 Display();
             }
@@ -75,28 +84,45 @@ namespace MagicApp
             {
                 int wPos = arg.state.X.abs - 165;
                 int hPos = arg.state.Y.abs - 10;
-                for (int hid = -mouseWidth; hid <= mouseWidth; hid++)
+                int imgW = mMarkImage.cols;
+                int imgH = mMarkImage.rows;
+                int hBottom = hPos - mouseWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + mouseWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - mouseWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + mouseWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
                 {
-                    for (int wid = -mouseWidth; wid <= mouseWidth; wid++)
+                    for (int wid = wLeft; wid <= wRight; wid++)
                     {
-                        unsigned char* pixel = mMarkImage.ptr(hPos + hid, wPos + wid);
+                        unsigned char* pixel = mMarkImage.ptr(hid, wid);
                         pixel[0] = 255;
                         pixel[1] = 0;
                         pixel[2] = 0;
                     }
                 }
-                //mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
                 UpdateDisplayImage(mMarkImage);
                 Display();
             }
         }
-        mViewTool.MouseMoved(arg);
+        if (mIsPointSetMode)
+        {
+            mViewTool.MouseMoved(arg);
+        }
+        
         return true;
     }
 
     bool VisionShopApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        mViewTool.MousePressed(arg);
+        if (mIsPointSetMode)
+        {
+            mViewTool.MousePressed(arg);
+        }
+        
         return true;
     }
 
@@ -183,10 +209,11 @@ namespace MagicApp
         }
     }
 
-    void VisionShopApp::SwitchDisplayMode(void)
+    bool VisionShopApp::SwitchDisplayMode(void)
     {
         mIsPointSetMode = !mIsPointSetMode;
         Display();
+        return mIsPointSetMode;
     }
 
     void VisionShopApp::UpdatePointSet(void)

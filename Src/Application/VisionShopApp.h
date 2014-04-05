@@ -31,7 +31,7 @@ namespace MagicApp
 
         bool OpenImage(int& w, int& h);
         void SaveImage(void);
-        void SwitchDisplayMode(void);
+        bool SwitchDisplayMode(void);
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
         void SaliencyDetection(void);
