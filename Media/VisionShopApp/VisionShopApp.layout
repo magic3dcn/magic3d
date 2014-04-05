@@ -44,5 +44,11 @@
         <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_DisplayMode">
             <Property key="Enabled" value="false"/>
         </Widget>
+        <Widget type="EditBox" skin="EditBox" position="72 385 35 35" align="Left Top" name="Edit_ClusterNumber">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="110 385 35 35" align="Left Top" name="But_ClusteringDo">
+            <Property key="Visible" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>

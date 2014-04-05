@@ -30,6 +30,7 @@ namespace MagicApp
         void BrushBack(MyGUI::Widget* pSender);
         void SegmentImageDo(MyGUI::Widget* pSender);
         void Clustering(MyGUI::Widget* pSender);
+        void DoClustering(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 

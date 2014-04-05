@@ -38,8 +38,14 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_BrushBack")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BrushBack);
         mRoot.at(0)->findWidget("But_SegmentDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SegmentImageDo);
         mRoot.at(0)->findWidget("But_Clustering")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Clustering);
+        mRoot.at(0)->findWidget("But_ClusteringDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoClustering);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Contact);
+        std::stringstream ss;
+        std::string textString;
+        ss << 5;
+        ss >> textString;
+        mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
     }
 
     void VisionShopAppUI::Shutdown()
@@ -258,7 +264,20 @@ namespace MagicApp
 
     void VisionShopAppUI::Clustering(MyGUI::Widget* pSender)
     {
+        bool isVisiable = mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->isVisible();
+        mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->setVisible(!isVisiable);
+        mRoot.at(0)->findWidget("But_ClusteringDo")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+    }
 
+    void VisionShopAppUI::DoClustering(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            std::string textString = mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->getOnlyText();
+            int k = std::atoi(textString.c_str());
+            pVS->ImageClustering(k);
+        }
     }
 
     void VisionShopAppUI::BackHome(MyGUI::Widget* pSender)

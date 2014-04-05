@@ -38,20 +38,27 @@ namespace MagicApp
         void BrushFront(void);
         void BrushBack(void);
         void SegmentImageDo(void);
-        cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
+        void ImageClustering(int k);
 
     private:
         void SetupScene(void);
         void ShutdownScene(void);
-        void UpdatePointSetFromImage(void);
+        void UpdateAuxiliaryData(void);
+        void UpdateDisplayImage(const cv::Mat& markImg);
+        void UpdatePointSet(void);
+        void Display(void);
+        void SetDefaultParameter(void);
+        cv::Mat ResizeToViewSuit(const cv::Mat& img) const;
 
     private:
         VisionShopAppUI mUI;
         MouseMode mMouseMode;
         cv::Mat mImage;
         cv::Mat mMarkImage;
+        cv::Mat mDisplayImage;
         MagicDGP::Point3DSet* mpPointSet;
         bool mIsPointSetMode;
+        bool mIsNewImage;
         MagicTool::ViewTool mViewTool;
     };
 }

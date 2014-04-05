@@ -15,7 +15,8 @@ namespace MagicApp
         mUI(),
         mMouseMode(MM_View),
         mpPointSet(NULL),
-        mIsPointSetMode(false)
+        mIsPointSetMode(false),
+        mIsNewImage(true)
     {
     }
 
@@ -29,6 +30,7 @@ namespace MagicApp
         InfoLog << "Enter VisionShopApp" << std::endl;
         mUI.Setup();
         SetupScene();
+        SetDefaultParameter();
 
         return true;
     }
@@ -65,7 +67,9 @@ namespace MagicApp
                         pixel[2] = 255;
                     }
                 }
-                mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+                //mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+                UpdateDisplayImage(mMarkImage);
+                Display();
             }
             else if (mMouseMode == MM_Paint_Back)
             {
@@ -81,7 +85,9 @@ namespace MagicApp
                         pixel[2] = 0;
                     }
                 }
-                mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+                //mUI.UpdateMarkedImageTexture(mImage, mMarkImage);
+                UpdateDisplayImage(mMarkImage);
+                Display();
             }
         }
         mViewTool.MouseMoved(arg);
@@ -108,8 +114,10 @@ namespace MagicApp
     {
         if (mImage.data != NULL)
         {
-            cv::Mat resizedImg = ResizeToViewSuit(mImage);
-            mUI.UpdateImageTexture(resizedImg);
+            mImage = ResizeToViewSuit(mImage);
+            mIsNewImage = true;
+            UpdateAuxiliaryData();
+            Display();
         }
     }
 
@@ -150,12 +158,12 @@ namespace MagicApp
             if (mImage.data != NULL)
             {
                 mImage = ResizeToViewSuit(mImage);
-                mUI.UpdateImageTexture(mImage);
+                mIsNewImage = true;
+                UpdateAuxiliaryData();
+                Display();
                 w = mImage.cols;
                 h = mImage.rows;
-                //update brush image
-                cv::Size imgSize(w, h);
-                mMarkImage = cv::Mat(imgSize, CV_8UC3);
+
                 return true;
             }
         }
@@ -168,9 +176,9 @@ namespace MagicApp
         char filterName[] = "Support format(*.jpg, *.png, *.bmp, *tif)\0*.*\0";
         if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
         {
-            if (mImage.data != NULL)
+            if (mDisplayImage.data != NULL)
             {
-                cv::imwrite(fileName, mImage);
+                cv::imwrite(fileName, mDisplayImage);
             }
         }
     }
@@ -178,23 +186,10 @@ namespace MagicApp
     void VisionShopApp::SwitchDisplayMode(void)
     {
         mIsPointSetMode = !mIsPointSetMode;
-        if (mIsPointSetMode)
-        {
-            mUI.HideImageTexture();
-            if (mpPointSet == NULL)
-            {
-                UpdatePointSetFromImage();
-            }
-            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePoint", mpPointSet);
-        }
-        else
-        {
-            MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderPointSet");
-            mUI.UpdateImageTexture(mImage);
-        }
+        Display();
     }
 
-    void VisionShopApp::UpdatePointSetFromImage(void)
+    void VisionShopApp::UpdatePointSet(void)
     {
         if (mpPointSet != NULL)
         {
@@ -202,15 +197,15 @@ namespace MagicApp
             mpPointSet = NULL;
         }
         mpPointSet = new MagicDGP::Point3DSet;
-        int imgW = mImage.cols;
-        int imgH = mImage.rows;
+        int imgW = mDisplayImage.cols;
+        int imgH = mDisplayImage.rows;
         for (int hid = 0; hid < imgH; hid++)
         {
             for (int wid = 0; wid < imgW; wid++)
             {
-                unsigned char* pixel = mImage.ptr(hid, wid);
-                MagicDGP::Vector3 pos(pixel[0], pixel[1], pixel[2]);
-                MagicDGP::Vector3 color(pixel[0] / 255.0, pixel[1] / 255.0, pixel[2] / 255.0);
+                unsigned char* pixel = mDisplayImage.ptr(hid, wid);
+                MagicDGP::Vector3 pos(pixel[2], pixel[1], pixel[0]);
+                MagicDGP::Vector3 color(pixel[2] / 255.0, pixel[1] / 255.0, pixel[0] / 255.0);
                 MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
                 pPoint->SetColor(color);
                 mpPointSet->InsertPoint(pPoint);
@@ -219,37 +214,113 @@ namespace MagicApp
         mpPointSet->UnifyPosition(2.0);
     }
 
+    void VisionShopApp::UpdateDisplayImage(const cv::Mat& markImg)
+    {
+        int imgW = mImage.cols;
+        int imgH = mImage.rows;
+        cv::Size imgSize(imgW, imgH);
+        mDisplayImage.release();
+        mDisplayImage = cv::Mat(imgSize, CV_8UC3); 
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                const unsigned char* pMark = markImg.ptr(hid, wid);
+                unsigned char* pDisplay = mDisplayImage.ptr(hid, wid);
+                if (pMark[0] > 0 || pMark[1] > 0 || pMark[2] > 0)
+                {
+                    pDisplay[0] = pMark[0];
+                    pDisplay[1] = pMark[1];
+                    pDisplay[2] = pMark[2];
+                }
+                else
+                {
+                    unsigned char* pImage = mImage.ptr(hid, wid);
+                    pDisplay[0] = pImage[0];
+                    pDisplay[1] = pImage[1];
+                    pDisplay[2] = pImage[2];
+                }
+            }
+        }
+    }
+
+    void VisionShopApp::UpdateAuxiliaryData(void)
+    {
+        if (mIsNewImage) // Reset mMarkImage
+        {
+            int w = mImage.cols;
+            int h = mImage.rows;
+            cv::Size imgSize(w, h);
+            mMarkImage.release();
+            mMarkImage = cv::Mat(imgSize, CV_8UC3);
+            mIsNewImage = false;
+        }
+        //update mDisplayImage
+        UpdateDisplayImage(mMarkImage);
+        //Update PointSet
+        UpdatePointSet();
+    }
+
+    void VisionShopApp::Display()
+    {
+        if (mIsPointSetMode)
+        {
+            mUI.HideImageTexture();
+            if (mpPointSet == NULL)
+            {
+                UpdatePointSet();
+            }
+            MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("RenderPointSet", "SimplePointSize2", mpPointSet);
+        }
+        else
+        {
+            MagicCore::RenderSystem::GetSingleton()->HideRenderingObject("RenderPointSet");
+            mUI.UpdateImageTexture(mDisplayImage);
+        }
+    }
+
+    void VisionShopApp::SetDefaultParameter(void)
+    {
+        mMouseMode = MM_View;
+        mIsPointSetMode = false;
+        mIsNewImage = true;
+    }
+
     void VisionShopApp::ImageResizing(int w, int h)
     {
-        double startTime = MagicCore::ToolKit::GetTime();
         cv::Mat resizedImg = MagicDIP::Retargetting::SeamCarvingResizing(mImage, w, h);
+        mImage.release();
         mImage = resizedImg.clone();
-        DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
-        cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
-        mUI.UpdateImageTexture(resizedToViewImg);
+        mIsNewImage = true;
+        resizedImg.release();
+        UpdateAuxiliaryData();
+        Display();
     }
 
     void VisionShopApp::FastImageResizing(int w, int h)
     {
-        double startTime = MagicCore::ToolKit::GetTime();
-        //cv::Mat resizedImg = MagicDIP::Retargetting::FastSeamCarvingResizing(mImage, w, h);
-        cv::Mat resizedImg = MagicDIP::Retargetting::SaliencyBasedSeamCarvingResizing(mImage, w, h);
+        cv::Mat resizedImg = MagicDIP::Retargetting::FastSeamCarvingResizing(mImage, w, h);
+        //cv::Mat resizedImg = MagicDIP::Retargetting::SaliencyBasedSeamCarvingResizing(mImage, w, h);
         //cv::Mat resizedImg = MagicDIP::Retargetting::ImportanceDiffusionSeamCarvingResizing(mImage, w, h);
+        mImage.release();
         mImage = resizedImg.clone();
-        DebugLog << "ImageResizing time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
-        cv::Mat resizedToViewImg = ResizeToViewSuit(mImage);
-        mUI.UpdateImageTexture(resizedToViewImg);
+        mIsNewImage = true;
+        resizedImg.release();
+        UpdateAuxiliaryData();
+        Display();
     }
 
     void VisionShopApp::SaliencyDetection(void)
     {
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGAndGradientSaliency(mImage);
-        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::MultiScaleDoGBandSaliency(mImage, 1, 1);
+        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::MultiScaleDoGBandSaliency(mImage, 1, 1);
+        mImage.release();
         mImage = saliencyImg.clone();
-        cv::Mat resizedToViewImg = ResizeToViewSuit(saliencyImg);
-        mUI.UpdateImageTexture(resizedToViewImg);
+        saliencyImg.release();
+        UpdateAuxiliaryData();
+        Display();
     }
 
     cv::Mat VisionShopApp::ResizeToViewSuit(const cv::Mat& img) const
@@ -297,48 +368,18 @@ namespace MagicApp
 
     void VisionShopApp::SegmentImageDo()
     {
-        /*mMouseMode = MM_View;
+        mMouseMode = MM_View;
         cv::Mat segImg = MagicDIP::Segmentation::SegmentByGraphCut(mImage, mMarkImage);
-        mUI.UpdateMarkedImageTexture(mImage, segImg);*/
-        
-        //do an experiment about clustering
-        /*int imgW = mImage.cols;
-        int imgH = mImage.rows;
-        int dim = 3;
-        std::vector<double> sourceData;
-        std::vector<double> inputData;
-        for (int hid = 0; hid < imgH; hid++)
-        {
-            for (int wid = 0; wid < imgW; wid++)
-            {
-                unsigned char* pPixel = mImage.ptr(hid, wid);
-                sourceData.push_back(pPixel[0]);
-                sourceData.push_back(pPixel[1]);
-                sourceData.push_back(pPixel[2]);
-                inputData.push_back(pPixel[0]);
-                inputData.push_back(pPixel[1]);
-                inputData.push_back(pPixel[2]);
-            }
-        }
-        std::vector<double> resData;
-        MagicML::Clustering::MeanshiftValue(sourceData, dim, 40, inputData, resData);
-        int pixelIndex = 0;
-        for (int hid = 0; hid < imgH; hid++)
-        {
-            for (int wid = 0; wid < imgW; wid++)
-            {
-                unsigned char* pPixel = mImage.ptr(hid, wid);
-                pPixel[0] = resData.at(pixelIndex * 3 + 0);
-                pPixel[1] = resData.at(pixelIndex * 3 + 1);
-                pPixel[2] = resData.at(pixelIndex * 3 + 2);
-                pixelIndex++;
-            }
-        }*/
+        UpdateDisplayImage(segImg);
+        segImg.release();
+        Display();
+    }
 
+    void VisionShopApp::ImageClustering(int k)
+    {
         int imgW = mImage.cols;
         int imgH = mImage.rows;
         int dim = 3;
-        int k = 5;
         std::vector<double> inputData;
         for (int hid = 0; hid < imgH; hid++)
         {
@@ -391,6 +432,7 @@ namespace MagicApp
                 pixelIndex++;
             }
         }
-        mUI.UpdateImageTexture(mImage);
+        UpdateAuxiliaryData();
+        Display();
     }
 }

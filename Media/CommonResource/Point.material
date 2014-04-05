@@ -11,6 +11,18 @@ material SimplePoint
     }
 }
 
+material SimplePointSize2
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            point_size 2
+        }
+    }
+}
+
 material SimplePoint_Red
 {
     technique
