@@ -54,7 +54,7 @@ namespace MagicDIP
         
         //Construct Graph and apply graph cut
         //Calculate some constant value
-        double lambda = 50;
+        double lambda = 10;
         double maxL = 8 * lambda + 1;
         double beta = 0;
         for (int hid = 1; hid < imgH - 1; hid++)
