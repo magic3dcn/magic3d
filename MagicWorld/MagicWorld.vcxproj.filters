@@ -333,6 +333,9 @@
     <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\Deformation.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -535,6 +538,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp">
       <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\Deformation.cpp">
+      <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

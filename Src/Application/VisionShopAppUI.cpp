@@ -39,6 +39,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_SegmentDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SegmentImageDo);
         mRoot.at(0)->findWidget("But_Clustering")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Clustering);
         mRoot.at(0)->findWidget("But_ClusteringDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoClustering);
+        mRoot.at(0)->findWidget("But_Deformation")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Deformation);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::Contact);
         std::stringstream ss;
@@ -151,6 +152,7 @@ namespace MagicApp
                 mRoot.at(0)->findWidget("But_SaliencyDetection")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Segment")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_Clustering")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_Deformation")->castType<MyGUI::Button>()->setEnabled(true);
                 std::stringstream ss;
                 std::string textString;
                 ss << w;
@@ -285,6 +287,15 @@ namespace MagicApp
             std::string textString = mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->getOnlyText();
             int k = std::atoi(textString.c_str());
             pVS->ImageClustering(k);
+        }
+    }
+
+    void VisionShopAppUI::Deformation(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            pVS->Deformation();
         }
     }
 

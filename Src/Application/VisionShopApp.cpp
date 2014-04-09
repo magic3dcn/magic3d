@@ -8,6 +8,7 @@
 #include "../DIP/Segmentation.h"
 #include "../MachineLearning/Clustering.h"
 #include "../MachineLearning/GaussianMixtureModel.h"
+#include "../DIP/Deformation.h"
 
 namespace MagicApp
 {
@@ -16,7 +17,9 @@ namespace MagicApp
         mMouseMode(MM_View),
         mpPointSet(NULL),
         mIsPointSetMode(false),
-        mIsNewImage(true)
+        mIsNewImage(true),
+        mIsDeformMarkSelected(false),
+        mSelectedDeformMarkIndex(-1)
     {
     }
 
@@ -108,6 +111,24 @@ namespace MagicApp
                 Display();
             }
         }
+        else if (arg.state.buttonDown(OIS::MB_Right))
+        {
+            if (mMouseMode == MM_Deformation && mIsDeformMarkSelected)
+            {
+                int wPos = arg.state.X.abs - 165;
+                int hPos = arg.state.Y.abs - 10;
+                int imgW = mMarkImage.cols;
+                int imgH = mMarkImage.rows;
+                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                {
+                    std::vector<int> targetMarks = mDeformationMarks;
+                    targetMarks.at(mSelectedDeformMarkIndex * 2) = wPos;
+                    targetMarks.at(mSelectedDeformMarkIndex * 2 + 1) = hPos;
+                    UpdateDisplayImage(targetMarks);
+                    Display();
+                }
+            }
+        }
         if (mIsPointSetMode)
         {
             mViewTool.MouseMoved(arg);
@@ -122,12 +143,71 @@ namespace MagicApp
         {
             mViewTool.MousePressed(arg);
         }
+        if (mMouseMode == MM_Deformation && id == OIS::MB_Right)
+        {
+            //Judge whether select
+            int wPos = arg.state.X.abs - 165;
+            int hPos = arg.state.Y.abs - 10;
+            int tol = 5;
+            mIsDeformMarkSelected = false;
+            int markNum = mDeformationMarks.size() / 2;
+            for (int mid = 0; mid < markNum; mid++)
+            {
+                if (abs(wPos - mDeformationMarks.at(2 * mid)) < tol &&
+                    abs(hPos - mDeformationMarks.at(2 * mid + 1)) < tol)
+                {
+                    mIsDeformMarkSelected = true;
+                    mSelectedDeformMarkIndex = mid;
+                }
+            }
+        }
         
         return true;
     }
 
     bool VisionShopApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        if (mMouseMode == MM_Deformation)
+        {
+            if (id == OIS::MB_Left)
+            {
+                int wPos = arg.state.X.abs - 165;
+                int hPos = arg.state.Y.abs - 10;
+                mDeformationMarks.push_back(wPos);
+                mDeformationMarks.push_back(hPos);
+                UpdateDisplayImage(mDeformationMarks);
+                Display();
+            }
+            else if (id == OIS::MB_Right && mIsDeformMarkSelected)
+            {
+                int wPos = arg.state.X.abs - 165;
+                int hPos = arg.state.Y.abs - 10;
+                int imgW = mMarkImage.cols;
+                int imgH = mMarkImage.rows;
+                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                {
+                    std::vector<int> targetMarks = mDeformationMarks;
+                    targetMarks.at(mSelectedDeformMarkIndex * 2) = wPos;
+                    targetMarks.at(mSelectedDeformMarkIndex * 2 + 1) = hPos;
+                    //Deform mImage
+                    cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, mDeformationMarks, targetMarks);
+                    mImage.release();
+                    mImage = deformImg.clone();
+                    deformImg.release();
+                    //
+                    mDeformationMarks = targetMarks;
+                    UpdateDisplayImage(mDeformationMarks);
+                    Display();
+                }
+                else
+                {
+                    UpdateDisplayImage(mDeformationMarks);
+                    Display();
+                }
+                mIsDeformMarkSelected = false;
+                mSelectedDeformMarkIndex = -1;
+            }
+        }
         return true;
     }
 
@@ -184,12 +264,13 @@ namespace MagicApp
             if (mImage.data != NULL)
             {
                 mImage = ResizeToViewSuit(mImage);
-                mIsNewImage = true;
+                SetDefaultParameter();
+                //mIsNewImage = true;
                 UpdateAuxiliaryData();
                 Display();
                 w = mImage.cols;
                 h = mImage.rows;
-
+                
                 return true;
             }
         }
@@ -271,6 +352,39 @@ namespace MagicApp
         }
     }
 
+    void VisionShopApp::UpdateDisplayImage(const std::vector<int>& markIndex)
+    {
+        mDisplayImage.release();
+        mDisplayImage = mImage.clone();
+        int imgW = mImage.cols;
+        int imgH = mImage.rows;
+        int markNum = markIndex.size() / 2;
+        int markWidth = 3;
+        for (int mid = 0; mid < markNum; mid++)
+        {
+            int wPos = markIndex.at(2 * mid);
+            int hPos = markIndex.at(2 * mid + 1);
+            int hBottom = hPos - markWidth;
+            hBottom = hBottom > 0 ? hBottom : 0;
+            int hUp = hPos + markWidth;
+            hUp = hUp >= imgH ? imgH - 1 : hUp;
+            int wLeft = wPos - markWidth;
+            wLeft = wLeft > 0 ? wLeft : 0;
+            int wRight = wPos + markWidth;
+            wRight = wRight >= imgW ? imgW - 1 : wRight;
+            for (int hid = hBottom; hid <= hUp; hid++)
+            {
+                for (int wid = wLeft; wid <= wRight; wid++)
+                {
+                    unsigned char* pixel = mDisplayImage.ptr(hid, wid);
+                    pixel[0] = 0;
+                    pixel[1] = 0;
+                    pixel[2] = 255;
+                }
+            }
+        }
+    }
+
     void VisionShopApp::UpdateAuxiliaryData(void)
     {
         if (mIsNewImage) // Reset mMarkImage
@@ -311,6 +425,9 @@ namespace MagicApp
         mMouseMode = MM_View;
         mIsPointSetMode = false;
         mIsNewImage = true;
+        mDeformationMarks.clear();
+        mIsDeformMarkSelected = false;
+        mSelectedDeformMarkIndex = -1;
     }
 
     void VisionShopApp::ImageResizing(int w, int h)
@@ -461,5 +578,23 @@ namespace MagicApp
         }
         UpdateAuxiliaryData();
         Display();
+    }
+
+    void VisionShopApp::Deformation(void)
+    {
+        if (mMouseMode == MM_Deformation)
+        {
+            mDeformationMarks.clear();
+            UpdateDisplayImage(mDeformationMarks);
+            Display();
+            mMouseMode = MM_View;
+        }
+        else
+        {
+            mIsNewImage = true;
+            UpdateAuxiliaryData();
+            Display();
+            mMouseMode = MM_Deformation;
+        }
     }
 }

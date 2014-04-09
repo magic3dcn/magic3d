@@ -14,7 +14,8 @@ namespace MagicApp
         {
             MM_View,
             MM_Paint_Front,
-            MM_Paint_Back
+            MM_Paint_Back,
+            MM_Deformation
         };
 
         VisionShopApp();
@@ -39,12 +40,14 @@ namespace MagicApp
         void BrushBack(void);
         void SegmentImageDo(void);
         void ImageClustering(int k);
+        void Deformation(void);
 
     private:
         void SetupScene(void);
         void ShutdownScene(void);
         void UpdateAuxiliaryData(void);
         void UpdateDisplayImage(const cv::Mat& markImg);
+        void UpdateDisplayImage(const std::vector<int>& markIndex);
         void UpdatePointSet(void);
         void Display(void);
         void SetDefaultParameter(void);
@@ -60,5 +63,8 @@ namespace MagicApp
         bool mIsPointSetMode;
         bool mIsNewImage;
         MagicTool::ViewTool mViewTool;
+        std::vector<int> mDeformationMarks;
+        bool mIsDeformMarkSelected;
+        int mSelectedDeformMarkIndex;
     };
 }

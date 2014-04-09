@@ -170,6 +170,7 @@
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\Vector2.h" />
     <ClInclude Include="..\Src\DGP\Vector3.h" />
+    <ClInclude Include="..\Src\DIP\Deformation.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
@@ -315,6 +316,7 @@
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
     <ClCompile Include="..\Src\DGP\Vector2.cpp" />
     <ClCompile Include="..\Src\DGP\Vector3.cpp" />
+    <ClCompile Include="..\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />

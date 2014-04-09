@@ -6,7 +6,7 @@
             <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="ImageBox" skin="ImageBox" position="165 10 250 250" align="Left Top" name="Image_ImageView"/>
-        <Widget type="Button" skin="But_Home" position="10 500 60 60" align="Left Top" name="But_BackHome"/>
+        <Widget type="Button" skin="But_Home" position="10 570 60 60" align="Left Top" name="But_BackHome"/>
         <Widget type="EditBox" skin="EditBox" position="72 155 40 20" align="Left Top" name="Edit_Width">
             <Property key="Visible" value="false"/>
         </Widget>
@@ -16,8 +16,8 @@
         <Widget type="Button" skin="But_Resize" position="115 182 28 28" align="Left Top" name="But_ImageResizingDo">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Contact" position="10 570 60 60" align="Left Top" name="But_Contact"/>
-        <Widget type="Button" skin="But_Save" position="10 430 60 60" align="Left Top" name="But_SaveImage">
+        <Widget type="Button" skin="But_Contact" position="10 640 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Save" position="10 500 60 60" align="Left Top" name="But_SaveImage">
             <Property key="Enabled" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Fast" position="115 150 28 28" align="Left Top" name="But_FastImageResizingDo">
@@ -49,6 +49,9 @@
         </Widget>
         <Widget type="Button" skin="But_Clustering" position="110 385 35 35" align="Left Top" name="But_ClusteringDo">
             <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="10 430 60 60" align="Left Top" name="But_Deformation">
+            <Property key="Enabled" value="false"/>
         </Widget>
     </Widget>
 </MyGUI>
