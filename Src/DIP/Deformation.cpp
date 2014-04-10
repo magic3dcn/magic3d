@@ -39,6 +39,7 @@ namespace MagicDIP
         }
         std::vector<std::vector<double> > aMatList(markNum);
         std::vector<bool> visitFlag(imgW * imgH, 0);
+        DebugLog << "Prepare time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         for (int hid = 0; hid < imgH; hid++)
         {
             for (int wid = 0; wid < imgW; wid++)
