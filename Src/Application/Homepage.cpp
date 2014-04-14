@@ -7,6 +7,7 @@
 #include "AugmentedRealityApp.h"
 #include "VideoRecordingApp.h"
 #include "../Common/AppManager.h"
+#include "FaceBeautificationApp.h"
 
 namespace MagicApp
 {
@@ -52,6 +53,11 @@ namespace MagicApp
         {
             InfoLog << "EnterVideoRecordingApp" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new VideoRecordingApp, "VideoRecordingApp");
+        }
+        else if (arg.key == OIS::KC_F)
+        {
+            InfoLog << "EnterFaceBeautificationApp" << std::endl;
+            MagicCore::AppManager::GetSingleton()->EnterApp(new FaceBeautificationApp, "FaceBeautificationApp");
         }
 
         return true;

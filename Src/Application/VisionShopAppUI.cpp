@@ -97,47 +97,6 @@ namespace MagicApp
         pIB->setImageTexture("ImageTexture");
     }
 
-    void VisionShopAppUI::UpdateMarkedImageTexture(const cv::Mat& image, const cv::Mat& mark)
-    {
-        int texW = image.cols;
-        int texH = image.rows;
-        if (mpImageTexture != NULL)
-        {
-            MyGUI::RenderManager::getInstance().destroyTexture(mpImageTexture);
-            mpImageTexture = NULL;
-        }
-        mpImageTexture = MyGUI::RenderManager::getInstance().createTexture("ImageTexture");
-        mpImageTexture->createManual(texW, texH, MyGUI::TextureUsage::Static | MyGUI::TextureUsage::Write, MyGUI::PixelFormat::R8G8B8A8);
-        MyGUI::uint8* pDest = static_cast<MyGUI::uint8*>(mpImageTexture->lock(MyGUI::TextureUsage::Write));
-        for (int yid = 0; yid < texH; yid++)
-        {
-            for (int xid = 0; xid < texW; xid++)
-            {
-                const unsigned char* markPixel = mark.ptr(yid, xid);
-                if (markPixel[0] > 0 || markPixel[1] > 0 || markPixel[2] > 0)
-                {
-                    *pDest++ = markPixel[0];
-                    *pDest++ = markPixel[1];
-                    *pDest++ = markPixel[2];
-                    *pDest++ = 255;
-                }
-                else
-                {
-                    const unsigned char* pixel = image.ptr(yid, xid);
-                    *pDest++ = pixel[0];
-                    *pDest++ = pixel[1];
-                    *pDest++ = pixel[2];
-                    *pDest++ = 255;
-                }
-            }
-        }
-		mpImageTexture->unlock();
-
-        MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_ImageView")->castType<MyGUI::ImageBox>();
-        pIB->setSize(texW, texH);
-        pIB->setImageTexture("ImageTexture");
-    }
-
     void VisionShopAppUI::OpenImage(MyGUI::Widget* pSender)
     {
         VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));

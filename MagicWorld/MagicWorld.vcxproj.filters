@@ -73,6 +73,9 @@
     <Filter Include="MachineLearning">
       <UniqueIdentifier>{dfd3f61c-8624-413e-8ff2-40ec2e29fa7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\FaceBeautificationApp">
+      <UniqueIdentifier>{780716de-33f7-484e-aa7e-58324976efdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -336,6 +339,12 @@
     <ClInclude Include="..\Src\DIP\Deformation.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Application\FaceBeautificationAppUI.h">
+      <Filter>Application\FaceBeautificationApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\FaceBeautificationApp.h">
+      <Filter>Application\FaceBeautificationApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -541,6 +550,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DIP\Deformation.cpp">
       <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\FaceBeautificationAppUI.cpp">
+      <Filter>Application\FaceBeautificationApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\FaceBeautificationApp.cpp">
+      <Filter>Application\FaceBeautificationApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

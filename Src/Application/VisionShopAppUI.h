@@ -14,7 +14,6 @@ namespace MagicApp
         void Shutdown();
 
         void UpdateImageTexture(const cv::Mat& image);
-        void UpdateMarkedImageTexture(const cv::Mat& image, const cv::Mat& mark);
         void HideImageTexture(void);
 
     private:
