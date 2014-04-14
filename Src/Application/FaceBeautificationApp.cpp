@@ -79,14 +79,7 @@ namespace MagicApp
             mImage = cv::imread(fileName);
             if (mImage.data != NULL)
             {
-                //mImage = ResizeToViewSuit(mImage);
-                //SetDefaultParameter();
-                ////mIsNewImage = true;
-                //UpdateAuxiliaryData();
-                //Display();
-                //w = mImage.cols;
-                //h = mImage.rows;
-                
+                mUI.UpdateLeftImage(mImage);
                 return true;
             }
         }

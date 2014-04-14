@@ -21,7 +21,7 @@ namespace MagicApp
         void HideRightImage(void);
 
     private:
-        void UpdateImageTexture(MyGUI::ITexture* pImageTex, const cv::Mat& image);
+        void UpdateImageTexture(MyGUI::ITexture** pImageTex, const cv::Mat& image, const std::string& texName);
         void OpenImage(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
