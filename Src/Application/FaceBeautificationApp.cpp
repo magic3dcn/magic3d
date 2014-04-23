@@ -21,6 +21,28 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             std::ifstream fin(fileName);
+            int leftBrowNum;
+            fin >> leftBrowNum;
+            mLeftBrowFPs.clear();
+            mLeftBrowFPs.resize(leftBrowNum * 2);
+            for (int fid = 0; fid < leftBrowNum; fid++)
+            {
+                int hid, wid;
+                fin >> hid >> wid;
+                mLeftBrowFPs.at(fid * 2) = hid;
+                mLeftBrowFPs.at(fid * 2 + 1) = wid;
+            }
+            int rightBrowNum;
+            fin >> rightBrowNum;
+            mRightBrowFPs.clear();
+            mRightBrowFPs.resize(rightBrowNum * 2);
+            for (int fid = 0; fid < rightBrowNum; fid++)
+            {
+                int hid, wid;
+                fin >> hid >> wid;
+                mRightBrowFPs.at(fid * 2) = hid;
+                mRightBrowFPs.at(fid * 2 + 1) = wid;
+            }
             int leftEyeNum;
             fin >> leftEyeNum;
             mLeftEyeFPs.clear();
@@ -87,6 +109,16 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
         {
             std::ofstream fout(fileName);
+            fout << mLeftBrowFPs.size() << " ";
+            for (int fid = 0; fid < mLeftBrowFPs.size(); fid++)
+            {
+                fout << mLeftBrowFPs.at(fid) << " ";
+            }
+            fout << mRightBrowFPs.size() << " ";
+            for (int fid = 0; fid < mRightBrowFPs.size(); fid++)
+            {
+                fout << mRightBrowFPs.at(fid) << " ";
+            }
             fout << mLeftEyeFPs.size() << " ";
             for (int fid = 0; fid < mLeftEyeFPs.size(); fid++)
             {
@@ -119,6 +151,26 @@ namespace MagicApp
     bool FaceFeaturePoint::Select(int hid, int wid)
     {
         int tol = 5;
+        for (int fid = 0; fid < mLeftBrowFPs.size() / 2; fid++)
+        {
+            if (abs(hid - mLeftBrowFPs.at(2 * fid)) < tol &&
+                abs(wid - mLeftBrowFPs.at(2 * fid + 1)) < tol)
+            {
+                mSelectType = FT_Left_Brow;
+                mSelectIndex = fid;
+                return true;
+            }
+        }
+        for (int fid = 0; fid < mRightBrowFPs.size() / 2; fid++)
+        {
+            if (abs(hid - mRightBrowFPs.at(2 * fid)) < tol &&
+                abs(wid - mRightBrowFPs.at(2 * fid + 1)) < tol)
+            {
+                mSelectType = FT_Right_Brow;
+                mSelectIndex = fid;
+                return true;
+            }
+        }
         for (int fid = 0; fid < mLeftEyeFPs.size() / 2; fid++)
         {
             if (abs(hid - mLeftEyeFPs.at(2 * fid)) < tol &&
@@ -174,7 +226,17 @@ namespace MagicApp
 
     void FaceFeaturePoint::MoveTo(int hid, int wid)
     {
-        if (mSelectType == FT_Left_Eye)
+        if (mSelectType == FT_Left_Brow)
+        {
+            mLeftBrowFPs.at(mSelectIndex * 2) = hid;
+            mLeftBrowFPs.at(mSelectIndex * 2 + 1) = wid;
+        }
+        else if (mSelectType == FT_Right_Brow)
+        {
+            mRightBrowFPs.at(mSelectIndex * 2) = hid;
+            mRightBrowFPs.at(mSelectIndex * 2 + 1) = wid;
+        }
+        else if (mSelectType == FT_Left_Eye)
         {
             mLeftEyeFPs.at(mSelectIndex * 2) = hid;
             mLeftEyeFPs.at(mSelectIndex * 2 + 1) = wid;
@@ -204,6 +266,14 @@ namespace MagicApp
     void FaceFeaturePoint::Get(std::vector<int>& posList)
     {
         posList.clear();
+        for (std::vector<int>::iterator itr = mLeftBrowFPs.begin(); itr != mLeftBrowFPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mRightBrowFPs.begin(); itr != mRightBrowFPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
         for (std::vector<int>::iterator itr = mLeftEyeFPs.begin(); itr != mLeftEyeFPs.end(); itr++)
         {
             posList.push_back(*itr);
@@ -300,7 +370,7 @@ namespace MagicApp
             int imgW = mImage.cols;
             int imgH = mImage.rows;
             int markNum = markIndex->size() / 2;
-            int markWidth = 3;
+            int markWidth = 1;
             for (int mid = 0; mid < markNum; mid++)
             {
                 int wPos = markIndex->at(2 * mid + 1);

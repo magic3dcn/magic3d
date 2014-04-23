@@ -11,6 +11,8 @@ namespace MagicApp
         enum FeatureType
         {
             FT_None = 0,
+            FT_Left_Brow,
+            FT_Right_Brow,
             FT_Left_Eye,
             FT_Right_Eye,
             FT_Mouse,
@@ -31,6 +33,8 @@ namespace MagicApp
     private:
         int mSelectIndex;
         FeatureType mSelectType;
+        std::vector<int> mLeftBrowFPs;
+        std::vector<int> mRightBrowFPs;
         std::vector<int> mLeftEyeFPs;
         std::vector<int> mRightEyeFPs;
         std::vector<int> mNoseFPs;
