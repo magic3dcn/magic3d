@@ -7,5 +7,11 @@
         <Widget type="ImageBox" skin="ImageBox" position="400 50 300 375" align="Left Top" name="Image_Middle"/>
         <Widget type="ImageBox" skin="ImageBox" position="710 50 300 375" align="Left Top" name="Image_Right"/>
         <Widget type="Button" skin="But_Open" position="10 10 60 60" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_LoadFeaturePoint">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_SaveFeaturePoint">
+            <Property key="Enabled" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>
