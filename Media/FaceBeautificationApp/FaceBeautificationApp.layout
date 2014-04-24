@@ -10,7 +10,10 @@
         <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_LoadFeaturePoint">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_SaveFeaturePoint">
+        <Widget type="Button" skin="Button" position="10 220 60 60" align="Left Top" name="But_SaveFeaturePoint">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_MoveFeature">
             <Property key="Enabled" value="false"/>
         </Widget>
     </Widget>

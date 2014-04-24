@@ -297,7 +297,8 @@ namespace MagicApp
     }
 
     FaceBeautificationApp::FaceBeautificationApp() :
-        mFeaturePointSelected(false)
+        mFeaturePointSelected(false),
+        mMouseMode(MM_View)
     {
     }
 
@@ -329,60 +330,71 @@ namespace MagicApp
 
     bool FaceBeautificationApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        if (arg.state.buttonDown(OIS::MB_Right))
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
-            if (mFeaturePointSelected)
+            if (arg.state.buttonDown(OIS::MB_Left))
             {
-                int hPos = arg.state.Y.abs - 50;
-                int wPos = arg.state.X.abs - 90;
-                int imgH = mImage.rows;
-                int imgW = mImage.cols;
-                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                if (mFeaturePointSelected)
                 {
-                    DebugLog << "Feature Move" << std::endl;
-                    mOriginFPs.MoveTo(hPos, wPos);
-                    std::vector<int> markIndex;
-                    mOriginFPs.Get(markIndex);
-                    UpdateLeftDisplayImage(&markIndex);
-                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                    int hPos = arg.state.Y.abs - 50;
+                    int wPos = arg.state.X.abs - 90;
+                    int imgH = mImage.rows;
+                    int imgW = mImage.cols;
+                    if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                    {
+                        DebugLog << "Feature Move" << std::endl;
+                        mOriginFPs.MoveTo(hPos, wPos);
+                        std::vector<int> markIndex;
+                        mOriginFPs.Get(markIndex);
+                        UpdateLeftDisplayImage(&markIndex);
+                        mUI.UpdateLeftImage(mLeftDisplayImage);
+                    }
                 }
             }
         }
+        
         return true;
     }
 
     bool FaceBeautificationApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (id == OIS::MB_Right)
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
-            int hPos = arg.state.Y.abs - 50;
-            int wPos = arg.state.X.abs - 90;
-            int tol = 5;
-            mFeaturePointSelected = mOriginFPs.Select(hPos, wPos);
-            DebugLog << "MousePressed: " << mFeaturePointSelected << std::endl;
+            if (id == OIS::MB_Left)
+            {
+                int hPos = arg.state.Y.abs - 50;
+                int wPos = arg.state.X.abs - 90;
+                int tol = 5;
+                mFeaturePointSelected = mOriginFPs.Select(hPos, wPos);
+                DebugLog << "MousePressed: " << mFeaturePointSelected << std::endl;
+            }
         }
+        
         return true;
     }
 
     bool FaceBeautificationApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        if (id == OIS::MB_Right)
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
-            if (mFeaturePointSelected)
+            if (id == OIS::MB_Left)
             {
-                int hPos = arg.state.Y.abs - 50;
-                int wPos = arg.state.X.abs - 90;
-                int imgH = mImage.rows;
-                int imgW = mImage.cols;
-                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                if (mFeaturePointSelected)
                 {
-                    mOriginFPs.MoveTo(hPos, wPos);
-                    std::vector<int> markIndex;
-                    mOriginFPs.Get(markIndex);
-                    UpdateLeftDisplayImage(&markIndex);
-                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                    int hPos = arg.state.Y.abs - 50;
+                    int wPos = arg.state.X.abs - 90;
+                    int imgH = mImage.rows;
+                    int imgW = mImage.cols;
+                    if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                    {
+                        mOriginFPs.MoveTo(hPos, wPos);
+                        std::vector<int> markIndex;
+                        mOriginFPs.Get(markIndex);
+                        UpdateLeftDisplayImage(&markIndex);
+                        mUI.UpdateLeftImage(mLeftDisplayImage);
+                    }
+                    mFeaturePointSelected = false;
                 }
-                mFeaturePointSelected = false;
             }
         }
         
@@ -460,6 +472,7 @@ namespace MagicApp
                 mOriginFPs.Get(markIndex);
                 UpdateLeftDisplayImage(&markIndex);
                 mUI.UpdateLeftImage(mLeftDisplayImage);
+                mMouseMode = MM_View;
                 return true;
             }
         }
@@ -473,6 +486,11 @@ namespace MagicApp
         mOriginFPs.Get(markIndex);
         UpdateLeftDisplayImage(&markIndex);
         mUI.UpdateLeftImage(mLeftDisplayImage);
+    }
+
+    void FaceBeautificationApp::MoveOriginFeaturePoint()
+    {
+        mMouseMode = MM_Move_Origin_Feature;
     }
 
     void FaceBeautificationApp::SaveFeaturePoint()

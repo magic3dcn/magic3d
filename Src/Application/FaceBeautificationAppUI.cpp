@@ -40,6 +40,7 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("FaceBeautificationApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenImage);
         mRoot.at(0)->findWidget("But_LoadFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadFeaturePoint);
+        mRoot.at(0)->findWidget("But_MoveFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::MoveFeaturePoint);
         mRoot.at(0)->findWidget("But_SaveFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::SaveFeaturePoint);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::Contact);
@@ -131,6 +132,16 @@ namespace MagicApp
         if (pFB != NULL)
         {
             pFB->LoadFeaturePoint();
+            mRoot.at(0)->findWidget("But_MoveFeature")->castType<MyGUI::Button>()->setEnabled(true);
+        }
+    }
+
+    void FaceBeautificationAppUI::MoveFeaturePoint(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->MoveOriginFeaturePoint();
         }
     }
 

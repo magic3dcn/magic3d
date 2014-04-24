@@ -24,6 +24,7 @@ namespace MagicApp
         void UpdateImageTexture(MyGUI::ITexture** pImageTex, const cv::Mat& image, const std::string& texName);
         void OpenImage(MyGUI::Widget* pSender);
         void LoadFeaturePoint(MyGUI::Widget* pSender);
+        void MoveFeaturePoint(MyGUI::Widget* pSender);
         void SaveFeaturePoint(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);

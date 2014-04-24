@@ -45,6 +45,12 @@ namespace MagicApp
     class FaceBeautificationApp : public MagicCore::AppBase
     {
     public:
+        enum MouseMode
+        {
+            MM_View,
+            MM_Move_Origin_Feature
+        };
+
         FaceBeautificationApp();
         ~FaceBeautificationApp();
 
@@ -59,6 +65,7 @@ namespace MagicApp
 
         bool OpenImage(void);
         void LoadFeaturePoint();
+        void MoveOriginFeaturePoint();
         void SaveFeaturePoint();
 
     private:
@@ -73,6 +80,7 @@ namespace MagicApp
         cv::Mat mLeftDisplayImage;
         FaceFeaturePoint mOriginFPs;
         bool mFeaturePointSelected;
+        MouseMode mMouseMode;
     };
 
     
