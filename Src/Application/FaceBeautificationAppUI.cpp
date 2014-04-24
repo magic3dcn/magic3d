@@ -136,7 +136,11 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::SaveFeaturePoint(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->SaveFeaturePoint();
+        }
     }
 
     void FaceBeautificationAppUI::BackHome(MyGUI::Widget* pSender)

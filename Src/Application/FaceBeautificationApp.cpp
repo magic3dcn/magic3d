@@ -109,37 +109,37 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
         {
             std::ofstream fout(fileName);
-            fout << mLeftBrowFPs.size() << " ";
+            fout << mLeftBrowFPs.size() / 2 << " ";
             for (int fid = 0; fid < mLeftBrowFPs.size(); fid++)
             {
                 fout << mLeftBrowFPs.at(fid) << " ";
             }
-            fout << mRightBrowFPs.size() << " ";
+            fout << mRightBrowFPs.size() / 2 << " ";
             for (int fid = 0; fid < mRightBrowFPs.size(); fid++)
             {
                 fout << mRightBrowFPs.at(fid) << " ";
             }
-            fout << mLeftEyeFPs.size() << " ";
+            fout << mLeftEyeFPs.size() / 2 << " ";
             for (int fid = 0; fid < mLeftEyeFPs.size(); fid++)
             {
                 fout << mLeftEyeFPs.at(fid) << " ";
             }
-            fout << mRightEyeFPs.size() << " ";
+            fout << mRightEyeFPs.size() / 2 << " ";
             for (int fid = 0; fid < mRightEyeFPs.size(); fid++)
             {
                 fout << mRightEyeFPs.at(fid) << " ";
             }
-            fout << mNoseFPs.size() << " ";
+            fout << mNoseFPs.size() / 2 << " ";
             for (int fid = 0; fid < mNoseFPs.size(); fid++)
             {
                 fout << mNoseFPs.at(fid) << " ";
             }
-            fout << mMouseFPs.size() << " ";
+            fout << mMouseFPs.size() / 2 << " ";
             for (int fid = 0; fid < mMouseFPs.size(); fid++)
             {
                 fout << mMouseFPs.at(fid) << " ";
             }
-            fout << mBorderFPs.size() << " ";
+            fout << mBorderFPs.size() / 2 << " ";
             for (int fid = 0; fid < mBorderFPs.size(); fid++)
             {
                 fout << mBorderFPs.at(fid) << " ";
@@ -296,7 +296,8 @@ namespace MagicApp
         }
     }
 
-    FaceBeautificationApp::FaceBeautificationApp()
+    FaceBeautificationApp::FaceBeautificationApp() :
+        mFeaturePointSelected(false)
     {
     }
 
@@ -328,16 +329,63 @@ namespace MagicApp
 
     bool FaceBeautificationApp::MouseMoved( const OIS::MouseEvent &arg )
     {
+        if (arg.state.buttonDown(OIS::MB_Right))
+        {
+            if (mFeaturePointSelected)
+            {
+                int hPos = arg.state.Y.abs - 50;
+                int wPos = arg.state.X.abs - 90;
+                int imgH = mImage.rows;
+                int imgW = mImage.cols;
+                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                {
+                    DebugLog << "Feature Move" << std::endl;
+                    mOriginFPs.MoveTo(hPos, wPos);
+                    std::vector<int> markIndex;
+                    mOriginFPs.Get(markIndex);
+                    UpdateLeftDisplayImage(&markIndex);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                }
+            }
+        }
         return true;
     }
 
     bool FaceBeautificationApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        if (id == OIS::MB_Right)
+        {
+            int hPos = arg.state.Y.abs - 50;
+            int wPos = arg.state.X.abs - 90;
+            int tol = 5;
+            mFeaturePointSelected = mOriginFPs.Select(hPos, wPos);
+            DebugLog << "MousePressed: " << mFeaturePointSelected << std::endl;
+        }
         return true;
     }
 
     bool FaceBeautificationApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        if (id == OIS::MB_Right)
+        {
+            if (mFeaturePointSelected)
+            {
+                int hPos = arg.state.Y.abs - 50;
+                int wPos = arg.state.X.abs - 90;
+                int imgH = mImage.rows;
+                int imgW = mImage.cols;
+                if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
+                {
+                    mOriginFPs.MoveTo(hPos, wPos);
+                    std::vector<int> markIndex;
+                    mOriginFPs.Get(markIndex);
+                    UpdateLeftDisplayImage(&markIndex);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                }
+                mFeaturePointSelected = false;
+            }
+        }
+        
         return true;
     }
 
@@ -407,7 +455,10 @@ namespace MagicApp
             mImage = cv::imread(fileName);
             if (mImage.data != NULL)
             {
-                UpdateLeftDisplayImage(NULL);
+                mImage = ResizeInputImageToCanvas(mImage);
+                std::vector<int> markIndex;
+                mOriginFPs.Get(markIndex);
+                UpdateLeftDisplayImage(&markIndex);
                 mUI.UpdateLeftImage(mLeftDisplayImage);
                 return true;
             }
@@ -426,6 +477,39 @@ namespace MagicApp
 
     void FaceBeautificationApp::SaveFeaturePoint()
     {
+        mOriginFPs.Save();
+    }
 
+    cv::Mat FaceBeautificationApp::ResizeInputImageToCanvas(const cv::Mat& img) const
+    {
+        int winW = 300;
+        int winH = 375;
+        int imgW = img.cols;
+        int imgH = img.rows;
+        bool resized = false;
+        if (imgW > winW)
+        {
+            imgH = int(imgH * float(winW) / imgW);
+            imgW = winW;
+            resized = true;
+        }
+        if (imgH > winH)
+        {
+            imgW = int(imgW * float(winH) / imgH);
+            imgH = winH;
+            resized = true;
+        }
+        if (resized)
+        {
+            cv::Size vcSize(imgW, imgH);
+            cv::Mat resizedImg(vcSize, CV_8UC3);
+            cv::resize(img, resizedImg, vcSize);
+            return resizedImg;
+        }
+        else
+        {
+            cv::Mat resizedImg = img.clone();
+            return resizedImg;
+        }
     }
 }

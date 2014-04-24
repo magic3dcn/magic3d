@@ -65,12 +65,14 @@ namespace MagicApp
         void SetupScene(void);
         void ShutdownScene(void);
         void UpdateLeftDisplayImage(std::vector<int>* markIndex);
+        cv::Mat ResizeInputImageToCanvas(const cv::Mat& img) const;
 
     private:
         FaceBeautificationAppUI mUI;
         cv::Mat mImage;
         cv::Mat mLeftDisplayImage;
         FaceFeaturePoint mOriginFPs;
+        bool mFeaturePointSelected;
     };
 
     
