@@ -1,5 +1,6 @@
 #pragma once
 #include "../Common/AppBase.h"
+#include "../Math/HomoMatrix3.h"
 #include "FaceBeautificationAppUI.h"
 #include <vector>
 
@@ -26,7 +27,8 @@ namespace MagicApp
         void Save();
         bool Select(int hid, int wid);
         void MoveTo(int hid, int wid);
-        void Get(std::vector<int>& posList);
+        void Get(std::vector<int>& posList); // h, w
+        void GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale);
 
         ~FaceFeaturePoint();
 
@@ -64,21 +66,33 @@ namespace MagicApp
         virtual void WindowResized( Ogre::RenderWindow* rw );
 
         bool OpenImage(void);
-        void LoadFeaturePoint();
-        void MoveOriginFeaturePoint();
-        void SaveFeaturePoint();
+        void LoadFeaturePoint(void);
+        void MoveOriginFeaturePoint(void);
+        void SaveFeaturePoint(void);
+        bool OpenRefImage(void);
+        void LoadRefFeaturePoint(void);
+        void AlignFeature(void);
+        void DeformOriginFace(void);
 
     private:
         void SetupScene(void);
         void ShutdownScene(void);
-        void UpdateLeftDisplayImage(std::vector<int>* markIndex);
+        void UpdateLeftDisplayImage(const std::vector<int>* markIndex);
+        void UpdateMidDisplayImage(const std::vector<int>* markIndex);
+        void UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
+            const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform);
         cv::Mat ResizeInputImageToCanvas(const cv::Mat& img) const;
 
     private:
         FaceBeautificationAppUI mUI;
         cv::Mat mImage;
         cv::Mat mLeftDisplayImage;
+        cv::Mat mRefImage;
+        cv::Mat mMidDisplayImage;
+        cv::Mat mRightDisplayImage;
         FaceFeaturePoint mOriginFPs;
+        FaceFeaturePoint mRefFPs;
+        MagicMath::HomoMatrix3 mRefFPTranform;
         bool mFeaturePointSelected;
         MouseMode mMouseMode;
     };

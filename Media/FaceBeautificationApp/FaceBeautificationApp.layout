@@ -6,15 +6,21 @@
         <Widget type="ImageBox" skin="ImageBox" position="90 50 300 375" align="Left Top" name="Image_Left"/>
         <Widget type="ImageBox" skin="ImageBox" position="400 50 300 375" align="Left Top" name="Image_Middle"/>
         <Widget type="ImageBox" skin="ImageBox" position="710 50 300 375" align="Left Top" name="Image_Right"/>
-        <Widget type="Button" skin="But_Open" position="10 10 60 60" align="Left Top" name="But_Open"/>
-        <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_LoadFeaturePoint">
+        <Widget type="Button" skin="But_Open" position="90 450 60 60" align="Left Top" name="But_Open"/>
+        <Widget type="Button" skin="Button" position="160 450 60 60" align="Left Top" name="But_LoadFeaturePoint">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 220 60 60" align="Left Top" name="But_SaveFeaturePoint">
+        <Widget type="Button" skin="But_Save" position="300 450 60 60" align="Left Top" name="But_SaveFeaturePoint">
             <Property key="Enabled" value="false"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_MoveFeature">
+        <Widget type="Button" skin="Button" position="230 450 60 60" align="Left Top" name="But_MoveFeature">
             <Property key="Enabled" value="false"/>
         </Widget>
+        <Widget type="Button" skin="But_Open" position="400 450 60 60" align="Left Top" name="But_OpenReference"/>
+        <Widget type="Button" skin="Button" position="470 450 60 60" align="Left Top" name="But_LoadRefFeaturePoint">
+            <Property key="Enabled" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="But_Align" position="10 10 60 60" align="Left Top" name="But_AlignFeature"/>
+        <Widget type="Button" skin="But_Deform" position="10 80 60 60" align="Left Top" name="But_Deform"/>
     </Widget>
 </MyGUI>

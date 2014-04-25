@@ -263,7 +263,9 @@ namespace MagicApp
             mImage = cv::imread(fileName);
             if (mImage.data != NULL)
             {
-                mImage = ResizeToViewSuit(mImage);
+                cv::Mat resizedImg = ResizeToViewSuit(mImage);
+                mImage.release();
+                mImage = resizedImg;
                 SetDefaultParameter();
                 //mIsNewImage = true;
                 UpdateAuxiliaryData();

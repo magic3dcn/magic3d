@@ -42,6 +42,10 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_LoadFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadFeaturePoint);
         mRoot.at(0)->findWidget("But_MoveFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::MoveFeaturePoint);
         mRoot.at(0)->findWidget("But_SaveFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::SaveFeaturePoint);
+        mRoot.at(0)->findWidget("But_OpenReference")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenReferenceImage);
+        mRoot.at(0)->findWidget("But_LoadRefFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadRefFeaturePoint);
+        mRoot.at(0)->findWidget("But_AlignFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::AlignFeaturePoint);
+        mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::DeformOriginFace);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::Contact);
     }
@@ -63,12 +67,18 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::UpdateMiddleImage(const cv::Mat& image)
     {
-
+        UpdateImageTexture(&mpMiddleImageTexture, image, std::string("MiddleImageTexture"));
+        MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Middle")->castType<MyGUI::ImageBox>();
+        pIB->setVisible(true);
+        pIB->setImageTexture("MiddleImageTexture");
     }
 
     void FaceBeautificationAppUI::UpdateRightImage(const cv::Mat& image)
     {
-
+        UpdateImageTexture(&mpRightImageTexture, image, std::string("RightImageTexture"));
+        MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Right")->castType<MyGUI::ImageBox>();
+        pIB->setVisible(true);
+        pIB->setImageTexture("RightImageTexture");
     }
 
     void FaceBeautificationAppUI::HideLeftImage(void)
@@ -79,12 +89,14 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::HideMiddleImage(void)
     {
-
+        MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Middle")->castType<MyGUI::ImageBox>();
+        pIB->setVisible(false);
     }
 
     void FaceBeautificationAppUI::HideRightImage(void)
     {
-
+        MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Right")->castType<MyGUI::ImageBox>();
+        pIB->setVisible(false);
     }
 
     void FaceBeautificationAppUI::UpdateImageTexture(MyGUI::ITexture** pImageTex, const cv::Mat& image, const std::string& texName)
@@ -151,6 +163,45 @@ namespace MagicApp
         if (pFB != NULL)
         {
             pFB->SaveFeaturePoint();
+        }
+    }
+
+    void FaceBeautificationAppUI::OpenReferenceImage(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            if (pFB->OpenRefImage())
+            {
+                mRoot.at(0)->findWidget("But_LoadRefFeaturePoint")->castType<MyGUI::Button>()->setEnabled(true);
+            }
+        }
+    }
+
+    void FaceBeautificationAppUI::LoadRefFeaturePoint(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->LoadRefFeaturePoint();
+        }
+    }
+
+    void FaceBeautificationAppUI::AlignFeaturePoint(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->AlignFeature();
+        }
+    }
+
+    void FaceBeautificationAppUI::DeformOriginFace(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->DeformOriginFace();
         }
     }
 

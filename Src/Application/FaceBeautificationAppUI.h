@@ -26,6 +26,10 @@ namespace MagicApp
         void LoadFeaturePoint(MyGUI::Widget* pSender);
         void MoveFeaturePoint(MyGUI::Widget* pSender);
         void SaveFeaturePoint(MyGUI::Widget* pSender);
+        void OpenReferenceImage(MyGUI::Widget* pSender);
+        void LoadRefFeaturePoint(MyGUI::Widget* pSender);
+        void AlignFeaturePoint(MyGUI::Widget* pSender);
+        void DeformOriginFace(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 

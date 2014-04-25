@@ -1,4 +1,5 @@
 #include "FaceBeautificationApp.h"
+#include "../DIP/Deformation.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
 
@@ -296,6 +297,51 @@ namespace MagicApp
         }
     }
 
+    void FaceFeaturePoint::GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale)
+    {
+        double leftPosX = 0;
+        double leftPosY = 0;
+        double rightPosX = 0;
+        double rightPosY = 0;
+        int browSize = mLeftBrowFPs.size() / 2;
+        for (int fid = 0; fid < browSize; fid++)
+        {
+            leftPosX += mLeftBrowFPs.at(2 * fid + 1);
+            leftPosY += mLeftBrowFPs.at(2 * fid);
+            rightPosX += mRightBrowFPs.at(2 * fid + 1);
+            rightPosY += mRightBrowFPs.at(2 * fid);
+        }
+        int eyeSize = mLeftEyeFPs.size() / 2;
+        for (int fid = 0; fid < eyeSize; fid++)
+        {
+            leftPosX += mLeftEyeFPs.at(2 * fid + 1);
+            leftPosY += mLeftEyeFPs.at(2 * fid);
+            rightPosX += mRightEyeFPs.at(2 * fid + 1);
+            rightPosY += mRightEyeFPs.at(2 * fid);
+        }
+        int borderRevIndex = mBorderFPs.size() - 1;
+        int halfBorderSize = mBorderFPs.size() / 2 / 2;
+        for (int fid = 0; fid < halfBorderSize; fid++)
+        {
+            leftPosX += mBorderFPs.at(2 * fid + 1);
+            leftPosY += mBorderFPs.at(2 * fid);
+            rightPosX += mBorderFPs.at(borderRevIndex - 2 * fid);
+            rightPosY += mBorderFPs.at(borderRevIndex - 2 * fid - 1);
+        }
+        int statSize = browSize + eyeSize + halfBorderSize;
+        leftPosX = leftPosX / statSize;
+        leftPosY = leftPosY / statSize;
+        rightPosX = rightPosX / statSize;
+        rightPosY = rightPosY / statSize;
+        posX = (leftPosX + rightPosX) / 2;
+        posY = (leftPosY + rightPosY) / 2;
+        dirX = leftPosY - rightPosY;
+        dirY = rightPosX - leftPosX;
+        scale = sqrt(dirX * dirX + dirY * dirY);
+        dirX /= scale;
+        dirY /= scale;
+    }
+
     FaceBeautificationApp::FaceBeautificationApp() :
         mFeaturePointSelected(false),
         mMouseMode(MM_View)
@@ -421,7 +467,7 @@ namespace MagicApp
 
     }
 
-    void FaceBeautificationApp::UpdateLeftDisplayImage(std::vector<int>* markIndex)
+    void FaceBeautificationApp::UpdateLeftDisplayImage(const std::vector<int>* markIndex)
     {
         mLeftDisplayImage.release();
         mLeftDisplayImage = mImage.clone();
@@ -457,6 +503,113 @@ namespace MagicApp
         }
     }
 
+    void FaceBeautificationApp::UpdateMidDisplayImage(const std::vector<int>* markIndex)
+    {
+        mMidDisplayImage.release();
+        mMidDisplayImage = mRefImage.clone();
+        if (markIndex != NULL)
+        {
+            int imgW = mRefImage.cols;
+            int imgH = mRefImage.rows;
+            int markNum = markIndex->size() / 2;
+            int markWidth = 1;
+            for (int mid = 0; mid < markNum; mid++)
+            {
+                int wPos = markIndex->at(2 * mid + 1);
+                int hPos = markIndex->at(2 * mid);
+                int hBottom = hPos - markWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + markWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - markWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + markWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
+                {
+                    for (int wid = wLeft; wid <= wRight; wid++)
+                    {
+                        unsigned char* pixel = mMidDisplayImage.ptr(hid, wid);
+                        pixel[0] = 0;
+                        pixel[1] = 255;
+                        pixel[2] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    void FaceBeautificationApp::UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
+        const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform)
+    {
+        mRightDisplayImage.release();
+        mRightDisplayImage = img.clone();
+        if (midMarkIndex != NULL)
+        {
+            int imgW = mRightDisplayImage.cols;
+            int imgH = mRightDisplayImage.rows;
+            int markNum = midMarkIndex->size() / 2;
+            int markWidth = 1;
+            for (int mid = 0; mid < markNum; mid++)
+            {
+                int wPosRef = midMarkIndex->at(2 * mid + 1);
+                int hPosRef = midMarkIndex->at(2 * mid);
+                double wPosRes, hPosRes;
+                midTransform.TransformPoint(wPosRef, hPosRef, wPosRes, hPosRes);
+                int wPos = wPosRes;
+                int hPos = hPosRes;
+                int hBottom = hPos - markWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + markWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - markWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + markWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
+                {
+                    for (int wid = wLeft; wid <= wRight; wid++)
+                    {
+                        unsigned char* pixel = mRightDisplayImage.ptr(hid, wid);
+                        pixel[0] = 0;
+                        pixel[1] = 255;
+                        pixel[2] = 0;
+                    }
+                }
+            }
+        }
+        if (leftMarkIndex != NULL)
+        {
+            int imgW = mRightDisplayImage.cols;
+            int imgH = mRightDisplayImage.rows;
+            int markNum = leftMarkIndex->size() / 2;
+            int markWidth = 1;
+            for (int mid = 0; mid < markNum; mid++)
+            {
+                int wPos = leftMarkIndex->at(2 * mid + 1);
+                int hPos = leftMarkIndex->at(2 * mid);
+                int hBottom = hPos - markWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + markWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - markWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + markWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
+                {
+                    for (int wid = wLeft; wid <= wRight; wid++)
+                    {
+                        unsigned char* pixel = mRightDisplayImage.ptr(hid, wid);
+                        pixel[0] = 0;
+                        pixel[1] = 0;
+                        pixel[2] = 255;
+                    }
+                }
+            }
+        }
+    }
+
     bool FaceBeautificationApp::OpenImage(void)
     {
         std::string fileName;
@@ -467,11 +620,19 @@ namespace MagicApp
             mImage = cv::imread(fileName);
             if (mImage.data != NULL)
             {
-                mImage = ResizeInputImageToCanvas(mImage);
+                cv::Mat resizedImg = ResizeInputImageToCanvas(mImage);
+                mImage.release();
+                mImage = resizedImg;
                 std::vector<int> markIndex;
                 mOriginFPs.Get(markIndex);
                 UpdateLeftDisplayImage(&markIndex);
                 mUI.UpdateLeftImage(mLeftDisplayImage);
+
+                std::vector<int> refMarkIndex;
+                mRefFPs.Get(refMarkIndex);
+                UpdateRightDisplayImage(mImage, &markIndex, &refMarkIndex, mRefFPTranform);
+                mUI.UpdateRightImage(mRightDisplayImage);
+
                 mMouseMode = MM_View;
                 return true;
             }
@@ -486,6 +647,11 @@ namespace MagicApp
         mOriginFPs.Get(markIndex);
         UpdateLeftDisplayImage(&markIndex);
         mUI.UpdateLeftImage(mLeftDisplayImage);
+
+        std::vector<int> refMarkIndex;
+        mRefFPs.Get(refMarkIndex);
+        UpdateRightDisplayImage(mImage, &markIndex, &refMarkIndex, mRefFPTranform);
+        mUI.UpdateRightImage(mRightDisplayImage);
     }
 
     void FaceBeautificationApp::MoveOriginFeaturePoint()
@@ -496,6 +662,100 @@ namespace MagicApp
     void FaceBeautificationApp::SaveFeaturePoint()
     {
         mOriginFPs.Save();
+    }
+
+    bool FaceBeautificationApp::OpenRefImage(void)
+    {
+        std::string fileName;
+        char filterName[] = "Image Files(*.*)\0*.*\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mRefImage.release();
+            mRefImage = cv::imread(fileName);
+            if (mRefImage.data != NULL)
+            {
+                mRefImage = ResizeInputImageToCanvas(mRefImage);
+                std::vector<int> markIndex;
+                mRefFPs.Get(markIndex);
+                UpdateMidDisplayImage(&markIndex);
+                mUI.UpdateMiddleImage(mMidDisplayImage);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void FaceBeautificationApp::LoadRefFeaturePoint(void)
+    {
+        mRefFPs.Load();
+        std::vector<int> refMarkIndex;
+        mRefFPs.Get(refMarkIndex);
+        UpdateMidDisplayImage(&refMarkIndex);
+        mUI.UpdateMiddleImage(mMidDisplayImage);
+
+        std::vector<int> originMarkIndex;
+        mOriginFPs.Get(originMarkIndex);
+        UpdateRightDisplayImage(mImage, &originMarkIndex, &refMarkIndex, mRefFPTranform);
+        mUI.UpdateRightImage(mRightDisplayImage);
+    }
+
+    void FaceBeautificationApp::AlignFeature(void)
+    {
+        double originPosX, originPosY, originDirX, originDirY, originScale;
+        mOriginFPs.GetTransform(originPosX, originPosY, originDirX, originDirY, originScale);
+        double refPosX, refPosY, refDirX, refDirY, refScale;
+        mRefFPs.GetTransform(refPosX, refPosY, refDirX, refDirY, refScale);
+        MagicMath::HomoMatrix3 translateToCenterMat;
+        translateToCenterMat.GenerateTranslation(-refPosX, -refPosY);
+        double cosTheta = originDirX * refDirX + originDirY * refDirY;
+        cosTheta = cosTheta > 1 ? 1 : cosTheta;
+        double theta = acos(cosTheta);
+        double flag = refDirX * originDirY - originDirX * refDirY;
+        if (flag < 0)
+        {
+            theta *= -1;
+        }
+        MagicMath::HomoMatrix3 rotateMat;
+        rotateMat.GenerateRotation(theta);
+        MagicMath::HomoMatrix3 scaleMat;
+        scaleMat.GenerateScaling(originScale / refScale, originScale / refScale);
+        MagicMath::HomoMatrix3 translateToOriginMat;
+        translateToOriginMat.GenerateTranslation(originPosX, originPosY);
+        mRefFPTranform = translateToOriginMat * scaleMat * rotateMat * translateToCenterMat;
+        //fmRefFPTranform = scaleMat * translateMat;
+        std::vector<int> originMark;
+        mOriginFPs.Get(originMark);
+        std::vector<int> refMark;
+        mRefFPs.Get(refMark);
+        UpdateRightDisplayImage(mImage, &originMark, &refMark, mRefFPTranform);
+        mUI.UpdateRightImage(mRightDisplayImage);
+    }
+
+    void FaceBeautificationApp::DeformOriginFace(void)
+    {
+        std::vector<int> originMarkIndex;
+        mOriginFPs.Get(originMarkIndex);
+        std::vector<int> refMarkIndex;
+        mRefFPs.Get(refMarkIndex);
+        //Update index w and h
+        int markSize = originMarkIndex.size() / 2;
+        for (int mid = 0; mid < markSize; mid++)
+        {
+            int temp = originMarkIndex.at(2 * mid);
+            originMarkIndex.at(2 * mid) = originMarkIndex.at(2 * mid + 1);
+            originMarkIndex.at(2 * mid + 1) = temp;
+            //transform ref
+            double xRes, yRes;
+            mRefFPTranform.TransformPoint(refMarkIndex.at(2 * mid + 1), refMarkIndex.at(2 * mid), xRes, yRes);
+            refMarkIndex.at(2 * mid) = xRes;
+            refMarkIndex.at(2 * mid + 1) = yRes;
+        }
+        //Deform
+        cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, originMarkIndex, refMarkIndex);
+        //UpdateRightDisplayImage(deformImg, &originMarkIndex, &refMarkIndex, mRefFPTranform);
+        UpdateRightDisplayImage(deformImg, NULL, NULL, mRefFPTranform);
+        mUI.UpdateRightImage(mRightDisplayImage);
     }
 
     cv::Mat FaceBeautificationApp::ResizeInputImageToCanvas(const cv::Mat& img) const

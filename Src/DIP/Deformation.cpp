@@ -51,6 +51,7 @@ namespace MagicDIP
                 for (int mid = 0; mid < markNum; mid++)
                 {
                     double dTemp = (pos - pList.at(mid)).LengthSquared(); //variable
+                    dTemp *= dTemp;
                     if (dTemp < 1.0e-15)
                     {
                         isMarkVertex = true;
