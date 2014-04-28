@@ -264,6 +264,45 @@ namespace MagicApp
         }
     }
 
+    void FaceFeaturePoint::MoveDelta(int deltaH, int deltaW)
+    {
+        if (mSelectType == FT_Left_Brow)
+        {
+            mLeftBrowFPs.at(mSelectIndex * 2) += deltaH;
+            mLeftBrowFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Right_Brow)
+        {
+            mRightBrowFPs.at(mSelectIndex * 2) += deltaH;
+            mRightBrowFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Left_Eye)
+        {
+            mLeftEyeFPs.at(mSelectIndex * 2) += deltaH;
+            mLeftEyeFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Right_Eye)
+        {
+            mRightEyeFPs.at(mSelectIndex * 2) += deltaH;
+            mRightEyeFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Nose)
+        {
+            mNoseFPs.at(mSelectIndex * 2) += deltaH;
+            mNoseFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Mouse)
+        {
+            mMouseFPs.at(mSelectIndex * 2) += deltaH;
+            mMouseFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+        else if (mSelectType == FT_Border)
+        {
+            mBorderFPs.at(mSelectIndex * 2) += deltaH;
+            mBorderFPs.at(mSelectIndex * 2 + 1) += deltaW;
+        }
+    }
+
     void FaceFeaturePoint::Get(std::vector<int>& posList)
     {
         posList.clear();
@@ -388,7 +427,6 @@ namespace MagicApp
                     int imgW = mImage.cols;
                     if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
                     {
-                        DebugLog << "Feature Move" << std::endl;
                         mOriginFPs.MoveTo(hPos, wPos);
                         std::vector<int> markIndex;
                         mOriginFPs.Get(markIndex);
@@ -412,7 +450,6 @@ namespace MagicApp
                 int wPos = arg.state.X.abs - 90;
                 int tol = 5;
                 mFeaturePointSelected = mOriginFPs.Select(hPos, wPos);
-                DebugLog << "MousePressed: " << mFeaturePointSelected << std::endl;
             }
         }
         
@@ -427,7 +464,7 @@ namespace MagicApp
             {
                 if (mFeaturePointSelected)
                 {
-                    int hPos = arg.state.Y.abs - 50;
+                    /*int hPos = arg.state.Y.abs - 50;
                     int wPos = arg.state.X.abs - 90;
                     int imgH = mImage.rows;
                     int imgW = mImage.cols;
@@ -438,7 +475,7 @@ namespace MagicApp
                         mOriginFPs.Get(markIndex);
                         UpdateLeftDisplayImage(&markIndex);
                         mUI.UpdateLeftImage(mLeftDisplayImage);
-                    }
+                    }*/
                     mFeaturePointSelected = false;
                 }
             }
@@ -449,6 +486,33 @@ namespace MagicApp
 
     bool FaceBeautificationApp::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (mFeaturePointSelected)
+        {
+            int deltaH = 0;
+            int deltaW = 0;
+            if (arg.key == OIS::KC_LEFT)
+            {
+                deltaW = -1;
+            }
+            else if (arg.key == OIS::KC_RIGHT)
+            {
+                deltaW = 1;
+            }
+            else if (arg.key == OIS::KC_UP)
+            {
+                deltaH = -1;
+            }
+            else if (arg.key == OIS::KC_DOWN)
+            {
+                deltaH = 1;
+            }
+            mOriginFPs.MoveDelta(deltaH, deltaW);
+            std::vector<int> markIndex;
+            mOriginFPs.Get(markIndex);
+            UpdateLeftDisplayImage(&markIndex);
+            mUI.UpdateLeftImage(mLeftDisplayImage);
+        }
+        
         return true;
     }
 

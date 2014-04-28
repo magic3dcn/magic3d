@@ -27,6 +27,7 @@ namespace MagicApp
         void Save();
         bool Select(int hid, int wid);
         void MoveTo(int hid, int wid);
+        void MoveDelta(int deltaH, int deltaW);
         void Get(std::vector<int>& posList); // h, w
         void GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale);
 
