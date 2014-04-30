@@ -100,6 +100,46 @@ namespace MagicApp
                 mBorderFPs.at(fid * 2 + 1) = wid;
             }
             fin.close();
+
+            UpdateDPs();
+        }
+    }
+
+    void FaceFeaturePoint::UpdateDPs()
+    {
+        ConstructOneDPs(mLeftBrowFPs, true, 1, mLeftBrowDPs);
+        ConstructOneDPs(mRightBrowFPs, true, 1, mRightBrowDPs);
+        ConstructOneDPs(mLeftEyeFPs, true, 1, mLeftEyeDPs);
+        ConstructOneDPs(mRightEyeFPs, true, 1, mRightEyeDPs);
+        ConstructOneDPs(mNoseFPs, false, 1, mNoseDPs);
+        ConstructOneDPs(mMouseFPs, true, 1, mMouseDPs);
+        ConstructOneDPs(mBorderFPs, false, 3, mBorderDPs);
+    }
+
+    void FaceFeaturePoint::ConstructOneDPs(const std::vector<int>& fps, bool isClosed, int addSize, std::vector<int>& dps)
+    {
+        double addDelta = 1.0 / (addSize + 1);
+        int fpsSize = fps.size() / 2;
+        dps.clear();
+        for (int fid = 0; fid < fpsSize; fid++)
+        {
+            int hid = fps.at(fid * 2);
+            int wid = fps.at(fid * 2 + 1);
+            if (!isClosed && fid == fpsSize - 1)
+            {
+                dps.push_back(hid);
+                dps.push_back(wid);
+                break;
+            }
+            int hidNext = fps.at((fid + 1) % fpsSize * 2);
+            int widNext = fps.at((fid + 1) % fpsSize * 2 + 1);
+            for (int addId = 0; addId <= addSize; addId++)
+            {
+                int addHid = int(hid * (1.0 - addId * addDelta) + hidNext * addId * addDelta);
+                int addWid = int(wid * (1.0 - addId * addDelta) + widNext * addId * addDelta);
+                dps.push_back(addHid);
+                dps.push_back(addWid);
+            }
         }
     }
 
@@ -262,6 +302,7 @@ namespace MagicApp
             mBorderFPs.at(mSelectIndex * 2) = hid;
             mBorderFPs.at(mSelectIndex * 2 + 1) = wid;
         }
+        UpdateDPs();
     }
 
     void FaceFeaturePoint::MoveDelta(int deltaH, int deltaW)
@@ -301,9 +342,43 @@ namespace MagicApp
             mBorderFPs.at(mSelectIndex * 2) += deltaH;
             mBorderFPs.at(mSelectIndex * 2 + 1) += deltaW;
         }
+        UpdateDPs();
     }
 
-    void FaceFeaturePoint::Get(std::vector<int>& posList)
+    void FaceFeaturePoint::GetDPs(std::vector<int>& posList)
+    {
+        posList.clear();
+        for (std::vector<int>::iterator itr = mLeftBrowDPs.begin(); itr != mLeftBrowDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mRightBrowDPs.begin(); itr != mRightBrowDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mLeftEyeDPs.begin(); itr != mLeftEyeDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mRightEyeDPs.begin(); itr != mRightEyeDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mNoseDPs.begin(); itr != mNoseDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mMouseDPs.begin(); itr != mMouseDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+        for (std::vector<int>::iterator itr = mBorderDPs.begin(); itr != mBorderDPs.end(); itr++)
+        {
+            posList.push_back(*itr);
+        }
+    }
+
+    void FaceFeaturePoint::GetFPs(std::vector<int>& posList)
     {
         posList.clear();
         for (std::vector<int>::iterator itr = mLeftBrowFPs.begin(); itr != mLeftBrowFPs.end(); itr++)
@@ -429,8 +504,10 @@ namespace MagicApp
                     {
                         mOriginFPs.MoveTo(hPos, wPos);
                         std::vector<int> markIndex;
-                        mOriginFPs.Get(markIndex);
-                        UpdateLeftDisplayImage(&markIndex);
+                        mOriginFPs.GetDPs(markIndex);
+                        std::vector<int> featureIndex;
+                        mOriginFPs.GetFPs(featureIndex);
+                        UpdateLeftDisplayImage(&markIndex, &featureIndex);
                         mUI.UpdateLeftImage(mLeftDisplayImage);
                     }
                 }
@@ -464,18 +541,6 @@ namespace MagicApp
             {
                 if (mFeaturePointSelected)
                 {
-                    /*int hPos = arg.state.Y.abs - 50;
-                    int wPos = arg.state.X.abs - 90;
-                    int imgH = mImage.rows;
-                    int imgW = mImage.cols;
-                    if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
-                    {
-                        mOriginFPs.MoveTo(hPos, wPos);
-                        std::vector<int> markIndex;
-                        mOriginFPs.Get(markIndex);
-                        UpdateLeftDisplayImage(&markIndex);
-                        mUI.UpdateLeftImage(mLeftDisplayImage);
-                    }*/
                     mFeaturePointSelected = false;
                 }
             }
@@ -508,8 +573,10 @@ namespace MagicApp
             }
             mOriginFPs.MoveDelta(deltaH, deltaW);
             std::vector<int> markIndex;
-            mOriginFPs.Get(markIndex);
-            UpdateLeftDisplayImage(&markIndex);
+            mOriginFPs.GetDPs(markIndex);
+            std::vector<int> featureIndex;
+            mOriginFPs.GetFPs(featureIndex);
+            UpdateLeftDisplayImage(&markIndex, &featureIndex);
             mUI.UpdateLeftImage(mLeftDisplayImage);
         }
         
@@ -531,7 +598,7 @@ namespace MagicApp
 
     }
 
-    void FaceBeautificationApp::UpdateLeftDisplayImage(const std::vector<int>* markIndex)
+    void FaceBeautificationApp::UpdateLeftDisplayImage(const std::vector<int>* markIndex, const std::vector<int>* featureIndex)
     {
         mLeftDisplayImage.release();
         mLeftDisplayImage = mImage.clone();
@@ -560,6 +627,36 @@ namespace MagicApp
                         unsigned char* pixel = mLeftDisplayImage.ptr(hid, wid);
                         pixel[0] = 0;
                         pixel[1] = 0;
+                        pixel[2] = 255;
+                    }
+                }
+            }
+        }
+        if (featureIndex != NULL)
+        {
+            int imgW = mImage.cols;
+            int imgH = mImage.rows;
+            int markNum = featureIndex->size() / 2;
+            int markWidth = 1;
+            for (int mid = 0; mid < markNum; mid++)
+            {
+                int wPos = featureIndex->at(2 * mid + 1);
+                int hPos = featureIndex->at(2 * mid);
+                int hBottom = hPos - markWidth;
+                hBottom = hBottom > 0 ? hBottom : 0;
+                int hUp = hPos + markWidth;
+                hUp = hUp >= imgH ? imgH - 1 : hUp;
+                int wLeft = wPos - markWidth;
+                wLeft = wLeft > 0 ? wLeft : 0;
+                int wRight = wPos + markWidth;
+                wRight = wRight >= imgW ? imgW - 1 : wRight;
+                for (int hid = hBottom; hid <= hUp; hid++)
+                {
+                    for (int wid = wLeft; wid <= wRight; wid++)
+                    {
+                        unsigned char* pixel = mLeftDisplayImage.ptr(hid, wid);
+                        pixel[0] = 0;
+                        pixel[1] = 255;
                         pixel[2] = 255;
                     }
                 }
@@ -688,12 +785,12 @@ namespace MagicApp
                 mImage.release();
                 mImage = resizedImg;
                 std::vector<int> markIndex;
-                mOriginFPs.Get(markIndex);
-                UpdateLeftDisplayImage(&markIndex);
+                mOriginFPs.GetDPs(markIndex);
+                UpdateLeftDisplayImage(&markIndex, NULL);
                 mUI.UpdateLeftImage(mLeftDisplayImage);
 
                 std::vector<int> refMarkIndex;
-                mRefFPs.Get(refMarkIndex);
+                mRefFPs.GetDPs(refMarkIndex);
                 UpdateRightDisplayImage(mImage, &markIndex, &refMarkIndex, mRefFPTranform);
                 mUI.UpdateRightImage(mRightDisplayImage);
 
@@ -708,12 +805,12 @@ namespace MagicApp
     {
         mOriginFPs.Load();
         std::vector<int> markIndex;
-        mOriginFPs.Get(markIndex);
-        UpdateLeftDisplayImage(&markIndex);
+        mOriginFPs.GetDPs(markIndex);
+        UpdateLeftDisplayImage(&markIndex, NULL);
         mUI.UpdateLeftImage(mLeftDisplayImage);
 
         std::vector<int> refMarkIndex;
-        mRefFPs.Get(refMarkIndex);
+        mRefFPs.GetDPs(refMarkIndex);
         UpdateRightDisplayImage(mImage, &markIndex, &refMarkIndex, mRefFPTranform);
         mUI.UpdateRightImage(mRightDisplayImage);
     }
@@ -721,6 +818,12 @@ namespace MagicApp
     void FaceBeautificationApp::MoveOriginFeaturePoint()
     {
         mMouseMode = MM_Move_Origin_Feature;
+        std::vector<int> markIndex;
+        mOriginFPs.GetDPs(markIndex);
+        std::vector<int> featureIndex;
+        mOriginFPs.GetFPs(featureIndex);
+        UpdateLeftDisplayImage(&markIndex, &featureIndex);
+        mUI.UpdateLeftImage(mLeftDisplayImage);
     }
 
     void FaceBeautificationApp::SaveFeaturePoint()
@@ -740,7 +843,7 @@ namespace MagicApp
             {
                 mRefImage = ResizeInputImageToCanvas(mRefImage);
                 std::vector<int> markIndex;
-                mRefFPs.Get(markIndex);
+                mRefFPs.GetDPs(markIndex);
                 UpdateMidDisplayImage(&markIndex);
                 mUI.UpdateMiddleImage(mMidDisplayImage);
 
@@ -754,12 +857,12 @@ namespace MagicApp
     {
         mRefFPs.Load();
         std::vector<int> refMarkIndex;
-        mRefFPs.Get(refMarkIndex);
+        mRefFPs.GetDPs(refMarkIndex);
         UpdateMidDisplayImage(&refMarkIndex);
         mUI.UpdateMiddleImage(mMidDisplayImage);
 
         std::vector<int> originMarkIndex;
-        mOriginFPs.Get(originMarkIndex);
+        mOriginFPs.GetDPs(originMarkIndex);
         UpdateRightDisplayImage(mImage, &originMarkIndex, &refMarkIndex, mRefFPTranform);
         mUI.UpdateRightImage(mRightDisplayImage);
     }
@@ -789,9 +892,9 @@ namespace MagicApp
         mRefFPTranform = translateToOriginMat * scaleMat * rotateMat * translateToCenterMat;
         //fmRefFPTranform = scaleMat * translateMat;
         std::vector<int> originMark;
-        mOriginFPs.Get(originMark);
+        mOriginFPs.GetDPs(originMark);
         std::vector<int> refMark;
-        mRefFPs.Get(refMark);
+        mRefFPs.GetDPs(refMark);
         UpdateRightDisplayImage(mImage, &originMark, &refMark, mRefFPTranform);
         mUI.UpdateRightImage(mRightDisplayImage);
     }
@@ -799,9 +902,9 @@ namespace MagicApp
     void FaceBeautificationApp::DeformOriginFace(void)
     {
         std::vector<int> originMarkIndex;
-        mOriginFPs.Get(originMarkIndex);
+        mOriginFPs.GetDPs(originMarkIndex);
         std::vector<int> refMarkIndex;
-        mRefFPs.Get(refMarkIndex);
+        mRefFPs.GetDPs(refMarkIndex);
         //Update index w and h
         int markSize = originMarkIndex.size() / 2;
         for (int mid = 0; mid < markSize; mid++)

@@ -50,9 +50,8 @@ namespace MagicDIP
                 double wSum = 0;
                 for (int mid = 0; mid < markNum; mid++)
                 {
-                    double dTemp = (pos - pList.at(mid)).LengthSquared(); //variable
-                    dTemp *= dTemp;
-                    dTemp *= dTemp;
+                    //double dTemp = (pos - pList.at(mid)).LengthSquared(); //variable
+                    double dTemp = (pos - pList.at(mid)).Length();
                     if (dTemp < 1.0e-15)
                     {
                         isMarkVertex = true;
@@ -132,8 +131,99 @@ namespace MagicDIP
         }
         DebugLog << "Deform time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         startTime = MagicCore::ToolKit::GetTime();
-        //fill hole
+        std::vector<int> unVisitVecH;
+        std::vector<int> unVisitVecW;
         for (int hid = 0; hid < imgH; hid++)
+        {
+            int baseIndex = hid * imgW;
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                if (!visitFlag.at(baseIndex + wid))
+                {
+                    unVisitVecH.push_back(hid);
+                    unVisitVecW.push_back(wid);
+                }
+            }
+        }
+        int minAcceptSize = 4;
+        int fillTime = 1;
+        while (unVisitVecH.size() > 0)
+        {
+            DebugLog << "unVisit number: " << unVisitVecH.size() << std::endl;
+            std::vector<int> unVisitVecHCopy = unVisitVecH;
+            std::vector<int> unVisitVecWCopy = unVisitVecW;
+            unVisitVecH.clear();
+            unVisitVecW.clear();
+            int unVisitSize = unVisitVecHCopy.size();
+            for (int uid = 0; uid < unVisitSize; uid++)
+            {
+                MagicDGP::Vector3 avgColor(0, 0, 0);
+                int hid = unVisitVecHCopy.at(uid);
+                int wid = unVisitVecWCopy.at(uid);
+                int avgSize = 0;
+                if ((hid - 1) >= 0 && visitFlag.at((hid - 1) * imgW + wid))
+                {
+                    unsigned char* pPixel = resImg.ptr(hid - 1, wid);
+                    avgColor[0] += pPixel[0];
+                    avgColor[1] += pPixel[1];
+                    avgColor[2] += pPixel[2];
+                    avgSize++;
+                }
+                if ((hid + 1) < imgH && visitFlag.at((hid + 1) * imgW + wid))
+                {
+                    unsigned char* pPixel = resImg.ptr(hid + 1, wid);
+                    avgColor[0] += pPixel[0];
+                    avgColor[1] += pPixel[1];
+                    avgColor[2] += pPixel[2];
+                    avgSize++;
+                }
+                if ((wid - 1) >= 0 && visitFlag.at(hid * imgW + wid - 1))
+                {
+                    unsigned char* pPixel = resImg.ptr(hid, wid - 1);
+                    avgColor[0] += pPixel[0];
+                    avgColor[1] += pPixel[1];
+                    avgColor[2] += pPixel[2];
+                    avgSize++;
+                }
+                if ((wid + 1) < imgW && visitFlag.at(hid * imgW + wid + 1))
+                {
+                    unsigned char* pPixel = resImg.ptr(hid, wid + 1);
+                    avgColor[0] += pPixel[0];
+                    avgColor[1] += pPixel[1];
+                    avgColor[2] += pPixel[2];
+                    avgSize++;
+                }
+                if (avgSize >= minAcceptSize)
+                {
+                    visitFlag.at(hid * imgW + wid) = 1;
+                    avgColor /= avgSize;
+                    unsigned char* pFillPixel = resImg.ptr(hid, wid);
+                    pFillPixel[0] = avgColor[0];
+                    pFillPixel[1] = avgColor[1];
+                    pFillPixel[2] = avgColor[2];
+                }
+                else
+                {
+                    unVisitVecH.push_back(hid);
+                    unVisitVecW.push_back(wid);
+                }
+            }
+            if (fillTime == 3)
+            {
+                minAcceptSize--;
+            }
+            else if (fillTime == 5)
+            {
+                minAcceptSize--;
+            }
+            else if (fillTime == 7)
+            {
+                minAcceptSize--;
+            }
+            fillTime++;
+        }
+        //fill hole
+        /*for (int hid = 0; hid < imgH; hid++)
         {
             int baseIndex = hid * imgW;
             for (int wid = 0; wid < imgW; wid++)
@@ -204,7 +294,7 @@ namespace MagicDIP
                     pFillPixel[2] = avgColor[2];
                 }
             }
-        }
+        }*/
         DebugLog << "Fill hole time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         return resImg;
     }

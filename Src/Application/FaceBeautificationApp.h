@@ -28,21 +28,33 @@ namespace MagicApp
         bool Select(int hid, int wid);
         void MoveTo(int hid, int wid);
         void MoveDelta(int deltaH, int deltaW);
-        void Get(std::vector<int>& posList); // h, w
+        void GetDPs(std::vector<int>& posList); // h, w
+        void GetFPs(std::vector<int>& posList);
         void GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale);
 
         ~FaceFeaturePoint();
 
     private:
+        void UpdateDPs();
+        void ConstructOneDPs(const std::vector<int>& fps, bool isClosed, int addSize, std::vector<int>& dps);
+
+    private:
         int mSelectIndex;
         FeatureType mSelectType;
         std::vector<int> mLeftBrowFPs;
+        std::vector<int> mLeftBrowDPs;
         std::vector<int> mRightBrowFPs;
+        std::vector<int> mRightBrowDPs;
         std::vector<int> mLeftEyeFPs;
+        std::vector<int> mLeftEyeDPs;
         std::vector<int> mRightEyeFPs;
+        std::vector<int> mRightEyeDPs;
         std::vector<int> mNoseFPs;
+        std::vector<int> mNoseDPs;
         std::vector<int> mMouseFPs;
+        std::vector<int> mMouseDPs;
         std::vector<int> mBorderFPs;
+        std::vector<int> mBorderDPs;
     };
 
     class FaceBeautificationApp : public MagicCore::AppBase
@@ -78,7 +90,7 @@ namespace MagicApp
     private:
         void SetupScene(void);
         void ShutdownScene(void);
-        void UpdateLeftDisplayImage(const std::vector<int>* markIndex);
+        void UpdateLeftDisplayImage(const std::vector<int>* markIndex, const std::vector<int>* featureIndex);
         void UpdateMidDisplayImage(const std::vector<int>* markIndex);
         void UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
             const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform);
