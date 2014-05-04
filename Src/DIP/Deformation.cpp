@@ -52,6 +52,7 @@ namespace MagicDIP
                 {
                     //double dTemp = (pos - pList.at(mid)).LengthSquared(); //variable
                     double dTemp = (pos - pList.at(mid)).Length();
+                    dTemp = pow(dTemp, 1.25);
                     if (dTemp < 1.0e-15)
                     {
                         isMarkVertex = true;
@@ -208,15 +209,15 @@ namespace MagicDIP
                     unVisitVecW.push_back(wid);
                 }
             }
-            if (fillTime == 3)
+            if (fillTime == 4)
             {
                 minAcceptSize--;
             }
-            else if (fillTime == 5)
+            else if (fillTime == 6)
             {
                 minAcceptSize--;
             }
-            else if (fillTime == 7)
+            else if (fillTime == 8)
             {
                 minAcceptSize--;
             }

@@ -16,6 +16,7 @@ xcopy /y .\Dependencies\OpenCV\bin\release\opencv_imgproc247.dll .\bin\release\
 xcopy /y .\Dependencies\OpenCV\bin\release\opencv_calib3d247.dll .\bin\release\
 xcopy /y .\Dependencies\OpenCV\bin\release\opencv_flann247.dll .\bin\release\
 xcopy /y .\Dependencies\OpenCV\bin\release\opencv_features2d247.dll .\bin\release\
+xcopy /y .\Dependencies\OpenCV\bin\release\opencv_video247.dll .\bin\release\
 xcopy /y .\Dependencies\OGRE\bin\debug\OgreMain_d.dll .\bin\debug\
 xcopy /y .\Dependencies\OGRE\bin\debug\Plugin_CgProgramManager_d.dll .\bin\debug\
 xcopy /y .\Dependencies\OGRE\bin\debug\cg.dll .\bin\debug\
@@ -36,3 +37,4 @@ xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_imgproc247d.dll .\bin\debug\
 xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_calib3d247d.dll .\bin\debug\
 xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_flann247d.dll .\bin\debug\
 xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_features2d247d.dll .\bin\debug\
+xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_video247d.dll .\bin\debug\

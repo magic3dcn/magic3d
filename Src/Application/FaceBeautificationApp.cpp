@@ -107,13 +107,13 @@ namespace MagicApp
 
     void FaceFeaturePoint::UpdateDPs()
     {
-        ConstructOneDPs(mLeftBrowFPs, true, 1, mLeftBrowDPs);
-        ConstructOneDPs(mRightBrowFPs, true, 1, mRightBrowDPs);
-        ConstructOneDPs(mLeftEyeFPs, true, 1, mLeftEyeDPs);
-        ConstructOneDPs(mRightEyeFPs, true, 1, mRightEyeDPs);
-        ConstructOneDPs(mNoseFPs, false, 1, mNoseDPs);
-        ConstructOneDPs(mMouseFPs, true, 1, mMouseDPs);
-        ConstructOneDPs(mBorderFPs, false, 3, mBorderDPs);
+        ConstructOneDPs(mLeftBrowFPs, true, 2, mLeftBrowDPs);
+        ConstructOneDPs(mRightBrowFPs, true, 2, mRightBrowDPs);
+        ConstructOneDPs(mLeftEyeFPs, true, 2, mLeftEyeDPs);
+        ConstructOneDPs(mRightEyeFPs, true, 2, mRightEyeDPs);
+        ConstructOneDPs(mNoseFPs, false, 2, mNoseDPs);
+        ConstructOneDPs(mMouseFPs, true, 2, mMouseDPs);
+        ConstructOneDPs(mBorderFPs, false, 10, mBorderDPs);
     }
 
     void FaceFeaturePoint::ConstructOneDPs(const std::vector<int>& fps, bool isClosed, int addSize, std::vector<int>& dps)
@@ -869,7 +869,30 @@ namespace MagicApp
 
     void FaceBeautificationApp::AlignFeature(void)
     {
-        double originPosX, originPosY, originDirX, originDirY, originScale;
+        std::vector<int> originFeatures, refFeatures;
+        mOriginFPs.GetFPs(originFeatures);
+        mRefFPs.GetFPs(refFeatures);
+        int featureSize = originFeatures.size() / 2;
+        std::vector<cv::Point2f> cvOriginFeatures(featureSize);
+        std::vector<cv::Point2f> cvRefFeatures(featureSize);
+        for (int fid = 0; fid < featureSize; fid++)
+        {
+            cvOriginFeatures.at(fid).x = originFeatures.at(fid * 2 + 1);
+            cvOriginFeatures.at(fid).y = originFeatures.at(fid * 2);
+            cvRefFeatures.at(fid).x = refFeatures.at(fid * 2 + 1);
+            cvRefFeatures.at(fid).y = refFeatures.at(fid * 2 );
+        }
+        cv::Mat transMat = cv::estimateRigidTransform(cvRefFeatures, cvOriginFeatures, false);
+        DebugLog << "transMat: " << std::endl << transMat << std::endl;
+        mRefFPTranform.Unit();
+        mRefFPTranform.SetValue(0, 0, transMat.at<double>(0, 0));
+        mRefFPTranform.SetValue(0, 1, transMat.at<double>(0, 1));
+        mRefFPTranform.SetValue(0, 2, transMat.at<double>(0, 2));
+        mRefFPTranform.SetValue(1, 0, transMat.at<double>(1, 0));
+        mRefFPTranform.SetValue(1, 1, transMat.at<double>(1, 1));
+        mRefFPTranform.SetValue(1, 2, transMat.at<double>(1, 2));
+
+        /*double originPosX, originPosY, originDirX, originDirY, originScale;
         mOriginFPs.GetTransform(originPosX, originPosY, originDirX, originDirY, originScale);
         double refPosX, refPosY, refDirX, refDirY, refScale;
         mRefFPs.GetTransform(refPosX, refPosY, refDirX, refDirY, refScale);
@@ -889,7 +912,8 @@ namespace MagicApp
         scaleMat.GenerateScaling(originScale / refScale, originScale / refScale);
         MagicMath::HomoMatrix3 translateToOriginMat;
         translateToOriginMat.GenerateTranslation(originPosX, originPosY);
-        mRefFPTranform = translateToOriginMat * scaleMat * rotateMat * translateToCenterMat;
+        mRefFPTranform = translateToOriginMat * scaleMat * rotateMat * translateToCenterMat;*/
+
         //fmRefFPTranform = scaleMat * translateMat;
         std::vector<int> originMark;
         mOriginFPs.GetDPs(originMark);
