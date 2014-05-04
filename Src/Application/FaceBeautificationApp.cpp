@@ -411,51 +411,6 @@ namespace MagicApp
         }
     }
 
-    void FaceFeaturePoint::GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale)
-    {
-        double leftPosX = 0;
-        double leftPosY = 0;
-        double rightPosX = 0;
-        double rightPosY = 0;
-        int browSize = mLeftBrowFPs.size() / 2;
-        for (int fid = 0; fid < browSize; fid++)
-        {
-            leftPosX += mLeftBrowFPs.at(2 * fid + 1);
-            leftPosY += mLeftBrowFPs.at(2 * fid);
-            rightPosX += mRightBrowFPs.at(2 * fid + 1);
-            rightPosY += mRightBrowFPs.at(2 * fid);
-        }
-        int eyeSize = mLeftEyeFPs.size() / 2;
-        for (int fid = 0; fid < eyeSize; fid++)
-        {
-            leftPosX += mLeftEyeFPs.at(2 * fid + 1);
-            leftPosY += mLeftEyeFPs.at(2 * fid);
-            rightPosX += mRightEyeFPs.at(2 * fid + 1);
-            rightPosY += mRightEyeFPs.at(2 * fid);
-        }
-        int borderRevIndex = mBorderFPs.size() - 1;
-        int halfBorderSize = mBorderFPs.size() / 2 / 2;
-        for (int fid = 0; fid < halfBorderSize; fid++)
-        {
-            leftPosX += mBorderFPs.at(2 * fid + 1);
-            leftPosY += mBorderFPs.at(2 * fid);
-            rightPosX += mBorderFPs.at(borderRevIndex - 2 * fid);
-            rightPosY += mBorderFPs.at(borderRevIndex - 2 * fid - 1);
-        }
-        int statSize = browSize + eyeSize + halfBorderSize;
-        leftPosX = leftPosX / statSize;
-        leftPosY = leftPosY / statSize;
-        rightPosX = rightPosX / statSize;
-        rightPosY = rightPosY / statSize;
-        posX = (leftPosX + rightPosX) / 2;
-        posY = (leftPosY + rightPosY) / 2;
-        dirX = leftPosY - rightPosY;
-        dirY = rightPosX - leftPosX;
-        scale = sqrt(dirX * dirX + dirY * dirY);
-        dirX /= scale;
-        dirY /= scale;
-    }
-
     FaceBeautificationApp::FaceBeautificationApp() :
         mFeaturePointSelected(false),
         mMouseMode(MM_View)
@@ -892,29 +847,6 @@ namespace MagicApp
         mRefFPTranform.SetValue(1, 1, transMat.at<double>(1, 1));
         mRefFPTranform.SetValue(1, 2, transMat.at<double>(1, 2));
 
-        /*double originPosX, originPosY, originDirX, originDirY, originScale;
-        mOriginFPs.GetTransform(originPosX, originPosY, originDirX, originDirY, originScale);
-        double refPosX, refPosY, refDirX, refDirY, refScale;
-        mRefFPs.GetTransform(refPosX, refPosY, refDirX, refDirY, refScale);
-        MagicMath::HomoMatrix3 translateToCenterMat;
-        translateToCenterMat.GenerateTranslation(-refPosX, -refPosY);
-        double cosTheta = originDirX * refDirX + originDirY * refDirY;
-        cosTheta = cosTheta > 1 ? 1 : cosTheta;
-        double theta = acos(cosTheta);
-        double flag = refDirX * originDirY - originDirX * refDirY;
-        if (flag < 0)
-        {
-            theta *= -1;
-        }
-        MagicMath::HomoMatrix3 rotateMat;
-        rotateMat.GenerateRotation(theta);
-        MagicMath::HomoMatrix3 scaleMat;
-        scaleMat.GenerateScaling(originScale / refScale, originScale / refScale);
-        MagicMath::HomoMatrix3 translateToOriginMat;
-        translateToOriginMat.GenerateTranslation(originPosX, originPosY);
-        mRefFPTranform = translateToOriginMat * scaleMat * rotateMat * translateToCenterMat;*/
-
-        //fmRefFPTranform = scaleMat * translateMat;
         std::vector<int> originMark;
         mOriginFPs.GetDPs(originMark);
         std::vector<int> refMark;

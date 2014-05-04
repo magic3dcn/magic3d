@@ -30,7 +30,6 @@ namespace MagicApp
         void MoveDelta(int deltaH, int deltaW);
         void GetDPs(std::vector<int>& posList); // h, w
         void GetFPs(std::vector<int>& posList);
-        void GetTransform(double& posX, double& posY, double& dirX, double& dirY, double& scale);
 
         ~FaceFeaturePoint();
 
@@ -108,6 +107,9 @@ namespace MagicApp
         MagicMath::HomoMatrix3 mRefFPTranform;
         bool mFeaturePointSelected;
         MouseMode mMouseMode;
+        //ASM
+        std::vector<cv::Mat*> mTrainingImages;
+        std::vector<FaceFeaturePoint*> mTrainingTransforms;
     };
 
     
