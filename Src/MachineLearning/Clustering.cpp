@@ -110,7 +110,7 @@ namespace MagicML
                 RMat(rid, cid) = 0.0;
             }
         }
-        for (int sid = 0; sid < dataCount; sid++)
+        /*for (int sid = 0; sid < dataCount; sid++)
         {
             int baseIndex = inputIndex.at(sid) * dim;
             for (int rid= 0; rid < dim; rid++)
@@ -127,7 +127,24 @@ namespace MagicML
             {
                 RMat(rid, cid) -= (meanVector.at(rid) * meanVector.at(cid) * dataCount);
             }
+        }*/
+        std::vector<double> deltaVec(dim);
+        for (int sid = 0; sid < dataCount; sid++)
+        {
+            int baseIndex = inputIndex.at(sid) * dim;
+            for (int did = 0; did < dim; did++)
+            {
+                deltaVec.at(did) = inputData.at(baseIndex + did) - meanVector.at(did);
+            }
+            for (int rid= 0; rid < dim; rid++)
+            {
+                for (int cid = 0; cid < dim; cid++)
+                {
+                    RMat(rid, cid) += (deltaVec.at(rid) * deltaVec.at(cid));
+                }
+            }
         }
+        RMat /= dataCount;
         Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(RMat);
         eigenValue = es.eigenvalues()(dim - 1);
         Eigen::VectorXd maxVec = es.eigenvectors().col(dim - 1);

@@ -47,17 +47,19 @@ namespace MagicDIP
                 MagicDGP::Vector2 pos(wid, hid);
                 //calculate w
                 bool isMarkVertex = false;
+                int markedIndex = -1;
                 double wSum = 0;
                 for (int mid = 0; mid < markNum; mid++)
                 {
                     //double dTemp = (pos - pList.at(mid)).LengthSquared(); //variable
                     double dTemp = (pos - pList.at(mid)).Length();
-                    dTemp = pow(dTemp, 1.25);
                     if (dTemp < 1.0e-15)
                     {
                         isMarkVertex = true;
+                        markedIndex = mid;
                         break;
                     }
+                    dTemp = pow(dTemp, 1.25);
                     wList.at(mid) = 1.0 / dTemp;
                     wSum += wList.at(mid);
                 }
@@ -65,11 +67,13 @@ namespace MagicDIP
                 if (isMarkVertex)
                 {
                     const unsigned char* pPixel = inputImg.ptr(hid, wid);
-                    unsigned char* pResPixel = resImg.ptr(hid, wid);
+                    int targetH = targetIndex.at(2 * markedIndex + 1);
+                    int targetW = targetIndex.at(2 * markedIndex);
+                    unsigned char* pResPixel = resImg.ptr(targetH, targetW);
                     pResPixel[0] = pPixel[0];
                     pResPixel[1] = pPixel[1];
                     pResPixel[2] = pPixel[2];
-                    visitFlag.at(hid * imgW + wid) = 1;
+                    visitFlag.at(targetH * imgW + targetW) = 1;
                 }
                 else
                 {

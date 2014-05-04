@@ -193,7 +193,7 @@ namespace MagicApp
                     cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, mDeformationMarks, targetMarks);
                     mImage.release();
                     mImage = deformImg.clone();
-                    deformImg.release();
+                    //deformImg.release();
                     //
                     mDeformationMarks = targetMarks;
                     UpdateDisplayImage(mDeformationMarks);
@@ -220,7 +220,9 @@ namespace MagicApp
     {
         if (mImage.data != NULL)
         {
-            mImage = ResizeToViewSuit(mImage);
+            cv::Mat resizedImg = ResizeToViewSuit(mImage);
+            mImage.release();
+            mImage = resizedImg.clone();
             mIsNewImage = true;
             UpdateAuxiliaryData();
             Display();
@@ -265,7 +267,7 @@ namespace MagicApp
             {
                 cv::Mat resizedImg = ResizeToViewSuit(mImage);
                 mImage.release();
-                mImage = resizedImg;
+                mImage = resizedImg.clone();
                 SetDefaultParameter();
                 //mIsNewImage = true;
                 UpdateAuxiliaryData();
@@ -538,8 +540,8 @@ namespace MagicApp
             }
         }
         std::vector<int> clusterRes;
-        //MagicML::Clustering::OrchardBoumanClustering(inputData, dim, k, clusterRes);
-        MagicML::Clustering::KMeansClustering(inputData, dim, k, clusterRes);
+        MagicML::Clustering::OrchardBoumanClustering(inputData, dim, k, clusterRes);
+        //MagicML::Clustering::KMeansClustering(inputData, dim, k, clusterRes);
         std::vector<int> clusterCount(k, 0);
         std::vector<double> clusterColor(k * dim, 0);
         int pixelIndex = 0;
