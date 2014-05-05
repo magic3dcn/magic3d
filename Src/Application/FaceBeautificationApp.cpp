@@ -767,6 +767,16 @@ namespace MagicApp
         mRightDisplayImage.release();
         cv::Size imgSize(winW, winH);
         mRightDisplayImage.create(imgSize, CV_8UC3);
+        for (int hid = 0; hid < winH; hid++)
+        {
+            for (int wid = 0; wid < winW; wid++)
+            {
+                unsigned char* pixel = mRightDisplayImage.ptr(hid, wid);
+                pixel[0] = 0;
+                pixel[1] = 0;
+                pixel[2] = 0;
+            }
+        }
         int markNum = markIndex.size() / 2;
         for (int markId = 0; markId < markNum; markId++)
         {
