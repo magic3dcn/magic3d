@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
-        <Widget type="Button" skin="But_Home" position="10 290 60 60" align="Left Top" name="But_Home"/>
-        <Widget type="Button" skin="But_Contact" position="10 360 60 60" align="Left Top" name="But_Contact"/>
+        <Widget type="Button" skin="But_Home" position="10 430 60 60" align="Left Top" name="But_Home"/>
+        <Widget type="Button" skin="But_Contact" position="10 500 60 60" align="Left Top" name="But_Contact"/>
         <Widget type="ImageBox" skin="ImageBox" position="90 50 300 375" align="Left Top" name="Image_Left"/>
         <Widget type="ImageBox" skin="ImageBox" position="400 50 300 375" align="Left Top" name="Image_Middle"/>
         <Widget type="ImageBox" skin="ImageBox" position="710 50 300 375" align="Left Top" name="Image_Right"/>
@@ -22,5 +22,9 @@
         </Widget>
         <Widget type="Button" skin="But_Align" position="10 10 60 60" align="Left Top" name="But_AlignFeature"/>
         <Widget type="Button" skin="But_Deform" position="10 80 60 60" align="Left Top" name="But_Deform"/>
+        <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_DoPCA"/>
+        <Widget type="Button" skin="But_Open" position="10 220 60 60" align="Left Top" name="But_LoadPCA"/>
+        <Widget type="Button" skin="Button" position="10 290 60 60" align="Left Top" name="But_ObservePca"/>
+        <Widget type="Button" skin="Button" position="540 450 60 60" align="Left Top" name="But_Project"/>
     </Widget>
 </MyGUI>

@@ -2,6 +2,7 @@
 #include "../Common/AppBase.h"
 #include "../Math/HomoMatrix3.h"
 #include "FaceBeautificationAppUI.h"
+#include "../MachineLearning/PrincipalComponentAnalysis.h"
 #include <vector>
 
 namespace MagicApp
@@ -24,6 +25,7 @@ namespace MagicApp
         FaceFeaturePoint();
         
         void Load();
+        void Load(const std::string fileName);
         void Save();
         bool Select(int hid, int wid);
         void MoveTo(int hid, int wid);
@@ -85,6 +87,10 @@ namespace MagicApp
         void LoadRefFeaturePoint(void);
         void AlignFeature(void);
         void DeformOriginFace(void);
+        void DoPca(void);
+        void LoadPca(void);
+        void ObservePca(void);
+        void ProjectRefFeatures(void);
 
     private:
         void SetupScene(void);
@@ -93,6 +99,9 @@ namespace MagicApp
         void UpdateMidDisplayImage(const std::vector<int>* markIndex);
         void UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
             const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform);
+        void UpdateRightDisplayImage(const std::vector<FaceFeaturePoint*>& faceFeatureList, 
+            const std::vector<MagicMath::HomoMatrix3*>& transformList);
+        void UpdateRightDisplayImage(const std::vector<int>& markIndex);
         cv::Mat ResizeInputImageToCanvas(const cv::Mat& img) const;
 
     private:
@@ -107,9 +116,10 @@ namespace MagicApp
         MagicMath::HomoMatrix3 mRefFPTranform;
         bool mFeaturePointSelected;
         MouseMode mMouseMode;
+        MagicML::PrincipalComponentAnalysis mPca;
         //ASM
-        std::vector<cv::Mat*> mTrainingImages;
-        std::vector<FaceFeaturePoint*> mTrainingTransforms;
+        //std::vector<cv::Mat*> mTrainingImages;
+        //std::vector<FaceFeaturePoint*> mTrainingTransforms;
     };
 
     

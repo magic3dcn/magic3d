@@ -81,6 +81,26 @@ namespace MagicMath
         mValues[8] = 1;
     }
 
+    HomoMatrix3 HomoMatrix3::ReverseRigidTransform(void)
+    {
+        HomoMatrix3 revMat;
+        double s = sqrt(mValues[0] * mValues[0] + mValues[1] * mValues[1]);
+        double newS = 1 / s;
+        double r00 = mValues[0] / s;
+        double r01 = mValues[1] / s;
+        double r10 = mValues[3] / s;
+        double r11 = mValues[4] / s;
+        
+        revMat.SetValue(0, 0, r00 * newS);
+        revMat.SetValue(0, 1, r10 * newS);
+        revMat.SetValue(1, 0, r01 * newS);
+        revMat.SetValue(1, 1, r11 * newS);
+        revMat.SetValue(0, 2, -newS * (r00 * mValues[2] + r10 * mValues[5]));
+        revMat.SetValue(1, 2, -newS * (r01 * mValues[2] + r11 * mValues[5]));
+
+        return revMat;
+    }
+
     HomoMatrix3 HomoMatrix3::operator * (const HomoMatrix3& mat) const
     {
         HomoMatrix3 matRes;

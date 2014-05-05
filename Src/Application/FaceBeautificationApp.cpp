@@ -21,88 +21,92 @@ namespace MagicApp
         char filterName[] = "Feature Point Files(*.fp)\0*.fp\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            std::ifstream fin(fileName);
-            int leftBrowNum;
-            fin >> leftBrowNum;
-            mLeftBrowFPs.clear();
-            mLeftBrowFPs.resize(leftBrowNum * 2);
-            for (int fid = 0; fid < leftBrowNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mLeftBrowFPs.at(fid * 2) = hid;
-                mLeftBrowFPs.at(fid * 2 + 1) = wid;
-            }
-            int rightBrowNum;
-            fin >> rightBrowNum;
-            mRightBrowFPs.clear();
-            mRightBrowFPs.resize(rightBrowNum * 2);
-            for (int fid = 0; fid < rightBrowNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mRightBrowFPs.at(fid * 2) = hid;
-                mRightBrowFPs.at(fid * 2 + 1) = wid;
-            }
-            int leftEyeNum;
-            fin >> leftEyeNum;
-            mLeftEyeFPs.clear();
-            mLeftEyeFPs.resize(leftEyeNum * 2);
-            for (int fid = 0; fid < leftEyeNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mLeftEyeFPs.at(fid * 2) = hid;
-                mLeftEyeFPs.at(fid * 2 + 1) = wid;
-            }
-            int rightEyeNum;
-            fin >> rightEyeNum;
-            mRightEyeFPs.clear();
-            mRightEyeFPs.resize(rightEyeNum * 2);
-            for (int fid = 0; fid < rightEyeNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mRightEyeFPs.at(fid * 2) = hid;
-                mRightEyeFPs.at(fid * 2 + 1) = wid;
-            }
-            int noseNum;
-            fin >> noseNum;
-            mNoseFPs.clear();
-            mNoseFPs.resize(noseNum * 2);
-            for (int fid = 0; fid < noseNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mNoseFPs.at(fid * 2) = hid;
-                mNoseFPs.at(fid * 2 + 1) = wid;
-            }
-            int mouseNum;
-            fin >> mouseNum;
-            mMouseFPs.clear();
-            mMouseFPs.resize(mouseNum * 2);
-            for (int fid = 0; fid < mouseNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mMouseFPs.at(fid * 2) = hid;
-                mMouseFPs.at(fid * 2 + 1) = wid;
-            }
-            int borderNum;
-            fin >> borderNum;
-            mBorderFPs.clear();
-            mBorderFPs.resize(borderNum * 2);
-            for (int fid = 0; fid < borderNum; fid++)
-            {
-                int hid, wid;
-                fin >> hid >> wid;
-                mBorderFPs.at(fid * 2) = hid;
-                mBorderFPs.at(fid * 2 + 1) = wid;
-            }
-            fin.close();
-
-            UpdateDPs();
+            Load(fileName);
         }
+    }
+
+    void FaceFeaturePoint::Load(const std::string fileName)
+    {
+        std::ifstream fin(fileName);
+        int leftBrowNum;
+        fin >> leftBrowNum;
+        mLeftBrowFPs.clear();
+        mLeftBrowFPs.resize(leftBrowNum * 2);
+        for (int fid = 0; fid < leftBrowNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mLeftBrowFPs.at(fid * 2) = hid;
+            mLeftBrowFPs.at(fid * 2 + 1) = wid;
+        }
+        int rightBrowNum;
+        fin >> rightBrowNum;
+        mRightBrowFPs.clear();
+        mRightBrowFPs.resize(rightBrowNum * 2);
+        for (int fid = 0; fid < rightBrowNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mRightBrowFPs.at(fid * 2) = hid;
+            mRightBrowFPs.at(fid * 2 + 1) = wid;
+        }
+        int leftEyeNum;
+        fin >> leftEyeNum;
+        mLeftEyeFPs.clear();
+        mLeftEyeFPs.resize(leftEyeNum * 2);
+        for (int fid = 0; fid < leftEyeNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mLeftEyeFPs.at(fid * 2) = hid;
+            mLeftEyeFPs.at(fid * 2 + 1) = wid;
+        }
+        int rightEyeNum;
+        fin >> rightEyeNum;
+        mRightEyeFPs.clear();
+        mRightEyeFPs.resize(rightEyeNum * 2);
+        for (int fid = 0; fid < rightEyeNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mRightEyeFPs.at(fid * 2) = hid;
+            mRightEyeFPs.at(fid * 2 + 1) = wid;
+        }
+        int noseNum;
+        fin >> noseNum;
+        mNoseFPs.clear();
+        mNoseFPs.resize(noseNum * 2);
+        for (int fid = 0; fid < noseNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mNoseFPs.at(fid * 2) = hid;
+            mNoseFPs.at(fid * 2 + 1) = wid;
+        }
+        int mouseNum;
+        fin >> mouseNum;
+        mMouseFPs.clear();
+        mMouseFPs.resize(mouseNum * 2);
+        for (int fid = 0; fid < mouseNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mMouseFPs.at(fid * 2) = hid;
+            mMouseFPs.at(fid * 2 + 1) = wid;
+        }
+        int borderNum;
+        fin >> borderNum;
+        mBorderFPs.clear();
+        mBorderFPs.resize(borderNum * 2);
+        for (int fid = 0; fid < borderNum; fid++)
+        {
+            int hid, wid;
+            fin >> hid >> wid;
+            mBorderFPs.at(fid * 2) = hid;
+            mBorderFPs.at(fid * 2 + 1) = wid;
+        }
+        fin.close();
+        UpdateDPs();
     }
 
     void FaceFeaturePoint::UpdateDPs()
@@ -726,6 +730,55 @@ namespace MagicApp
         }
     }
 
+    void FaceBeautificationApp::UpdateRightDisplayImage(const std::vector<FaceFeaturePoint*>& faceFeatureList, 
+        const std::vector<MagicMath::HomoMatrix3*>& transformList)
+    {
+        int winW = 300;
+        int winH = 375;
+        mRightDisplayImage.release();
+        cv::Size imgSize(winW, winH);
+        mRightDisplayImage.create(imgSize, CV_8UC3);
+        int faceNum = faceFeatureList.size();
+        for (int faceId = 0; faceId < faceNum; faceId++)
+        {
+            std::vector<int> fps;
+            faceFeatureList.at(faceId)->GetFPs(fps);
+            int markNum = fps.size() / 2;
+            for (int markId = 0; markId < markNum; markId++)
+            {
+                int wPosRef = fps.at(2 * markId + 1);
+                int hPosRef = fps.at(2 * markId);
+                double wPosRes, hPosRes;
+                transformList.at(faceId)->TransformPoint(wPosRef, hPosRef, wPosRes, hPosRes);
+                int wPos = wPosRes;
+                int hPos = hPosRes;
+                unsigned char* pixel = mRightDisplayImage.ptr(hPos, wPos);
+                pixel[0] = 0;
+                pixel[1] = 0;
+                pixel[2] = 255;
+            }
+        }
+    }
+
+    void FaceBeautificationApp::UpdateRightDisplayImage(const std::vector<int>& markIndex)
+    {
+        int winW = 300;
+        int winH = 375;
+        mRightDisplayImage.release();
+        cv::Size imgSize(winW, winH);
+        mRightDisplayImage.create(imgSize, CV_8UC3);
+        int markNum = markIndex.size() / 2;
+        for (int markId = 0; markId < markNum; markId++)
+        {
+            int wPos = markIndex.at(2 * markId + 1);
+            int hPos = markIndex.at(2 * markId);
+            unsigned char* pixel = mRightDisplayImage.ptr(hPos, wPos);
+            pixel[0] = 0;
+            pixel[1] = 0;
+            pixel[2] = 255;
+        }
+    }
+
     bool FaceBeautificationApp::OpenImage(void)
     {
         std::string fileName;
@@ -879,6 +932,249 @@ namespace MagicApp
         //UpdateRightDisplayImage(deformImg, &originMarkIndex, &refMarkIndex, mRefFPTranform);
         UpdateRightDisplayImage(deformImg, NULL, NULL, mRefFPTranform);
         mUI.UpdateRightImage(mRightDisplayImage);
+    }
+
+    void FaceBeautificationApp::DoPca(void)
+    {
+        //load feature data
+        int fileNum = 41;
+        std::vector<FaceFeaturePoint*> faceFeatureList(fileNum, NULL);
+        std::vector<MagicMath::HomoMatrix3*> transformList(fileNum, NULL);
+        for (int fileId = 0; fileId < fileNum; fileId++)
+        {
+            std::stringstream ss;
+            ss << "../../Media/FaceData/f" << fileId << ".fp";
+            std::string fileName;
+            ss >> fileName;
+            faceFeatureList.at(fileId) = new FaceFeaturePoint;
+            faceFeatureList.at(fileId)->Load(fileName);
+            transformList.at(fileId) = new MagicMath::HomoMatrix3;
+            DebugLog << "Load file: " << fileId << " " << fileName << std::endl;
+            //transformList.at(fileId)->Unit();
+        }
+
+        //align to feature data
+        std::vector<int> firstfps;
+        faceFeatureList.at(0)->GetFPs(firstfps);
+        int pointCount = firstfps.size() / 2;
+        std::vector<cv::Point2f> cvCurFeatures(pointCount);
+        std::vector<cv::Point2f> cvRefFeatures(pointCount);
+        for (int pointId = 0; pointId < pointCount; pointId++)
+        {
+            cvRefFeatures.at(pointId).x = firstfps.at(pointId * 2 + 1);
+            cvRefFeatures.at(pointId).y = firstfps.at(pointId * 2);
+        }
+        for (int fileId = 1; fileId < fileNum; fileId++)
+        {
+            std::vector<int> curfps;
+            faceFeatureList.at(fileId)->GetFPs(curfps);
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                cvCurFeatures.at(pointId).x = curfps.at(pointId * 2 + 1);
+                cvCurFeatures.at(pointId).y = curfps.at(pointId * 2);
+            }
+            cv::Mat transMat = cv::estimateRigidTransform(cvCurFeatures, cvRefFeatures, false);
+            transformList.at(fileId)->Unit();
+            transformList.at(fileId)->SetValue(0, 0, transMat.at<double>(0, 0));
+            transformList.at(fileId)->SetValue(0, 1, transMat.at<double>(0, 1));
+            transformList.at(fileId)->SetValue(0, 2, transMat.at<double>(0, 2));
+            transformList.at(fileId)->SetValue(1, 0, transMat.at<double>(1, 0));
+            transformList.at(fileId)->SetValue(1, 1, transMat.at<double>(1, 1));
+            transformList.at(fileId)->SetValue(1, 2, transMat.at<double>(1, 2));
+        }
+
+        //calculate mean features
+        for (int fileId = 1; fileId < fileNum; fileId++)
+        {
+            std::vector<int> curfps;
+            faceFeatureList.at(fileId)->GetFPs(curfps);
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                double wPosRef = curfps.at(pointId * 2 + 1);
+                double hPosRef = curfps.at(pointId * 2);
+                double wPosRes, hPosRes;
+                transformList.at(fileId)->TransformPoint(wPosRef, hPosRef, wPosRes, hPosRes);
+                cvRefFeatures.at(pointId).x += wPosRes;
+                cvRefFeatures.at(pointId).y += hPosRes;
+            }
+        }
+        for (int pointId = 0; pointId < pointCount; pointId++)
+        {
+            cvRefFeatures.at(pointId).x /= fileNum;
+            cvRefFeatures.at(pointId).y /= fileNum;
+        }
+
+        //align to mean features
+        for (int fileId = 0; fileId < fileNum; fileId++)
+        {
+            std::vector<int> curfps;
+            faceFeatureList.at(fileId)->GetFPs(curfps);
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                cvCurFeatures.at(pointId).x = curfps.at(pointId * 2 + 1);
+                cvCurFeatures.at(pointId).y = curfps.at(pointId * 2);
+            }
+            cv::Mat transMat = cv::estimateRigidTransform(cvCurFeatures, cvRefFeatures, false);
+            transformList.at(fileId)->Unit();
+            transformList.at(fileId)->SetValue(0, 0, transMat.at<double>(0, 0));
+            transformList.at(fileId)->SetValue(0, 1, transMat.at<double>(0, 1));
+            transformList.at(fileId)->SetValue(0, 2, transMat.at<double>(0, 2));
+            transformList.at(fileId)->SetValue(1, 0, transMat.at<double>(1, 0));
+            transformList.at(fileId)->SetValue(1, 1, transMat.at<double>(1, 1));
+            transformList.at(fileId)->SetValue(1, 2, transMat.at<double>(1, 2));
+        }
+
+        //display aligned feature
+        UpdateRightDisplayImage(faceFeatureList, transformList);
+        mUI.UpdateRightImage(mRightDisplayImage);
+
+        //Do Pca
+        int dataDim = pointCount * 2;
+        std::vector<double> pcaData(dataDim * fileNum);
+        for (int fileId = 0; fileId < fileNum; fileId++)
+        {
+            std::vector<int> curfps;
+            faceFeatureList.at(fileId)->GetFPs(curfps);
+            int baseId = fileId * dataDim;
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                double wPosRef = curfps.at(pointId * 2 + 1);
+                double hPosRef = curfps.at(pointId * 2);
+                double wPosRes, hPosRes;
+                transformList.at(fileId)->TransformPoint(wPosRef, hPosRef, wPosRes, hPosRes);
+                pcaData.at(baseId + pointId * 2) = hPosRes;
+                pcaData.at(baseId + pointId * 2 + 1) = wPosRes;
+            }
+        }
+        int pcaDim = 40;
+        mPca.Analyse(pcaData, dataDim, pcaDim);
+
+        //Save Pca
+        mPca.Save();
+
+        //free memory
+        for (int fileId = 0; fileId < fileNum; fileId++)
+        {
+            delete faceFeatureList.at(fileId);
+            faceFeatureList.at(fileId) = NULL;
+            delete transformList.at(fileId);
+            transformList.at(fileId) = NULL;
+        }
+    }
+
+    void FaceBeautificationApp::LoadPca(void)
+    {
+        mPca.Load();
+    }
+
+    void FaceBeautificationApp::ObservePca(void)
+    {
+        static int pcaId = -1;
+        static int deltaId = 0;
+        if (pcaId == -1)
+        {
+            std::vector<double> eigenVec = mPca.GetAvgVector();
+            std::vector<int> markIndex(eigenVec.size());
+            for (int mid = 0; mid < eigenVec.size(); mid++)
+            {
+                markIndex.at(mid) = eigenVec.at(mid);
+            }
+            UpdateRightDisplayImage(markIndex);
+            pcaId++;
+        }
+        else
+        {
+            std::vector<double> meanVec = mPca.GetAvgVector();
+            std::vector<double> eigenVec = mPca.GetEigenVector(pcaId);
+            double eigenValue = mPca.GetEigenValue(pcaId);
+            double maxCoef = 10 * sqrt(eigenValue);
+            double minCoef = -maxCoef;
+            double curCoef = minCoef + deltaId;
+            if (curCoef > maxCoef)
+            {
+                deltaId = 0;
+                pcaId++;
+            }
+            else
+            {
+                deltaId += 5;
+            }
+            std::vector<int> markIndex(eigenVec.size());
+            for (int mid = 0; mid < eigenVec.size(); mid++)
+            {
+                markIndex.at(mid) = floor(meanVec.at(mid) + eigenVec.at(mid) * curCoef + 0.5);
+            }
+            UpdateRightDisplayImage(markIndex);
+        }
+        mUI.UpdateRightImage(mRightDisplayImage);
+        //pcaId++;
+    }
+
+    void FaceBeautificationApp::ProjectRefFeatures(void)
+    {
+        static bool isProjected = false;
+
+        std::vector<int> fps;
+        mRefFPs.GetFPs(fps);
+        int pointCount = fps.size() / 2;
+        std::vector<double> avgVec = mPca.GetAvgVector();
+        std::vector<cv::Point2f> cvfps(pointCount);
+        std::vector<cv::Point2f> cvavg(pointCount);
+        for (int pointId = 0; pointId < pointCount; pointId++)
+        {
+            cvfps.at(pointId).x = fps.at(pointId * 2 + 1);
+            cvfps.at(pointId).y = fps.at(pointId * 2);
+            cvavg.at(pointId).x = avgVec.at(pointId * 2 + 1);
+            cvavg.at(pointId).y = avgVec.at(pointId * 2);
+        }
+        cv::Mat transMat = cv::estimateRigidTransform(cvfps, cvavg, false);
+        mRefFPTranform.Unit();
+        mRefFPTranform.SetValue(0, 0, transMat.at<double>(0, 0));
+        mRefFPTranform.SetValue(0, 1, transMat.at<double>(0, 1));
+        mRefFPTranform.SetValue(0, 2, transMat.at<double>(0, 2));
+        mRefFPTranform.SetValue(1, 0, transMat.at<double>(1, 0));
+        mRefFPTranform.SetValue(1, 1, transMat.at<double>(1, 1));
+        mRefFPTranform.SetValue(1, 2, transMat.at<double>(1, 2));
+        //
+        std::vector<double> unifiedVec(pointCount * 2);
+        for (int pointId = 0; pointId < pointCount; pointId++)
+        {
+            double xRes, yRes;
+            mRefFPTranform.TransformPoint(cvfps.at(pointId).x, cvfps.at(pointId).y, xRes, yRes);
+            unifiedVec.at(pointId * 2) = yRes;
+            unifiedVec.at(pointId * 2 + 1) = xRes;
+        }
+        if (isProjected)
+        {
+            std::vector<double> projectVec = mPca.Project(unifiedVec);
+            std::vector<int> markIndex(pointCount * 2);
+            MagicMath::HomoMatrix3 revMat = mRefFPTranform.ReverseRigidTransform();
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                double xRes, yRes;
+                revMat.TransformPoint(projectVec.at(pointId * 2 + 1), projectVec.at(pointId * 2), xRes, yRes);
+                markIndex.at(pointId * 2 + 1) = floor(xRes + 0.5);
+                markIndex.at(pointId * 2) = floor(yRes + 0.5);
+            }
+            UpdateMidDisplayImage(&markIndex);
+        }
+        else
+        {
+            std::vector<int> markIndex(pointCount * 2);
+            MagicMath::HomoMatrix3 revMat = mRefFPTranform.ReverseRigidTransform();
+            for (int pointId = 0; pointId < pointCount; pointId++)
+            {
+                double xRes, yRes;
+                revMat.TransformPoint(unifiedVec.at(pointId * 2 + 1), unifiedVec.at(pointId * 2), xRes, yRes);
+                markIndex.at(pointId * 2 + 1) = floor(xRes + 0.5);
+                markIndex.at(pointId * 2) = floor(yRes + 0.5);
+            }
+            UpdateMidDisplayImage(&markIndex);
+        }
+        
+        mUI.UpdateMiddleImage(mMidDisplayImage);
+
+        isProjected = !isProjected;
     }
 
     cv::Mat FaceBeautificationApp::ResizeInputImageToCanvas(const cv::Mat& img) const

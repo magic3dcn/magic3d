@@ -44,8 +44,12 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_SaveFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::SaveFeaturePoint);
         mRoot.at(0)->findWidget("But_OpenReference")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenReferenceImage);
         mRoot.at(0)->findWidget("But_LoadRefFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadRefFeaturePoint);
+        mRoot.at(0)->findWidget("But_Project")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::ProjectRefFeaturePoint);
         mRoot.at(0)->findWidget("But_AlignFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::AlignFeaturePoint);
         mRoot.at(0)->findWidget("But_Deform")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::DeformOriginFace);
+        mRoot.at(0)->findWidget("But_DoPCA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::DoPca);
+        mRoot.at(0)->findWidget("But_LoadPCA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadPca);
+        mRoot.at(0)->findWidget("But_ObservePca")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::ObservePca);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::Contact);
     }
@@ -187,6 +191,15 @@ namespace MagicApp
         }
     }
 
+    void FaceBeautificationAppUI::ProjectRefFeaturePoint(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->ProjectRefFeatures();
+        }
+    }
+
     void FaceBeautificationAppUI::AlignFeaturePoint(MyGUI::Widget* pSender)
     {
         FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
@@ -202,6 +215,33 @@ namespace MagicApp
         if (pFB != NULL)
         {
             pFB->DeformOriginFace();
+        }
+    }
+
+    void FaceBeautificationAppUI::DoPca(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->DoPca();
+        }
+    }
+
+    void FaceBeautificationAppUI::LoadPca(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->LoadPca();
+        }
+    }
+
+    void FaceBeautificationAppUI::ObservePca(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->ObservePca();
         }
     }
 

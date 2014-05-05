@@ -14,6 +14,7 @@ namespace MagicMath
         void GenerateRotation(double theta); //counterclockwise
         void GenerateScaling(double scaleX, double scaleY);
         void Unit(void);
+        HomoMatrix3 ReverseRigidTransform(void);
         HomoMatrix3 operator * (const HomoMatrix3& mat) const;
         HomoMatrix3 operator *= (const HomoMatrix3& mat);
         double GetValue(int row, int col) const;

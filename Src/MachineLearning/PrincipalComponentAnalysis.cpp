@@ -21,7 +21,10 @@ namespace MagicML
     void PrincipalComponentAnalysis::Analyse(const std::vector<double>& data, int dataDim, int pcaDim)
     {
         Clear();
+        mDataDim = dataDim;
+        mPcaDim = pcaDim;
         int dataCount = data.size() / dataDim;
+        DebugLog << "dataCount: " << dataCount << std::endl;
         mAvgVector = std::vector<double>(dataDim, 0.0);
         for (int dataId = 0; dataId < dataCount; dataId++)
         {
@@ -65,8 +68,8 @@ namespace MagicML
         mEigenVectors.resize(pcaDim * dataDim);
         for (int pcaId = 0; pcaId < pcaDim; pcaId++)
         {
-            mEigenValues.at(pcaId) = es.eigenvalues()(dataDim - pcaId);
-            Eigen::VectorXd eigVec = es.eigenvectors().col(dataDim - pcaId);
+            mEigenValues.at(pcaId) = es.eigenvalues()(dataDim - 1 - pcaId);
+            Eigen::VectorXd eigVec = es.eigenvectors().col(dataDim - 1 - pcaId);
             int baseIndex = pcaId * dataDim;
             for (int dim = 0; dim < dataDim; dim++)
             {
@@ -107,14 +110,20 @@ namespace MagicML
 
     std::vector<double> PrincipalComponentAnalysis::Project(const std::vector<double>& data)
     {
+        std::vector<double> deltaVec(mDataDim);
         std::vector<double> projectVec(mDataDim);
+        for (int dim = 0; dim < mDataDim; dim++)
+        {
+            projectVec.at(dim) = mAvgVector.at(dim);
+            deltaVec.at(dim) = data.at(dim) - mAvgVector.at(dim);
+        }
         for (int pcaId = 0; pcaId < mPcaDim; pcaId++)
         {
             double coef = 0.0;
             int baseIndex = pcaId * mDataDim;
             for (int dim = 0; dim < mDataDim; dim++)
             {
-                coef += data.at(dim) * mEigenVectors.at(baseIndex + dim);
+                coef += deltaVec.at(dim) * mEigenVectors.at(baseIndex + dim);
             }
             for (int dim = 0; dim < mDataDim; dim++)
             {
@@ -133,17 +142,20 @@ namespace MagicML
             Clear();
             std::ifstream fin(fileName);
             fin >> mDataDim >> mPcaDim;
+            
+            mEigenValues.resize(mPcaDim);
+            for (int vid = 0; vid < mPcaDim; vid++)
+            {
+                fin >> mEigenValues.at(vid);
+            }
+
             int vSize = mDataDim * mPcaDim;
             mEigenVectors.resize(vSize);
             for (int vid = 0; vid < vSize; vid++)
             {
                 fin >> mEigenVectors.at(vid);
             }
-            mEigenValues.resize(mPcaDim);
-            for (int vid = 0; vid < mPcaDim; vid++)
-            {
-                fin >> mEigenValues.at(vid);
-            }
+            
             mAvgVector.resize(mDataDim);
             for (int vid = 0; vid < mDataDim; vid++)
             {
@@ -161,15 +173,18 @@ namespace MagicML
         {
             std::ofstream fout(fileName);
             fout << mDataDim << " " << mPcaDim << std::endl;
+            
+            for (int vid = 0; vid < mPcaDim; vid++)
+            {
+                fout << mEigenValues.at(vid) << std::endl;
+            }
+
             int vSize = mDataDim * mPcaDim;
             for (int vid = 0; vid < vSize; vid++)
             {
                 fout << mEigenVectors.at(vid) << " ";
             }
-            for (int vid = 0; vid < mPcaDim; vid++)
-            {
-                fout << mEigenValues.at(vid) << " ";
-            }
+            
             for (int vid = 0; vid < mDataDim; vid++)
             {
                 fout << mAvgVector.at(vid) << " ";
