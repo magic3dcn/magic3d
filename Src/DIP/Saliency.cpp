@@ -99,6 +99,20 @@ namespace MagicDIP
         return cvtImg;
     }
 
+    int SaliencyDetection::MaxNumber(int n0, int n1, int n2)
+    {
+        int maxNum = n0;
+        if (n1 > maxNum)
+        {
+            maxNum = n1;
+        }
+        if (n2 > maxNum)
+        {
+            maxNum = n2;
+        }
+        return maxNum;
+    }
+
     cv::Mat SaliencyDetection::GradientSaliency(const cv::Mat& inputImg)
     {
         int inputW = inputImg.cols;
@@ -112,25 +126,41 @@ namespace MagicDIP
             {
                 const unsigned char* pixel = inputImg.ptr(hid, wid);
                 const unsigned char* pixelWNext = NULL;
+                const unsigned char* pixelWPre = NULL;
                 if (wid == 0)
                 {
                     pixelWNext = inputImg.ptr(hid, wid + 1);
+                    pixelWPre = inputImg.ptr(hid, wid);
+                }
+                else if (wid == inputW - 1)
+                {
+                    pixelWNext = inputImg.ptr(hid, wid);
+                    pixelWPre = inputImg.ptr(hid, wid - 1);
                 }
                 else
                 {
-                    pixelWNext = inputImg.ptr(hid, wid - 1);
+                    pixelWNext = inputImg.ptr(hid, wid + 1);
+                    pixelWPre = inputImg.ptr(hid, wid - 1);
                 }
                 const unsigned char* pixelHNext = NULL;
+                const unsigned char* pixelHPre = NULL;
                 if (hid == 0)
                 {
                     pixelHNext = inputImg.ptr(hid + 1, wid);
+                    pixelHPre = inputImg.ptr(hid, wid);
+                }
+                else if (hid == inputH - 1)
+                {
+                    pixelHNext = inputImg.ptr(hid, wid);
+                    pixelHPre = inputImg.ptr(hid - 1, wid);
                 }
                 else
                 {
-                    pixelHNext = inputImg.ptr(hid - 1, wid);
+                    pixelHNext = inputImg.ptr(hid + 1, wid);
+                    pixelHPre = inputImg.ptr(hid - 1, wid);
                 }
-                gradList.at(wid) = abs(pixel[0] - pixelWNext[0]) + abs(pixel[1] - pixelWNext[1]) + abs(pixel[2] - pixelWNext[2]) +
-                    abs(pixel[0] - pixelHNext[0]) + abs(pixel[1] - pixelHNext[1]) + abs(pixel[2] - pixelHNext[2]);
+                gradList.at(wid) = MaxNumber(abs(pixelWPre[0] - pixelWNext[0]), abs(pixelWPre[1] - pixelWNext[1]), abs(pixelWPre[2] - pixelWNext[2])) +
+                    MaxNumber(abs(pixelHPre[0] - pixelHNext[0]), abs(pixelHPre[1] - pixelHNext[1]), abs(pixelHPre[2] - pixelHNext[2]));
                 if (gradList.at(wid) > maxGrad)
                 {
                     maxGrad = gradList.at(wid);

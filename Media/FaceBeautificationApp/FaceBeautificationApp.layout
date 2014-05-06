@@ -26,5 +26,6 @@
         <Widget type="Button" skin="But_Open" position="10 220 60 60" align="Left Top" name="But_LoadPCA"/>
         <Widget type="Button" skin="Button" position="10 290 60 60" align="Left Top" name="But_ObservePca"/>
         <Widget type="Button" skin="Button" position="540 450 60 60" align="Left Top" name="But_Project"/>
+        <Widget type="Button" skin="Button" position="90 520 60 60" align="Left Top" name="But_AutoAlignFeature"/>
     </Widget>
 </MyGUI>

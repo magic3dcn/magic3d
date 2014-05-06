@@ -38,7 +38,7 @@
 namespace flann
 {
 
-typedef unsigned char uchar;
+//typedef unsigned char uchar;
 
 class Matrix_
 {
@@ -51,7 +51,7 @@ public:
     Matrix_(void* data_, size_t rows_, size_t cols_, flann_datatype_t type_, size_t stride_ = 0) :
         rows(rows_), cols(cols_), stride(stride_), type(type_)
     {
-    	data = static_cast<uchar*>(data_);
+    	data = static_cast<unsigned char*>(data_);
 
     	if (stride==0) stride = flann_datatype_size(type)*cols;
     }
@@ -74,7 +74,7 @@ public:
     size_t stride;
     flann_datatype_t type;
 protected:
-    uchar* data;
+    unsigned char* data;
 
     template<typename Archive>
     void serialize(Archive& ar)
@@ -84,7 +84,7 @@ protected:
     	ar & stride;
     	ar & type;
     	if (Archive::is_loading::value) {
-    		data = new uchar[rows*stride];
+    		data = new unsigned char[rows*stride];
     	}
     	ar & serialization::make_binary_object(data, rows*stride);
     }

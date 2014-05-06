@@ -1,7 +1,9 @@
 #include "FaceBeautificationApp.h"
+#include "flann/flann.h"
 #include "../DIP/Deformation.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
+#include "../DIP/Saliency.h"
 
 namespace MagicApp
 {
@@ -841,6 +843,82 @@ namespace MagicApp
         std::vector<int> featureIndex;
         mOriginFPs.GetFPs(featureIndex);
         UpdateLeftDisplayImage(&markIndex, &featureIndex);
+        mUI.UpdateLeftImage(mLeftDisplayImage);
+    }
+
+    void FaceBeautificationApp::AutoMoveOriginFeaturePoint(void)
+    {
+        //Calculate gradient image to get feature set
+        cv::Mat gradImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        int imgH = mImage.rows;
+        int imgW = mImage.cols;
+        std::vector<int> gradPoints;
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* gradPixel = gradImg.ptr(hid, wid);
+                unsigned char* imgPixel = mImage.ptr(hid, wid);
+                if (gradPixel[0] > 50)
+                {
+                    imgPixel[0] = 255;
+                    imgPixel[1] = 255;
+                    imgPixel[2] = 255;
+                    gradPoints.push_back(hid);
+                    gradPoints.push_back(wid);
+                }
+                else
+                {
+                    imgPixel[0] = 0;
+                    imgPixel[1] = 0;
+                    imgPixel[2] = 0;
+                }
+            }
+        }
+        //UpdateLeftDisplayImage(NULL, NULL);
+        
+
+        //using flann to find the nearest correspondance for every fps
+        int dim = 2;
+        int refNum = gradPoints.size() / 2;
+        float* dataSet = new float[refNum * dim];
+        for (int dataId = 0; dataId < refNum; dataId++)
+        {
+            dataSet[dim * dataId] = gradPoints.at(dim * dataId);
+            dataSet[dim * dataId + 1] = gradPoints.at(dim * dataId + 1);
+        }
+        std::vector<int> fps;
+        mOriginFPs.GetFPs(fps);
+        int searchNum = fps.size() / 2;
+        float* searchSet = new float[searchNum * dim];
+        for (int dataId = 0; dataId < searchNum; dataId++)
+        {
+            searchSet[dataId * dim] = fps.at(dataId * dim);
+            searchSet[dataId * dim + 1] = fps.at(dataId * dim + 1);
+        }
+        int nn = 1;
+        int* pIndex = new int[searchNum * nn];
+        float* pDist = new float[searchNum * nn];
+        FLANNParameters searchPara;
+        searchPara = DEFAULT_FLANN_PARAMETERS;
+        searchPara.algorithm = FLANN_INDEX_KDTREE;
+        searchPara.trees = 8;
+        searchPara.log_level = FLANN_LOG_INFO;
+        searchPara.checks = 64;
+        float speedup;
+        flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
+        flann_find_nearest_neighbors_index(indexId, searchSet, searchNum, pIndex, pDist, nn, &searchPara);
+        
+        //align
+        std::vector<int> reffps(searchNum * 2);
+        for (int sid = 0; sid < searchNum; sid++)
+        {
+            reffps.at(sid * 2) = gradPoints.at(pIndex[sid] * 2);
+            reffps.at(sid * 2 + 1) = gradPoints.at(pIndex[sid] * 2 + 1);
+        }
+
+        //update display
+        UpdateLeftDisplayImage(&fps, &reffps);
         mUI.UpdateLeftImage(mLeftDisplayImage);
     }
 

@@ -82,6 +82,7 @@ namespace MagicApp
         bool OpenImage(void);
         void LoadFeaturePoint(void);
         void MoveOriginFeaturePoint(void);
+        void AutoMoveOriginFeaturePoint(void);
         void SaveFeaturePoint(void);
         bool OpenRefImage(void);
         void LoadRefFeaturePoint(void);

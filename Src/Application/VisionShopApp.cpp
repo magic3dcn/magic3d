@@ -460,8 +460,8 @@ namespace MagicApp
 
     void VisionShopApp::SaliencyDetection(void)
     {
-        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGAndGradientSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::MultiScaleDoGBandSaliency(mImage, 1, 1);
         mImage.release();

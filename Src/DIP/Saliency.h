@@ -13,5 +13,8 @@ namespace MagicDIP
         static cv::Mat GradientSaliency(const cv::Mat& inputImg);
         static cv::Mat DoGAndGradientSaliency(const cv::Mat& inputImg);
         static cv::Mat MultiScaleDoGBandSaliency(const cv::Mat& inputImg, int wNum, int hNum);
+
+    private:
+        static int MaxNumber(int n0, int n1, int n2);
     };
 }
