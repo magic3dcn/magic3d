@@ -26,12 +26,14 @@ namespace MagicApp
         
         void Load();
         void Load(const std::string fileName);
+        void Load(int browNum, int eyeNum, int noseNum, int mouseNum, int borderNum, const std::vector<int>& posList);
         void Save();
         bool Select(int hid, int wid);
         void MoveTo(int hid, int wid);
         void MoveDelta(int deltaH, int deltaW);
         void GetDPs(std::vector<int>& posList); // h, w
         void GetFPs(std::vector<int>& posList);
+        void GetParameter(int& browNum, int& eyeNum, int& noseNum, int& mouseNum, int& borderNum);
 
         ~FaceFeaturePoint();
 
@@ -83,6 +85,9 @@ namespace MagicApp
         void LoadFeaturePoint(void);
         void MoveOriginFeaturePoint(void);
         void AutoMoveOriginFeaturePoint(void);
+        void AlignToMean(void);
+        void AlignAllToMean(void);
+        void CalMeanFace(void);
         void SaveFeaturePoint(void);
         bool OpenRefImage(void);
         void LoadRefFeaturePoint(void);

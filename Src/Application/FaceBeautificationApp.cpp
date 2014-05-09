@@ -111,6 +111,75 @@ namespace MagicApp
         UpdateDPs();
     }
 
+    void FaceFeaturePoint::Load(int browNum, int eyeNum, int noseNum, int mouseNum, int borderNum, const std::vector<int>& posList)
+    {
+        int baseIndex = 0;
+        mLeftBrowFPs.clear();
+        mLeftBrowFPs.resize(browNum * 2);
+        for (int pointId = 0; pointId < browNum; pointId++)
+        {
+            mLeftBrowFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mLeftBrowFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (browNum * 2);
+
+        mRightBrowFPs.clear();
+        mRightBrowFPs.resize(browNum * 2);
+        for (int pointId = 0; pointId < browNum; pointId++)
+        {
+            mRightBrowFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mRightBrowFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (browNum * 2);
+
+        mLeftEyeFPs.clear();
+        mLeftEyeFPs.resize(eyeNum * 2);
+        for (int pointId = 0; pointId < eyeNum; pointId++)
+        {
+            mLeftEyeFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mLeftEyeFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (eyeNum * 2);
+
+        mRightEyeFPs.clear();
+        mRightEyeFPs.resize(eyeNum * 2);
+        for (int pointId = 0; pointId < eyeNum; pointId++)
+        {
+            mRightEyeFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mRightEyeFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (eyeNum * 2);
+
+        mNoseFPs.clear();
+        mNoseFPs.resize(noseNum * 2);
+        for (int pointId = 0; pointId < noseNum; pointId++)
+        {
+            mNoseFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mNoseFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (noseNum * 2);
+
+        mMouseFPs.clear();
+        mMouseFPs.resize(mouseNum * 2);
+        for (int pointId = 0; pointId < mouseNum; pointId++)
+        {
+            mMouseFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mMouseFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (mouseNum * 2);
+
+        mBorderFPs.clear();
+        mBorderFPs.resize(borderNum * 2);
+        for (int pointId = 0; pointId < borderNum; pointId++)
+        {
+            mBorderFPs.at(pointId * 2) = posList.at(baseIndex + pointId * 2);
+            mBorderFPs.at(pointId * 2 + 1) = posList.at(baseIndex + pointId * 2 + 1);
+        }
+        baseIndex += (borderNum * 2);
+
+        UpdateDPs();
+    }
+
     void FaceFeaturePoint::UpdateDPs()
     {
         ConstructOneDPs(mLeftBrowFPs, true, 2, mLeftBrowDPs);
@@ -415,6 +484,15 @@ namespace MagicApp
         {
             posList.push_back(*itr);
         }
+    }
+
+    void FaceFeaturePoint::GetParameter(int& browNum, int& eyeNum, int& noseNum, int& mouseNum, int& borderNum)
+    {
+        browNum = mLeftBrowFPs.size() / 2;
+        eyeNum = mLeftEyeFPs.size() / 2;
+        noseNum = mNoseFPs.size() / 2;
+        mouseNum = mMouseFPs.size() / 2;
+        borderNum = mBorderFPs.size() / 2;
     }
 
     FaceBeautificationApp::FaceBeautificationApp() :
@@ -920,6 +998,227 @@ namespace MagicApp
         //update display
         UpdateLeftDisplayImage(&fps, &reffps);
         mUI.UpdateLeftImage(mLeftDisplayImage);
+    }
+
+    void FaceBeautificationApp::AlignToMean(void)
+    {
+        //Get mean feature
+        int browNum, eyeNum, noseNum, mouseNum, borderNum;
+        mOriginFPs.GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
+        std::vector<double> meanFeaturePosList_d = mPca.GetAvgVector();
+        std::vector<int> meanFeaturePosList(meanFeaturePosList_d.size());
+        for (int vid = 0; vid < meanFeaturePosList_d.size(); vid++)
+        {
+            meanFeaturePosList.at(vid) = floor(meanFeaturePosList_d.at(vid) + 0.5);
+        }
+        FaceFeaturePoint meanFPs;
+        meanFPs.Load(browNum, eyeNum, noseNum, mouseNum, borderNum, meanFeaturePosList);
+        
+        //Transform to mean feature
+        std::vector<int> originfps;
+        mOriginFPs.GetFPs(originfps);
+        int featureSize = originfps.size() / 2;
+        std::vector<cv::Point2f> cvOriginFeatures(featureSize);
+        std::vector<cv::Point2f> cvMeanFeatures(featureSize);
+        for (int fid = 0; fid < featureSize; fid++)
+        {
+            cvOriginFeatures.at(fid).x = originfps.at(fid * 2 + 1);
+            cvOriginFeatures.at(fid).y = originfps.at(fid * 2);
+            cvMeanFeatures.at(fid).x = meanFeaturePosList_d.at(fid * 2 + 1);
+            cvMeanFeatures.at(fid).y = meanFeaturePosList_d.at(fid * 2);
+        }
+        cv::Mat transMat = cv::estimateRigidTransform(cvOriginFeatures, cvMeanFeatures, false);
+        MagicMath::HomoMatrix3 homoTransMat;
+        homoTransMat.SetValue(0, 0, transMat.at<double>(0, 0));
+        homoTransMat.SetValue(0, 1, transMat.at<double>(0, 1));
+        homoTransMat.SetValue(0, 2, transMat.at<double>(0, 2));
+        homoTransMat.SetValue(1, 0, transMat.at<double>(1, 0));
+        homoTransMat.SetValue(1, 1, transMat.at<double>(1, 1));
+        homoTransMat.SetValue(1, 2, transMat.at<double>(1, 2));
+        homoTransMat.Print();
+        std::vector<int> originTransFps(featureSize * 2);
+        for (int fid = 0; fid < featureSize; fid++)
+        {
+            double xRes, yRes;
+            homoTransMat.TransformPoint(originfps.at(fid * 2 + 1), originfps.at(fid * 2), xRes, yRes);
+            originTransFps.at(fid * 2) = floor(yRes + 0.5);
+            originTransFps.at(fid * 2 + 1) = floor(xRes + 0.5);
+        }
+        //Rigid transform image
+        cv::Mat leftImgCopy = mImage.clone();
+        mImage.release();
+        cv::warpAffine(leftImgCopy, mImage, transMat, mImage.size());
+        //UpdateLeftDisplayImage(&originTransFps, &meanFeaturePosList);
+        //mUI.UpdateLeftImage(mLeftDisplayImage);
+
+        //Deform to mean feature
+        FaceFeaturePoint originTransFeature;
+        originTransFeature.Load(browNum, eyeNum, noseNum, mouseNum, borderNum, originTransFps);
+        std::vector<int> originTransDps, meanDps;
+        originTransFeature.GetDPs(originTransDps);
+        meanFPs.GetDPs(meanDps);
+        for (int fid = 0; fid < originTransDps.size() / 2; fid++)
+        {
+            int temp = originTransDps.at(fid * 2);
+            originTransDps.at(fid * 2) = originTransDps.at(fid * 2 + 1);
+            originTransDps.at(fid * 2 + 1) = temp;
+
+            temp = meanDps.at(fid * 2);
+            meanDps.at(fid * 2) = meanDps.at(fid * 2 + 1);
+            meanDps.at(fid * 2 + 1) = temp;
+        }
+        cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, originTransDps, meanDps);
+        mImage.release();
+        mImage = deformImg.clone();
+        
+        //Update display
+        UpdateLeftDisplayImage(&meanFeaturePosList, NULL);
+        mUI.UpdateLeftImage(mLeftDisplayImage);
+    }
+
+    void FaceBeautificationApp::AlignAllToMean(void)
+    {
+        int picCount = 41;
+        for (int picId = 0; picId < picCount; picId++)
+        {
+            //Load file
+            std::stringstream ss;
+            ss << "../../Media/FaceData/g" << picId << ".jpg";
+            std::string picName;
+            ss >> picName;
+            ss.clear();
+            ss << "../../Media/FaceData/f" << picId << ".fp";
+            std::string fpsName;
+            ss >> fpsName;
+            ss.clear();
+            mImage.release();
+            mImage = cv::imread(picName);
+            cv::Mat resizedImg = ResizeInputImageToCanvas(mImage);
+            mImage.release();
+            mImage = resizedImg.clone();
+            mOriginFPs.Load(fpsName);
+            
+            //Transform
+            int browNum, eyeNum, noseNum, mouseNum, borderNum;
+            mOriginFPs.GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
+            std::vector<double> meanFeaturePosList_d = mPca.GetAvgVector();
+            std::vector<int> meanFeaturePosList(meanFeaturePosList_d.size());
+            for (int vid = 0; vid < meanFeaturePosList_d.size(); vid++)
+            {
+                meanFeaturePosList.at(vid) = floor(meanFeaturePosList_d.at(vid) + 0.5);
+            }
+            FaceFeaturePoint meanFPs;
+            meanFPs.Load(browNum, eyeNum, noseNum, mouseNum, borderNum, meanFeaturePosList);
+            //Transform to mean feature
+            std::vector<int> originfps;
+            mOriginFPs.GetFPs(originfps);
+            int featureSize = originfps.size() / 2;
+            std::vector<cv::Point2f> cvOriginFeatures(featureSize);
+            std::vector<cv::Point2f> cvMeanFeatures(featureSize);
+            for (int fid = 0; fid < featureSize; fid++)
+            {
+                cvOriginFeatures.at(fid).x = originfps.at(fid * 2 + 1);
+                cvOriginFeatures.at(fid).y = originfps.at(fid * 2);
+                cvMeanFeatures.at(fid).x = meanFeaturePosList_d.at(fid * 2 + 1);
+                cvMeanFeatures.at(fid).y = meanFeaturePosList_d.at(fid * 2);
+            }
+            cv::Mat transMat = cv::estimateRigidTransform(cvOriginFeatures, cvMeanFeatures, false);
+            MagicMath::HomoMatrix3 homoTransMat;
+            homoTransMat.SetValue(0, 0, transMat.at<double>(0, 0));
+            homoTransMat.SetValue(0, 1, transMat.at<double>(0, 1));
+            homoTransMat.SetValue(0, 2, transMat.at<double>(0, 2));
+            homoTransMat.SetValue(1, 0, transMat.at<double>(1, 0));
+            homoTransMat.SetValue(1, 1, transMat.at<double>(1, 1));
+            homoTransMat.SetValue(1, 2, transMat.at<double>(1, 2));
+            homoTransMat.Print();
+            std::vector<int> originTransFps(featureSize * 2);
+            for (int fid = 0; fid < featureSize; fid++)
+            {
+                double xRes, yRes;
+                homoTransMat.TransformPoint(originfps.at(fid * 2 + 1), originfps.at(fid * 2), xRes, yRes);
+                originTransFps.at(fid * 2) = floor(yRes + 0.5);
+                originTransFps.at(fid * 2 + 1) = floor(xRes + 0.5);
+            }
+            //Rigid transform image
+            cv::Mat leftImgCopy = mImage.clone();
+            mImage.release();
+            cv::warpAffine(leftImgCopy, mImage, transMat, mImage.size());
+            //Deform to mean feature
+            FaceFeaturePoint originTransFeature;
+            originTransFeature.Load(browNum, eyeNum, noseNum, mouseNum, borderNum, originTransFps);
+            std::vector<int> originTransDps, meanDps;
+            originTransFeature.GetDPs(originTransDps);
+            meanFPs.GetDPs(meanDps);
+            for (int fid = 0; fid < originTransDps.size() / 2; fid++)
+            {
+                int temp = originTransDps.at(fid * 2);
+                originTransDps.at(fid * 2) = originTransDps.at(fid * 2 + 1);
+                originTransDps.at(fid * 2 + 1) = temp;
+
+                temp = meanDps.at(fid * 2);
+                meanDps.at(fid * 2) = meanDps.at(fid * 2 + 1);
+                meanDps.at(fid * 2 + 1) = temp;
+            }
+            cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, originTransDps, meanDps);
+            mImage.release();
+            //Write image
+            ss << "../../Media/FaceData/tg" << picId << ".jpg";
+            std::string transImgName;
+            ss >> transImgName;
+            cv::imwrite(transImgName, deformImg);
+        }
+    }
+
+    void FaceBeautificationApp::CalMeanFace(void)
+    {
+        int imgW = 300;
+        int imgH = 375;
+        std::vector<int> meanImgBlue(imgW * imgH, 0);
+        std::vector<int> meanImgGreen(imgW * imgH, 0);
+        std::vector<int> meanImgRed(imgW * imgH, 0);
+        int picCount = 40;
+        for (int picId = 1; picId <= picCount; picId++)
+        {
+            //Load file
+            std::stringstream ss;
+            ss << "../../Media/FaceData/tg" << picId << ".jpg";
+            std::string picName;
+            ss >> picName;
+            mImage.release();
+            mImage = cv::imread(picName);
+            cv::Mat resizedImg = ResizeInputImageToCanvas(mImage);
+            mImage.release();
+            mImage = resizedImg.clone();
+            for (int hid = 0; hid < imgH; hid++)
+            {
+                int baseIndex = hid * imgW;
+                for (int wid = 0; wid < imgW; wid++)
+                {
+                    unsigned char* pixel = mImage.ptr(hid, wid);
+                    meanImgBlue.at(baseIndex + wid) += pixel[0];
+                    meanImgGreen.at(baseIndex + wid) += pixel[1];
+                    meanImgRed.at(baseIndex + wid) += pixel[2];
+                }
+            }
+        }
+        cv::Size imgSize(imgW, imgH);
+        cv::Mat meanImg(imgSize, CV_8UC3);
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            int baseIndex = hid * imgW;
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* pixel = meanImg.ptr(hid, wid);
+                pixel[0] = float(meanImgBlue.at(baseIndex + wid)) / picCount;
+                pixel[1] = float(meanImgGreen.at(baseIndex + wid)) / picCount;
+                pixel[2] = float(meanImgRed.at(baseIndex + wid)) / picCount;
+            }
+        }
+        std::stringstream ss;
+        ss << "../../Media/FaceData/mg.jpg";
+        std::string meanName;
+        ss >> meanName;
+        cv::imwrite(meanName, meanImg);
     }
 
     void FaceBeautificationApp::SaveFeaturePoint()

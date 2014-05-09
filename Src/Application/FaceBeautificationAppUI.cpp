@@ -42,6 +42,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_LoadFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadFeaturePoint);
         mRoot.at(0)->findWidget("But_MoveFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::MoveFeaturePoint);
         mRoot.at(0)->findWidget("But_AutoAlignFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::AutoMoveFeaturePoint);
+        mRoot.at(0)->findWidget("But_AlignToMean")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::AlignToMean);
         mRoot.at(0)->findWidget("But_SaveFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::SaveFeaturePoint);
         mRoot.at(0)->findWidget("But_OpenReference")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenReferenceImage);
         mRoot.at(0)->findWidget("But_LoadRefFeaturePoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::LoadRefFeaturePoint);
@@ -168,6 +169,17 @@ namespace MagicApp
         if (pFB != NULL)
         {
             pFB->AutoMoveOriginFeaturePoint();
+        }
+    }
+
+    void FaceBeautificationAppUI::AlignToMean(MyGUI::Widget* pSender)
+    {
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            //pFB->AlignToMean();
+            //pFB->AlignAllToMean();
+            pFB->CalMeanFace();
         }
     }
 
