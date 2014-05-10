@@ -140,7 +140,7 @@ namespace MagicApp
         }
     }
 
-    void ReconstructionApp::CoarseRangeLimitCalculation(const std::vector<MagicDGP::Vector3>& posList)
+    void ReconstructionApp::CoarseRangeLimitCalculation(const std::vector<MagicMath::Vector3>& posList)
     {
         mLeftLimit = mDownLimit = 5000.f;
         mRightLimit = mTopLimit = -5000.f;
@@ -149,7 +149,7 @@ namespace MagicApp
         int posNum = posList.size();
         for (int i = 0; i < posNum; i++)
         {
-            MagicDGP::Vector3 pos = posList.at(i);
+            MagicMath::Vector3 pos = posList.at(i);
             if (pos[0] < mLeftLimit)
             {
                 mLeftLimit = pos[0];
@@ -166,7 +166,7 @@ namespace MagicApp
             {
                 mTopLimit = pos[1];
             }
-            if (pos[2] > -(MagicDGP::Epsilon))
+            if (pos[2] > -(1.0e-15))
             {
                 continue;
             }
@@ -209,7 +209,7 @@ namespace MagicApp
             const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
             int resolutionX = depthFrame.getVideoMode().getResolutionX();
             int resolutionY = depthFrame.getVideoMode().getResolutionY();
-            std::vector<MagicDGP::Vector3> posList;
+            std::vector<MagicMath::Vector3> posList;
             for(int y = 0; y < resolutionY; y++)  
             {  
                 for(int x = 0; x < resolutionX; x++)  
@@ -218,7 +218,7 @@ namespace MagicApp
                     float rx, ry, rz;
                     openni::CoordinateConverter::convertDepthToWorld(mDepthStream, 
                         x, y, depth, &rx, &ry, &rz);
-                    MagicDGP::Vector3 pos(-rx, ry, -rz);
+                    MagicMath::Vector3 pos(-rx, ry, -rz);
                     posList.push_back(pos);
                 }
             }
@@ -227,35 +227,35 @@ namespace MagicApp
                 CoarseRangeLimitCalculation(posList);
                 mIsNeedRangeLimitCaculation = false;
             }
-            std::vector<MagicDGP::Vector3> norList;
+            std::vector<MagicMath::Vector3> norList;
             for (int y = 0; y < resolutionY; y++)
             {
                 for (int x = 0; x < resolutionX; x++)
                 {
                     if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                         continue;
                     }
-                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    MagicMath::Vector3 pos = posList.at(y * resolutionX + x);
                     if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
                         pos[1] < mDownLimit || pos[1] > mTopLimit ||
                         pos[2] > mFrontLimit || pos[2] < mBackLimit)
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                         continue;
                     }
-                    MagicDGP::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
-                    MagicDGP::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
-                    MagicDGP::Vector3 nor = dirX.CrossProduct(dirY);
-                    MagicDGP::Real len = nor.Normalise();
-                    if (len > MagicDGP::Epsilon)
+                    MagicMath::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
+                    MagicMath::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
+                    MagicMath::Vector3 nor = dirX.CrossProduct(dirY);
+                    double len = nor.Normalise();
+                    if (len > 1.0e-15)
                     {
                         norList.push_back(nor);
                     }
                     else
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                     }
                 }
             }
@@ -277,14 +277,14 @@ namespace MagicApp
             int pointNum = posList.size();
             for (int i = 0; i < pointNum; i++)
             {
-                MagicDGP::Vector3 pos = posList.at(i);
+                MagicMath::Vector3 pos = posList.at(i);
                 if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
                     pos[1] < mDownLimit || pos[1] > mTopLimit ||
                     pos[2] > mFrontLimit || pos[2] < mBackLimit)
                 {
                     continue;
                 }
-                MagicDGP::Vector3 nor = norList.at(i);
+                MagicMath::Vector3 nor = norList.at(i);
                 pMObj->position(pos[0], pos[1], pos[2]);
                 pMObj->normal(nor[0], nor[1], nor[2]);
                 pMObj->colour(0.86, 0.86, 0.86);
@@ -417,7 +417,7 @@ namespace MagicApp
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction" << std::endl;
         MagicDGP::SignedDistanceFunction sdf(400, 400, 400, mLeftLimit, mRightLimit, mDownLimit, mTopLimit, mBackLimit, mFrontLimit);
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Create SignedDistanceFunction Finish" << std::endl;
-        MagicDGP::HomoMatrix4 lastTrans;
+        MagicMath::HomoMatrix4 lastTrans;
         lastTrans.Unit();
         MagicDGP::Point3DSet* pPointSet = GetPointSetFromRecord(mFrameStartIndex);
         sdf.UpdateFineSDF(pPointSet, &lastTrans);
@@ -431,14 +431,14 @@ namespace MagicApp
             mUI.SetProgressBarPosition(frameIndex - mFrameStartIndex);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Fusion Point Set: " << frameIndex << " -------------------------------"<< std::endl;
             MagicDGP::Point3DSet* pNewPC = GetPointSetFromRecord(frameIndex);//
-            MagicDGP::HomoMatrix4 newTrans;//
+            MagicMath::HomoMatrix4 newTrans;//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Get " << pNewPC->GetPointNumber() << " PointSetFromRecord: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
             float timeRegistrate = MagicCore::ToolKit::GetTime();
             MagicDGP::Registration registrate;
             registrate.ICPRegistrateEnhance(pPointSet, pNewPC, &lastTrans, &newTrans, mDepthStream);//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: ICP Registration: " << MagicCore::ToolKit::GetTime() - timeRegistrate << std::endl;
             float timeUpdateSDF = MagicCore::ToolKit::GetTime();
-            MagicDGP::HomoMatrix4 newTransInv = newTrans.Inverse();//
+            MagicMath::HomoMatrix4 newTransInv = newTrans.Inverse();//
             sdf.UpdateSDF(pNewPC, &newTransInv);//
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Fusion: Update SDF: " << MagicCore::ToolKit::GetTime() - timeUpdateSDF << std::endl;
             lastTrans = newTrans;
@@ -490,7 +490,7 @@ namespace MagicApp
             const openni::DepthPixel* pDepth = (const openni::DepthPixel*)depthFrame.getData();
             int resolutionX = depthFrame.getVideoMode().getResolutionX();
             int resolutionY = depthFrame.getVideoMode().getResolutionY();
-            std::vector<MagicDGP::Vector3> posList;
+            std::vector<MagicMath::Vector3> posList;
             for(int y = 0; y < resolutionY; y++)  
             {  
                 for(int x = 0; x < resolutionX; x++)  
@@ -499,18 +499,18 @@ namespace MagicApp
                     float rx, ry, rz;
                     openni::CoordinateConverter::convertDepthToWorld(mDepthStream, 
                         x, y, depth, &rx, &ry, &rz);
-                    MagicDGP::Vector3 pos(-rx, ry, -rz);
+                    MagicMath::Vector3 pos(-rx, ry, -rz);
                     posList.push_back(pos);
                 }
             }
             //Smooth
-            std::vector<MagicDGP::Vector3> smoothPosList;
+            std::vector<MagicMath::Vector3> smoothPosList;
             float depthThre = 100;
             for (int y = 0; y < resolutionY; y++)
             {
                 for (int x = 0; x < resolutionX ; x++)
                 {
-                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    MagicMath::Vector3 pos = posList.at(y * resolutionX + x);
                     if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
                     {
                         smoothPosList.push_back(pos);
@@ -523,14 +523,14 @@ namespace MagicApp
                         smoothPosList.push_back(pos);
                         continue;
                     }
-                    if (pos.Length() < MagicDGP::Epsilon)
+                    if (pos.Length() < 1.0e-15)
                     {
                         smoothPosList.push_back(pos);
                         continue;
                     }
-                    std::vector<MagicDGP::Vector3> neighbotPos;
-                    MagicDGP::Vector3 pos1 = posList.at(y * resolutionX + x - 1);
-                    if (pos1.Length() > MagicDGP::Epsilon)
+                    std::vector<MagicMath::Vector3> neighbotPos;
+                    MagicMath::Vector3 pos1 = posList.at(y * resolutionX + x - 1);
+                    if (pos1.Length() > 1.0e-15)
                     {
                         if (fabs(pos[2] - pos1[2]) < depthThre)
                         {
@@ -538,12 +538,12 @@ namespace MagicApp
                         }
                         else
                         {
-                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            smoothPosList.push_back(MagicMath::Vector3(0, 0, 0));
                             continue;
                         }
                     }
-                    MagicDGP::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
-                    if (pos2.Length() > MagicDGP::Epsilon)
+                    MagicMath::Vector3 pos2 = posList.at(y * resolutionX + x + 1);
+                    if (pos2.Length() > 1.0e-15)
                     {
                         if (fabs(pos[2] - pos2[2]) < depthThre)
                         {
@@ -551,12 +551,12 @@ namespace MagicApp
                         }
                         else
                         {
-                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            smoothPosList.push_back(MagicMath::Vector3(0, 0, 0));
                             continue;
                         }
                     }
-                    MagicDGP::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
-                    if (pos3.Length() > MagicDGP::Epsilon)
+                    MagicMath::Vector3 pos3 = posList.at((y - 1) * resolutionX + x);
+                    if (pos3.Length() > 1.0e-15)
                     {
                         if (fabs(pos[2] - pos3[2]) < depthThre)
                         {
@@ -564,12 +564,12 @@ namespace MagicApp
                         }
                         else
                         {
-                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            smoothPosList.push_back(MagicMath::Vector3(0, 0, 0));
                             continue;
                         }
                     }
-                    MagicDGP::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
-                    if (pos4.Length() > MagicDGP::Epsilon)
+                    MagicMath::Vector3 pos4 = posList.at((y + 1) * resolutionX + x);
+                    if (pos4.Length() > 1.0e-15)
                     {
                         if (fabs(pos[2] - pos4[2]) < depthThre)
                         {
@@ -577,7 +577,7 @@ namespace MagicApp
                         }
                         else
                         {
-                            smoothPosList.push_back(MagicDGP::Vector3(0, 0, 0));
+                            smoothPosList.push_back(MagicMath::Vector3(0, 0, 0));
                             continue;
                         }
                     }
@@ -587,7 +587,7 @@ namespace MagicApp
                     }
                     else
                     {
-                        MagicDGP::Vector3 avgPos(0, 0, 0);
+                        MagicMath::Vector3 avgPos(0, 0, 0);
                         for (int i = 0; i < neighbotPos.size(); i++)
                         {
                             avgPos += neighbotPos.at(i);
@@ -599,35 +599,35 @@ namespace MagicApp
             }
             posList = smoothPosList;
             //
-            std::vector<MagicDGP::Vector3> norList;
+            std::vector<MagicMath::Vector3> norList;
             for (int y = 0; y < resolutionY; y++)
             {
                 for (int x = 0; x < resolutionX; x++)
                 {
                     if ((y == 0) || (y == resolutionY - 1) || (x == 0) || (x == resolutionX - 1))
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                         continue;
                     }
-                    MagicDGP::Vector3 pos = posList.at(y * resolutionX + x);
+                    MagicMath::Vector3 pos = posList.at(y * resolutionX + x);
                     if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
                         pos[1] < mDownLimit || pos[1] > mTopLimit ||
                         pos[2] > mFrontLimit || pos[2] < mBackLimit)
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                         continue;
                     }
-                    MagicDGP::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
-                    MagicDGP::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
-                    MagicDGP::Vector3 nor = dirX.CrossProduct(dirY);
-                    MagicDGP::Real len = nor.Normalise();
-                    if (len > MagicDGP::Epsilon)
+                    MagicMath::Vector3 dirX = posList.at(y * resolutionX + x + 1) - posList.at(y * resolutionX + x - 1);
+                    MagicMath::Vector3 dirY = posList.at((y + 1) * resolutionX + x) - posList.at((y - 1) * resolutionX + x);
+                    MagicMath::Vector3 nor = dirX.CrossProduct(dirY);
+                    double len = nor.Normalise();
+                    if (len > 1.0e-15)
                     {
                         norList.push_back(nor);
                     }
                     else
                     {
-                        norList.push_back(MagicDGP::Vector3(0, 0, 1));
+                        norList.push_back(MagicMath::Vector3(0, 0, 1));
                     }
                 }
             }
@@ -635,7 +635,7 @@ namespace MagicApp
             int pointNum = posList.size();
             for (int i = 0; i < pointNum; i++)
             {
-                MagicDGP::Vector3 pos = posList.at(i);
+                MagicMath::Vector3 pos = posList.at(i);
                 if (pos[0] < mLeftLimit || pos[0] > mRightLimit ||
                     pos[1] < mDownLimit || pos[1] > mTopLimit ||
                     pos[2] > mFrontLimit || pos[2] < mBackLimit)

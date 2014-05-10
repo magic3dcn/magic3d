@@ -1,6 +1,6 @@
 #include "Deformation.h"
-#include "../DGP/Vector2.h"
-#include "../DGP/Vector3.h"
+#include "../Math/Vector2.h"
+#include "../Math/Vector3.h"
 #include "../Common/LogSystem.h"
 #include "../Common/ToolKit.h"
 
@@ -24,18 +24,18 @@ namespace MagicDIP
         cv::Mat resImg(imgSize, CV_8UC3);
         int markNum = originIndex.size() / 2;
         std::vector<double> wList(markNum);
-        std::vector<MagicDGP::Vector2> pHatList(markNum);
-        std::vector<MagicDGP::Vector2> qHatList(markNum);
-        MagicDGP::Vector2 pStar, qStar;
-        std::vector<MagicDGP::Vector2> pList(markNum);
+        std::vector<MagicMath::Vector2> pHatList(markNum);
+        std::vector<MagicMath::Vector2> qHatList(markNum);
+        MagicMath::Vector2 pStar, qStar;
+        std::vector<MagicMath::Vector2> pList(markNum);
         for (int mid = 0; mid < markNum; mid++)
         {
-            pList.at(mid) = MagicDGP::Vector2(originIndex.at(mid * 2), originIndex.at(mid * 2 + 1));
+            pList.at(mid) = MagicMath::Vector2(originIndex.at(mid * 2), originIndex.at(mid * 2 + 1));
         }
-        std::vector<MagicDGP::Vector2> qList(markNum);
+        std::vector<MagicMath::Vector2> qList(markNum);
         for (int mid = 0; mid < markNum; mid++)
         {
-            qList.at(mid) = MagicDGP::Vector2(targetIndex.at(mid * 2), targetIndex.at(mid * 2 + 1));
+            qList.at(mid) = MagicMath::Vector2(targetIndex.at(mid * 2), targetIndex.at(mid * 2 + 1));
         }
         std::vector<std::vector<double> > aMatList(markNum);
         std::vector<bool> visitFlag(imgW * imgH, 0);
@@ -44,7 +44,7 @@ namespace MagicDIP
         {
             for (int wid = 0; wid < imgW; wid++)
             {
-                MagicDGP::Vector2 pos(wid, hid);
+                MagicMath::Vector2 pos(wid, hid);
                 //calculate w
                 bool isMarkVertex = false;
                 int markedIndex = -1;
@@ -78,8 +78,8 @@ namespace MagicDIP
                 else
                 {
                     //Calculate pStar qStar
-                    pStar = MagicDGP::Vector2(0.0, 0.0);
-                    qStar = MagicDGP::Vector2(0.0, 0.0);
+                    pStar = MagicMath::Vector2(0.0, 0.0);
+                    qStar = MagicMath::Vector2(0.0, 0.0);
                     for (int mid = 0; mid < markNum; mid++)
                     {
                         pStar += (pList.at(mid) * wList.at(mid));
@@ -96,12 +96,12 @@ namespace MagicDIP
                     }
                     
                     //Calculate A
-                    MagicDGP::Vector2 col0 = pos - pStar;
-                    MagicDGP::Vector2 col1(col0[1], -col0[0]);
+                    MagicMath::Vector2 col0 = pos - pStar;
+                    MagicMath::Vector2 col1(col0[1], -col0[0]);
                     for (int mid = 0; mid < markNum; mid++)
                     {
                         std::vector<double> aMat(4);
-                        MagicDGP::Vector2 row1(pHatList.at(mid)[1], -pHatList.at(mid)[0]);
+                        MagicMath::Vector2 row1(pHatList.at(mid)[1], -pHatList.at(mid)[0]);
                         aMat.at(0) = pHatList.at(mid) * col0 * wList.at(mid);
                         aMat.at(1) = pHatList.at(mid) * col1 * wList.at(mid);
                         aMat.at(2) = row1 * col0 * wList.at(mid);
@@ -110,7 +110,7 @@ namespace MagicDIP
                     }
 
                     //Calculate fr(v)
-                    MagicDGP::Vector2 fVec(0, 0);
+                    MagicMath::Vector2 fVec(0, 0);
                     for (int mid = 0; mid < markNum; mid++)
                     {
                         fVec[0] += (qHatList.at(mid)[0] * aMatList.at(mid).at(0) + qHatList.at(mid)[1] * aMatList.at(mid).at(2));
@@ -119,7 +119,7 @@ namespace MagicDIP
 
                     //Calculate target position
                     fVec.Normalise();
-                    MagicDGP::Vector2 targetPos = fVec * ((pos - pStar).Length()) + qStar;
+                    MagicMath::Vector2 targetPos = fVec * ((pos - pStar).Length()) + qStar;
                     int targetW = targetPos[0];
                     int targetH = targetPos[1];
                     if (targetH >= 0 && targetH < imgH && targetW >= 0 && targetW < imgW)
@@ -162,7 +162,7 @@ namespace MagicDIP
             int unVisitSize = unVisitVecHCopy.size();
             for (int uid = 0; uid < unVisitSize; uid++)
             {
-                MagicDGP::Vector3 avgColor(0, 0, 0);
+                MagicMath::Vector3 avgColor(0, 0, 0);
                 int hid = unVisitVecHCopy.at(uid);
                 int wid = unVisitVecWCopy.at(uid);
                 int avgSize = 0;
@@ -236,7 +236,7 @@ namespace MagicDIP
                 if (!visitFlag.at(baseIndex + wid))
                 {
                     double wSum = 0;
-                    MagicDGP::Vector3 avgColor(0, 0, 0);
+                    MagicMath::Vector3 avgColor(0, 0, 0);
                     for (int wRight = wid + 1; wRight < imgW; wRight++)
                     {
                         if (visitFlag.at(baseIndex + wRight))

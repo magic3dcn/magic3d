@@ -23,7 +23,7 @@ namespace MagicTool
 
     void ViewTool::MousePressed(const OIS::MouseEvent& arg)
     {
-        mMousePos = MagicDGP::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
+        mMousePos = MagicMath::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
     }
 
     void ViewTool::MouseMoved(const OIS::MouseEvent& arg)
@@ -31,21 +31,21 @@ namespace MagicTool
         if (arg.state.buttonDown(OIS::MB_Left) && 
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode"))
         {
-            MagicDGP::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
-            mMousePos = MagicDGP::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
+            MagicMath::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
+            mMousePos = MagicMath::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->yaw(Ogre::Degree(mouseDiff[0]) * 0.2, Ogre::Node::TS_PARENT);
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->pitch(Ogre::Degree(mouseDiff[1]) * 0.2, Ogre::Node::TS_PARENT);
         }
         else if (arg.state.buttonDown(OIS::MB_Right))
         {
-            MagicDGP::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
-            mMousePos = MagicDGP::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
+            MagicMath::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
+            mMousePos = MagicMath::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->move(Ogre::Vector3(0, 0, mouseDiff[1]) * 0.007 * mScale);
         }
         else if (arg.state.buttonDown(OIS::MB_Middle))
         {
-            MagicDGP::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
-            mMousePos = MagicDGP::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
+            MagicMath::Vector3 mouseDiff(arg.state.X.abs - mMousePos[0], arg.state.Y.abs - mMousePos[1], 0);
+            mMousePos = MagicMath::Vector3(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
             MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->move(Ogre::Vector3(mouseDiff[0] * (-1), mouseDiff[1], 0) * 0.0025 * mScale);
         }
         

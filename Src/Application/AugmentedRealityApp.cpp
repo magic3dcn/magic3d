@@ -164,10 +164,10 @@ namespace MagicApp
         if (mpBackboardMesh == NULL)
         {
             mpBackboardMesh = new MagicDGP::LightMesh3D;
-            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->InsertVertex(MagicDGP::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicMath::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicMath::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicMath::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->InsertVertex(MagicMath::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
             MagicDGP::FaceIndex fi;
             fi.mIndex[0] = 0;
             fi.mIndex[1] = 1;
@@ -178,17 +178,17 @@ namespace MagicApp
             fi.mIndex[2] = 3;
             mpBackboardMesh->InsertFace(fi);
             mpBackboardMesh->UpdateNormal();
-            mpBackboardMesh->GetVertex(0)->SetTexCord(MagicDGP::Vector3(0, 1, 0));
-            mpBackboardMesh->GetVertex(1)->SetTexCord(MagicDGP::Vector3(1, 1, 0));
-            mpBackboardMesh->GetVertex(2)->SetTexCord(MagicDGP::Vector3(1, 0, 0));
-            mpBackboardMesh->GetVertex(3)->SetTexCord(MagicDGP::Vector3(0, 0, 0));
+            mpBackboardMesh->GetVertex(0)->SetTexCord(MagicMath::Vector3(0, 1, 0));
+            mpBackboardMesh->GetVertex(1)->SetTexCord(MagicMath::Vector3(1, 1, 0));
+            mpBackboardMesh->GetVertex(2)->SetTexCord(MagicMath::Vector3(1, 0, 0));
+            mpBackboardMesh->GetVertex(3)->SetTexCord(MagicMath::Vector3(0, 0, 0));
         }
         else
         {
-            mpBackboardMesh->GetVertex(0)->SetPosition(MagicDGP::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->GetVertex(1)->SetPosition(MagicDGP::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->GetVertex(2)->SetPosition(MagicDGP::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
-            mpBackboardMesh->GetVertex(3)->SetPosition(MagicDGP::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(0)->SetPosition(MagicMath::Vector3(-boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(1)->SetPosition(MagicMath::Vector3(boardHalfWidth, -boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(2)->SetPosition(MagicMath::Vector3(boardHalfWidth, boardHalfHeight, -mBackboardDepth));
+            mpBackboardMesh->GetVertex(3)->SetPosition(MagicMath::Vector3(-boardHalfWidth, boardHalfHeight, -mBackboardDepth));
         }
         MagicCore::RenderSystem::GetSingleton()->RenderLightMesh3DWithTexture("BackBoard", "VCMat", mpBackboardMesh);
     }

@@ -1,5 +1,6 @@
 #include "Saliency.h"
-#include "../DGP/Vector3.h"
+#include "../Math/Vector3.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDIP
 {
@@ -337,7 +338,7 @@ namespace MagicDIP
     public:
         ImgSubRegion();
         ImgSubRegion(int leftTopX, int leftTopY, int width, int height);
-        ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicDGP::Vector3& avgPixel);
+        ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicMath::Vector3& avgPixel);
         ~ImgSubRegion();
         bool MergeRegion(const ImgSubRegion& imgNeighbor, ImgSubRegion& mergedRegion);
         void CalculateAvgPixel(const cv::Mat& img);
@@ -345,7 +346,7 @@ namespace MagicDIP
     public:
         int mLeftTopX, mLeftTopY;
         int mWidth, mHeight;
-        MagicDGP::Vector3 mAvgPixel;
+        MagicMath::Vector3 mAvgPixel;
     };
 
     ImgSubRegion::ImgSubRegion() :
@@ -366,7 +367,7 @@ namespace MagicDIP
     {
     }
 
-    ImgSubRegion::ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicDGP::Vector3& avgPixel) :
+    ImgSubRegion::ImgSubRegion(int leftTopX, int leftTopY, int width, int height, MagicMath::Vector3& avgPixel) :
         mLeftTopX(leftTopX),
         mLeftTopY(leftTopY),
         mWidth(width),
@@ -439,7 +440,7 @@ namespace MagicDIP
 
     void ImgSubRegion::CalculateAvgPixel(const cv::Mat& img)
     {
-        mAvgPixel = MagicDGP::Vector3(0, 0, 0);
+        mAvgPixel = MagicMath::Vector3(0, 0, 0);
         for (int hid = mLeftTopY; hid < mLeftTopY + mHeight; hid++)
         {
             for (int wid = mLeftTopX; wid < mLeftTopX + mWidth; wid++)
@@ -461,16 +462,16 @@ namespace MagicDIP
         int inputH = inputImg.rows;
 
         //calculate pixel average value
-        std::vector<std::vector<MagicDGP::Vector3> > avgImg(inputH);
+        std::vector<std::vector<MagicMath::Vector3> > avgImg(inputH);
         for (int hid = 0; hid < inputH; hid++)
         {
-            avgImg.at(hid) = std::vector<MagicDGP::Vector3>(inputW);
+            avgImg.at(hid) = std::vector<MagicMath::Vector3>(inputW);
         }
         for (int wid = 0; wid < inputW; wid++)
         {
             for (int hid = 1; hid < inputH - 1; hid++)
             {
-                MagicDGP::Vector3 avgV(0, 0, 0);
+                MagicMath::Vector3 avgV(0, 0, 0);
                 unsigned char* pixel = cvtImg.ptr(hid, wid);
                 unsigned char* pixelTop  = cvtImg.ptr(hid + 1, wid);
                 unsigned char* pixelDown = cvtImg.ptr(hid - 1, wid);
@@ -481,7 +482,7 @@ namespace MagicDIP
                 avgImg.at(hid).at(wid) = avgV;
             }
         }
-        std::vector<MagicDGP::Vector3> avgRowTemp(inputW);
+        std::vector<MagicMath::Vector3> avgRowTemp(inputW);
         for (int hid = 0; hid < inputH; hid++)
         {
             for (int wid = 1; wid < inputW - 1; wid++)

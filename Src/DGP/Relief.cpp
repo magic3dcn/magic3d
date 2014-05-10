@@ -3,6 +3,7 @@
 #include "Eigen/Sparse"
 #include "Eigen/SparseLU"
 #include "../Common/ToolKit.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -14,22 +15,22 @@ namespace MagicDGP
     {
     }
 
-    LightMesh3D* ReliefGeneration::PlaneReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY)
+    LightMesh3D* ReliefGeneration::PlaneReliefFromHeightField(std::vector<double>& heightField, int resX, int resY)
     {
         CompressHeightField(heightField, resX, resY);
         //Generate relief mesh
-        Real minX = -1.0;
-        Real maxX = 1.0;
-        Real minY = -1.0;
-        Real maxY = 1.0;
-        Real deltaX = (maxX - minX) / resX;
-        Real deltaY = (maxY - minY) / resY;
+        double minX = -1.0;
+        double maxX = 1.0;
+        double minY = -1.0;
+        double maxY = 1.0;
+        double deltaX = (maxX - minX) / resX;
+        double deltaY = (maxY - minY) / resY;
         LightMesh3D* pMesh = new LightMesh3D;
         for (int xid = 0; xid < resX + 1; xid++)
         {
             for (int yid = 0; yid < resY + 1; yid++)
             {
-                Vector3 pos(minX + deltaX * xid, minY + deltaY * yid, heightField.at(xid * (resY + 1) + yid));
+                MagicMath::Vector3 pos(minX + deltaX * xid, minY + deltaY * yid, heightField.at(xid * (resY + 1) + yid));
                 pMesh->InsertVertex(pos);
             }
         }
@@ -53,12 +54,12 @@ namespace MagicDGP
             }
         }
 
-        Real thick = -0.1;
+        double thick = -0.1;
         for (int xid = 0; xid < resX + 1; xid++)
         {
             for (int yid = 0; yid < resY + 1; yid++)
             {
-                Vector3 pos(minX + deltaX * xid, minY + deltaY * yid, thick);
+                MagicMath::Vector3 pos(minX + deltaX * xid, minY + deltaY * yid, thick);
                 pMesh->InsertVertex(pos);
             }
         }
@@ -155,26 +156,26 @@ namespace MagicDGP
         return pMesh;
     }
 
-    LightMesh3D* ReliefGeneration::CylinderReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY)
+    LightMesh3D* ReliefGeneration::CylinderReliefFromHeightField(std::vector<double>& heightField, int resX, int resY)
     {
         CompressHeightField(heightField, resX, resY);
         //Generate relief mesh
-        Real minX = -1.0;
-        Real maxX = 1.0;
-        Real minY = -1.0;
-        Real maxY = 1.0;
-        Real deltaX = (maxX - minX) / resX;
-        Real deltaY = (maxY - minY) / resY;
+        double minX = -1.0;
+        double maxX = 1.0;
+        double minY = -1.0;
+        double maxY = 1.0;
+        double deltaX = (maxX - minX) / resX;
+        double deltaY = (maxY - minY) / resY;
         LightMesh3D* pMesh = new LightMesh3D;
-        Real deltaTheta = 3.14159265 / resX;
-        Real baseRadius = (maxX - minX) / 2;
+        double deltaTheta = 3.14159265 / resX;
+        double baseRadius = (maxX - minX) / 2;
         for (int xid = 0; xid < resX + 1; xid++)
         {
             for (int yid = 0; yid < resY + 1; yid++)
             {
-                Real radius = baseRadius + heightField.at(xid * (resY + 1) + yid);
-                Real theta = deltaTheta * xid;
-                Vector3 pos(radius * cos(theta), minY + deltaY * yid, radius * sin(theta));
+                double radius = baseRadius + heightField.at(xid * (resY + 1) + yid);
+                double theta = deltaTheta * xid;
+                MagicMath::Vector3 pos(radius * cos(theta), minY + deltaY * yid, radius * sin(theta));
                 pMesh->InsertVertex(pos);
             }
         }
@@ -209,22 +210,22 @@ namespace MagicDGP
         return pMesh;
     }
 
-    void ReliefGeneration::CompressHeightField(std::vector<Real>& heightField, int resX, int resY)
+    void ReliefGeneration::CompressHeightField(std::vector<double>& heightField, int resX, int resY)
     {
-        Real bbScale = 2;
-        Real alpha = bbScale * 300.0;
-        Real threthold = bbScale * 0.05;
+        double bbScale = 2;
+        double alpha = bbScale * 300.0;
+        double threthold = bbScale * 0.05;
         int vertNum = (resX + 1) * (resY + 1);
-        std::vector<Vector3> DeltaVector(vertNum);
+        std::vector<MagicMath::Vector3> DeltaVector(vertNum);
         for (int xid = 0; xid < resX; xid++)
         {
             for (int yid = 0; yid < resY; yid++)
             {
                 int index = xid * (resY + 1) + yid;
-                Vector3 deltaT(0, 0, 0);
+                MagicMath::Vector3 deltaT(0, 0, 0);
                 deltaT[0] = heightField.at(index + resY + 1) - heightField.at(index);
                 deltaT[1] = heightField.at(index + 1) - heightField.at(index);
-                Real deltaMag = deltaT.Normalise();
+                double deltaMag = deltaT.Normalise();
                 if (deltaMag > threthold)
                 {
                     deltaMag = 0;
@@ -236,7 +237,7 @@ namespace MagicDGP
                 DeltaVector.at(index) = deltaT * deltaMag;
             }
         }
-        std::vector<Real> LaplaceField(vertNum);
+        std::vector<double> LaplaceField(vertNum);
         for (int xid = 1; xid < resX; xid++)
         {
             for (int yid = 1; yid < resY; yid++)

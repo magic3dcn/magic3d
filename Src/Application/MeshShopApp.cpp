@@ -86,7 +86,7 @@ namespace MagicApp
             mPickTool.MouseReleased(arg);
             std::vector<int> pickIndex;
             mPickTool.GetPickLightMeshIndex(pickIndex);
-            MagicDGP::Vector3 pickColor(0.663, 0.506, 0.459);
+            MagicMath::Vector3 pickColor(0.663, 0.506, 0.459);
             for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
             {
                 mPickIndexSet.insert(*piIter);
@@ -247,13 +247,13 @@ namespace MagicApp
     {
         int vertNum = mpLightMesh->GetVertexNumber();
         int maxNum = 100;
-        MagicDGP::Real epsilon = 0.001;
+        double epsilon = 0.001;
         for (int vid = 0; vid < vertNum; vid++)
         {
             int randNum = rand();
             randNum = randNum % (2 * maxNum) - maxNum;
-            MagicDGP::Real scale = MagicDGP::Real(randNum) / maxNum * epsilon;
-            MagicDGP::Vector3 newPos = mpLightMesh->GetVertex(vid)->GetPosition() + mpLightMesh->GetVertex(vid)->GetNormal() * scale;
+            double scale = double(randNum) / maxNum * epsilon;
+            MagicMath::Vector3 newPos = mpLightMesh->GetVertex(vid)->GetPosition() + mpLightMesh->GetVertex(vid)->GetNormal() * scale;
             mpLightMesh->GetVertex(vid)->SetPosition(newPos);
         }
         mpLightMesh->UpdateNormal();
@@ -395,7 +395,7 @@ namespace MagicApp
         {  
             for(int x = 0; x < 512; x++)  
             {
-                MagicDGP::Vector3 pos(x / 512.0, y / 512.0, 0);
+                MagicMath::Vector3 pos(x / 512.0, y / 512.0, 0);
                 pos[2] = (img.getColourAt(x, y, 0))[1];
                 MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
                 pPS->InsertPoint(pPoint);

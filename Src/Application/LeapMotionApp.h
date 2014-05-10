@@ -14,14 +14,14 @@ namespace MagicApp
         ~LeapMotionData();
 
         void LoadData();
-        void GetCurrentData(MagicDGP::Vector3& palmPos, MagicDGP::Vector3& palmVelocity);
+        void GetCurrentData(MagicMath::Vector3& palmPos, MagicMath::Vector3& palmVelocity);
         int64_t GetCurrentTimeStamp();
         int64_t GetNextTimeStamp();
         void NextFrame();
 
     private:
-        std::vector<MagicDGP::Vector3> mPalmPos;
-        std::vector<MagicDGP::Vector3> mPalmVelocity;
+        std::vector<MagicMath::Vector3> mPalmPos;
+        std::vector<MagicMath::Vector3> mPalmVelocity;
         std::vector<int64_t> mTimeStamp;
         int mFrameIndex;
     };

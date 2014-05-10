@@ -19,13 +19,13 @@ namespace MagicDGP
     Point3DSet* Sampling::PointSetWLOPSampling(const Point3DSet* pPS, int sampleNum)
     {
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::PointSetWLOPSampling" << std::endl;
-        std::vector<Vector3> samplePosList;
+        std::vector<MagicMath::Vector3> samplePosList;
         InitialSampling(pPS, sampleNum, samplePosList);
         sampleNum = samplePosList.size();
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Finsh Initial Sampling: " << sampleNum << std::endl;
         WLOPIteration(pPS, samplePosList);
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Finish WLOP Iteration" << std::endl;
-        std::vector<Vector3> norList;
+        std::vector<MagicMath::Vector3> norList;
         LocalPCANormalEstimate(samplePosList, norList);
         NormalConsistent(pPS, samplePosList, norList);
         sampleNum = samplePosList.size();
@@ -40,7 +40,7 @@ namespace MagicDGP
         return pNewPS;
     }
 
-    void Sampling::InitialSampling(const Point3DSet* pPS, int sampleNum, std::vector<Vector3>& samplePosList)
+    void Sampling::InitialSampling(const Point3DSet* pPS, int sampleNum, std::vector<MagicMath::Vector3>& samplePosList)
     {
         int psNum = pPS->GetPointNumber();
         int delta = psNum / sampleNum;
@@ -59,7 +59,7 @@ namespace MagicDGP
 
     }
 
-    void Sampling::WLOPIteration(const Point3DSet* pPS, std::vector<Vector3> & samplePosList)
+    void Sampling::WLOPIteration(const Point3DSet* pPS, std::vector<MagicMath::Vector3> & samplePosList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::WLOPIteration" << std::endl;
@@ -74,16 +74,16 @@ namespace MagicDGP
         {
             iterNum = iterNum - jNum / 100000;
         }
-        Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pPS->GetBBox(bboxMin, bboxMax);
-        Real smallValue = 1.0e-10;
-        Real mu = 0.45;
-        //Real thetaScale = 1000;
-        //Real supportSize = 0.03f;
-        Real supportSize = pPS->GetDensity() * 500;
-        Real thetaScale = 100 / supportSize / supportSize;
+        double smallValue = 1.0e-10;
+        double mu = 0.45;
+        //double thetaScale = 1000;
+        //double supportSize = 0.03f;
+        double supportSize = pPS->GetDensity() * 500;
+        double thetaScale = 100 / supportSize / supportSize;
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Density: " << pPS->GetDensity() << " supportSize: " << supportSize << " thetaScale: " << thetaScale << std::endl; 
-        Vector3 deltaBBox = bboxMax - bboxMin;
+        MagicMath::Vector3 deltaBBox = bboxMax - bboxMin;
         int resolutionX = int(deltaBBox[0] / supportSize) + 1;
         int resolutionY = int(deltaBBox[1] / supportSize) + 1;
         int resolutionZ = int(deltaBBox[2] / supportSize) + 1;
@@ -93,7 +93,7 @@ namespace MagicDGP
         //construct pcIndexMap
         for (int pcIndex = 0; pcIndex < jNum; pcIndex++)
         {
-            Vector3 deltaPos = pPS->GetPoint(pcIndex)->GetPosition() - bboxMin;
+            MagicMath::Vector3 deltaPos = pPS->GetPoint(pcIndex)->GetPosition() - bboxMin;
             int index = int(deltaPos[0] / supportSize) * resolutionYZ + int(deltaPos[1] / supportSize) * resolutionZ + int(deltaPos[2] / supportSize);
             pcIndexMap[index].push_back(pcIndex);
         }
@@ -105,23 +105,23 @@ namespace MagicDGP
             std::map<int, std::vector<int> > sampleIndexMap;
             for (int sampleIndex = 0; sampleIndex < iNum; sampleIndex++)
             {
-                Vector3 deltaPos = samplePosList.at(sampleIndex) - bboxMin;
+                MagicMath::Vector3 deltaPos = samplePosList.at(sampleIndex) - bboxMin;
                 int index = int(deltaPos[0] / supportSize) * resolutionYZ + int(deltaPos[1] / supportSize) * resolutionZ + int(deltaPos[2] / supportSize);
                 sampleIndexMap[index].push_back(sampleIndex);
             }
             
-            std::vector<Vector3> samplePosBak = samplePosList;
+            std::vector<MagicMath::Vector3> samplePosBak = samplePosList;
             for (int i = 0; i < iNum; i++)
             {
-                Vector3 samplePosI = samplePosBak.at(i); 
-                Vector3 sampleDeltaPos = samplePosI - bboxMin;
+                MagicMath::Vector3 samplePosI = samplePosBak.at(i); 
+                MagicMath::Vector3 sampleDeltaPos = samplePosI - bboxMin;
                 int xIndex = sampleDeltaPos[0] / supportSize;
                 int yIndex = sampleDeltaPos[1] / supportSize;
                 int zIndex = sampleDeltaPos[2] / supportSize;
-                Vector3 posRes1(0, 0, 0);
-                Real alphaSum = 0;
-                Vector3 posRes2(0, 0, 0);
-                Real betaSum = 0;
+                MagicMath::Vector3 posRes1(0, 0, 0);
+                double alphaSum = 0;
+                MagicMath::Vector3 posRes2(0, 0, 0);
+                double betaSum = 0;
                 for (int xx = -1; xx <= 1; xx++)
                 {
                     for (int yy = -1; yy <= 1; yy++)
@@ -134,16 +134,16 @@ namespace MagicDGP
                             for (int mapIndex = 0; mapIndex < blockSize; mapIndex++)
                             {
                                 int pointIndex = pcIndexMap[blockIndex].at(mapIndex);
-                                Vector3 psPos = pPS->GetPoint(pointIndex)->GetPosition();
-                                Vector3 deltaPos = samplePosI - psPos;
-                                Real deltaLen = deltaPos.Length();
+                                MagicMath::Vector3 psPos = pPS->GetPoint(pointIndex)->GetPosition();
+                                MagicMath::Vector3 deltaPos = samplePosI - psPos;
+                                double deltaLen = deltaPos.Length();
                                 if (deltaLen < smallValue)
                                 {
                                     deltaLen = smallValue;
                                 }
-                                //Real alpha = exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
-                                Real rTemp = thetaScale * deltaLen * deltaLen;
-                                Real alpha = 1 / deltaLen / (1 + rTemp + rTemp * rTemp);
+                                //double alpha = exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
+                                double rTemp = thetaScale * deltaLen * deltaLen;
+                                double alpha = 1 / deltaLen / (1 + rTemp + rTemp * rTemp);
                                 posRes1 += psPos * alpha;
                                 alphaSum += alpha;
                             }
@@ -156,16 +156,16 @@ namespace MagicDGP
                                 {
                                     continue;
                                 }
-                                Vector3 psPos = samplePosBak.at(pointIndex);
-                                Vector3 deltaPos = samplePosI - psPos;
-                                Real deltaLen = deltaPos.Length();
+                                MagicMath::Vector3 psPos = samplePosBak.at(pointIndex);
+                                MagicMath::Vector3 deltaPos = samplePosI - psPos;
+                                double deltaLen = deltaPos.Length();
                                 if (deltaLen < smallValue)
                                 {
                                     deltaLen = smallValue;
                                 }
-                                //Real beta = -exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
-                                Real rTemp = thetaScale * deltaLen * deltaLen;
-                                Real beta = -1 / deltaLen / (1 + rTemp + rTemp * rTemp);
+                                //double beta = -exp(-thetaScale * deltaLen * deltaLen) / deltaLen;
+                                double rTemp = thetaScale * deltaLen * deltaLen;
+                                double beta = -1 / deltaLen / (1 + rTemp + rTemp * rTemp);
                                 posRes2 += (samplePosI - psPos) * beta;
                                 betaSum += beta;
                             }
@@ -192,7 +192,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Iteration total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
-    void Sampling::LocalPCANormalEstimate(const std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList)
+    void Sampling::LocalPCANormalEstimate(const std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
     {
         float startTime = MagicCore::ToolKit::GetTime();
 
@@ -207,7 +207,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < pointNum; i++)
         {
-            MagicDGP::Vector3 pos = samplePosList.at(i);
+            MagicMath::Vector3 pos = samplePosList.at(i);
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -236,8 +236,8 @@ namespace MagicDGP
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
         for (int i = 0; i < pointNum; i++)
         {
-            Vector3 pos = samplePosList.at(i);
-            Vector3 deltaPos[20]; //nn
+            MagicMath::Vector3 pos = samplePosList.at(i);
+            MagicMath::Vector3 deltaPos[20]; //nn
             int baseIndex = i * nn;
             for (int j = 0; j < nn; j++)
             {
@@ -248,7 +248,7 @@ namespace MagicDGP
             {
                 for (int yy = 0; yy < 3; yy++)
                 {
-                    Real v = 0;
+                    double v = 0;
                     for (int kk = 0; kk < nn; kk++)
                     {
                         v += deltaPos[kk][xx] * deltaPos[kk][yy];
@@ -258,9 +258,9 @@ namespace MagicDGP
             }//end for xx
             es.compute(mat);
             Eigen::Vector3d norvec = es.eigenvectors().col(0);
-            Vector3 nor(norvec(0), norvec(1), norvec(2));
-            Real norLen = nor.Normalise();
-            if (norLen < Epsilon)
+            MagicMath::Vector3 nor(norvec(0), norvec(1), norvec(2));
+            double norLen = nor.Normalise();
+            if (norLen < 1.0e-15)
             {
                 MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Error: small normal length" << std::endl;
             }
@@ -275,7 +275,7 @@ namespace MagicDGP
         //    std::set<int> spreadSetNext;
         //    for (std::set<int>::iterator itr = spreadSet.begin(); itr != spreadSet.end(); itr++)
         //    {
-        //        Vector3 nor = norList.at(*itr);
+        //        MagicMath::Vector3 nor = norList.at(*itr);
         //        int baseIndex = *itr * nn;
         //        //for (int i = 0; i < nn; i++)
         //        for (int i = 0; i < 9; i++)
@@ -308,7 +308,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::LocalPCANormalEstimate, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
-    void Sampling::NormalConsistent(const Point3DSet* pPS, std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList)
+    void Sampling::NormalConsistent(const Point3DSet* pPS, std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
     {
         float startTime = MagicCore::ToolKit::GetTime();
 
@@ -317,7 +317,7 @@ namespace MagicDGP
         float* dataSet = new float[refNum * dim];
         for (int i = 0; i < refNum; i++)
         {
-            Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 pos = pPS->GetPoint(i)->GetPosition();
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -326,7 +326,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < searchNum; i++)
         {
-            Vector3 pos = samplePosList.at(i);
+            MagicMath::Vector3 pos = samplePosList.at(i);
             searchSet[dim * i + 0] = pos[0];
             searchSet[dim * i + 1] = pos[1];
             searchSet[dim * i + 2] = pos[2];
@@ -347,10 +347,10 @@ namespace MagicDGP
         delete []dataSet;
         delete []searchSet;
 
-        std::vector<Vector3> newPosList, newNorList;
+        std::vector<MagicMath::Vector3> newPosList, newNorList;
         for (int i = 0; i < searchNum; i++)
         {
-            Vector3 norRef(0, 0, 0);
+            MagicMath::Vector3 norRef(0, 0, 0);
             int baseIndex = i * nn;
             float norError = 0;
             for (int j = 0; j < nn; j++)
@@ -386,7 +386,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::NormalConsistent, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
-    void Sampling::NormalSmooth(std::vector<Vector3>& samplePosList, std::vector<Vector3>& norList)
+    void Sampling::NormalSmooth(std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
     {
         float startTime = MagicCore::ToolKit::GetTime();
 
@@ -398,7 +398,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < pointNum; i++)
         {
-            MagicDGP::Vector3 pos = samplePosList.at(i);
+            MagicMath::Vector3 pos = samplePosList.at(i);
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -425,15 +425,15 @@ namespace MagicDGP
         int smoothNum = nn / 2;
         for (int k = 0; k < smoothNum; k++)
         {
-            std::vector<Vector3> newNorList(pointNum);
+            std::vector<MagicMath::Vector3> newNorList(pointNum);
             for (int i = 0; i < pointNum; i++)
             {
                 int avgFlag = 0;
-                Vector3 nor = norList.at(i);
+                MagicMath::Vector3 nor = norList.at(i);
                 int baseIndex = nn * i;
                 for (int j = 0; j < nn; j++)
                 {
-                    Vector3 norNeighbor = norList.at(pIndex[baseIndex + j]);
+                    MagicMath::Vector3 norNeighbor = norList.at(pIndex[baseIndex + j]);
                     if (norNeighbor * nor > 0)
                     {
                         avgFlag++;
@@ -481,12 +481,12 @@ namespace MagicDGP
         std::vector<int> sampleIndex(sampleNum);
         sampleFlag.at(0) = true;
         sampleIndex.at(0) = 0;
-        std::vector<Real> minDist(psNum, 1.0e10);
+        std::vector<double> minDist(psNum, 1.0e10);
         int curIndex = 0;
         for (int sid = 1; sid < sampleNum; ++sid)
         {
-            Vector3 curPos = pPS->GetPoint(curIndex)->GetPosition();
-            Real maxDist = -1;
+            MagicMath::Vector3 curPos = pPS->GetPoint(curIndex)->GetPosition();
+            double maxDist = -1;
             int pos = -1;
             for (int vid = 0; vid < psNum; ++vid)
             {
@@ -494,7 +494,7 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                Real dist = (pPS->GetPoint(vid)->GetPosition() - curPos).LengthSquared();
+                double dist = (pPS->GetPoint(vid)->GetPosition() - curPos).LengthSquared();
                 if (dist < minDist.at(vid))
                 {
                     minDist.at(vid) = dist;
@@ -533,12 +533,12 @@ namespace MagicDGP
         sampleFlag.at(0) = true;
         sampleIndex = std::vector<int>(sampleNum);
         sampleIndex.at(0) = 0;
-        std::vector<Real> minDist(vertNum, 1.0e10);
+        std::vector<double> minDist(vertNum, 1.0e10);
         int curIndex = 0;
         for (int sid = 1; sid < sampleNum; ++sid)
         {
-            Vector3 curPos = pMesh->GetVertex(curIndex)->GetPosition();
-            Real maxDist = -1;
+            MagicMath::Vector3 curPos = pMesh->GetVertex(curIndex)->GetPosition();
+            double maxDist = -1;
             int pos = -1;
             for (int vid = 0; vid < vertNum; ++vid)
             {
@@ -546,7 +546,7 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                Real dist = (pMesh->GetVertex(vid)->GetPosition() - curPos).LengthSquared();
+                double dist = (pMesh->GetVertex(vid)->GetPosition() - curPos).LengthSquared();
                 if (dist < minDist.at(vid))
                 {
                     minDist.at(vid) = dist;
@@ -573,7 +573,7 @@ namespace MagicDGP
             InfoLog << "Consolidation::SimplifyMesh target vertex number is less than vertex number." << std::endl;
             return false;
         }
-        std::vector<HomoMatrix4> quadricMatList;
+        std::vector<MagicMath::HomoMatrix4> quadricMatList;
         CalQuadricMatrix(pMesh, quadricMatList);
         int collapseNum = vertNum - targetNum;
         for (int collapseId = 0; collapseId < collapseNum; collapseId++)
@@ -585,32 +585,32 @@ namespace MagicDGP
 
     }
 
-    void Sampling::CalQuadricMatrix(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatList)
+    void Sampling::CalQuadricMatrix(Mesh3D* pMesh, std::vector<MagicMath::HomoMatrix4>& quadricMatList)
     {
         int vertNum = pMesh->GetVertexNumber();
         int faceNum = pMesh->GetFaceNumber();
         quadricMatList.clear();
-        quadricMatList = std::vector<HomoMatrix4>(vertNum);
-        std::vector<std::vector<Real> > faceQuadricMat = std::vector<std::vector<Real> >(faceNum);
+        quadricMatList = std::vector<MagicMath::HomoMatrix4>(vertNum);
+        std::vector<std::vector<double> > faceQuadricMat = std::vector<std::vector<double> >(faceNum);
         for (int fid = 0; fid < faceNum; fid++)
         {
             Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
-            Vector3 pos0 = pEdge->GetVertex()->GetPosition();
-            Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
-            Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
-            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            MagicMath::Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+            MagicMath::Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+            MagicMath::Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+            MagicMath::Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
             nor.Normalise();
-            Real d = nor * pos0 * (-1.0);
+            double d = nor * pos0 * (-1.0);
 
         }
     }
 
-    int Sampling::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<HomoMatrix4>& quadricMatrix)
+    int Sampling::ChooseCollapseEdge(Mesh3D* pMesh, std::vector<MagicMath::HomoMatrix4>& quadricMatrix)
     {
         return 0;
     }
 
-    void Sampling::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<HomoMatrix4>& quadricMatList)
+    void Sampling::CollapseEdge(Mesh3D* pMesh, int edgeId, std::vector<MagicMath::HomoMatrix4>& quadricMatList)
     {
 
     }

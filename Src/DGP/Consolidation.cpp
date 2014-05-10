@@ -3,6 +3,7 @@
 #include "Eigen/Eigenvalues"
 #include "Eigen/Sparse"
 #include "Eigen/SparseLU"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -17,7 +18,7 @@ namespace MagicDGP
     void Consolidation::CalPointSetNormal(Point3DSet* pPointSet)
     {
         int pointNum = pPointSet->GetPointNumber();
-        std::vector<Vector3> norList(pointNum);
+        std::vector<MagicMath::Vector3> norList(pointNum);
 
         int dim = 3;
         int refNum = pointNum;
@@ -26,7 +27,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int pid = 0; pid < pointNum; pid++)
         {
-            MagicDGP::Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
+            MagicMath::Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
             dataSet[dim * pid + 0] = pos[0];
             dataSet[dim * pid + 1] = pos[1];
             dataSet[dim * pid + 2] = pos[2];
@@ -53,8 +54,8 @@ namespace MagicDGP
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
         for (int pid = 0; pid < pointNum; pid++)
         {
-            Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
-            Vector3 deltaPos[20]; //nn
+            MagicMath::Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
+            MagicMath::Vector3 deltaPos[20]; //nn
             int baseIndex = pid * nn;
             for (int j = 0; j < nn; j++)
             {
@@ -65,7 +66,7 @@ namespace MagicDGP
             {
                 for (int yy = 0; yy < 3; yy++)
                 {
-                    Real v = 0;
+                    double v = 0;
                     for (int kk = 0; kk < nn; kk++)
                     {
                         v += deltaPos[kk][xx] * deltaPos[kk][yy];
@@ -75,9 +76,9 @@ namespace MagicDGP
             }//end for xx
             es.compute(mat);
             Eigen::Vector3d norvec = es.eigenvectors().col(0);
-            Vector3 nor(norvec(0), norvec(1), norvec(2));
-            Real norLen = nor.Normalise();
-            if (norLen < Epsilon)
+            MagicMath::Vector3 nor(norvec(0), norvec(1), norvec(2));
+            double norLen = nor.Normalise();
+            if (norLen < 1.0e-15)
             {
                 DebugLog << "Error: small normal length" << std::endl;
             }
@@ -89,7 +90,7 @@ namespace MagicDGP
             pDist = NULL;
         }
         //Make normal consitent
-        std::multimap<Real, int> prioritySet;
+        std::multimap<double, int> prioritySet;
         std::vector<bool> acceptMark(pointNum, 0);
         while (true)
         {
@@ -97,19 +98,19 @@ namespace MagicDGP
             int activeId = -1;
             if (prioritySet.size() > 0)
             {
-                std::multimap<Real, int>::iterator firstItr = prioritySet.begin();
+                std::multimap<double, int>::iterator firstItr = prioritySet.begin();
                 activeId = firstItr->second;
                 prioritySet.erase(firstItr);
             }
             else 
             {
-                Real maxZ = -1.0e10;
+                double maxZ = -1.0e10;
                 int maxZId = -1;
                 for (int pid = 0; pid < pointNum; pid++)
                 {
                     if (acceptMark.at(pid) == 0)
                     {
-                        Real z = pPointSet->GetPoint(pid)->GetPosition()[2];
+                        double z = pPointSet->GetPoint(pid)->GetPosition()[2];
                         if (z > maxZ)
                         {
                             maxZ = z;
@@ -144,12 +145,12 @@ namespace MagicDGP
                 }
                 else
                 {
-                    Real cosAngle = norList.at(activeId) * norList.at(nIndex);
+                    double cosAngle = norList.at(activeId) * norList.at(nIndex);
                     if (cosAngle < 0)
                     {
                         norList.at(nIndex) *= -1;
                     }
-                    prioritySet.insert( std::pair<Real, int>(1.0 - fabs(cosAngle), nIndex) );
+                    prioritySet.insert( std::pair<double, int>(1.0 - fabs(cosAngle), nIndex) );
                     acceptMark.at(nIndex) = true;
                 }
             }
@@ -184,7 +185,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int pid = 0; pid < pointNum; pid++)
         {
-            MagicDGP::Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
+            MagicMath::Vector3 pos = pPointSet->GetPoint(pid)->GetPosition();
             dataSet[dim * pid + 0] = pos[0];
             dataSet[dim * pid + 1] = pos[1];
             dataSet[dim * pid + 2] = pos[2];
@@ -212,8 +213,8 @@ namespace MagicDGP
         for (int pid = 0; pid < pointNum; pid++)
         {
             Point3D* pPoint = pPointSet->GetPoint(pid);
-            Vector3 pos = pPoint->GetPosition();
-            Vector3 deltaPos[20]; //nn
+            MagicMath::Vector3 pos = pPoint->GetPosition();
+            MagicMath::Vector3 deltaPos[20]; //nn
             int baseIndex = pid * nn;
             for (int j = 0; j < nn; j++)
             {
@@ -224,7 +225,7 @@ namespace MagicDGP
             {
                 for (int yy = 0; yy < 3; yy++)
                 {
-                    Real v = 0;
+                    double v = 0;
                     for (int kk = 0; kk < nn; kk++)
                     {
                         v += deltaPos[kk][xx] * deltaPos[kk][yy];
@@ -234,9 +235,9 @@ namespace MagicDGP
             }//end for xx
             es.compute(mat);
             Eigen::Vector3d norvec = es.eigenvectors().col(0);
-            Vector3 nor(norvec(0), norvec(1), norvec(2));
-            Real norLen = nor.Normalise();
-            if (norLen < Epsilon)
+            MagicMath::Vector3 nor(norvec(0), norvec(1), norvec(2));
+            double norLen = nor.Normalise();
+            if (norLen < 1.0e-15)
             {
                 DebugLog << "Error: small normal length" << std::endl;
             }
@@ -259,7 +260,7 @@ namespace MagicDGP
         return true;
     }
 
-    //Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion)
+    //Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, double proportion)
     //{
     //    DebugLog << "Consolidation::RemoveSmallMeshPatch" << std::endl;
     //    int vertNum = pMesh->GetVertexNumber();
@@ -381,7 +382,7 @@ namespace MagicDGP
     //    return NULL;
     //}
 
-    Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion)
+    Mesh3D* Consolidation::RemoveSmallMeshPatch(Mesh3D* pMesh, double proportion)
     {
         DebugLog << "Consolidation::RemoveSmallMeshPatch" << std::endl;
         int vertNum = pMesh->GetVertexNumber();
@@ -516,7 +517,7 @@ namespace MagicDGP
         return pNewMesh;
     }
 
-    LightMesh3D* Consolidation::RemoveSmallMeshPatch(LightMesh3D* pMesh, Real proportion)
+    LightMesh3D* Consolidation::RemoveSmallMeshPatch(LightMesh3D* pMesh, double proportion)
     {
         int vertNum = pMesh->GetVertexNumber();
         int smallNum = vertNum * proportion;
@@ -628,7 +629,7 @@ namespace MagicDGP
         return pNewMesh;
     }
 
-    Point3DSet* Consolidation::RemovePointSetOutlier(Point3DSet* pPS, Real proportion)
+    Point3DSet* Consolidation::RemovePointSetOutlier(Point3DSet* pPS, double proportion)
     {
         int dim = 3;
         int pointNum = pPS->GetPointNumber();
@@ -638,7 +639,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < pointNum; i++)
         {
-            MagicDGP::Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 pos = pPS->GetPoint(i)->GetPosition();
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -664,14 +665,14 @@ namespace MagicDGP
         std::map<float, int> densityMap;
         for (int i = 0; i < pointNum; i++)
         {
-            MagicDGP::Vector3 pos = pPS->GetPoint(i)->GetPosition();
-            MagicDGP::Vector3 nor = pPS->GetPoint(i)->GetNormal();
+            MagicMath::Vector3 pos = pPS->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 nor = pPS->GetPoint(i)->GetNormal();
             float density = 0;
             int baseIndex = nn * i;
             for (int j = 0; j < nn; j++)
             {
-                MagicDGP::Vector3 posNeigh = pPS->GetPoint(pIndex[baseIndex + j])->GetPosition();
-                MagicDGP::Vector3 deltaPos = posNeigh - pos + nor * 10 * ( (posNeigh - pos) * nor );
+                MagicMath::Vector3 posNeigh = pPS->GetPoint(pIndex[baseIndex + j])->GetPosition();
+                MagicMath::Vector3 deltaPos = posNeigh - pos + nor * 10 * ( (posNeigh - pos) * nor );
                 density += deltaPos.Length();
             }
             densityMap[density] = i;
@@ -719,13 +720,13 @@ namespace MagicDGP
         DebugLog << "Consolidation::SimpleMeshSmooth...." << std::endl;
         pMesh->UpdateBoundaryFlag();
         int vertNum = pMesh->GetVertexNumber();
-        std::vector<Vector3> posBakList(vertNum);
+        std::vector<MagicMath::Vector3> posBakList(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             posBakList.at(vid) = pMesh->GetVertex(vid)->GetPosition();
         }
-        Real smoothWeight = 0.75;
-        std::vector<Vector3> smoothPos(vertNum);
+        double smoothWeight = 0.75;
+        std::vector<MagicMath::Vector3> smoothPos(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             Vertex3D* pVert = pMesh->GetVertex(vid);
@@ -734,7 +735,7 @@ namespace MagicDGP
                 continue;
             }
             Edge3D* pEdge = pVert->GetEdge();
-            Vector3 avgPos(0, 0, 0);
+            MagicMath::Vector3 avgPos(0, 0, 0);
             int neighNum = 0;
             do
             {
@@ -779,8 +780,8 @@ namespace MagicDGP
             neighFaceNum.at(faceIdx.mIndex[1])++;
             neighFaceNum.at(faceIdx.mIndex[2])++;
         }
-        Real smoothWeight = 0.75;
-        std::vector<Vector3> smoothPos(vertNum);
+        double smoothWeight = 0.75;
+        std::vector<MagicMath::Vector3> smoothPos(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::set<int> neighbors = neighVertList.at(vid);
@@ -788,7 +789,7 @@ namespace MagicDGP
             {
                 continue;
             }
-            Vector3 avgPos(0, 0, 0);
+            MagicMath::Vector3 avgPos(0, 0, 0);
             for (std::set<int>::iterator nItr = neighbors.begin(); nItr != neighbors.end(); ++nItr)
             {
                 avgPos += pMesh->GetVertex(*nItr)->GetPosition();
@@ -816,23 +817,23 @@ namespace MagicDGP
         Eigen::VectorXd bx(vertNum, 1);
         Eigen::VectorXd by(vertNum, 1);
         Eigen::VectorXd bz(vertNum, 1);
-        Real deltaT = 0.00005;
-        Real epsilon = 1.0e-5;
+        double deltaT = 0.00005;
+        double epsilon = 1.0e-5;
         for (int vid = 0; vid < vertNum; vid++)
         {
             Vertex3D* pVert = pMesh->GetVertex(vid);
             if (pVert->GetBoundaryType() == BT_Boundary)
             {
                 tripletList.push_back( Eigen::Triplet<double>(vid, vid, 1) );
-                Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 pos = pVert->GetPosition();
                 bx(vid) = pos[0];
                 by(vid) = pos[1];
                 bz(vid) = pos[2];
             }
             else
             {
-                Real wSum = 0.0;
-                Real areaSum = 0.0;
+                double wSum = 0.0;
+                double areaSum = 0.0;
                 Edge3D* pEdge = pVert->GetEdge();
                 do
                 {
@@ -842,7 +843,7 @@ namespace MagicDGP
                 if (areaSum < epsilon)
                 {
                     tripletList.push_back( Eigen::Triplet<double>(vid, vid, 1) );
-                    Vector3 pos = pVert->GetPosition();
+                    MagicMath::Vector3 pos = pVert->GetPosition();
                     bx(vid) = pos[0];
                     by(vid) = pos[1];
                     bz(vid) = pos[2];
@@ -852,8 +853,8 @@ namespace MagicDGP
                 pEdge = pVert->GetEdge();
                 do
                 {
-                    Real wTemp = 0.0;
-                    Real sinV, cosV;
+                    double wTemp = 0.0;
+                    double sinV, cosV;
                     if (pEdge->GetFace() == NULL)
                     {
                         DebugLog << "pEdge->GetFace() == NULL" << std::endl;
@@ -862,9 +863,9 @@ namespace MagicDGP
                     {
                         DebugLog << "pEdge->GetPair()->GetFace() == NULL" << std::endl;
                     }
-                    Vector3 dir0 = pEdge->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
+                    MagicMath::Vector3 dir0 = pEdge->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
                     dir0.Normalise();
-                    Vector3 dir1 = pEdge->GetPre()->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
+                    MagicMath::Vector3 dir1 = pEdge->GetPre()->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
                     dir1.Normalise();
                     cosV = dir0 * dir1;
                     cosV = (cosV > 1) ? 1 : ((cosV < -1) ? -1 : cosV); 
@@ -888,7 +889,7 @@ namespace MagicDGP
                     pEdge = pEdge->GetPair()->GetNext();
                 } while (pEdge != NULL && pEdge != pVert->GetEdge());
                 tripletList.push_back( Eigen::Triplet<double>(vid, vid, 1.0 + deltaT * wSum / areaSum) );
-                Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 pos = pVert->GetPosition();
                 bx(vid) = pos[0];
                 by(vid) = pos[1];
                 bz(vid) = pos[2];
@@ -909,7 +910,7 @@ namespace MagicDGP
         //Copy result
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Vector3 newPos(resX(vid), resY(vid), resZ(vid));
+            MagicMath::Vector3 newPos(resX(vid), resY(vid), resZ(vid));
             pMesh->GetVertex(vid)->SetPosition(newPos);
         }
         DebugLog << "Fisish mean curvature flow" << std::endl;
@@ -928,7 +929,7 @@ namespace MagicDGP
             float* searchSet = new float[searchNum * dim];
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 pos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 pos = pPS->GetPoint(pid)->GetPosition();
                 dataSet[dim * pid + 0] = pos[0];
                 dataSet[dim * pid + 1] = pos[1];
                 dataSet[dim * pid + 2] = pos[2];
@@ -977,12 +978,12 @@ namespace MagicDGP
             }
         }
 
-        Real smoothWeight = 0.75;
-        std::vector<Vector3> smoothPos(pointNum);
+        double smoothWeight = 0.75;
+        std::vector<MagicMath::Vector3> smoothPos(pointNum);
         for (int pid = 0; pid < pointNum; pid++)
         {
-            Vector3 pos = pPS->GetPoint(pid)->GetPosition();
-            Vector3 avgPos(0, 0, 0);
+            MagicMath::Vector3 pos = pPS->GetPoint(pid)->GetPosition();
+            MagicMath::Vector3 avgPos(0, 0, 0);
             std::vector<int> neighbors = RiemannianGraph.at(pid);
             int neiSize = neighbors.size();
             for (int nid = 0; nid < neiSize; nid++)

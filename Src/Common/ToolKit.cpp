@@ -103,9 +103,9 @@ namespace MagicCore
         mIsONIInitialized = bInitialized;
     }
 
-    MagicDGP::Vector3 ToolKit::ColorCoding(float f)
+    MagicMath::Vector3 ToolKit::ColorCoding(float f)
     {
-        MagicDGP::Vector3 colorV;
+        MagicMath::Vector3 colorV;
         if (f >= 0 && f < 0.2)
         {
             colorV[0] = f * 5.0;

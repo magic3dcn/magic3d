@@ -92,7 +92,7 @@ namespace MagicApp
             mPickTool.MouseReleased(arg);
             std::vector<int> pickIndex;
             mPickTool.GetPickPointsetIndex(pickIndex);
-            MagicDGP::Vector3 pickColor(1 - mDefaultColor[0], 1 - mDefaultColor[1], 1 - mDefaultColor[2]);
+            MagicMath::Vector3 pickColor(1 - mDefaultColor[0], 1 - mDefaultColor[1], 1 - mDefaultColor[2]);
             for (std::vector<int>::iterator piIter = pickIndex.begin(); piIter != pickIndex.end(); ++piIter)
             {
                 mPickIndexSet.insert(*piIter);
@@ -182,7 +182,7 @@ namespace MagicApp
         int pointNum = mpPointSet->GetPointNumber();
         for (int pid = 0; pid < pointNum; pid++)
         {
-            MagicDGP::Vector3 nor = mpPointSet->GetPoint(pid)->GetNormal();
+            MagicMath::Vector3 nor = mpPointSet->GetPoint(pid)->GetNormal();
             nor *= -1;
             mpPointSet->GetPoint(pid)->SetNormal(nor);
         }
@@ -264,13 +264,13 @@ namespace MagicApp
     {
         int pointNum = mpPointSet->GetPointNumber();
         int maxNum = 100;
-        MagicDGP::Real epsilon = 0.001;
+        double epsilon = 0.001;
         for (int pid = 0; pid < pointNum; pid++)
         {
             int randNum = rand();
             randNum = randNum % (2 * maxNum) - maxNum;
-            MagicDGP::Real scale = MagicDGP::Real(randNum) / maxNum * epsilon;
-            MagicDGP::Vector3 newPos = mpPointSet->GetPoint(pid)->GetPosition() + mpPointSet->GetPoint(pid)->GetNormal() * scale;
+            double scale = double(randNum) / maxNum * epsilon;
+            MagicMath::Vector3 newPos = mpPointSet->GetPoint(pid)->GetPosition() + mpPointSet->GetPoint(pid)->GetNormal() * scale;
             mpPointSet->GetPoint(pid)->SetPosition(newPos);
         }
         UpdatePointSetRendering();

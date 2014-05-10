@@ -38,7 +38,7 @@ namespace MagicApp
         bool SetupDevice();
         void ReleaseDevice();
         void UpdateScannerDisplay();
-        void CoarseRangeLimitCalculation(const std::vector<MagicDGP::Vector3>& posList);
+        void CoarseRangeLimitCalculation(const std::vector<MagicMath::Vector3>& posList);
         MagicDGP::Point3DSet* GetPointSetFromRecord(int frameId);
 
     private:

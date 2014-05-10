@@ -10,30 +10,30 @@ namespace MagicDGP
     {
     }
 
-    void Curvature::CalGaussianCurvature(const Mesh3D* pMesh, std::vector<Real>& curvList)
+    void Curvature::CalGaussianCurvature(const Mesh3D* pMesh, std::vector<double>& curvList)
     {
         int vertNum = pMesh->GetVertexNumber();
         curvList.clear();
         curvList.resize(vertNum);
-        Real twoPI = 2 * 3.14159265;
+        double twoPI = 2 * 3.14159265;
         for (int vid = 0; vid < vertNum; vid++)
         {
             const Vertex3D* pVert = pMesh->GetVertex(vid);
-            Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 pos = pVert->GetPosition();
             const Edge3D* pEdge = pVert->GetEdge();
-            Real angleSum = 0;
+            double angleSum = 0;
             do
             {
                 const Face3D* pFace = pEdge->GetFace();
                 if (pFace != NULL)
                 {
-                    Vector3 pos1 = pEdge->GetVertex()->GetPosition();
-                    Vector3 pos2 = pEdge->GetNext()->GetVertex()->GetPosition();
-                    Vector3 dir1 = pos1 - pos;
+                    MagicMath::Vector3 pos1 = pEdge->GetVertex()->GetPosition();
+                    MagicMath::Vector3 pos2 = pEdge->GetNext()->GetVertex()->GetPosition();
+                    MagicMath::Vector3 dir1 = pos1 - pos;
                     dir1.Normalise();
-                    Vector3 dir2 = pos2 - pos;
+                    MagicMath::Vector3 dir2 = pos2 - pos;
                     dir2.Normalise();
-                    Real cosAngle = dir1 * dir2;
+                    double cosAngle = dir1 * dir2;
                     cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
                     angleSum += acos(cosAngle);
                 }
@@ -43,9 +43,9 @@ namespace MagicDGP
         }
     }
 
-    void Curvature::CalMeanCurvature(const Mesh3D* pMesh, std::vector<Real>& curvList)
+    void Curvature::CalMeanCurvature(const Mesh3D* pMesh, std::vector<double>& curvList)
     {
-        Real epsilon = 1.0e-5;
+        double epsilon = 1.0e-5;
         int vertNum = pMesh->GetVertexNumber();
         curvList.clear();
         curvList.resize(vertNum);
@@ -58,19 +58,19 @@ namespace MagicDGP
                 continue;
             }
             const Edge3D* pEdge = pVert->GetEdge();
-            Vector3 avgPos(0, 0, 0);
-            Real wSum = 0;
-            Real areaSum = 0;
+            MagicMath::Vector3 avgPos(0, 0, 0);
+            double wSum = 0;
+            double areaSum = 0;
             do 
             {
                 areaSum += pEdge->GetFace()->GetArea();
 
-                Real wTemp = 0;
-                Real sinV, cosV;
+                double wTemp = 0;
+                double sinV, cosV;
 
-                Vector3 dir0 = pEdge->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
+                MagicMath::Vector3 dir0 = pEdge->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
                 dir0.Normalise();
-                Vector3 dir1 = pEdge->GetPre()->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
+                MagicMath::Vector3 dir1 = pEdge->GetPre()->GetVertex()->GetPosition() - pEdge->GetNext()->GetVertex()->GetPosition();
                 dir1.Normalise();
                 cosV = dir0 * dir1;
                 cosV = (cosV > 1) ? 1 : ((cosV < -1) ? -1 : cosV); 
@@ -94,8 +94,8 @@ namespace MagicDGP
                 pEdge = pEdge->GetPair()->GetNext();
             } while(pEdge != NULL && pEdge != pVert->GetEdge());
             avgPos = avgPos / wSum;
-            Vector3 HVector = pVert->GetPosition() - avgPos;
-            Real uh = HVector.Length();
+            MagicMath::Vector3 HVector = pVert->GetPosition() - avgPos;
+            double uh = HVector.Length();
             uh = uh / areaSum;
             if (HVector * pVert->GetNormal() < 0)
             {

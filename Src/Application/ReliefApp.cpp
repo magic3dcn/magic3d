@@ -158,7 +158,7 @@ namespace MagicApp
         MagicCore::RenderSystem::GetSingleton()->Update();
         Ogre::Image img;
         depthTex->convertToImage(img);
-        std::vector<MagicDGP::Real> heightField(512 * 512);
+        std::vector<double> heightField(512 * 512);
         for(int x = 0; x < 512; x++)  
         {  
             for(int y = 0; y < 512; y++)  

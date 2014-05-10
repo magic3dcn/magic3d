@@ -60,7 +60,7 @@ namespace MagicApp
         MagicTool::PickPointTool mPickTool;
         MouseMode mMouseMode;
         bool mPickIgnoreBack;
-        MagicDGP::Vector3 mDefaultColor;
+        MagicMath::Vector3 mDefaultColor;
         std::set<int> mPickIndexSet;
         std::vector<std::vector<int> > mRiemannianGraph;
     };

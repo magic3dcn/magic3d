@@ -158,9 +158,6 @@
     <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h" />
     <ClInclude Include="..\Src\DGP\Consolidation.h" />
     <ClInclude Include="..\Src\DGP\Curvature.h" />
-    <ClInclude Include="..\Src\DGP\DGPDefines.h" />
-    <ClInclude Include="..\Src\DGP\HomoMatrix4.h" />
-    <ClInclude Include="..\Src\DGP\HomoVector4.h" />
     <ClInclude Include="..\Src\DGP\Mesh3D.h" />
     <ClInclude Include="..\Src\DGP\MeshReconstruction.h" />
     <ClInclude Include="..\Src\DGP\Parser.h" />
@@ -170,8 +167,6 @@
     <ClInclude Include="..\Src\DGP\Relief.h" />
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
-    <ClInclude Include="..\Src\DGP\Vector2.h" />
-    <ClInclude Include="..\Src\DGP\Vector3.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
@@ -180,6 +175,10 @@
     <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h" />
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
+    <ClInclude Include="..\Src\Math\HomoMatrix4.h" />
+    <ClInclude Include="..\Src\Math\HomoVector4.h" />
+    <ClInclude Include="..\Src\Math\Vector2.h" />
+    <ClInclude Include="..\Src\Math\Vector3.h" />
     <ClInclude Include="..\Src\Tool\PickPointTool.h" />
     <ClInclude Include="..\Src\Tool\ThreadPool.h" />
     <ClInclude Include="..\Src\Tool\ViewTool.h" />
@@ -308,9 +307,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Consolidation.cpp" />
     <ClCompile Include="..\Src\DGP\Curvature.cpp" />
-    <ClCompile Include="..\Src\DGP\DGPDefines.cpp" />
-    <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp" />
-    <ClCompile Include="..\Src\DGP\HomoVector4.cpp" />
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp" />
     <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp" />
     <ClCompile Include="..\Src\DGP\Parser.cpp" />
@@ -320,8 +316,6 @@
     <ClCompile Include="..\Src\DGP\Relief.cpp" />
     <ClCompile Include="..\Src\DGP\Sampling.cpp" />
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
-    <ClCompile Include="..\Src\DGP\Vector2.cpp" />
-    <ClCompile Include="..\Src\DGP\Vector3.cpp" />
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
@@ -330,6 +324,10 @@
     <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp" />
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />
+    <ClCompile Include="..\Src\Math\HomoMatrix4.cpp" />
+    <ClCompile Include="..\Src\Math\HomoVector4.cpp" />
+    <ClCompile Include="..\Src\Math\Vector2.cpp" />
+    <ClCompile Include="..\Src\Math\Vector3.cpp" />
     <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>

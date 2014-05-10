@@ -35,7 +35,7 @@ namespace MagicApp
             {
                 fin >> ch;
                 int64_t time;
-                MagicDGP::Vector3 palmPos, palmVelocity;
+                MagicMath::Vector3 palmPos, palmVelocity;
                 fin >> time >> palmPos[0] >> palmPos[1] >> palmPos[2] >> palmVelocity[0] >> palmVelocity[1] >> palmVelocity[2];
                 mTimeStamp.push_back(time);
                 mPalmPos.push_back(palmPos);
@@ -47,7 +47,7 @@ namespace MagicApp
         }
     }
 
-    void LeapMotionData::GetCurrentData(MagicDGP::Vector3& palmPos, MagicDGP::Vector3& palmVelocity)
+    void LeapMotionData::GetCurrentData(MagicMath::Vector3& palmPos, MagicMath::Vector3& palmVelocity)
     {
         palmPos = mPalmPos.at(mFrameIndex);
         palmVelocity = mPalmVelocity.at(mFrameIndex);
@@ -110,7 +110,7 @@ namespace MagicApp
         {
             mSysTimeAccum += timeElapsed / 20;
             float currentTime = mLeapData.GetCurrentTimeStamp() / 1000000.f;
-            MagicDGP::Vector3 palmPos, palmVelocity;
+            MagicMath::Vector3 palmPos, palmVelocity;
             mLeapData.GetCurrentData(palmPos, palmVelocity);
             while (true)
             {
@@ -137,11 +137,11 @@ namespace MagicApp
             palmPos /= 250;
             palmPos[1] = palmPos[1] - 1.25;
             palmPos[2] = 0;
-            MagicDGP::Real velocity = palmVelocity.Length();
+            double velocity = palmVelocity.Length();
             palmVelocity /= 5000;
             palmVelocity[2] = 0;
-            std::vector<MagicDGP::Vector3> startPos, endPos;
-            startPos.push_back(MagicDGP::Vector3(0, 0, 0));
+            std::vector<MagicMath::Vector3> startPos, endPos;
+            startPos.push_back(MagicMath::Vector3(0, 0, 0));
             endPos.push_back(palmVelocity);
             MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("RenderVelocity", "SimpleLine", startPos, endPos);
             MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPos[0], palmPos[1], palmPos[2]);
@@ -352,12 +352,12 @@ namespace MagicApp
                 palmPosition.y = palmPosition.y - 1.25;
                 palmPosition.z = 0;
                 Leap::Vector palmVelocity = handList[0].palmVelocity();
-                MagicDGP::Real palmVeloValue = palmVelocity.magnitude();
+                double palmVeloValue = palmVelocity.magnitude();
                 palmVelocity /= 5000;
                 palmVelocity.z = 0;
-                std::vector<MagicDGP::Vector3> startPos, endPos;
-                startPos.push_back(MagicDGP::Vector3(0, 0, 0));
-                endPos.push_back(MagicDGP::Vector3(palmVelocity.x, palmVelocity.y, palmVelocity.z));
+                std::vector<MagicMath::Vector3> startPos, endPos;
+                startPos.push_back(MagicMath::Vector3(0, 0, 0));
+                endPos.push_back(MagicMath::Vector3(palmVelocity.x, palmVelocity.y, palmVelocity.z));
                 MagicCore::RenderSystem::GetSingleton()->RenderLineSegments("RenderVelocity", "SimpleLine", startPos, endPos);
                 MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getRootSceneNode()->setPosition(palmPosition.x, palmPosition.y, palmPosition.z);
             }

@@ -28,7 +28,7 @@ namespace MagicApp
         void FilterMesh3D();
         void CalNormalDeviation();
         void CalNormalDeviationByMT();
-        void CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
+        void CalScaleGradient(std::vector<double>& scaleField, std::vector<MagicMath::Vector3>& gradientField, 
             const MagicDGP::Mesh3D* pMesh);
         void SampleVertex();
         void DrawPrimitive(MagicDGP::ShapeCandidate* pCand);

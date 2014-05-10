@@ -1,6 +1,6 @@
 #pragma once
 #include "OIS.h"
-#include "../DGP/Vector3.h"
+#include "../Math/Vector3.h"
 
 namespace MagicTool
 {
@@ -15,7 +15,7 @@ namespace MagicTool
         ~ViewTool();
 
     private:
-        MagicDGP::Vector3 mMousePos;
+        MagicMath::Vector3 mMousePos;
         float mScale;
     };
 

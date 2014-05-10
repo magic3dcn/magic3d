@@ -6,8 +6,8 @@
 #include <vector>
 #include <set>
 #include <stdio.h>
-#include "DGPDefines.h"
 #include "../Common/ToolKit.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -49,8 +49,8 @@ namespace MagicDGP
     Point3DSet* Parser::ParsePointSetByOBJ(std::string fileName)
     {
         std::ifstream fin(fileName);
-        std::vector<Vector3> posList;
-        std::vector<Vector3> norList;
+        std::vector<MagicMath::Vector3> posList;
+        std::vector<MagicMath::Vector3> norList;
         const int maxSize = 512;
         char pLine[maxSize];
         while (fin.getline(pLine, maxSize))
@@ -60,22 +60,22 @@ namespace MagicDGP
                 if (pLine[1] == ' ' )
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 pos;
+                    MagicMath::Vector3 pos;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        pos[i] = (Real)atof(tok);
+                        pos[i] = (double)atof(tok);
                     }
                     posList.push_back(pos);
                 }
                 else if (pLine[1] == 'n')
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 nor;
+                    MagicMath::Vector3 nor;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        nor[i] = (Real)atof(tok);
+                        nor[i] = (double)atof(tok);
                     }
                     norList.push_back(nor);
                 }
@@ -86,7 +86,6 @@ namespace MagicDGP
         InfoLog << "Vertex number: " << posList.size() << " normal number: " << norList.size() << std::endl;
         if (norList.size() > 0)
         {
-            MAGICASSERT(norList.size() == posList.size(), "Error: Positino size != Normal Size in OBJ file!");
             for (int i = 0; i < posList.size(); i++)
             {
                 Point3D* point = new Point3D(posList.at(i), norList.at(i), i);
@@ -148,7 +147,7 @@ namespace MagicDGP
             fseek(fp, stlLabelSize, SEEK_SET);
             fread(&faceNum, sizeof(int), 1, fp);
             pPointSet = new Point3DSet;
-            std::set<Vector3> vertPosSet;
+            std::set<MagicMath::Vector3> vertPosSet;
             for (int fid = 0; fid < faceNum; fid++)
             {
                 unsigned short attr;
@@ -164,8 +163,8 @@ namespace MagicDGP
                     fread(&xx, sizeof(xx), 1, fp);
                     fread(&yy, sizeof(yy), 1, fp);
                     fread(&zz, sizeof(zz), 1, fp);
-                    Vector3 pos(xx, yy, zz);
-                    std::pair<std::set<Vector3>::iterator, bool> res = vertPosSet.insert( pos );
+                    MagicMath::Vector3 pos(xx, yy, zz);
+                    std::pair<std::set<MagicMath::Vector3>::iterator, bool> res = vertPosSet.insert( pos );
                     if (res.second)
                     {
                         Point3D* point = new Point3D(pos);
@@ -190,11 +189,11 @@ namespace MagicDGP
             }
             //read file
             pPointSet = new Point3DSet;
-            std::set<Vector3> vertPosSet;
+            std::set<MagicMath::Vector3> vertPosSet;
             int currentVertId = 0;
             while (!feof(fp))
             {
-                Vector3 faceNorm;
+                MagicMath::Vector3 faceNorm;
                 float xx, yy, zz;
                 int ret = fscanf(fp, "%*s %*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
@@ -208,23 +207,23 @@ namespace MagicDGP
                     ErrorLog << "error: parse position error" << std::endl;
                     return pPointSet;
                 }
-                Vector3 pos0(xx, yy, zz);
+                MagicMath::Vector3 pos0(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pPointSet;
                 }
-                Vector3 pos1(xx, yy, zz);
+                MagicMath::Vector3 pos1(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pPointSet;
                 }
-                Vector3 pos2(xx, yy, zz);
+                MagicMath::Vector3 pos2(xx, yy, zz);
 
-                std::pair<std::set<Vector3>::iterator, bool> res = vertPosSet.insert( pos0 );
+                std::pair<std::set<MagicMath::Vector3>::iterator, bool> res = vertPosSet.insert( pos0 );
                 if (res.second)
                 {
                     Point3D* point = new Point3D(pos0);
@@ -268,14 +267,14 @@ namespace MagicDGP
         Point3DSet* pPointSet = new Point3DSet;
         for (int vid = 0; vid < pointNum; vid++)
         {
-            Vector3 pos;
+            MagicMath::Vector3 pos;
             fin.getline(pLine, maxSize);
             char* tok = strtok(pLine, " ");
-            pos[0] = (Real)atof(tok);
+            pos[0] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[1] = (Real)atof(tok);
+            pos[1] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[2] = (Real)atof(tok);
+            pos[2] = (double)atof(tok);
             Point3D* point = new Point3D(pos);
             pPointSet->InsertPoint(point);
         }
@@ -344,8 +343,8 @@ namespace MagicDGP
         const int maxSize = 512;
         char pLine[maxSize];
         Mesh3D* pMesh = new Mesh3D;
-        std::vector<Vector3> normalList;
-        std::vector<Vector3> texcordList;
+        std::vector<MagicMath::Vector3> normalList;
+        std::vector<MagicMath::Vector3> texcordList;
         while (fin.getline(pLine, maxSize))
         {
             if (pLine[0] == 'v')
@@ -353,33 +352,33 @@ namespace MagicDGP
                 if (pLine[1] == ' ' )
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 pos;
+                    MagicMath::Vector3 pos;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        pos[i] = (Real)atof(tok);
+                        pos[i] = (double)atof(tok);
                     }
                     pMesh->InsertVertex(pos);
                 }
                 else if (pLine[1] == 'n')
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 nor;
+                    MagicMath::Vector3 nor;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        nor[i] = (Real)atof(tok);
+                        nor[i] = (double)atof(tok);
                     }
                     normalList.push_back(nor);
                 }
                 else if (pLine[1] == 't')
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 tex;
+                    MagicMath::Vector3 tex;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        tex[i] = (Real)atof(tok);
+                        tex[i] = (double)atof(tok);
                     }
                     texcordList.push_back(tex);
                 }
@@ -464,7 +463,7 @@ namespace MagicDGP
             fseek(fp, stlLabelSize, SEEK_SET);
             fread(&faceNum, sizeof(int), 1, fp);
             pMesh = new Mesh3D;
-            std::map<Vector3, int> vertPosMap;
+            std::map<MagicMath::Vector3, int> vertPosMap;
             int currentVertId = 0;
             for (int fid = 0; fid < faceNum; fid++)
             {
@@ -475,14 +474,14 @@ namespace MagicDGP
                 fread(&yy, sizeof(yy), 1, fp);
                 fread(&zz, sizeof(zz), 1, fp);
                 //read face position
-                Vector3 pos[3];
-                std::set<Vector3> validVertex;
+                MagicMath::Vector3 pos[3];
+                std::set<MagicMath::Vector3> validVertex;
                 for (int vid = 0; vid < 3; vid++)
                 {
                     fread(&xx, sizeof(xx), 1, fp);
                     fread(&yy, sizeof(yy), 1, fp);
                     fread(&zz, sizeof(zz), 1, fp);
-                    pos[vid] = Vector3(xx, yy, zz);
+                    pos[vid] = MagicMath::Vector3(xx, yy, zz);
                     validVertex.insert(pos[vid]);
                 }
                 if (validVertex.size() != 3)
@@ -497,9 +496,9 @@ namespace MagicDGP
                         /*fread(&xx, sizeof(xx), 1, fp);
                         fread(&yy, sizeof(yy), 1, fp);
                         fread(&zz, sizeof(zz), 1, fp);
-                        Vector3 pos(xx, yy, zz);*/
-                        std::pair<std::map<Vector3, int>::iterator, bool> mapRes 
-                            = vertPosMap.insert( std::pair<Vector3, int>(pos[vid], currentVertId) );
+                        MagicMath::Vector3 pos(xx, yy, zz);*/
+                        std::pair<std::map<MagicMath::Vector3, int>::iterator, bool> mapRes 
+                            = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos[vid], currentVertId) );
                         if (mapRes.second)
                         {
                             vertList.at(vid) = pMesh->InsertVertex(pos[vid]);
@@ -531,11 +530,11 @@ namespace MagicDGP
             }
             //read file
             pMesh = new Mesh3D;
-            std::map<Vector3, int> vertPosMap;
+            std::map<MagicMath::Vector3, int> vertPosMap;
             int currentVertId = 0;
             while (!feof(fp))
             {
-                Vector3 faceNorm;
+                MagicMath::Vector3 faceNorm;
                 float xx, yy, zz;
                 int ret = fscanf(fp, "%*s %*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
@@ -549,23 +548,23 @@ namespace MagicDGP
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos0(xx, yy, zz);
+                MagicMath::Vector3 pos0(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos1(xx, yy, zz);
+                MagicMath::Vector3 pos1(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos2(xx, yy, zz);
+                MagicMath::Vector3 pos2(xx, yy, zz);
                 //judge whether it is a valid face.
-                std::set<Vector3> validVertex;
+                std::set<MagicMath::Vector3> validVertex;
                 validVertex.insert(pos0);
                 validVertex.insert(pos1);
                 validVertex.insert(pos2);
@@ -576,7 +575,7 @@ namespace MagicDGP
                 else
                 {
                     std::vector<Vertex3D* > vertList(3);
-                    std::pair<std::map<Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos0, currentVertId) );
+                    std::pair<std::map<MagicMath::Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos0, currentVertId) );
                     if (mapRes.second)
                     {
                         vertList.at(0) = pMesh->InsertVertex(pos0);
@@ -586,7 +585,7 @@ namespace MagicDGP
                     {
                         vertList.at(0) = pMesh->GetVertex(vertPosMap[pos0]);
                     }
-                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos1, currentVertId) );
+                    mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos1, currentVertId) );
                     if (mapRes.second)
                     {
                         vertList.at(1) = pMesh->InsertVertex(pos1);
@@ -596,7 +595,7 @@ namespace MagicDGP
                     {
                         vertList.at(1) = pMesh->GetVertex(vertPosMap[pos1]);
                     }
-                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos2, currentVertId) );
+                    mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos2, currentVertId) );
                     if (mapRes.second)
                     {
                         vertList.at(2) = pMesh->InsertVertex(pos2);
@@ -634,14 +633,14 @@ namespace MagicDGP
         Mesh3D* pMesh = new Mesh3D;
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Vector3 pos;
+            MagicMath::Vector3 pos;
             fin.getline(pLine, maxSize);
             char* tok = strtok(pLine, " ");
-            pos[0] = (Real)atof(tok);
+            pos[0] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[1] = (Real)atof(tok);
+            pos[1] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[2] = (Real)atof(tok);
+            pos[2] = (double)atof(tok);
             pMesh->InsertVertex(pos);
         }
         for (int fid = 0; fid < faceNum; fid++)
@@ -671,8 +670,8 @@ namespace MagicDGP
         const int maxSize = 512;
         char pLine[maxSize];
         LightMesh3D* pMesh = new LightMesh3D;
-        std::vector<Vector3> normalList;
-        std::vector<Vector3> texcordList;
+        std::vector<MagicMath::Vector3> normalList;
+        std::vector<MagicMath::Vector3> texcordList;
         while (fin.getline(pLine, maxSize))
         {
             if (pLine[0] == 'v')
@@ -680,33 +679,33 @@ namespace MagicDGP
                 if (pLine[1] == ' ' )
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 pos;
+                    MagicMath::Vector3 pos;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        pos[i] = (Real)atof(tok);
+                        pos[i] = (double)atof(tok);
                     }
                     pMesh->InsertVertex(pos);
                 }
                 else if (pLine[1] == 'n')
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 nor;
+                    MagicMath::Vector3 nor;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        nor[i] = (Real)atof(tok);
+                        nor[i] = (double)atof(tok);
                     }
                     normalList.push_back(nor);
                 }
                 else if (pLine[1] == 't')
                 {
                     char* tok = strtok(pLine, " ");
-                    Vector3 tex;
+                    MagicMath::Vector3 tex;
                     for (int i = 0; i < 3; i++)
                     {
                         tok = strtok(NULL, " ");
-                        tex[i] = (Real)atof(tok);
+                        tex[i] = (double)atof(tok);
                     }
                     texcordList.push_back(tex);
                 }
@@ -790,7 +789,7 @@ namespace MagicDGP
             fseek(fp, stlLabelSize, SEEK_SET);
             fread(&faceNum, sizeof(int), 1, fp);
             pMesh = new LightMesh3D;
-            std::map<Vector3, int> vertPosMap;
+            std::map<MagicMath::Vector3, int> vertPosMap;
             int currentVertId = 0;
             for (int fid = 0; fid < faceNum; fid++)
             {
@@ -801,14 +800,14 @@ namespace MagicDGP
                 fread(&yy, sizeof(yy), 1, fp);
                 fread(&zz, sizeof(zz), 1, fp);
                 //read face position
-                Vector3 pos[3];
-                std::set<Vector3> validVertex;
+                MagicMath::Vector3 pos[3];
+                std::set<MagicMath::Vector3> validVertex;
                 for (int vid = 0; vid < 3; vid++)
                 {
                     fread(&xx, sizeof(xx), 1, fp);
                     fread(&yy, sizeof(yy), 1, fp);
                     fread(&zz, sizeof(zz), 1, fp);
-                    pos[vid] = Vector3(xx, yy, zz);
+                    pos[vid] = MagicMath::Vector3(xx, yy, zz);
                     validVertex.insert(pos[vid]);
                 }
                 if (validVertex.size() != 3)
@@ -820,8 +819,8 @@ namespace MagicDGP
                     FaceIndex faceIdx;
                     for (int vid = 0; vid < 3; vid++)
                     {
-                        std::pair<std::map<Vector3, int>::iterator, bool> mapRes 
-                            = vertPosMap.insert( std::pair<Vector3, int>(pos[vid], currentVertId) );
+                        std::pair<std::map<MagicMath::Vector3, int>::iterator, bool> mapRes 
+                            = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos[vid], currentVertId) );
                         if (mapRes.second)
                         {
                             Vertex3D* pNewVert = pMesh->InsertVertex(pos[vid]);
@@ -854,11 +853,11 @@ namespace MagicDGP
             }
             //read file
             pMesh = new LightMesh3D;
-            std::map<Vector3, int> vertPosMap;
+            std::map<MagicMath::Vector3, int> vertPosMap;
             int currentVertId = 0;
             while (!feof(fp))
             {
-                Vector3 faceNorm;
+                MagicMath::Vector3 faceNorm;
                 float xx, yy, zz;
                 int ret = fscanf(fp, "%*s %*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
@@ -872,23 +871,23 @@ namespace MagicDGP
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos0(xx, yy, zz);
+                MagicMath::Vector3 pos0(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos1(xx, yy, zz);
+                MagicMath::Vector3 pos1(xx, yy, zz);
                 ret = fscanf(fp, "%*s %f %f %f\n", &xx, &yy, &zz);
                 if (ret != 3)
                 {
                     ErrorLog << "error: parse position error" << std::endl;
                     return pMesh;
                 }
-                Vector3 pos2(xx, yy, zz);
+                MagicMath::Vector3 pos2(xx, yy, zz);
                 //judge whether it is a valid face.
-                std::set<Vector3> validVertex;
+                std::set<MagicMath::Vector3> validVertex;
                 validVertex.insert(pos0);
                 validVertex.insert(pos1);
                 validVertex.insert(pos2);
@@ -900,7 +899,7 @@ namespace MagicDGP
                 {
                     FaceIndex faceIdx;
                     //std::vector<Vertex3D* > vertList(3);
-                    std::pair<std::map<Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos0, currentVertId) );
+                    std::pair<std::map<MagicMath::Vector3, int>::iterator, bool> mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos0, currentVertId) );
                     if (mapRes.second)
                     {
                         Vertex3D* pNewVert = pMesh->InsertVertex(pos0);
@@ -911,7 +910,7 @@ namespace MagicDGP
                     {
                         faceIdx.mIndex[0] = vertPosMap[pos0];
                     }
-                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos1, currentVertId) );
+                    mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos1, currentVertId) );
                     if (mapRes.second)
                     {
                         Vertex3D* pNewVert = pMesh->InsertVertex(pos1);
@@ -922,7 +921,7 @@ namespace MagicDGP
                     {
                         faceIdx.mIndex[1] = vertPosMap[pos1];
                     }
-                    mapRes = vertPosMap.insert( std::pair<Vector3, int>(pos2, currentVertId) );
+                    mapRes = vertPosMap.insert( std::pair<MagicMath::Vector3, int>(pos2, currentVertId) );
                     if (mapRes.second)
                     {
                         Vertex3D* pNewVert = pMesh->InsertVertex(pos2);
@@ -961,14 +960,14 @@ namespace MagicDGP
         LightMesh3D* pMesh = new LightMesh3D;
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Vector3 pos;
+            MagicMath::Vector3 pos;
             fin.getline(pLine, maxSize);
             char* tok = strtok(pLine, " ");
-            pos[0] = (Real)atof(tok);
+            pos[0] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[1] = (Real)atof(tok);
+            pos[1] = (double)atof(tok);
             tok = strtok(NULL, " ");
-            pos[2] = (Real)atof(tok);
+            pos[2] = (double)atof(tok);
             pMesh->InsertVertex(pos);
         }
         for (int fid = 0; fid < faceNum; fid++)
@@ -1028,8 +1027,8 @@ namespace MagicDGP
             for (int i = 0; i < pcNum; i++)
             {
                 const Point3D* pPoint = pPC->GetPoint(i);
-                Vector3 pos = pPoint->GetPosition();
-                Vector3 nor = pPoint->GetNormal();
+                MagicMath::Vector3 pos = pPoint->GetPosition();
+                MagicMath::Vector3 nor = pPoint->GetNormal();
                 fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
                 fout << "vn " << nor[0] << " " << nor[1] << " " << nor[2] << std::endl;
             }
@@ -1039,7 +1038,7 @@ namespace MagicDGP
             for (int i = 0; i < pcNum; i++)
             {
                 const Point3D* pPoint = pPC->GetPoint(i);
-                Vector3 pos = pPoint->GetPosition();
+                MagicMath::Vector3 pos = pPoint->GetPosition();
                 fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << std::endl;
             }
         }
@@ -1063,7 +1062,7 @@ namespace MagicDGP
         fout << "end_header" << "\n";
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 pos = pPC->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 pos = pPC->GetPoint(i)->GetPosition();
             fout << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
         }
         fout.close();
@@ -1078,7 +1077,7 @@ namespace MagicDGP
         fout << pointNum << " " << 0 << " " << 0 << "\n";
         for (int vid = 0; vid < pointNum; vid++)
         {
-            Vector3 pos = pPC->GetPoint(vid)->GetPosition();
+            MagicMath::Vector3 pos = pPC->GetPoint(vid)->GetPosition();
             fout << pos[0] << "  " << pos[1] << " " << pos[2] << "\n"; 
         }
         fout.close();
@@ -1149,7 +1148,7 @@ namespace MagicDGP
         int vertNum = pMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {
-            Vector3 pos = pMesh->GetVertex(i)->GetPosition();
+            MagicMath::Vector3 pos = pMesh->GetVertex(i)->GetPosition();
             fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
         }
         int faceNum = pMesh->GetFaceNumber();
@@ -1171,10 +1170,10 @@ namespace MagicDGP
         for (int fid = 0; fid < faceNum; fid++)
         {
             const Edge3D* pEdge = pMesh->GetFace(fid)->GetEdge();
-            Vector3 pos0 = pEdge->GetVertex()->GetPosition();
-            Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
-            Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
-            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            MagicMath::Vector3 pos0 = pEdge->GetVertex()->GetPosition();
+            MagicMath::Vector3 pos1 = pEdge->GetNext()->GetVertex()->GetPosition();
+            MagicMath::Vector3 pos2 = pEdge->GetPre()->GetVertex()->GetPosition();
+            MagicMath::Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
             nor.Normalise();
             fout << "  facet normal " << nor[0] << " " << nor[1] << " " << nor[2] << "\n";
             fout << "    outer loop" << "\n";
@@ -1198,7 +1197,7 @@ namespace MagicDGP
         fout << vertNum << " " << faceNum << " " << 0 << "\n";
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Vector3 pos = pMesh->GetVertex(vid)->GetPosition();
+            MagicMath::Vector3 pos = pMesh->GetVertex(vid)->GetPosition();
             fout << pos[0] << "  " << pos[1] << " " << pos[2] << "\n"; 
         }
         for (int fid = 0; fid < faceNum; fid++)
@@ -1217,7 +1216,7 @@ namespace MagicDGP
         int vertNum = pMesh->GetVertexNumber();
         for (int i = 0; i < vertNum; i++)
         {
-            Vector3 pos = pMesh->GetVertex(i)->GetPosition();
+            MagicMath::Vector3 pos = pMesh->GetVertex(i)->GetPosition();
             fout << "v " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
         }
         int faceNum = pMesh->GetFaceNumber();
@@ -1239,10 +1238,10 @@ namespace MagicDGP
         for (int fid = 0; fid < faceNum; fid++)
         {
             FaceIndex faceIdx = pMesh->GetFace(fid);
-            Vector3 pos0 = pMesh->GetVertex(faceIdx.mIndex[0])->GetPosition();
-            Vector3 pos1 = pMesh->GetVertex(faceIdx.mIndex[1])->GetPosition();
-            Vector3 pos2 = pMesh->GetVertex(faceIdx.mIndex[2])->GetPosition();
-            Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            MagicMath::Vector3 pos0 = pMesh->GetVertex(faceIdx.mIndex[0])->GetPosition();
+            MagicMath::Vector3 pos1 = pMesh->GetVertex(faceIdx.mIndex[1])->GetPosition();
+            MagicMath::Vector3 pos2 = pMesh->GetVertex(faceIdx.mIndex[2])->GetPosition();
+            MagicMath::Vector3 nor = (pos1 - pos0).CrossProduct(pos2 - pos0);
             nor.Normalise();
             fout << "  facet normal " << nor[0] << " " << nor[1] << " " << nor[2] << "\n";
             fout << "    outer loop" << "\n";
@@ -1266,7 +1265,7 @@ namespace MagicDGP
         fout << vertNum << " " << faceNum << " " << 0 << "\n";
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Vector3 pos = pMesh->GetVertex(vid)->GetPosition();
+            MagicMath::Vector3 pos = pMesh->GetVertex(vid)->GetPosition();
             fout << pos[0] << "  " << pos[1] << " " << pos[2] << "\n"; 
         }
         for (int fid = 0; fid < faceNum; fid++)

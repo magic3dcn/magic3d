@@ -16,7 +16,7 @@ namespace MagicDGP
 
     struct PrimitiveScore
     {
-        Real mScore[4];
+        double mScore[4];
 
         PrimitiveScore()
         {
@@ -43,17 +43,17 @@ namespace MagicDGP
         int GetSupportNum();
         std::vector<int>& GetSupportVertex();
         void SetSupportVertex(const std::vector<int>& supportVertex);
-        Real GetSupportArea();
-        void UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-        Real GetScore();
-        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList) = 0;
+        double GetSupportArea();
+        void UpdateSupportArea(const Mesh3D* pMesh, std::vector<double>& vertWeightList);
+        double GetScore();
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList) = 0;
         bool HasRefit() const;
     protected:
         std::vector<int> mSupportVertex;
         PrimitiveType mType;
-        Real mScore;
+        double mScore;
         bool mRemoved;
-        Real mSupportArea;
+        double mSupportArea;
         bool mHasRefit;
     };
 
@@ -68,12 +68,12 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList);
     public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
-        Vector3 mCenter, mNormal;
+        MagicMath::Vector3 mCenter, mNormal;
 
     };
 
@@ -88,12 +88,12 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList);
     public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
-        Vector3 mCenter;
-        Real mRadius;
+        MagicMath::Vector3 mCenter;
+        double mRadius;
     };
 
     class CylinderCandidate : public ShapeCandidate
@@ -107,14 +107,14 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList);
         void Rectify(const Mesh3D* pMesh);
     public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
-        Vector3 mCenter;
-        Real mRadius;
-        Vector3 mDir;
+        MagicMath::Vector3 mCenter;
+        double mRadius;
+        MagicMath::Vector3 mDir;
     };
 
     class ConeCandidate : public ShapeCandidate
@@ -128,14 +128,14 @@ namespace MagicDGP
         virtual int Refitting(const Mesh3D* pMesh, std::vector<int>& resFlag);
         virtual bool FitParameter(const Mesh3D* pMesh);
         virtual PrimitiveType GetType();
-        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList);
+        virtual void UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList);
     public:
         const Vertex3D* mpVert0;
         const Vertex3D* mpVert1;
         const Vertex3D* mpVert2;
-        Vector3 mApex;
-        Vector3 mDir;
-        Real mAngle;
+        MagicMath::Vector3 mApex;
+        MagicMath::Vector3 mDir;
+        double mAngle;
     };
 
     class PrimitiveDetection
@@ -153,32 +153,32 @@ namespace MagicDGP
         static ShapeCandidate* Primitive2DSelectionByVertexSampling(Mesh3D* pMesh, int selectIndex, std::vector<int>& res);
     
     private:
-        static void CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList);
-        static bool SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& featureScores,
-            std::vector<int>& sampleIndex, int sampleNum, Real validProportion);
+        static void CalVertexWeight(Mesh3D* pMesh, std::vector<double>& vertWeightList);
+        static bool SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& featureScores,
+            std::vector<int>& sampleIndex, int sampleNum, double validProportion);
         static void SampleNeighborVertex(const Mesh3D* pMesh, std::vector<int>& neighborList, std::vector<int>& sampleNeigbors);
         static bool AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList);
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList);
         static bool AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
-            std::vector<Real>& featureScores, std::vector<int>& sampleIndex);
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList, 
+            std::vector<double>& featureScores, std::vector<int>& sampleIndex);
         static bool AddNewCandidatesByScore(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
-            std::vector<Real>& featureScores, std::vector<int>& sampleIndex);
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList, 
+            std::vector<double>& featureScores, std::vector<int>& sampleIndex);
         static bool IsCandidateAcceptable(int index, std::vector<ShapeCandidate* >& candidates);
         static void RemoveAcceptableCandidate(std::vector<ShapeCandidate* >& candidates, const std::vector<int>& res);
         static void ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials);
         static int ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates);
         static bool UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res);
-        static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, Real acceptScale);
-        static bool UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, Real scoreScale);
+        static bool UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, double acceptScale);
+        static bool UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, double scoreScale);
         static void CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features);
-        static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
-        static void CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
+        static void CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<double>& scores);
+        static void CalScaleGradient(std::vector<double>& scaleField, std::vector<MagicMath::Vector3>& gradientField, 
             const MagicDGP::Mesh3D* pMesh);
-        static void CalFeatureScoreByGradient(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores);
-        static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
-            Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<Real>& vertWeightList);
+        static void CalFeatureScoreByGradient(Mesh3D* pMesh, std::vector<int>& features, std::vector<double>& scores);
+        static int RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<double, int>& refitedPotentials,
+            Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<double>& vertWeightList);
     };
 
 }

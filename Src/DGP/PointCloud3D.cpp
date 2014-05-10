@@ -13,7 +13,7 @@ namespace MagicDGP
     {
     }
 
-    Point3D::Point3D(const Vector3& pos) : 
+    Point3D::Point3D(const MagicMath::Vector3& pos) : 
         mPosition(pos),
         mNormal(0, 0, 0),
         mColor(0.09, 0.48627, 0.69),
@@ -22,7 +22,7 @@ namespace MagicDGP
     {
     }
 
-    Point3D::Point3D(const Vector3& pos, const Vector3& nor) : 
+    Point3D::Point3D(const MagicMath::Vector3& pos, const MagicMath::Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
         mColor(0.09, 0.48627, 0.69),
@@ -31,7 +31,7 @@ namespace MagicDGP
     {
     }
 
-    Point3D::Point3D(const Vector3& pos, int id) :
+    Point3D::Point3D(const MagicMath::Vector3& pos, int id) :
         mPosition(pos),
         mNormal(0, 0, 0),
         mColor(0.09, 0.48627, 0.69),
@@ -40,7 +40,7 @@ namespace MagicDGP
     {
     }
 
-    Point3D::Point3D(const Vector3& pos, const Vector3& nor, int id) : 
+    Point3D::Point3D(const MagicMath::Vector3& pos, const MagicMath::Vector3& nor, int id) : 
         mPosition(pos),
         mNormal(nor),
         mColor(0.09, 0.48627, 0.69),
@@ -53,32 +53,32 @@ namespace MagicDGP
     {
     }
 
-    void Point3D::SetPosition(const Vector3& pos)
+    void Point3D::SetPosition(const MagicMath::Vector3& pos)
     {
         mPosition = pos;
     }
 
-    Vector3 Point3D::GetPosition() const
+    MagicMath::Vector3 Point3D::GetPosition() const
     {
         return mPosition;
     }
 
-    void Point3D::SetNormal(const Vector3& nor)
+    void Point3D::SetNormal(const MagicMath::Vector3& nor)
     {
         mNormal = nor;
     }
 
-    Vector3 Point3D::GetNormal() const
+    MagicMath::Vector3 Point3D::GetNormal() const
     {
         return mNormal;
     }
 
-    void Point3D::SetColor(const Vector3& color)
+    void Point3D::SetColor(const MagicMath::Vector3& color)
     {
         mColor = color;
     }
 
-    Vector3 Point3D::GetColor() const
+    MagicMath::Vector3 Point3D::GetColor() const
     {
         return mColor;
     }
@@ -153,13 +153,13 @@ namespace MagicDGP
         }
     }
 
-    void Point3DSet::UnifyPosition(Real size)
+    void Point3DSet::UnifyPosition(double size)
     {
-        Vector3 posMin(10e10, 10e10, 10e10);
-        Vector3 posMax(-10e10, -10e10, -10e10);
+        MagicMath::Vector3 posMin(10e10, 10e10, 10e10);
+        MagicMath::Vector3 posMax(-10e10, -10e10, -10e10);
         for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
         {
-            Vector3 pos = (*itr)->GetPosition();
+            MagicMath::Vector3 pos = (*itr)->GetPosition();
             posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
             posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
             posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
@@ -167,8 +167,8 @@ namespace MagicDGP
             posMax[1] = posMax[1] > pos[1] ? posMax[1] : pos[1];
             posMax[2] = posMax[2] > pos[2] ? posMax[2] : pos[2];
         }
-        Vector3 scale3 = posMax - posMin;
-        Real scaleMax = scale3[0];
+        MagicMath::Vector3 scale3 = posMax - posMin;
+        double scaleMax = scale3[0];
         if (scaleMax < scale3[1])
         {
             scaleMax = scale3[1];
@@ -177,17 +177,17 @@ namespace MagicDGP
         {
             scaleMax = scale3[2];
         }
-        if (scaleMax > Epsilon)
+        if (scaleMax > 1.0e-15)
         {
-            Real scaleV = size / scaleMax;
-            Vector3 centerPos = (posMin + posMax) / 2.0;
+            double scaleV = size / scaleMax;
+            MagicMath::Vector3 centerPos = (posMin + posMax) / 2.0;
             for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
             {
                 (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
             }
         }
-        mBBoxMin = Vector3(-size, -size, -size);
-        mBBoxMax = Vector3(size, size, size);
+        mBBoxMin = MagicMath::Vector3(-size, -size, -size);
+        mBBoxMax = MagicMath::Vector3(size, size, size);
     }
 
     void Point3DSet::InsertPoint(Point3D* pPoint)
@@ -201,7 +201,7 @@ namespace MagicDGP
         return mPointSet.size();
     }
 
-    void Point3DSet::SetColor(Vector3 color)
+    void Point3DSet::SetColor(MagicMath::Vector3 color)
     {
         for (std::vector<Point3D* >::iterator itr = mPointSet.begin(); itr != mPointSet.end(); ++itr)
         {
@@ -211,14 +211,14 @@ namespace MagicDGP
 
     void Point3DSet::CalculateBBox()
     {
-        Vector3 posTemp = mPointSet.at(0)->GetPosition();
+        MagicMath::Vector3 posTemp = mPointSet.at(0)->GetPosition();
         mBBoxMin[0] = mBBoxMax[0] = posTemp[0];
         mBBoxMin[1] = mBBoxMax[1] = posTemp[1];
         mBBoxMin[2] = mBBoxMax[2] = posTemp[2];
         int pointNum = mPointSet.size();
         for (int i = 0; i < pointNum; i++)
         {
-            Vector3 pos = mPointSet.at(i)->GetPosition();
+            MagicMath::Vector3 pos = mPointSet.at(i)->GetPosition();
             for (int k = 0; k < 3; k++)
             {
                 if (mBBoxMin[k] > pos[k])
@@ -231,17 +231,15 @@ namespace MagicDGP
                 }
             }
         }
-        DebugLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
-            << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 
-    void Point3DSet::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const
+    void Point3DSet::GetBBox(MagicMath::Vector3& bboxMin, MagicMath::Vector3& bboxMax) const
     {
         bboxMin = mBBoxMin;
         bboxMax = mBBoxMax;
     }
 
-    Real Point3DSet::GetDensity() const
+    double Point3DSet::GetDensity() const
     {
         return mDensity;
     }
@@ -256,7 +254,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < pointNum; i++)
         {
-            Vector3 pos = mPointSet.at(i)->GetPosition();
+            MagicMath::Vector3 pos = mPointSet.at(i)->GetPosition();
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -290,7 +288,6 @@ namespace MagicDGP
             }
         }
         mDensity /= (pointNum * nn);
-        DebugLog << "Point Cloud Density: " << mDensity << std::endl;
         if (pIndex != NULL)
         {
             delete []pIndex;

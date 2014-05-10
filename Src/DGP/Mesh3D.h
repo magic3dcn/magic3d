@@ -1,5 +1,5 @@
 #pragma once
-#include "Vector3.h"
+#include "../Math/Vector3.h"
 #include <vector>
 #include <map>
 
@@ -16,18 +16,18 @@ namespace MagicDGP
     {
     public:
         Vertex3D();
-        Vertex3D(const Vector3& pos);
-        Vertex3D(const Vector3& pos, const Vector3& nor);
+        Vertex3D(const MagicMath::Vector3& pos);
+        Vertex3D(const MagicMath::Vector3& pos, const MagicMath::Vector3& nor);
         ~Vertex3D();
 
-        Vector3 GetPosition() const;
-        void    SetPosition(const Vector3& pos);
-        Vector3 GetNormal() const;
-        void    SetNormal(const Vector3& nor);
-        Vector3 GetTexCord() const;
-        void    SetTexCord(const Vector3& tex);
-        Vector3 GetColor() const;
-        void    SetColor(const Vector3& color);
+        MagicMath::Vector3 GetPosition() const;
+        void    SetPosition(const MagicMath::Vector3& pos);
+        MagicMath::Vector3 GetNormal() const;
+        void    SetNormal(const MagicMath::Vector3& nor);
+        MagicMath::Vector3 GetTexCord() const;
+        void    SetTexCord(const MagicMath::Vector3& tex);
+        MagicMath::Vector3 GetColor() const;
+        void    SetColor(const MagicMath::Vector3& color);
         Edge3D* GetEdge();
         const Edge3D* GetEdge() const;
         void    SetEdge(Edge3D* pEdge);
@@ -39,10 +39,10 @@ namespace MagicDGP
         BoundaryType GetBoundaryType() const;
 
     private:
-        Vector3 mPosition;
-        Vector3 mNormal;
-        Vector3 mTexCord;
-        Vector3 mColor;
+        MagicMath::Vector3 mPosition;
+        MagicMath::Vector3 mNormal;
+        MagicMath::Vector3 mTexCord;
+        MagicMath::Vector3 mColor;
         Edge3D* mpEdge;
         int     mId;
         bool    mValid;
@@ -99,10 +99,10 @@ namespace MagicDGP
         Edge3D* GetEdge();
         const Edge3D* GetEdge() const;
         void    SetEdge(Edge3D* pEdge);
-        Vector3 GetNormal() const;
-        void    SetNormal(const Vector3& nor);
+        MagicMath::Vector3 GetNormal() const;
+        void    SetNormal(const MagicMath::Vector3& nor);
         void    CalArea();
-        Real    GetArea() const;
+        double    GetArea() const;
         int     GetId() const;
         void    SetId(int id);
         void    SetValid(bool valid);
@@ -110,8 +110,8 @@ namespace MagicDGP
 
     private:
         Edge3D* mpEdge;
-        Vector3 mNormal;
-        Real    mArea;
+        MagicMath::Vector3 mNormal;
+        double    mArea;
         int     mId;
         bool    mValid;
     };
@@ -136,14 +136,14 @@ namespace MagicDGP
         int GetEdgeNumber() const;
         int GetFaceNumber() const;
 
-        Vertex3D* InsertVertex(const Vector3& pos);
+        Vertex3D* InsertVertex(const MagicMath::Vector3& pos);
         Edge3D*   InsertEdge(Vertex3D* pVertStart, Vertex3D* pVertEnd);
         Face3D*   InsertFace(const std::vector<Vertex3D* >& vertList);
 
-        void UnifyPosition(Real size);
+        void UnifyPosition(double size);
         void UpdateNormal();
         void UpdateBoundaryFlag();
-        void GetBBox(Vector3& bboxMin, Vector3& bboxMax) const;
+        void GetBBox(MagicMath::Vector3& bboxMin, MagicMath::Vector3& bboxMax) const;
         void CalculateBBox();
         void CalculateFaceArea();
         void ClearData();
@@ -153,7 +153,7 @@ namespace MagicDGP
         std::vector<Edge3D* >   mEdgeList;
         std::vector<Face3D* >   mFaceList;
         std::map<std::pair<Vertex3D*, Vertex3D*>, Edge3D* > mEdgeMap; //Only used in construct mesh
-        Vector3 mBBoxMin, mBBoxMax;
+        MagicMath::Vector3 mBBoxMin, mBBoxMax;
     };
 
     struct FaceIndex
@@ -173,10 +173,10 @@ namespace MagicDGP
         int GetVertexNumber() const;
         int GetFaceNumber() const;
 
-        Vertex3D* InsertVertex(const Vector3& pos);
+        Vertex3D* InsertVertex(const MagicMath::Vector3& pos);
         void InsertFace(const FaceIndex& fi);
 
-        void UnifyPosition(Real size);
+        void UnifyPosition(double size);
         void UpdateNormal();
         void ClearData();
 

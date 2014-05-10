@@ -13,9 +13,9 @@ namespace MagicDGP
         static void CalPointSetNormal(Point3DSet* pPointSet);
         static bool RedressPointSetNormal(Point3DSet* pPointSet);
 
-        static Mesh3D* RemoveSmallMeshPatch(Mesh3D* pMesh, Real proportion);
-        static LightMesh3D* RemoveSmallMeshPatch(LightMesh3D* pMesh, Real proportion);
-        static Point3DSet* RemovePointSetOutlier(Point3DSet* pPS, Real proportion);
+        static Mesh3D* RemoveSmallMeshPatch(Mesh3D* pMesh, double proportion);
+        static LightMesh3D* RemoveSmallMeshPatch(LightMesh3D* pMesh, double proportion);
+        static Point3DSet* RemovePointSetOutlier(Point3DSet* pPS, double proportion);
 
         static void SimpleMeshSmooth(Mesh3D* pMesh);
         static void SimpleMeshSmooth(LightMesh3D* pMesh);

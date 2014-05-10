@@ -316,8 +316,8 @@ namespace MagicApp
             for (int wid = 0; wid < imgW; wid++)
             {
                 unsigned char* pixel = mDisplayImage.ptr(hid, wid);
-                MagicDGP::Vector3 pos(pixel[2], pixel[1], pixel[0]);
-                MagicDGP::Vector3 color(pixel[2] / 255.0, pixel[1] / 255.0, pixel[0] / 255.0);
+                MagicMath::Vector3 pos(pixel[2], pixel[1], pixel[0]);
+                MagicMath::Vector3 color(pixel[2] / 255.0, pixel[1] / 255.0, pixel[0] / 255.0);
                 MagicDGP::Point3D* pPoint = new MagicDGP::Point3D(pos);
                 pPoint->SetColor(color);
                 mpPointSet->InsertPoint(pPoint);

@@ -3,6 +3,7 @@
 #include "Eigen/Dense"
 //#include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -26,7 +27,7 @@ namespace MagicDGP
         }
     }
 
-    void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes)
+    void Registration::ICPRegistrate(const Point3DSet* pRef, Point3DSet* pOrigin, const MagicMath::HomoMatrix4* pTransInit, MagicMath::HomoMatrix4* pTransRes)
     {
         int iterNum = 10;
         *pTransRes = *pTransInit;
@@ -42,7 +43,7 @@ namespace MagicDGP
             ICPFindCorrespondance(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
             float timeMinimize = MagicCore::ToolKit::GetTime();
-            HomoMatrix4 transDelta;
+            MagicMath::HomoMatrix4 transDelta;
             ICPEnergyMinimization(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex, &transDelta);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
             //*pTransRes *= transDelta;
@@ -96,15 +97,15 @@ namespace MagicDGP
         startIndex = startIndex % deltaSize;
 
         //int pcNum = pPC->GetPointNumber();
-        //std::map<Real, int> normalDistribute;
+        //std::map<double, int> normalDistribute;
         //for (int i = 0; i < pcNum; i++)
         //{
-        //    Vector3 nor = pPC->GetPoint(i)->GetNormal();
+        //    MagicMath::Vector3 nor = pPC->GetPoint(i)->GetNormal();
         //    normalDistribute[nor[2]] = i;
         //}
         //int sampleNum = 1000;
         //int currentNum = 0;
-        //for (std::map<Real, int>::iterator itr = normalDistribute.begin(); itr != normalDistribute.end(); ++itr)
+        //for (std::map<double, int>::iterator itr = normalDistribute.begin(); itr != normalDistribute.end(); ++itr)
         //{
         //    sampleIndex.push_back(itr->second);
         //    currentNum++;
@@ -114,11 +115,11 @@ namespace MagicDGP
         //    }
         //}
 
-        //std::vector<Vector3> startPos, endPos;
+        //std::vector<MagicMath::Vector3> startPos, endPos;
         //for (int i = 0; i < sampleIndex.size(); i++)
         //{
-        //    Vector3 pos = pPC->GetPoint(sampleIndex.at(i))->GetPosition();
-        //    Vector3 nor = pPC->GetPoint(sampleIndex.at(i))->GetNormal();
+        //    MagicMath::Vector3 pos = pPC->GetPoint(sampleIndex.at(i))->GetPosition();
+        //    MagicMath::Vector3 nor = pPC->GetPoint(sampleIndex.at(i))->GetNormal();
         //    startPos.push_back(pos);
         //    endPos.push_back(pos + nor * 50);
         //}
@@ -134,7 +135,7 @@ namespace MagicDGP
         mDataSet = new float[refNum * dim];
         for (int i = 0; i < refNum; i++)
         {
-            Vector3 pos = pRef->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 pos = pRef->GetPoint(i)->GetPosition();
             mDataSet[dim * i + 0] = pos[0];
             mDataSet[dim * i + 1] = pos[1];
             mDataSet[dim * i + 2] = pos[2];
@@ -149,7 +150,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "      ICPInitRefData: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
-    void Registration::ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit,
+    void Registration::ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const MagicMath::HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex)
     {
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Registration::ICPFindCorrespondance" << std::endl;
@@ -159,7 +160,7 @@ namespace MagicDGP
         float* dataSet = new float[refNum * dim];
         for (int i = 0; i < refNum; i++)
         {
-            Vector3 pos = pRef->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 pos = pRef->GetPoint(i)->GetPosition();
             dataSet[dim * i + 0] = pos[0];
             dataSet[dim * i + 1] = pos[1];
             dataSet[dim * i + 2] = pos[2];
@@ -180,7 +181,7 @@ namespace MagicDGP
         float* searchSet = new float[searchNum * dim];
         for (int i = 0; i < searchNum; i++)
         {
-            Vector3 pos = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            MagicMath::Vector3 pos = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
             searchSet[dim * i + 0] = pos[0];
             searchSet[dim * i + 1] = pos[1];
             searchSet[dim * i + 2] = pos[2];
@@ -220,8 +221,8 @@ namespace MagicDGP
         delete []pDist;
     }
 
-    void Registration::ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const HomoMatrix4* pTransInit, 
-            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta)
+    void Registration::ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const MagicMath::HomoMatrix4* pTransInit, 
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, MagicMath::HomoMatrix4* pTransDelta)
     {
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Registration::ICPEnergyMinimization" << std::endl;
         int pcNum = sampleIndex.size();
@@ -229,11 +230,11 @@ namespace MagicDGP
         Eigen::VectorXd vecB(pcNum, 1);
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
-            Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
-            Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            MagicMath::Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
+            MagicMath::Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
+            MagicMath::Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
             vecB(i) = (posRef - posPC) * norRef;
-            Vector3 coffTemp = posPC.CrossProduct(norRef);
+            MagicMath::Vector3 coffTemp = posPC.CrossProduct(norRef);
             matA(i, 0) = coffTemp[0];
             matA(i, 1) = coffTemp[1];
             matA(i, 2) = coffTemp[2];
@@ -262,7 +263,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;*/
     }
 
-    void Registration::ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const HomoMatrix4* pTransInit, HomoMatrix4* pTransRes, openni::VideoStream& depthStream)
+    void Registration::ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const MagicMath::HomoMatrix4* pTransInit, MagicMath::HomoMatrix4* pTransRes, openni::VideoStream& depthStream)
     {
         int iterNum = 10;
         *pTransRes = *pTransInit;
@@ -276,7 +277,7 @@ namespace MagicDGP
             ICPFindCorrespondanceEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, depthStream);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
             float timeMinimize = MagicCore::ToolKit::GetTime();
-            HomoMatrix4 transDelta;
+            MagicMath::HomoMatrix4 transDelta;
             ICPEnergyMinimizationEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, &transDelta);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
             *pTransRes = transDelta * (*pTransRes);
@@ -292,13 +293,13 @@ namespace MagicDGP
         }
     }
 
-    void Registration::ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const HomoMatrix4* pTransform, openni::VideoStream& depthStream)
+    void Registration::ICPSamplePointEnhance(const Point3DSet* pPC, std::vector<int>& sampleIndex, const MagicMath::HomoMatrix4* pTransform, openni::VideoStream& depthStream)
     {
         std::vector<openni::DepthPixel> depthCache((mDepthResolutionX + 1) * (mDepthResolutionY + 1), 0);
         int pcNum = pPC->GetPointNumber();
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
+            MagicMath::Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
             int depthX, depthY;
             openni::DepthPixel depthZ;
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
@@ -323,7 +324,7 @@ namespace MagicDGP
         }
         for (int i = 0; i < pcNum; i++)
         {
-            Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
+            MagicMath::Vector3 pos = pTransform->TransformPoint( pPC->GetPoint(i)->GetPosition() );
             int depthX, depthY;
             openni::DepthPixel depthZ;
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
@@ -343,13 +344,13 @@ namespace MagicDGP
         }
     }
 
-    void Registration::ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
+    void Registration::ICPFindCorrespondanceEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const MagicMath::HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex, openni::VideoStream& depthStream)
     {
         std::map<int, int> depthMap;
         for (int i = 0; i < sampleIndex.size(); i++)
         {
-            Vector3 pos = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
+            MagicMath::Vector3 pos = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
             int depthX, depthY;
             openni::DepthPixel depthZ;
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
@@ -369,8 +370,8 @@ namespace MagicDGP
         float norThre = 0.1f; //cos(85);
         for (int i = 0; i < pNewPC->GetPointNumber(); i++)
         {
-            Vector3 pos = pNewPC->GetPoint(i)->GetPosition();
-            Vector3 nor = pNewPC->GetPoint(i)->GetNormal();
+            MagicMath::Vector3 pos = pNewPC->GetPoint(i)->GetPosition();
+            MagicMath::Vector3 nor = pNewPC->GetPoint(i)->GetNormal();
             int depthX, depthY;
             openni::DepthPixel depthZ;
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
@@ -385,12 +386,12 @@ namespace MagicDGP
             if (depthMap[depthX * mDepthResolutionY + depthY] != 0)
             {
                 //reject too long correspond 
-                Vector3 posCorres = pTransInit->TransformPoint( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetPosition() );            
+                MagicMath::Vector3 posCorres = pTransInit->TransformPoint( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetPosition() );            
                 if ( (posCorres - pos).Length() > distThre )
                 {
                     continue;
                 }
-                Vector3 norCorres = pTransInit->RotateVector( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetNormal() );
+                MagicMath::Vector3 norCorres = pTransInit->RotateVector( pRefPC->GetPoint(depthMap[depthX * mDepthResolutionY + depthY])->GetNormal() );
                 float norDist = nor * norCorres;
                 if (norDist < norThre || norDist > 1.0)
                 {
@@ -404,24 +405,24 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    sample number: " << sampleIndex.size() << std::endl;
     }
 
-    void Registration::ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const HomoMatrix4* pTransInit,
-            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, HomoMatrix4* pTransDelta)
+    void Registration::ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const MagicMath::HomoMatrix4* pTransInit,
+            std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, MagicMath::HomoMatrix4* pTransDelta)
     {
         int pcNum = sampleIndex.size();
         Eigen::MatrixXd matA(pcNum, 6);
         Eigen::VectorXd vecB(pcNum, 1);
         for (int i = 0; i < pcNum; i++)
         {
-            /*Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
-            Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
-            Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
+            /*MagicMath::Vector3 norRef = pRef->GetPoint(correspondIndex.at(i))->GetNormal();
+            MagicMath::Vector3 posRef = pRef->GetPoint(correspondIndex.at(i))->GetPosition();
+            MagicMath::Vector3 posPC  = pTransInit->TransformPoint( pOrigin->GetPoint(sampleIndex.at(i))->GetPosition() );
             vecB(i) = (posRef - posPC) * norRef;
-            Vector3 coffTemp = posPC.CrossProduct(norRef);*/
-            Vector3 norRef = pNewPC->GetPoint(correspondIndex.at(i))->GetNormal();
-            Vector3 posRef = pNewPC->GetPoint(correspondIndex.at(i))->GetPosition();
-            Vector3 posPC  = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
+            MagicMath::Vector3 coffTemp = posPC.CrossProduct(norRef);*/
+            MagicMath::Vector3 norRef = pNewPC->GetPoint(correspondIndex.at(i))->GetNormal();
+            MagicMath::Vector3 posRef = pNewPC->GetPoint(correspondIndex.at(i))->GetPosition();
+            MagicMath::Vector3 posPC  = pTransInit->TransformPoint( pRefPC->GetPoint(sampleIndex.at(i))->GetPosition() );
             vecB(i) = (posRef - posPC) * norRef;
-            Vector3 coffTemp = posPC.CrossProduct(norRef);
+            MagicMath::Vector3 coffTemp = posPC.CrossProduct(norRef);
             matA(i, 0) = coffTemp[0];
             matA(i, 1) = coffTemp[1];
             matA(i, 2) = coffTemp[2];

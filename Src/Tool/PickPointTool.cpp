@@ -20,33 +20,33 @@ namespace MagicTool
     {
     }
 
-    int PickPointTool::PickMeshVertexByPoint(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 mousePos, bool ignoreBack)
+    int PickPointTool::PickMeshVertexByPoint(const MagicDGP::Mesh3D* pMesh, MagicMath::Vector2 mousePos, bool ignoreBack)
     {
         if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode") == false)
         {
             return -1;
         }
-        MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
+        double pointSizeSquared = 0.01 * 0.01;
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
         Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
         Ogre::Matrix4 wvpM   = projM * viewM * worldM;
-        MagicDGP::Real minZ = 1.0e10;
+        double minZ = 1.0e10;
         int pickIndex = -1;
         int vertNum = pMesh->GetVertexNumber();
         if (ignoreBack == true)
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
-                    MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                    MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                     if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                     {
                         if (ogreVPos.z < minZ)
@@ -62,10 +62,10 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                 {
                     if (ogreVPos.z < minZ)
@@ -80,33 +80,33 @@ namespace MagicTool
         return pickIndex;
     }
 
-    int PickPointTool::PickMeshVertexByPoint(const MagicDGP::LightMesh3D* pMesh, MagicDGP::Vector2 mousePos, bool ignoreBack)
+    int PickPointTool::PickMeshVertexByPoint(const MagicDGP::LightMesh3D* pMesh, MagicMath::Vector2 mousePos, bool ignoreBack)
     {
         if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode") == false)
         {
             return -1;
         }
-        MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
+        double pointSizeSquared = 0.01 * 0.01;
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
         Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
         Ogre::Matrix4 wvpM   = projM * viewM * worldM;
-        MagicDGP::Real minZ = 1.0e10;
+        double minZ = 1.0e10;
         int pickIndex = -1;
         int vertNum = pMesh->GetVertexNumber();
         if (ignoreBack == true)
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
-                    MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                    MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                     if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                     {
                         if (ogreVPos.z < minZ)
@@ -122,10 +122,10 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                 {
                     if (ogreVPos.z < minZ)
@@ -140,14 +140,14 @@ namespace MagicTool
         return pickIndex;
     }
 
-    void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 pos0, 
-            MagicDGP::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::Mesh3D* pMesh, MagicMath::Vector2 pos0, 
+            MagicMath::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
     {
         pickIndex.clear();
-        MagicDGP::Real minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
-        MagicDGP::Real maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
-        MagicDGP::Real minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
-        MagicDGP::Real maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
+        double minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
+        double maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
+        double minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
+        double maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
 
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -159,12 +159,12 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
                     if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
@@ -178,7 +178,7 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
                 if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
@@ -189,14 +189,14 @@ namespace MagicTool
         }
     }
 
-    void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::LightMesh3D* pMesh, MagicDGP::Vector2 pos0, 
-            MagicDGP::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickMeshVertexByRectangle(const MagicDGP::LightMesh3D* pMesh, MagicMath::Vector2 pos0, 
+            MagicMath::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
     {
         pickIndex.clear();
-        MagicDGP::Real minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
-        MagicDGP::Real maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
-        MagicDGP::Real minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
-        MagicDGP::Real maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
+        double minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
+        double maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
+        double minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
+        double maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
 
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -208,12 +208,12 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
                     if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
@@ -227,7 +227,7 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
                 if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
@@ -238,8 +238,8 @@ namespace MagicTool
         }
     }
 
-    void PickPointTool::PickMeshVertexByCycle(const MagicDGP::Mesh3D* pMesh, MagicDGP::Vector2 centerPos, 
-            MagicDGP::Real radius, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickMeshVertexByCycle(const MagicDGP::Mesh3D* pMesh, MagicMath::Vector2 centerPos, 
+            double radius, std::vector<int>& pickIndex, bool ignoreBack)
     {
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -250,15 +250,15 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
-                    MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                    MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                     if ((screenPos - centerPos).Length() < radius)
                     {
                         pickIndex.push_back(vid);
@@ -270,10 +270,10 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - centerPos).Length() < radius)
                 {
                     pickIndex.push_back(vid);
@@ -282,8 +282,8 @@ namespace MagicTool
         }
     }
 
-    void PickPointTool::PickMeshVertexByCycle(const MagicDGP::LightMesh3D* pMesh, MagicDGP::Vector2 centerPos, 
-            MagicDGP::Real radius, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickMeshVertexByCycle(const MagicDGP::LightMesh3D* pMesh, MagicMath::Vector2 centerPos, 
+            double radius, std::vector<int>& pickIndex, bool ignoreBack)
     {
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -294,15 +294,15 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
+                MagicMath::Vector3 vNor = pMesh->GetVertex(vid)->GetNormal();
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVNor = worldM * ogreVNor;
                 if (ogreVNor.z > 0)
                 {
-                    MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                    MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                     Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                     ogreVPos = wvpM * ogreVPos;
-                    MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                    MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                     if ((screenPos - centerPos).Length() < radius)
                     {
                         pickIndex.push_back(vid);
@@ -314,10 +314,10 @@ namespace MagicTool
         {
             for (int vid = 0; vid < vertNum; vid++)
             {
-                MagicDGP::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
+                MagicMath::Vector3 vPos = pMesh->GetVertex(vid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - centerPos).Length() < radius)
                 {
                     pickIndex.push_back(vid);
@@ -326,30 +326,30 @@ namespace MagicTool
         }
     }
 
-    int PickPointTool::PickPointSetByPoint(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 mousePos, bool ignoreBack)
+    int PickPointTool::PickPointSetByPoint(const MagicDGP::Point3DSet* pPS, MagicMath::Vector2 mousePos, bool ignoreBack)
     {
         if (MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->hasSceneNode("ModelNode") == false)
         {
             return -1;
         }
-        MagicDGP::Real pointSizeSquared = 0.01 * 0.01;
+        double pointSizeSquared = 0.01 * 0.01;
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
         Ogre::Matrix4 projM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getProjectionMatrix();
         Ogre::Matrix4 wvpM   = projM * viewM * worldM;
-        MagicDGP::Real minZ = 1.0e10;
+        double minZ = 1.0e10;
         int pickIndex = -1;
         int pointNum = pPS->GetPointNumber();
         if (pPS->HasNormal() && ignoreBack)
         {
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
-                MagicDGP::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                 {
                     ogreVNor = worldM * ogreVNor;
@@ -368,10 +368,10 @@ namespace MagicTool
         {
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - mousePos).LengthSquared() < pointSizeSquared)
                 {
                     if (ogreVPos.z < minZ)
@@ -386,14 +386,14 @@ namespace MagicTool
         return pickIndex;
     }
 
-    void PickPointTool::PickPointSetByRectangle(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 pos0,
-            MagicDGP::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickPointSetByRectangle(const MagicDGP::Point3DSet* pPS, MagicMath::Vector2 pos0,
+            MagicMath::Vector2 pos1, std::vector<int>& pickIndex, bool ignoreBack)
     {
         pickIndex.clear();
-        MagicDGP::Real minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
-		MagicDGP::Real maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
-		MagicDGP::Real minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
-		MagicDGP::Real maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
+        double minX = (pos0[0] < pos1[0]) ? pos0[0] : pos1[0];
+		double maxX = (pos0[0] > pos1[0]) ? pos0[0] : pos1[0];
+		double minY = (pos0[1] < pos1[1]) ? pos0[1] : pos1[1];
+		double maxY = (pos0[1] > pos1[1]) ? pos0[1] : pos1[1];
 
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -404,12 +404,12 @@ namespace MagicTool
             int pointNum = pPS->GetPointNumber();
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
                 if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
                 {
-                    MagicDGP::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
+                    MagicMath::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
                     Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                     ogreVNor = worldM * ogreVNor;
                     if (ogreVNor.z > 0)
@@ -424,7 +424,7 @@ namespace MagicTool
             int pointNum = pPS->GetPointNumber();
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
                 if (ogreVPos.x > minX && ogreVPos.x < maxX && ogreVPos.y > minY && ogreVPos.y < maxY)
@@ -435,8 +435,8 @@ namespace MagicTool
         }
     }
 
-    void PickPointTool::PickPointSetByCycle(const MagicDGP::Point3DSet* pPS, MagicDGP::Vector2 centerPos, 
-            MagicDGP::Real radius, std::vector<int>& pickIndex, bool ignoreBack)
+    void PickPointTool::PickPointSetByCycle(const MagicDGP::Point3DSet* pPS, MagicMath::Vector2 centerPos, 
+            double radius, std::vector<int>& pickIndex, bool ignoreBack)
     {
         Ogre::Matrix4 worldM = MagicCore::RenderSystem::GetSingleton()->GetSceneManager()->getSceneNode("ModelNode")->_getFullTransform();
         Ogre::Matrix4 viewM  = MagicCore::RenderSystem::GetSingleton()->GetMainCamera()->getViewMatrix();
@@ -447,13 +447,13 @@ namespace MagicTool
             int pointNum = pPS->GetPointNumber();
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - centerPos).Length() < radius)
                 {
-                    MagicDGP::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
+                    MagicMath::Vector3 vNor = pPS->GetPoint(pid)->GetNormal();
                     Ogre::Vector4 ogreVNor(vNor[0], vNor[1], vNor[2], 0);
                     ogreVNor = worldM * ogreVNor;
                     if (ogreVNor.z > 0)
@@ -468,10 +468,10 @@ namespace MagicTool
             int pointNum = pPS->GetPointNumber();
             for (int pid = 0; pid < pointNum; pid++)
             {
-                MagicDGP::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
+                MagicMath::Vector3 vPos = pPS->GetPoint(pid)->GetPosition();
                 Ogre::Vector3 ogreVPos(vPos[0], vPos[1], vPos[2]);
                 ogreVPos = wvpM * ogreVPos;
-                MagicDGP::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
+                MagicMath::Vector2 screenPos(ogreVPos.x, ogreVPos.y);
                 if ((screenPos - centerPos).Length() < radius)
                 {
                     pickIndex.push_back(pid);
@@ -491,7 +491,7 @@ namespace MagicTool
 
     void PickPointTool::MousePressed(const OIS::MouseEvent& arg)
     {
-        mMousePos = MagicDGP::Vector2(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
+        mMousePos = MagicMath::Vector2(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
         mPickPressed = true;
     }
@@ -500,7 +500,7 @@ namespace MagicTool
     {
         if (arg.state.buttonDown(OIS::MB_Left) == true)
         {
-            MagicDGP::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
+            MagicMath::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
             UpdateMarkObject(mMousePos, curPos);
         }
@@ -513,7 +513,7 @@ namespace MagicTool
         mPickPointsetIndex.clear();
         if (mPickPressed)
         {
-            MagicDGP::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
+            MagicMath::Vector2 curPos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
             ClearMarkObject();
             Pick(curPos);
@@ -537,7 +537,7 @@ namespace MagicTool
         pickIndex = mPickPointsetIndex;
     }
 
-    void PickPointTool::UpdateMarkObject(MagicDGP::Vector2& pos0, MagicDGP::Vector2& pos1)
+    void PickPointTool::UpdateMarkObject(MagicMath::Vector2& pos0, MagicMath::Vector2& pos1)
     {
         if (mPickMode != PM_Point)
         {
@@ -582,12 +582,12 @@ namespace MagicTool
             {
                 pMObj->begin("SimpleLine", Ogre::RenderOperation::OT_LINE_STRIP);
                 float twoPi = 8.0f * atan( 1.0f );
-                MagicDGP::Real len = (pos0 - pos1).Length();
+                double len = (pos0 - pos1).Length();
                 for (int i = 0; i < 41; i++)
                 {
-                    MagicDGP::Real theta = twoPi * i / 40.f;
-                    MagicDGP::Real x = pos0[0] + len * cos(theta);
-                    MagicDGP::Real y = pos0[1] + len * sin(theta);
+                    double theta = twoPi * i / 40.f;
+                    double x = pos0[0] + len * cos(theta);
+                    double y = pos0[1] + len * sin(theta);
                     pMObj->position(x, y, -1);
                     pMObj->colour(0.615, 0.16, 0.196);
                 }
@@ -604,7 +604,7 @@ namespace MagicTool
         }
     }
 
-    void PickPointTool::Pick(MagicDGP::Vector2& curPos)
+    void PickPointTool::Pick(MagicMath::Vector2& curPos)
     {
         if (mpMesh != NULL)
         {

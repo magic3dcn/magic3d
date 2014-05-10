@@ -1,30 +1,31 @@
 #include "PrimitiveDetection.h"
 #include "Eigen/Dense"
 #include "../Common/ToolKit.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
     static int minInitSupportNum = 10;
     static int minSupportNum = 100;
-    static Real minSupportArea = 1;
-    static Real acceptableAreaScale = 0.17;
-    static Real acceptableArea = 1;
-    static Real acceptableAreaDelta = 1;
-    static Real acceptableScore = 0;
-    static Real maxAngleDeviation = 0.866;
-    static Real maxDistDeviation = 0.01;
-    static Real maxCylinderRadiusScale = 0.1;
-    static Real maxSphereRadiusScale = 0.01;
-    static Real maxSphereRadius = 1;
-    static Real maxCylinderRadius = 1;
-    static Real minConeAngle = 0.1745329251994329; //10 degree
-    static Real maxConeAngle = 1.3962; //80 degree
-    static Real maxConeAngleDeviation = 0.1745; //10 degree
-    //static Real baseScore = 0.93969262;
-    static Real baseScore = 0.2618;
+    static double minSupportArea = 1;
+    static double acceptableAreaScale = 0.17;
+    static double acceptableArea = 1;
+    static double acceptableAreaDelta = 1;
+    static double acceptableScore = 0;
+    static double maxAngleDeviation = 0.866;
+    static double maxDistDeviation = 0.01;
+    static double maxCylinderRadiusScale = 0.1;
+    static double maxSphereRadiusScale = 0.01;
+    static double maxSphereRadius = 1;
+    static double maxCylinderRadius = 1;
+    static double minConeAngle = 0.1745329251994329; //10 degree
+    static double maxConeAngle = 1.3962; //80 degree
+    static double maxConeAngleDeviation = 0.1745; //10 degree
+    //static double baseScore = 0.93969262;
+    static double baseScore = 0.2618;
     static std::vector<int> gSampleIndex;
-    static Real minScoreProportion = 10;
-    static Real scoreDeviation = 1;
+    static double minScoreProportion = 10;
+    static double scoreDeviation = 1;
 
     ShapeCandidate::ShapeCandidate() :
         mScore(0),
@@ -58,12 +59,12 @@ namespace MagicDGP
         mSupportVertex = supportVertex;
     }
 
-    Real ShapeCandidate::GetSupportArea()
+    double ShapeCandidate::GetSupportArea()
     {
         return mSupportArea;
     }
 
-    void ShapeCandidate::UpdateSupportArea(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void ShapeCandidate::UpdateSupportArea(const Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         mSupportArea = 0;
@@ -80,7 +81,7 @@ namespace MagicDGP
         return mSupportVertex;
     }
 
-    Real ShapeCandidate::GetScore()
+    double ShapeCandidate::GetScore()
     {
         return mScore;
     }
@@ -105,21 +106,21 @@ namespace MagicDGP
     bool PlaneCandidate::IsValid()
     {
         //Calculate parameter
-        Vector3 pos0 = mpVert0->GetPosition();
-        Vector3 pos1 = mpVert1->GetPosition();
-        Vector3 pos2 = mpVert2->GetPosition();
+        MagicMath::Vector3 pos0 = mpVert0->GetPosition();
+        MagicMath::Vector3 pos1 = mpVert1->GetPosition();
+        MagicMath::Vector3 pos2 = mpVert2->GetPosition();
         mCenter = (pos0 + pos1 + pos2) / 3; // in fact, mCenter can equal any pos!
-        Vector3 dir0 = pos1 - pos0;
-        Vector3 dir1 = pos2 - pos0;
+        MagicMath::Vector3 dir0 = pos1 - pos0;
+        MagicMath::Vector3 dir1 = pos2 - pos0;
         mNormal = dir0.CrossProduct(dir1);
-        if (mNormal.Normalise() < Epsilon)
+        if (mNormal.Normalise() < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "mNormal Length too small" << std::endl; 
             return false;
         }
 
         //Judge whether valid
-        //Real MaxAngleDeviation = 0.9848;
+        //double MaxAngleDeviation = 0.9848;
         if (fabs(mNormal * (mpVert0->GetNormal()) ) < maxAngleDeviation || 
             fabs(mNormal * (mpVert1->GetNormal()) ) < maxAngleDeviation ||
             fabs(mNormal * (mpVert2->GetNormal()) ) < maxAngleDeviation)
@@ -148,9 +149,9 @@ namespace MagicDGP
     int PlaneCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
-        //Real MaxAngleDeviation = 0.9848;
-        //Real MaxAngleDeviation = 0.94;
-        //Real MaxDistDeviation = 0.001;
+        //double MaxAngleDeviation = 0.9848;
+        //double MaxAngleDeviation = 0.94;
+        //double MaxDistDeviation = 0.001;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         int id2 = mpVert2->GetId();
@@ -192,12 +193,12 @@ namespace MagicDGP
                         visitFlag[newId] = 1;
                         if (resFlag.at(newId) == PrimitiveType::None)
                         {
-                            Vector3 pos = pNewVert->GetPosition();
-                            Real distDev = fabs( (pos - mCenter) * mNormal );
+                            MagicMath::Vector3 pos = pNewVert->GetPosition();
+                            double distDev = fabs( (pos - mCenter) * mNormal );
                             if (distDev < maxDistDeviation)
                             {
-                                Vector3 nor = pNewVert->GetNormal();
-                                Real angleDev = fabs( nor * mNormal );
+                                MagicMath::Vector3 nor = pNewVert->GetNormal();
+                                double angleDev = fabs( nor * mNormal );
                                 if (angleDev > maxAngleDeviation)
                                 {
                                     //searchIndexNext.push_back(newId);
@@ -262,14 +263,14 @@ namespace MagicDGP
             {
                 //first check current vertex
                 const Vertex3D* pVert = pMesh->GetVertex(*itr);
-                Vector3 pos = pVert->GetPosition();
-                Real distDev = fabs( (pos - mCenter) * mNormal );
+                MagicMath::Vector3 pos = pVert->GetPosition();
+                double distDev = fabs( (pos - mCenter) * mNormal );
                 if (distDev > maxDistDeviation)
                 {
                     continue;
                 }
-                Vector3 nor = pVert->GetNormal();
-                Real angleDev = fabs( nor * mNormal );
+                MagicMath::Vector3 nor = pVert->GetNormal();
+                double angleDev = fabs( nor * mNormal );
                 if (angleDev < maxAngleDeviation)
                 {
                     continue;
@@ -324,14 +325,14 @@ namespace MagicDGP
     //        {
     //            //first check current vertex
     //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
-    //            Vector3 pos = pVert->GetPosition();
-    //            Real distDev = fabs( (pos - mCenter) * mNormal );
+    //            MagicMath::Vector3 pos = pVert->GetPosition();
+    //            double distDev = fabs( (pos - mCenter) * mNormal );
     //            if (distDev > maxDistDeviation)
     //            {
     //                continue;
     //            }
-    //            Vector3 nor = pVert->GetNormal();
-    //            Real angleDev = fabs( nor * mNormal );
+    //            MagicMath::Vector3 nor = pVert->GetNormal();
+    //            double angleDev = fabs( nor * mNormal );
     //            if (angleDev < maxAngleDeviation)
     //            {
     //                continue;
@@ -373,8 +374,8 @@ namespace MagicDGP
             return false;
         }
         //Refit parameter
-        mCenter = Vector3(0, 0, 0);
-        mNormal = Vector3(0, 0, 0);
+        mCenter = MagicMath::Vector3(0, 0, 0);
+        mNormal = MagicMath::Vector3(0, 0, 0);
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
             const Vertex3D* pVert = pMesh->GetVertex(*itr);
@@ -393,21 +394,21 @@ namespace MagicDGP
         return Plane;
     }
 
-    void PlaneCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void PlaneCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         int supportNum = mSupportVertex.size();
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
-            /*Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Real distDev = fabs( (pos - mCenter) * mNormal );
+            /*MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            double distDev = fabs( (pos - mCenter) * mNormal );
             distDev = scoreDeviation - distDev;
             distDev = distDev > 0 ? distDev : 0;
             mScore += distDev * vertWeightList.at(*itr);*/
             //mScore += (scoreDeviation - distDev) * vertWeightList.at(*itr);
-            Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            Real cosA = fabs(nor * mNormal);
+            MagicMath::Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
+            double cosA = fabs(nor * mNormal);
             cosA = cosA > 1 ? 1 : cosA;
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
@@ -426,24 +427,24 @@ namespace MagicDGP
 
     bool SphereCandidate::IsValid()
     {
-        Vector3 nor0 = mpVert0->GetNormal();
-        Vector3 nor1 = mpVert1->GetNormal();
-        Real cosTheta = nor0 * nor1;
-        Real cosThetaSquare = cosTheta * cosTheta;
-        if (1 - cosThetaSquare < Epsilon)
+        MagicMath::Vector3 nor0 = mpVert0->GetNormal();
+        MagicMath::Vector3 nor1 = mpVert1->GetNormal();
+        double cosTheta = nor0 * nor1;
+        double cosThetaSquare = cosTheta * cosTheta;
+        if (1 - cosThetaSquare < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cosThetaSquare too large: " << cosThetaSquare << std::endl;
             return false;
         }
-        Vector3 pos0 = mpVert0->GetPosition();
-        Vector3 pos1 = mpVert1->GetPosition();
-        Vector3 dir = pos1 - pos0;
-        Real b0 = dir * nor0;
-        Real b1 = dir * nor1;
-        Real t0 = (b0 - b1 * cosTheta) / (1 - cosThetaSquare);
-        Real t1 = t0 * cosTheta - b1;
-        Vector3 interPos0 = pos0 + nor0 * t0;
-        Vector3 interPos1 = pos1 + nor1 * t1;
+        MagicMath::Vector3 pos0 = mpVert0->GetPosition();
+        MagicMath::Vector3 pos1 = mpVert1->GetPosition();
+        MagicMath::Vector3 dir = pos1 - pos0;
+        double b0 = dir * nor0;
+        double b1 = dir * nor1;
+        double t0 = (b0 - b1 * cosTheta) / (1 - cosThetaSquare);
+        double t1 = t0 * cosTheta - b1;
+        MagicMath::Vector3 interPos0 = pos0 + nor0 * t0;
+        MagicMath::Vector3 interPos1 = pos1 + nor1 * t1;
         mCenter = (interPos0 + interPos1) / 2;
         mRadius = ( (pos0 - mCenter).Length() + (pos1 - mCenter).Length() ) / 2;
         if (mRadius > maxSphereRadius)
@@ -452,17 +453,17 @@ namespace MagicDGP
             return false;
         }
         //Judge
-        //Real MaxAngleDeviation = 0.94;
-        Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
-        Vector3 dir0 = pos0 - mCenter;
-        Real dist0 = dir0.Normalise();
+        //double MaxAngleDeviation = 0.94;
+        double MaxDistDeviation = mRadius * maxSphereRadiusScale;
+        MagicMath::Vector3 dir0 = pos0 - mCenter;
+        double dist0 = dir0.Normalise();
         if (fabs(dist0 - mRadius) > MaxDistDeviation || fabs(dir0 * nor0) < maxAngleDeviation)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere is valid reject vertex0: " << fabs(dist0 - mRadius) << " " << fabs(dir0 * nor0) << std::endl;
             return false;
         }
-        Vector3 dir1 = pos1 - mCenter;
-        Real dist1 = dir1.Normalise();
+        MagicMath::Vector3 dir1 = pos1 - mCenter;
+        double dist1 = dir1.Normalise();
         if (fabs(dist1 - mRadius) > MaxDistDeviation || fabs(dir1 * nor1) < maxAngleDeviation)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sphere is valid reject vertex1: " << fabs(dist1 - mRadius) << " " << fabs(dir1 * nor1) << std::endl;
@@ -486,7 +487,7 @@ namespace MagicDGP
     int SphereCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
-        Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
+        double MaxDistDeviation = mRadius * maxSphereRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         mSupportVertex.clear();
@@ -516,10 +517,10 @@ namespace MagicDGP
                         visitFlag[newId] = 1;
                         if (resFlag.at(newId) == PrimitiveType::None)
                         {
-                            Vector3 pos = pNewVert->GetPosition();
-                            Vector3 nor = pNewVert->GetNormal();
-                            Vector3 dir = pos - mCenter;
-                            Real length = dir.Normalise();
+                            MagicMath::Vector3 pos = pNewVert->GetPosition();
+                            MagicMath::Vector3 nor = pNewVert->GetNormal();
+                            MagicMath::Vector3 dir = pos - mCenter;
+                            double length = dir.Normalise();
                             if (fabs(length - mRadius) < MaxDistDeviation && fabs(dir * nor) > maxAngleDeviation)
                             {
                                 searchIndexNext.push_back(newId);
@@ -547,7 +548,7 @@ namespace MagicDGP
     {
         mHasRefit = true;
         //Refit support vertex
-        Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
+        double MaxDistDeviation = mRadius * maxSphereRadiusScale;
         //std::map<int, int> visitFlag;
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
@@ -581,11 +582,11 @@ namespace MagicDGP
             {
                 //first check current vertex
                 const Vertex3D* pVert = pMesh->GetVertex(*itr);
-                Vector3 pos = pVert->GetPosition();
-                Vector3 nor = pVert->GetNormal();
-                Vector3 dir = pos - mCenter;
-                Real length = dir.Normalise();
-                Real angleDev = fabs(dir * nor);
+                MagicMath::Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 nor = pVert->GetNormal();
+                MagicMath::Vector3 dir = pos - mCenter;
+                double length = dir.Normalise();
+                double angleDev = fabs(dir * nor);
                 if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
                 {
                     continue;
@@ -626,7 +627,7 @@ namespace MagicDGP
     //    mHasRefit = true;
     //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit sphere: " << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << " " << mRadius << std::endl;
     //    //Refit support vertex
-    //    Real MaxDistDeviation = mRadius * maxSphereRadiusScale;
+    //    double MaxDistDeviation = mRadius * maxSphereRadiusScale;
     //    //std::map<int, int> visitFlag;
     //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
     //    std::vector<int> searchIndex = mSupportVertex;
@@ -643,11 +644,11 @@ namespace MagicDGP
     //        {
     //            //first check current vertex
     //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
-    //            Vector3 pos = pVert->GetPosition();
-    //            Vector3 nor = pVert->GetNormal();
-    //            Vector3 dir = pos - mCenter;
-    //            Real length = dir.Normalise();
-    //            Real angleDev = fabs(dir * nor);
+    //            MagicMath::Vector3 pos = pVert->GetPosition();
+    //            MagicMath::Vector3 nor = pVert->GetNormal();
+    //            MagicMath::Vector3 dir = pos - mCenter;
+    //            double length = dir.Normalise();
+    //            double angleDev = fabs(dir * nor);
     //            if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
     //            {
     //                continue;
@@ -696,8 +697,8 @@ namespace MagicDGP
         for (int i = 0; i < supportNum; i++)
         {
             const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
-            Vector3 pos = pVert->GetPosition();
-            Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
             matA(i, 0) = nor[0];
             matA(i, 1) = nor[1];
             matA(i, 2) = nor[2];
@@ -708,7 +709,7 @@ namespace MagicDGP
         Eigen::MatrixXd matCoefA = matAT * matA;
         Eigen::MatrixXd vecCoefB = matAT * vecB;
         Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
-        mCenter = Vector3(res(0), res(1), res(2));
+        mCenter = MagicMath::Vector3(res(0), res(1), res(2));
         mRadius = fabs(res(3));
         if (mRadius > maxSphereRadius)
         {
@@ -723,21 +724,21 @@ namespace MagicDGP
         return Sphere;
     }
 
-    void SphereCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void SphereCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
-            /*Real dev = fabs( (pMesh->GetVertex(*itr)->GetPosition() - mCenter).Length() - mRadius );
+            /*double dev = fabs( (pMesh->GetVertex(*itr)->GetPosition() - mCenter).Length() - mRadius );
             dev = scoreDeviation - dev;
             dev = dev > 0 ? dev : 0;
             mScore += dev * vertWeightList.at(*itr);*/
             //mScore += (scoreDeviation - dev) * vertWeightList.at(*itr);
-            Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            Vector3 dir = pMesh->GetVertex(*itr)->GetPosition() - mCenter;
+            MagicMath::Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
+            MagicMath::Vector3 dir = pMesh->GetVertex(*itr)->GetPosition() - mCenter;
             dir.Normalise();
-            Real cosA = fabs(nor * dir);
+            double cosA = fabs(nor * dir);
             cosA = cosA > 1 ? 1 : cosA;
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
@@ -756,36 +757,36 @@ namespace MagicDGP
 
     bool CylinderCandidate::IsValid()
     {
-        //Real MaxDistDeviation = 0.001;
-        Vector3 nor0 = mpVert0->GetNormal();
-        Vector3 nor1 = mpVert1->GetNormal();
+        //double MaxDistDeviation = 0.001;
+        MagicMath::Vector3 nor0 = mpVert0->GetNormal();
+        MagicMath::Vector3 nor1 = mpVert1->GetNormal();
         mDir = nor0.CrossProduct(nor1);
-        Real dirLen = mDir.Normalise();
-        if (dirLen < Epsilon)
+        double dirLen = mDir.Normalise();
+        if (dirLen < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "dirLen is too small: " << dirLen << std::endl;
             return false;
         }
-        Vector3 dirX = nor0;
-        Vector3 dirY = mDir.CrossProduct(dirX);
+        MagicMath::Vector3 dirX = nor0;
+        MagicMath::Vector3 dirY = mDir.CrossProduct(dirX);
         dirY.Normalise();
-        Real nor1ProjectX = dirX * nor1;
-        Real nor1ProjectY = dirY * nor1;
-        if (fabs(nor1ProjectY) < Epsilon)
+        double nor1ProjectX = dirX * nor1;
+        double nor1ProjectY = dirY * nor1;
+        if (fabs(nor1ProjectY) < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "nor1ProjectY is too small: " << nor1ProjectY << std::endl;
             return false;
         }
-        Vector3 pos0 = mpVert0->GetPosition();
-        Vector3 pos1 = mpVert1->GetPosition();
-        Vector3 originPos = pos0;
-        Vector3 pos1Dir = pos1 - originPos;
-        Real pos1ProjectX = dirX * pos1Dir;
-        Real pos1ProjectY = dirY * pos1Dir;
-        Real interX = pos1ProjectX - nor1ProjectX * pos1ProjectY / nor1ProjectY;
+        MagicMath::Vector3 pos0 = mpVert0->GetPosition();
+        MagicMath::Vector3 pos1 = mpVert1->GetPosition();
+        MagicMath::Vector3 originPos = pos0;
+        MagicMath::Vector3 pos1Dir = pos1 - originPos;
+        double pos1ProjectX = dirX * pos1Dir;
+        double pos1ProjectY = dirY * pos1Dir;
+        double interX = pos1ProjectX - nor1ProjectX * pos1ProjectY / nor1ProjectY;
         mCenter = originPos + dirX * interX;
         mRadius = fabs(interX);
-        Real radius2 = sqrt(pos1ProjectY * pos1ProjectY + (pos1ProjectX - interX) * (pos1ProjectX - interX));
+        double radius2 = sqrt(pos1ProjectY * pos1ProjectY + (pos1ProjectX - interX) * (pos1ProjectX - interX));
         //if (fabs(radius2 - mRadius) / mRadius > 0.05)
         //{
         //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Radius are too different: " << radius2 - mRadius << std::endl;
@@ -818,7 +819,7 @@ namespace MagicDGP
     int CylinderCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
-        Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
+        double MaxDistDeviation = mRadius * maxCylinderRadiusScale;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         mSupportVertex.clear();
@@ -848,11 +849,11 @@ namespace MagicDGP
                         visitFlag[newId] = 1;
                         if (resFlag.at(newId) == PrimitiveType::None)
                         {
-                            Vector3 pos = pNewVert->GetPosition();
-                            Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
-                            Vector3 nor = pNewVert->GetNormal();
-                            Vector3 dir = projectPos - mCenter;
-                            Real length = dir.Normalise();
+                            MagicMath::Vector3 pos = pNewVert->GetPosition();
+                            MagicMath::Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
+                            MagicMath::Vector3 nor = pNewVert->GetNormal();
+                            MagicMath::Vector3 dir = projectPos - mCenter;
+                            double length = dir.Normalise();
                             if (fabs(length - mRadius) < MaxDistDeviation && fabs(dir * nor) > maxAngleDeviation)
                             {
                                 searchIndexNext.push_back(newId);
@@ -885,7 +886,7 @@ namespace MagicDGP
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Cylinder: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
         //    << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << std::endl;
         //Refit support vertex
-        Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
+        double MaxDistDeviation = mRadius * maxCylinderRadiusScale;
         //std::map<int, int> visitFlag;
         std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
@@ -919,12 +920,12 @@ namespace MagicDGP
             {
                 //first check current vertex
                 const Vertex3D* pVert = pMesh->GetVertex(*itr);
-                Vector3 pos = pVert->GetPosition();
-                Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
-                Vector3 nor = pVert->GetNormal();
-                Vector3 dir = projectPos - mCenter;
-                Real length = dir.Normalise();
-                Real angleDev = fabs(dir * nor);
+                MagicMath::Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
+                MagicMath::Vector3 nor = pVert->GetNormal();
+                MagicMath::Vector3 dir = projectPos - mCenter;
+                double length = dir.Normalise();
+                double angleDev = fabs(dir * nor);
                 if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
                 {
                     continue;
@@ -968,7 +969,7 @@ namespace MagicDGP
     //    //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refit Cylinder: " << mDir[0] << " " << mDir[1] << " " << mDir[2] << " " << mRadius << " " 
     //    //    << mCenter[0] << " " << mCenter[1] << " " << mCenter[2] << std::endl;
     //    //Refit support vertex
-    //    Real MaxDistDeviation = mRadius * maxCylinderRadiusScale;
+    //    double MaxDistDeviation = mRadius * maxCylinderRadiusScale;
     //    //std::map<int, int> visitFlag;
     //    std::vector<bool> visitFlag(pMesh->GetVertexNumber(), 0);
     //    std::vector<int> searchIndex = mSupportVertex;
@@ -985,12 +986,12 @@ namespace MagicDGP
     //        {
     //            //first check current vertex
     //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
-    //            Vector3 pos = pVert->GetPosition();
-    //            Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
-    //            Vector3 nor = pVert->GetNormal();
-    //            Vector3 dir = projectPos - mCenter;
-    //            Real length = dir.Normalise();
-    //            Real angleDev = fabs(dir * nor);
+    //            MagicMath::Vector3 pos = pVert->GetPosition();
+    //            MagicMath::Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
+    //            MagicMath::Vector3 nor = pVert->GetNormal();
+    //            MagicMath::Vector3 dir = projectPos - mCenter;
+    //            double length = dir.Normalise();
+    //            double angleDev = fabs(dir * nor);
     //            if (fabs(length - mRadius) > MaxDistDeviation || angleDev < maxAngleDeviation)
     //            {
     //                continue;
@@ -1036,18 +1037,18 @@ namespace MagicDGP
         }
         //Refit parameter
         int supportNum = mSupportVertex.size();
-        Real XX = 0;
-        Real YY = 0;
-        Real ZZ = 0;
-        Real XY = 0;
-        Real YZ = 0;
-        Real ZX = 0;
-        Real X = 0;
-        Real Y = 0;
-        Real Z = 0;
+        double XX = 0;
+        double YY = 0;
+        double ZZ = 0;
+        double XY = 0;
+        double YZ = 0;
+        double ZX = 0;
+        double X = 0;
+        double Y = 0;
+        double Z = 0;
         for (int i = 0; i < supportNum; i++)
         {
-            Vector3 nor = pMesh->GetVertex(mSupportVertex.at(i))->GetNormal();
+            MagicMath::Vector3 nor = pMesh->GetVertex(mSupportVertex.at(i))->GetNormal();
             XX += nor[0] * nor[0];
             YY += nor[1] * nor[1];
             ZZ += nor[2] * nor[2];
@@ -1082,9 +1083,9 @@ namespace MagicDGP
         int rightEigenIndex = 0;
         Eigen::Vector3d dirVec[3];
         dirVec[0] = es.eigenvectors().col(0);
-        Real eigenAngle = fabs(mDir[0] * dirVec[0](0) + mDir[1] * dirVec[0](1) + mDir[2] * dirVec[0](2));
+        double eigenAngle = fabs(mDir[0] * dirVec[0](0) + mDir[1] * dirVec[0](1) + mDir[2] * dirVec[0](2));
         dirVec[1] = es.eigenvectors().col(1);
-        Real eigenAngleTemp = fabs(mDir[0] * dirVec[1](0) + mDir[1] * dirVec[1](1) + mDir[2] * dirVec[1](2));
+        double eigenAngleTemp = fabs(mDir[0] * dirVec[1](0) + mDir[1] * dirVec[1](1) + mDir[2] * dirVec[1](2));
         if ( eigenAngleTemp > eigenAngle)
         {
             rightEigenIndex = 1;
@@ -1101,24 +1102,24 @@ namespace MagicDGP
             //DebugLog << "Cylinder is not the right index" << std::endl;
             return false;
         }
-        mDir = Vector3(dirVec[rightEigenIndex](0), dirVec[rightEigenIndex](1), dirVec[rightEigenIndex](2));
+        mDir = MagicMath::Vector3(dirVec[rightEigenIndex](0), dirVec[rightEigenIndex](1), dirVec[rightEigenIndex](2));
         mDir.Normalise();
-        Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
-        Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
-        Vector3 dirX = planeNor - mDir * (mDir * planeNor);
+        MagicMath::Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
+        MagicMath::Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
+        MagicMath::Vector3 dirX = planeNor - mDir * (mDir * planeNor);
         dirX.Normalise();
-        Vector3 dirY = mDir.CrossProduct(dirX);
+        MagicMath::Vector3 dirY = mDir.CrossProduct(dirX);
         dirY.Normalise();
         Eigen::MatrixXd matA(supportNum, 3);
         Eigen::VectorXd vecB(supportNum, 1);
         for (int i = 0; i < supportNum; i++)
         {
             const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
-            Vector3 pos = pVert->GetPosition();
-            Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
-            Vector3 projectDir = projectPos - planePos;
-            Real projectX = projectDir * dirX;
-            Real projectY = projectDir * dirY;
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
+            MagicMath::Vector3 projectDir = projectPos - planePos;
+            double projectX = projectDir * dirX;
+            double projectY = projectDir * dirY;
             matA(i, 0) = projectX;
             matA(i, 1) = projectY;
             matA(i, 2) = 1;
@@ -1128,8 +1129,8 @@ namespace MagicDGP
         Eigen::MatrixXd matCoefA = matAT * matA;
         Eigen::MatrixXd vecCoefB = matAT * vecB;
         Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
-        Real centerX = res(0) / -2;
-        Real centerY = res(1) / -2;
+        double centerX = res(0) / -2;
+        double centerY = res(1) / -2;
         mRadius = sqrt( centerX * centerX + centerY * centerY - res(2) );
         mCenter = planePos + dirX * centerX + dirY * centerY;
         if (mRadius > maxCylinderRadius)
@@ -1149,20 +1150,20 @@ namespace MagicDGP
         {
             //float timeStart = MagicCore::ToolKit::GetTime();
             int supportNum = mSupportVertex.size();
-            std::vector<Vector3> axisPosList(supportNum);
-            Vector3 avgPos(0, 0, 0);
+            std::vector<MagicMath::Vector3> axisPosList(supportNum);
+            MagicMath::Vector3 avgPos(0, 0, 0);
             for (int sid = 0; sid < supportNum; sid++)
             {
-                Vector3 supportPos = pMesh->GetVertex(mSupportVertex.at(sid))->GetPosition();
-                Real t = mDir * (supportPos - mCenter);
-                Vector3 interPos = mCenter + mDir * t;
-                Vector3 accurateDir = interPos - supportPos;
+                MagicMath::Vector3 supportPos = pMesh->GetVertex(mSupportVertex.at(sid))->GetPosition();
+                double t = mDir * (supportPos - mCenter);
+                MagicMath::Vector3 interPos = mCenter + mDir * t;
+                MagicMath::Vector3 accurateDir = interPos - supportPos;
                 accurateDir.Normalise();
                 axisPosList.at(sid) = supportPos + accurateDir * mRadius;
                 avgPos += axisPosList.at(sid);
             }
             avgPos /= supportNum;
-            std::vector<Vector3> deltaPosList(supportNum);
+            std::vector<MagicMath::Vector3> deltaPosList(supportNum);
             for (int sid = 0; sid < supportNum; sid++)
             {
                 deltaPosList.at(sid) = axisPosList.at(sid) - avgPos;
@@ -1172,7 +1173,7 @@ namespace MagicDGP
             {
                 for (int yy = 0; yy < 3; yy++)
                 {
-                    Real v = 0;
+                    double v = 0;
                     for (int kk = 0; kk < supportNum; kk++)
                     {
                         v += deltaPosList[kk][xx] * deltaPosList[kk][yy];
@@ -1183,26 +1184,26 @@ namespace MagicDGP
             Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
             es.compute(mat);
             Eigen::Vector3d dirVec = es.eigenvectors().col(2);
-            //Vector3 oldDir = mDir;
-            mDir = Vector3(dirVec(0), dirVec(1), dirVec(2));
+            //MagicMath::Vector3 oldDir = mDir;
+            mDir = MagicMath::Vector3(dirVec(0), dirVec(1), dirVec(2));
             mDir.Normalise();
 
-            Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
-            Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
-            Vector3 dirX = planeNor - mDir * (mDir * planeNor);
+            MagicMath::Vector3 planePos = pMesh->GetVertex(mSupportVertex.at(0))->GetPosition();
+            MagicMath::Vector3 planeNor = pMesh->GetVertex(mSupportVertex.at(0))->GetNormal();
+            MagicMath::Vector3 dirX = planeNor - mDir * (mDir * planeNor);
             dirX.Normalise();
-            Vector3 dirY = mDir.CrossProduct(dirX);
+            MagicMath::Vector3 dirY = mDir.CrossProduct(dirX);
             dirY.Normalise();
             Eigen::MatrixXd matA(supportNum, 3);
             Eigen::VectorXd vecB(supportNum, 1);
             for (int i = 0; i < supportNum; i++)
             {
                 const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
-                Vector3 pos = pVert->GetPosition();
-                Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
-                Vector3 projectDir = projectPos - planePos;
-                Real projectX = projectDir * dirX;
-                Real projectY = projectDir * dirY;
+                MagicMath::Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 projectPos = pos + mDir * ( mDir * (planePos - pos) );
+                MagicMath::Vector3 projectDir = projectPos - planePos;
+                double projectX = projectDir * dirX;
+                double projectY = projectDir * dirY;
                 matA(i, 0) = projectX;
                 matA(i, 1) = projectY;
                 matA(i, 2) = 1;
@@ -1212,8 +1213,8 @@ namespace MagicDGP
             Eigen::MatrixXd matCoefA = matAT * matA;
             Eigen::MatrixXd vecCoefB = matAT * vecB;
             Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
-            Real centerX = res(0) / -2;
-            Real centerY = res(1) / -2;
+            double centerX = res(0) / -2;
+            double centerY = res(1) / -2;
             mRadius = sqrt( centerX * centerX + centerY * centerY - res(2) );
             mCenter = planePos + dirX * centerX + dirY * centerY;
             //DebugLog << "rectify time: " << MagicCore::ToolKit::GetTime() - timeStart 
@@ -1226,26 +1227,26 @@ namespace MagicDGP
         return Cylinder;
     }
 
-    void CylinderCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void CylinderCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
-            /*Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir); 
-            Vector3 dir = projectPos - mCenter;
-            Real dev = fabs( dir.Length() - mRadius );
+            /*MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            MagicMath::Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir); 
+            MagicMath::Vector3 dir = projectPos - mCenter;
+            double dev = fabs( dir.Length() - mRadius );
             dev = scoreDeviation - dev;
             dev = dev > 0 ? dev : 0;
             mScore += dev * vertWeightList.at(*itr);*/
             //mScore += (scoreDeviation - dev) * vertWeightList.at(*itr);
-            Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
-            Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            Vector3 dir = projectPos - mCenter;
+            MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            MagicMath::Vector3 projectPos = pos + mDir * ((mCenter - pos) * mDir);
+            MagicMath::Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
+            MagicMath::Vector3 dir = projectPos - mCenter;
             dir.Normalise();
-            Real cosA = fabs(nor * dir);
+            double cosA = fabs(nor * dir);
             cosA = cosA > 1 ? 1 : cosA;
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
@@ -1266,22 +1267,22 @@ namespace MagicDGP
     bool ConeCandidate::IsValid()
     {
         //calculate the intersection point of the three planes
-        Vector3 nor0 = mpVert0->GetNormal();
-        Vector3 nor1 = mpVert1->GetNormal();
-        Vector3 interDir01 = nor0.CrossProduct(nor1);
-        if (interDir01.Normalise() < Epsilon)
+        MagicMath::Vector3 nor0 = mpVert0->GetNormal();
+        MagicMath::Vector3 nor1 = mpVert1->GetNormal();
+        MagicMath::Vector3 interDir01 = nor0.CrossProduct(nor1);
+        if (interDir01.Normalise() < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parallel Plane" << std::endl;
             return false;
         }
-        Vector3 lineDir0 = nor0.CrossProduct(interDir01);
-        Vector3 pos0 = mpVert0->GetPosition();
-        Vector3 pos1 = mpVert1->GetPosition();
-        Vector3 interPos01 = pos0 + lineDir0 * ( (pos1 - pos0) * nor1 / (lineDir0 * nor1) );
-        Vector3 pos2 = mpVert2->GetPosition();
-        Vector3 nor2 = mpVert2->GetNormal();
-        Real dotTemp = interDir01 * nor2;
-        if (fabs(dotTemp) < Epsilon)
+        MagicMath::Vector3 lineDir0 = nor0.CrossProduct(interDir01);
+        MagicMath::Vector3 pos0 = mpVert0->GetPosition();
+        MagicMath::Vector3 pos1 = mpVert1->GetPosition();
+        MagicMath::Vector3 interPos01 = pos0 + lineDir0 * ( (pos1 - pos0) * nor1 / (lineDir0 * nor1) );
+        MagicMath::Vector3 pos2 = mpVert2->GetPosition();
+        MagicMath::Vector3 nor2 = mpVert2->GetNormal();
+        double dotTemp = interDir01 * nor2;
+        if (fabs(dotTemp) < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Parallel intersection line and plane" << std::endl;
             return false;
@@ -1291,41 +1292,41 @@ namespace MagicDGP
         //{
         //    return false;
         //}
-        Vector3 dir0 = pos0 - mApex;
-        if (dir0.Normalise() < Epsilon)
+        MagicMath::Vector3 dir0 = pos0 - mApex;
+        if (dir0.Normalise() < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Apex coincident" << std::endl;
             return false;
         }
-        Vector3 dir1 = pos1 - mApex;
-        if (dir1.Normalise() < Epsilon)
+        MagicMath::Vector3 dir1 = pos1 - mApex;
+        if (dir1.Normalise() < 1.0e-15)
         {
            // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Apex coincident" << std::endl;
             return false;
         }
-        Vector3 dir2 = pos2 - mApex;
-        if (dir2.Normalise() < Epsilon)
+        MagicMath::Vector3 dir2 = pos2 - mApex;
+        if (dir2.Normalise() < 1.0e-15)
         {
            // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Apex coincident" << std::endl;
             return false;
         }
-        Vector3 planeDir0 = dir2 - dir0;
-        Vector3 planeDir1 = dir2 - dir1;
+        MagicMath::Vector3 planeDir0 = dir2 - dir0;
+        MagicMath::Vector3 planeDir1 = dir2 - dir1;
         mDir = planeDir0.CrossProduct(planeDir1);
         if (mDir * dir0 < 0)
         {
             mDir *= -1;
         }
-        if (mDir.Normalise() < Epsilon)
+        if (mDir.Normalise() < 1.0e-15)
         {
            // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "cone: Cone Dir Len too Small" << std::endl;
             return false;
         }
-        Real cos0 = mDir * dir0;
+        double cos0 = mDir * dir0;
         cos0 = cos0 > 1 ? 1 : (cos0 < -1 ? -1 : cos0);
-        Real cos1 = mDir * dir1;
+        double cos1 = mDir * dir1;
         cos1 = cos1 > 1 ? 1 : (cos1 < -1 ? -1 : cos1);
-        Real cos2 = mDir * dir2;
+        double cos2 = mDir * dir2;
         cos2 = cos2 > 1 ? 1 : (cos2 < -1 ? -1 : cos2);
         mAngle = (acos(cos0) + acos(cos1) + acos(cos2)) / 3;
         if (mAngle > maxConeAngle || mAngle < minConeAngle)
@@ -1352,8 +1353,8 @@ namespace MagicDGP
     int ConeCandidate::CalSupportVertex(const Mesh3D* pMesh, std::vector<int>& resFlag)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
-        //Real MaxAngleDeviation = 0.1745329251994329; //10 degree
-        //Real MaxCosAngleDeviation = 0.94;
+        //double MaxAngleDeviation = 0.1745329251994329; //10 degree
+        //double MaxCosAngleDeviation = 0.94;
         int id0 = mpVert0->GetId();
         int id1 = mpVert1->GetId();
         int id2 = mpVert2->GetId();
@@ -1387,27 +1388,27 @@ namespace MagicDGP
                         visitFlag[newId] = 1;
                         if (resFlag.at(newId) == PrimitiveType::None)
                         {
-                            Vector3 pos = pNewVert->GetPosition();
-                            Vector3 posDir = pos - mApex;
-                            if (posDir.Normalise() <  Epsilon)
+                            MagicMath::Vector3 pos = pNewVert->GetPosition();
+                            MagicMath::Vector3 posDir = pos - mApex;
+                            if (posDir.Normalise() <  1.0e-15)
                             {
                                 continue;
                             }
-                            Real cosAngle = posDir * mDir;
+                            double cosAngle = posDir * mDir;
                             cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
-                            Real angle = acos(cosAngle);
+                            double angle = acos(cosAngle);
                             if (fabs(angle - mAngle) > maxConeAngleDeviation)
                             {
                                 continue;
                             }
-                            Vector3 dirTemp = mDir.CrossProduct(posDir);
-                            if (dirTemp.Normalise() < Epsilon)
+                            MagicMath::Vector3 dirTemp = mDir.CrossProduct(posDir);
+                            if (dirTemp.Normalise() < 1.0e-15)
                             {
                                 continue;
                             }
-                            Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+                            MagicMath::Vector3 ideaNor = dirTemp.CrossProduct(posDir);
                             ideaNor.Normalise();
-                            Vector3 nor = pNewVert->GetNormal();
+                            MagicMath::Vector3 nor = pNewVert->GetNormal();
                             if (fabs(nor * ideaNor) < maxAngleDeviation)
                             {
                                 continue;
@@ -1468,28 +1469,28 @@ namespace MagicDGP
             {
                 //first check current vertex
                 const Vertex3D* pVert = pMesh->GetVertex(*itr);
-                Vector3 pos = pVert->GetPosition();
-                Vector3 posDir = pos - mApex;
-                if (posDir.Normalise() <  Epsilon)
+                MagicMath::Vector3 pos = pVert->GetPosition();
+                MagicMath::Vector3 posDir = pos - mApex;
+                if (posDir.Normalise() <  1.0e-15)
                 {
                     continue;
                 }
-                Real cosAngle = posDir * mDir;
+                double cosAngle = posDir * mDir;
                 cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
-                Real angle = acos(cosAngle);
+                double angle = acos(cosAngle);
                 if (fabs(angle - mAngle) > maxConeAngleDeviation)
                 {
                     continue;
                 }
-                Vector3 dirTemp = mDir.CrossProduct(posDir);
-                if (dirTemp.Normalise() < Epsilon)
+                MagicMath::Vector3 dirTemp = mDir.CrossProduct(posDir);
+                if (dirTemp.Normalise() < 1.0e-15)
                 {
                     continue;
                 }
-                Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+                MagicMath::Vector3 ideaNor = dirTemp.CrossProduct(posDir);
                 ideaNor.Normalise();
-                Vector3 nor = pVert->GetNormal();
-                Real angleDev = fabs(nor * ideaNor);
+                MagicMath::Vector3 nor = pVert->GetNormal();
+                double angleDev = fabs(nor * ideaNor);
                 if (angleDev < maxAngleDeviation)
                 {
                     continue;
@@ -1543,28 +1544,28 @@ namespace MagicDGP
     //        {
     //            //first check current vertex
     //            const Vertex3D* pVert = pMesh->GetVertex(*itr);
-    //            Vector3 pos = pVert->GetPosition();
-    //            Vector3 posDir = pos - mApex;
-    //            if (posDir.Normalise() <  Epsilon)
+    //            MagicMath::Vector3 pos = pVert->GetPosition();
+    //            MagicMath::Vector3 posDir = pos - mApex;
+    //            if (posDir.Normalise() <  1.0e-15)
     //            {
     //                continue;
     //            }
-    //            Real cosAngle = posDir * mDir;
+    //            double cosAngle = posDir * mDir;
     //            cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
-    //            Real angle = acos(cosAngle);
+    //            double angle = acos(cosAngle);
     //            if (fabs(angle - mAngle) > maxConeAngleDeviation)
     //            {
     //                continue;
     //            }
-    //            Vector3 dirTemp = mDir.CrossProduct(posDir);
-    //            if (dirTemp.Normalise() < Epsilon)
+    //            MagicMath::Vector3 dirTemp = mDir.CrossProduct(posDir);
+    //            if (dirTemp.Normalise() < 1.0e-15)
     //            {
     //                continue;
     //            }
-    //            Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+    //            MagicMath::Vector3 ideaNor = dirTemp.CrossProduct(posDir);
     //            ideaNor.Normalise();
-    //            Vector3 nor = pVert->GetNormal();
-    //            Real angleDev = fabs(nor * ideaNor);
+    //            MagicMath::Vector3 nor = pVert->GetNormal();
+    //            double angleDev = fabs(nor * ideaNor);
     //            if (angleDev < maxAngleDeviation)
     //            {
     //                continue;
@@ -1612,8 +1613,8 @@ namespace MagicDGP
         for (int i = 0; i < supportNum; i++)
         {
             const Vertex3D* pVert = pMesh->GetVertex( mSupportVertex.at(i) );
-            Vector3 pos = pVert->GetPosition();
-            Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
             matA(i, 0) = nor[0];
             matA(i, 1) = nor[1];
             matA(i, 2) = nor[2];
@@ -1623,15 +1624,15 @@ namespace MagicDGP
         Eigen::MatrixXd matCoefA = matAT * matA;
         Eigen::MatrixXd vecCoefB = matAT * vecB;
         Eigen::VectorXd res = matCoefA.ldlt().solve(vecCoefB);
-        mApex = Vector3(res(0), res(1), res(2));
-        std::vector<Vector3> crossPosList;
-        std::vector<Vector3> crossDirList;
-        Vector3 avgCrossPos(0, 0, 0);
+        mApex = MagicMath::Vector3(res(0), res(1), res(2));
+        std::vector<MagicMath::Vector3> crossPosList;
+        std::vector<MagicMath::Vector3> crossDirList;
+        MagicMath::Vector3 avgCrossPos(0, 0, 0);
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
-            Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Vector3 dir = pos - mApex;
-            if (dir.Normalise() < Epsilon)
+            MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            MagicMath::Vector3 dir = pos - mApex;
+            if (dir.Normalise() < 1.0e-15)
             {
                 continue;
             }
@@ -1648,7 +1649,7 @@ namespace MagicDGP
         }
         int crossSize = crossPosList.size();
         avgCrossPos /= crossSize;
-        std::vector<Vector3> crossDeltaPosList(crossSize);
+        std::vector<MagicMath::Vector3> crossDeltaPosList(crossSize);
         for (int i = 0; i < crossSize; i++)
         {
             crossDeltaPosList.at(i) = crossPosList.at(i) - avgCrossPos;
@@ -1658,7 +1659,7 @@ namespace MagicDGP
         {
             for (int yy = 0; yy < 3; yy++)
             {
-                Real v = 0;
+                double v = 0;
                 for (int kk = 0; kk < crossSize; kk++)
                 {
                     v += crossDeltaPosList[kk][xx] * crossDeltaPosList[kk][yy];
@@ -1669,22 +1670,22 @@ namespace MagicDGP
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
         es.compute(mat);
         Eigen::Vector3d dirVec = es.eigenvectors().col(0);
-        mDir = Vector3(dirVec(0), dirVec(1), dirVec(2));
+        mDir = MagicMath::Vector3(dirVec(0), dirVec(1), dirVec(2));
         if (mDir * (avgCrossPos - mApex) < 0)
         {
             mDir *= -1;
         }
-        if (mDir.Normalise() < Epsilon)
+        if (mDir.Normalise() < 1.0e-15)
         {
             //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Cone: mDir is Zero" << std::endl;
             //mSupportVertex.clear();
-            DebugLog << "mDir.Normalise() < Epsilon" << std::endl;
+            DebugLog << "mDir.Normalise() < 1.0e-15" << std::endl;
             return false;
         }
-        Real angle = 0;
+        double angle = 0;
         for (int i = 0; i < crossSize; i++)
         {
-            Real cos = mDir * crossDirList.at(i);
+            double cos = mDir * crossDirList.at(i);
             cos = cos > 1 ? 1 : (cos < -1 ? -1 : cos);
             angle += acos(cos);
         }
@@ -1704,49 +1705,49 @@ namespace MagicDGP
         return Cone;
     }
 
-    void ConeCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void ConeCandidate::UpdateScore(const Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         mScore = 0;
         for (std::vector<int>::iterator itr = mSupportVertex.begin(); itr != mSupportVertex.end(); ++itr)
         {
-            /*Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Vector3 posDir = pos - mApex;
-            Real apexDist = posDir.Normalise();
-            if (apexDist < Epsilon)
+            /*MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            MagicMath::Vector3 posDir = pos - mApex;
+            double apexDist = posDir.Normalise();
+            if (apexDist < 1.0e-15)
             {
                 continue;
             }
-            Real cosAngle = posDir * mDir;
+            double cosAngle = posDir * mDir;
             cosAngle = cosAngle > 1 ? 1 : (cosAngle < -1 ? -1 : cosAngle);
-            Real angle = acos(cosAngle);
-            Real dev = fabs( apexDist * (sin(mAngle) - sin(angle)) );
+            double angle = acos(cosAngle);
+            double dev = fabs( apexDist * (sin(mAngle) - sin(angle)) );
             dev = scoreDeviation - dev;
             dev = dev > 0 ? dev : 0;
             mScore += dev * vertWeightList.at(*itr);*/
             //mScore += (scoreDeviation - dev) * vertWeightList.at(*itr);
-           // Real deltaAngle = fabs(angle - mAngle);
-           // Real dev = apexDist * sin(deltaAngle);
+           // double deltaAngle = fabs(angle - mAngle);
+           // double dev = apexDist * sin(deltaAngle);
            // mScore += (scoreDeviation - dev) * vertWeightList.at(*itr);
 
-            Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
-            Vector3 posDir = pos - mApex;
-            if (posDir.Normalise() < Epsilon)
+            MagicMath::Vector3 pos = pMesh->GetVertex(*itr)->GetPosition();
+            MagicMath::Vector3 posDir = pos - mApex;
+            if (posDir.Normalise() < 1.0e-15)
             {
                 continue;
             }
-            Vector3 dirTemp = mDir.CrossProduct(posDir);
-            if (dirTemp.Normalise() < Epsilon)
+            MagicMath::Vector3 dirTemp = mDir.CrossProduct(posDir);
+            if (dirTemp.Normalise() < 1.0e-15)
             {
                 continue;
             }
-            Vector3 ideaNor = dirTemp.CrossProduct(posDir);
-            if (ideaNor.Normalise() < Epsilon)
+            MagicMath::Vector3 ideaNor = dirTemp.CrossProduct(posDir);
+            if (ideaNor.Normalise() < 1.0e-15)
             {
                 continue;
             }
-            Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
-            Real cosA = fabs(nor * ideaNor);
+            MagicMath::Vector3 nor = pMesh->GetVertex(*itr)->GetNormal();
+            double cosA = fabs(nor * ideaNor);
             cosA = cosA > 1 ? 1 : cosA;
             mScore += (baseScore - acos(cosA)) * vertWeightList.at(*itr);
         }
@@ -1765,7 +1766,7 @@ namespace MagicDGP
     {
         static std::vector<int> localRes;
         static Mesh3D* localMesh = NULL;
-        static std::map<Real, ShapeCandidate* > candidateMap; 
+        static std::map<double, ShapeCandidate* > candidateMap; 
         static std::vector<ShapeCandidate* > candidates;
         //Intialize flags
         /*int vertNum = pMesh->GetVertexNumber();
@@ -1790,16 +1791,16 @@ namespace MagicDGP
             //Initialize Primitive Parameters
             pMesh->CalculateFaceArea();
             pMesh->CalculateBBox();
-            Vector3 bboxMin, bboxMax;
+            MagicMath::Vector3 bboxMin, bboxMax;
             pMesh->GetBBox(bboxMin, bboxMax);
-            Real bboxSize = (bboxMax - bboxMin).Length();
+            double bboxSize = (bboxMax - bboxMin).Length();
             maxDistDeviation = bboxSize * 0.004;
             maxSphereRadius = bboxSize / 2;
             maxCylinderRadius = bboxSize / 2;
         }
         res = localRes;
         std::vector<int> featureMarks(vertNum, 0);
-        std::vector<Real> featureScores;
+        std::vector<double> featureScores;
         CalFeatureScore(pMesh, featureMarks, featureScores);
         for (int vid = 0; vid < vertNum; vid++)
         {
@@ -1808,12 +1809,12 @@ namespace MagicDGP
                 res.at(vid) = PrimitiveType::Other;
             }
         }
-        std::vector<Real> vertWeightList;
+        std::vector<double> vertWeightList;
         //pMesh->CalculateFaceArea();
         CalVertexWeight(pMesh, vertWeightList);
 
         //Get valid vertex
-        std::map<Real, int> validMap;
+        std::map<double, int> validMap;
         for (int i = 0; i < vertNum; i++)
         {
             if (featureMarks.at(i) == 0 && res.at(i) == PrimitiveType::None)
@@ -1826,7 +1827,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "valid vertex number: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
-        for (std::map<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
+        for (std::map<double, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
         {
             validVert.at(indexTemp) = validItr->second;
             indexTemp++;
@@ -1841,12 +1842,12 @@ namespace MagicDGP
         sampleFlag.at(0) = true;
         std::vector<int> sampleIndex(sampleNum);
         sampleIndex.at(0) = 0;
-        std::vector<Real> minDist(validVertNum, 1.0e10);
+        std::vector<double> minDist(validVertNum, 1.0e10);
         int curIndex = 0;
         for (int sid = 1; sid < sampleNum; sid++)
         {
-            Vector3 curPos = pMesh->GetVertex(validVert.at(curIndex))->GetPosition();
-            Real maxDist = -1;
+            MagicMath::Vector3 curPos = pMesh->GetVertex(validVert.at(curIndex))->GetPosition();
+            double maxDist = -1;
             int pos = -1;
             for (int vid = 0; vid < validVertNum; ++vid)
             {
@@ -1854,7 +1855,7 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                Real dist = (pMesh->GetVertex(validVert.at(vid))->GetPosition() - curPos).LengthSquared();
+                double dist = (pMesh->GetVertex(validVert.at(vid))->GetPosition() - curPos).LengthSquared();
                 if (dist < minDist.at(vid))
                 {
                     minDist.at(vid) = dist;
@@ -2091,7 +2092,7 @@ namespace MagicDGP
         
         int acceptNum = 3;
         int acceptId = 0;
-        for (std::map<Real, ShapeCandidate* >::reverse_iterator candItr = candidateMap.rbegin(); candItr != candidateMap.rend(); ++candItr)
+        for (std::map<double, ShapeCandidate* >::reverse_iterator candItr = candidateMap.rbegin(); candItr != candidateMap.rend(); ++candItr)
         {
             if (candItr->second->IsRemoved() == true)
             {
@@ -2136,18 +2137,18 @@ namespace MagicDGP
         int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
         std::vector<int> sampleFlag(vertNum, 0);
-        std::vector<Real> featureScores;
+        std::vector<double> featureScores;
         //CalFeatureScore(pMesh, sampleFlag, featureScores); 
         CalFeatureScoreByGradient(pMesh, sampleFlag, featureScores);  //change
-        std::vector<Real> vertWeightList;
+        std::vector<double> vertWeightList;
         pMesh->CalculateFaceArea();
         CalVertexWeight(pMesh, vertWeightList);
 
         //Initialize Primitive Parameters
         pMesh->CalculateBBox();
-        Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pMesh->GetBBox(bboxMin, bboxMax);
-        Real bboxSize = (bboxMax - bboxMin).Length();
+        double bboxSize = (bboxMax - bboxMin).Length();
         scoreDeviation = bboxSize * 0.00001;
         maxDistDeviation = bboxSize * 0.004;
         maxSphereRadius = bboxSize / 2;
@@ -2350,17 +2351,17 @@ namespace MagicDGP
         int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
         std::vector<int> sampleFlag(vertNum, 0);
-        std::vector<Real> featureScores;
+        std::vector<double> featureScores;
         CalFeatureScore(pMesh, sampleFlag, featureScores);
-        std::vector<Real> vertWeightList;
+        std::vector<double> vertWeightList;
         pMesh->CalculateFaceArea();
         CalVertexWeight(pMesh, vertWeightList);
         
         //Initialize Primitive Parameters
         pMesh->CalculateBBox();
-        Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pMesh->GetBBox(bboxMin, bboxMax);
-        Real bboxSize = (bboxMax - bboxMin).Length();
+        double bboxSize = (bboxMax - bboxMin).Length();
         scoreDeviation = bboxSize * 0.00001;
         maxDistDeviation = bboxSize * 0.004;
         maxSphereRadius = bboxSize / 2;
@@ -2386,7 +2387,7 @@ namespace MagicDGP
                     if (res.at(vid) == PrimitiveType::None)
                     {
                         int bestType = -1;
-                        Real bestScore = 1.0e-10;
+                        double bestScore = 1.0e-10;
                         for (int tid = 0; tid < 4; tid++)
                         {
                             if (primScore.at(vid).mScore[tid] > bestScore)
@@ -2662,7 +2663,7 @@ namespace MagicDGP
                 if (bestCand != NULL)
                 {
                     bool needUpdateScore = false;
-                    Real score = bestCand->GetScore();
+                    double score = bestCand->GetScore();
                     int candType = bestCand->GetType();
                     candType--;
                     std::vector<int> supportVert = bestCand->GetSupportVertex();
@@ -2703,7 +2704,7 @@ namespace MagicDGP
             //if (res.at(vid) == PrimitiveType::None)
             {
                 int bestType = -1;
-                Real bestScore = 1.0e-10;
+                double bestScore = 1.0e-10;
                 for (int tid = 0; tid < 4; tid++)
                 {
                     if (primScore.at(vid).mScore[tid] > bestScore)
@@ -2727,8 +2728,8 @@ namespace MagicDGP
     }
 
     bool PrimitiveDetection::AddNewCandidatesByScore(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
-            std::vector<Real>& featureScores, std::vector<int>& sampleIndex)
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList, 
+            std::vector<double>& featureScores, std::vector<int>& sampleIndex)
     {
         int vertNum = pMesh->GetVertexNumber();
         int sampleNum = sampleIndex.size();
@@ -3002,23 +3003,23 @@ namespace MagicDGP
     {
         int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
-        std::vector<Real> featureScores;
+        std::vector<double> featureScores;
         CalFeatureScoreByGradient(pMesh, res, featureScores);
         static Mesh3D* pLastMesh = NULL;
         static std::vector<int> sampleFlag;
-        static std::vector<Real> vertWeightList;
+        static std::vector<double> vertWeightList;
         if (pMesh != pLastMesh)
         {
             pLastMesh = pMesh;
             sampleFlag = std::vector<int>(vertNum, 0);
-            //std::vector<Real> featureScores;
+            //std::vector<double> featureScores;
             //CalFeatureScore(pMesh, sampleFlag, featureScores);
             pMesh->CalculateFaceArea();
             CalVertexWeight(pMesh, vertWeightList);
             pMesh->CalculateBBox();
-            Vector3 bboxMin, bboxMax;
+            MagicMath::Vector3 bboxMin, bboxMax;
             pMesh->GetBBox(bboxMin, bboxMax);
-            Real bboxSize = (bboxMax - bboxMin).Length();
+            double bboxSize = (bboxMax - bboxMin).Length();
             scoreDeviation = bboxSize * 0.0001;
             maxDistDeviation = bboxSize * 0.004;
             maxSphereRadius = bboxSize / 2;
@@ -3306,25 +3307,25 @@ namespace MagicDGP
     {
         int vertNum = pMesh->GetVertexNumber();
         res = std::vector<int>(vertNum, PrimitiveType::None);
-        //std::vector<Real> featureScores;
+        //std::vector<double> featureScores;
         //CalFeatureScoreByGradient(pMesh, res, featureScores);
         static Mesh3D* pLastMesh = NULL;
         static std::vector<int> sampleFlag;
-        static std::vector<Real> vertWeightList;
+        static std::vector<double> vertWeightList;
         if (pMesh != pLastMesh)
         {
             pLastMesh = pMesh;
             sampleFlag = std::vector<int>(vertNum, 0);
-            std::vector<Real> featureScores;
+            std::vector<double> featureScores;
             CalFeatureScoreByGradient(pMesh, sampleFlag, featureScores);
-            //std::vector<Real> featureScores;
+            //std::vector<double> featureScores;
             //CalFeatureScore(pMesh, sampleFlag, featureScores);
             pMesh->CalculateFaceArea();
             CalVertexWeight(pMesh, vertWeightList);
             pMesh->CalculateBBox();
-            Vector3 bboxMin, bboxMax;
+            MagicMath::Vector3 bboxMin, bboxMax;
             pMesh->GetBBox(bboxMin, bboxMax);
-            Real bboxSize = (bboxMax - bboxMin).Length();
+            double bboxSize = (bboxMax - bboxMin).Length();
             scoreDeviation = bboxSize * 0.0001;
             maxDistDeviation = bboxSize * 0.004;
             maxSphereRadius = bboxSize / 2;
@@ -3617,19 +3618,19 @@ namespace MagicDGP
 
         static Mesh3D* pLastMesh = NULL;
         static std::vector<int> sampleFlag;
-        static std::vector<Real> vertWeightList;
+        static std::vector<double> vertWeightList;
         if (pMesh != pLastMesh)
         {
             pLastMesh = pMesh;
             sampleFlag = std::vector<int>(vertNum, 0);
-            std::vector<Real> featureScores;
+            std::vector<double> featureScores;
             CalFeatureScore(pMesh, sampleFlag, featureScores);
             pMesh->CalculateFaceArea();
             CalVertexWeight(pMesh, vertWeightList);
             pMesh->CalculateBBox();
-            Vector3 bboxMin, bboxMax;
+            MagicMath::Vector3 bboxMin, bboxMax;
             pMesh->GetBBox(bboxMin, bboxMax);
-            Real bboxSize = (bboxMax - bboxMin).Length();
+            double bboxSize = (bboxMax - bboxMin).Length();
             scoreDeviation = bboxSize * 0.0001;
             maxDistDeviation = bboxSize * 0.004;
             maxSphereRadius = bboxSize / 2;
@@ -3871,8 +3872,8 @@ namespace MagicDGP
     }
 
     bool PrimitiveDetection::AddNewCandidatesEnhance(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList, 
-            std::vector<Real>& featureScores, std::vector<int>& sampleIndex)
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList, 
+            std::vector<double>& featureScores, std::vector<int>& sampleIndex)
     {
         int vertNum = pMesh->GetVertexNumber();
         int sampleId = 0;
@@ -4173,7 +4174,7 @@ namespace MagicDGP
 
     int PrimitiveDetection::ChoseBestCandidate(std::vector<ShapeCandidate* >& candidates)
     {
-        Real bestScore = -1.0e10;
+        double bestScore = -1.0e10;
         int bestIndex = -1;
         for (int candId = 0; candId < candidates.size(); candId++)
         {
@@ -4199,15 +4200,15 @@ namespace MagicDGP
         res = std::vector<int>(vertNum, PrimitiveType::None);
         std::vector<int> sampleFlag(vertNum, 0);
         CalFeatureBoundary(pMesh, sampleFlag);
-        std::vector<Real> vertWeightList;
+        std::vector<double> vertWeightList;
         pMesh->CalculateFaceArea();
         CalVertexWeight(pMesh, vertWeightList);
 
         //Initialize Primitive Parameters
         pMesh->CalculateBBox();
-        Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pMesh->GetBBox(bboxMin, bboxMax);
-        Real bboxSize = (bboxMax - bboxMin).Length();
+        double bboxSize = (bboxMax - bboxMin).Length();
         maxDistDeviation = bboxSize * 0.004;
         maxSphereRadius = bboxSize / 2;
         maxCylinderRadius = bboxSize / 2;
@@ -4234,8 +4235,8 @@ namespace MagicDGP
 
             std::vector<int> potentials;
             ChosePotentials(candidates, potentials);
-            //std::map<Real, int> bestSet;
-            std::map<Real, int> refitedPotentials;
+            //std::map<double, int> bestSet;
+            std::map<double, int> refitedPotentials;
             int refitedNum = RefitPotentials(candidates, potentials, refitedPotentials, pMesh, res, vertWeightList);
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Refited Potential number: " << refitedPotentials.size() << std::endl;
             if (refitedNum == 0)
@@ -4252,7 +4253,7 @@ namespace MagicDGP
                 noRefittedPotentialsTime = 0;
             }
             //Judge whether to accept 
-            for (std::map<Real, int>::reverse_iterator itr = refitedPotentials.rbegin(); itr != refitedPotentials.rend(); ++itr)
+            for (std::map<double, int>::reverse_iterator itr = refitedPotentials.rbegin(); itr != refitedPotentials.rend(); ++itr)
             {
                 MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Candidate" << itr->second << " : " << candidates.at(itr->second)->GetSupportArea()
                          << "  mAcceptableArea: " << acceptableArea
@@ -4314,7 +4315,7 @@ namespace MagicDGP
         MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetection::Primitive2DDetection total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
-    void PrimitiveDetection::CalVertexWeight(Mesh3D* pMesh, std::vector<Real>& vertWeightList)
+    void PrimitiveDetection::CalVertexWeight(Mesh3D* pMesh, std::vector<double>& vertWeightList)
     {
         //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PrimitiveDetection::CalVertexWeight" << std::endl;
         vertWeightList.clear();
@@ -4324,7 +4325,7 @@ namespace MagicDGP
         {
             Vertex3D* pVert = pMesh->GetVertex(i);
             Edge3D* pEdge = pVert->GetEdge();
-            Real area = 0;
+            double area = 0;
             do
             {
                 Face3D* pFace = pEdge->GetFace();
@@ -4338,17 +4339,17 @@ namespace MagicDGP
         }
     }
 
-    bool PrimitiveDetection::SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& featureScores,
-            std::vector<int>& sampleIndex, int sampleNum, Real validProportion)
+    bool PrimitiveDetection::SampleVertex(const Mesh3D* pMesh, std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& featureScores,
+            std::vector<int>& sampleIndex, int sampleNum, double validProportion)
     {
         int vertNum = pMesh->GetVertexNumber();
         //Get valid vertex
-        std::multimap<Real, int> validMap;
+        std::multimap<double, int> validMap;
         for (int vid = 0; vid < vertNum; vid++)
         {
             if (sampleFlag.at(vid) == 0 && res.at(vid) == PrimitiveType::None)
             {
-                validMap.insert(std::pair<Real, int>(featureScores.at(vid), vid));
+                validMap.insert(std::pair<double, int>(featureScores.at(vid), vid));
                 //validMap[featureScores.at(vid)] = vid;
             }
         }
@@ -4364,7 +4365,7 @@ namespace MagicDGP
         DebugLog << "SampleVertex validVertNum: " << validVertNum << std::endl;
         std::vector<int> validVert(validVertNum);
         int indexTemp = 0;
-        for (std::multimap<Real, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
+        for (std::multimap<double, int>::iterator validItr = validMap.begin(); validItr != validMap.end(); ++validItr)
         {
             validVert.at(indexTemp) = validItr->second;
             indexTemp++;
@@ -4378,12 +4379,12 @@ namespace MagicDGP
         validSampleFlag.at(0) = true;
         std::vector<int> validSampleIndex(sampleNum);
         validSampleIndex.at(0) = 0;
-        std::vector<Real> minDist(validVertNum, 1.0e10);
+        std::vector<double> minDist(validVertNum, 1.0e10);
         int curIndex = 0;
         for (int sid = 1; sid < sampleNum; sid++)
         {
-            Vector3 curPos = pMesh->GetVertex(validVert.at(curIndex))->GetPosition();
-            Real maxDist = -1;
+            MagicMath::Vector3 curPos = pMesh->GetVertex(validVert.at(curIndex))->GetPosition();
+            double maxDist = -1;
             int pos = -1;
             for (int vid = 0; vid < validVertNum; ++vid)
             {
@@ -4391,7 +4392,7 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                Real dist = (pMesh->GetVertex(validVert.at(vid))->GetPosition() - curPos).LengthSquared();
+                double dist = (pMesh->GetVertex(validVert.at(vid))->GetPosition() - curPos).LengthSquared();
                 if (dist < minDist.at(vid))
                 {
                     minDist.at(vid) = dist;
@@ -4430,12 +4431,12 @@ namespace MagicDGP
         validSampleFlag.at(0) = true;
         std::vector<int> validSampleIndex(sampleNum);
         validSampleIndex.at(0) = 0;
-        std::vector<Real> minDist(neigborNum, 1.0e10);
+        std::vector<double> minDist(neigborNum, 1.0e10);
         int curIndex = 0;
         for (int sid = 1; sid < sampleNum; sid++)
         {
-            Vector3 curPos = pMesh->GetVertex( neighborList.at(curIndex) )->GetPosition();
-            Real maxDist = -1;
+            MagicMath::Vector3 curPos = pMesh->GetVertex( neighborList.at(curIndex) )->GetPosition();
+            double maxDist = -1;
             int pos = -1;
             for (int vid = 0; vid < neigborNum; ++vid)
             {
@@ -4443,7 +4444,7 @@ namespace MagicDGP
                 {
                     continue;
                 }
-                Real dist = (pMesh->GetVertex(neighborList.at(vid))->GetPosition() - curPos).LengthSquared();
+                double dist = (pMesh->GetVertex(neighborList.at(vid))->GetPosition() - curPos).LengthSquared();
                 if (dist < minDist.at(vid))
                 {
                     minDist.at(vid) = dist;
@@ -4466,7 +4467,7 @@ namespace MagicDGP
     }
 
     bool PrimitiveDetection::AddNewCandidates(std::vector<ShapeCandidate* >& candidates, const Mesh3D* pMesh, 
-            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<Real>& vertWeightList)
+            std::vector<int>& res, std::vector<int>& sampleFlag, std::vector<double>& vertWeightList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         std::vector<int> validVert;
@@ -4769,7 +4770,7 @@ namespace MagicDGP
 
     void PrimitiveDetection::ChosePotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials)
     {
-        std::map<Real, int> scoreMap;
+        std::map<double, int> scoreMap;
         int candNum = candidates.size();
         for (int candid = 0; candid < candNum; candid++)
         {
@@ -4791,7 +4792,7 @@ namespace MagicDGP
         int bestIdx = 0;
         potentials.clear();
         potentials.resize(bestNum);
-        for (std::map<Real, int>::reverse_iterator itr = scoreMap.rbegin(); itr != scoreMap.rend(); ++itr)
+        for (std::map<double, int>::reverse_iterator itr = scoreMap.rbegin(); itr != scoreMap.rend(); ++itr)
         {
             if (bestIdx >= bestNum)
             {
@@ -4805,7 +4806,7 @@ namespace MagicDGP
 
     bool PrimitiveDetection::UpdateAcceptableArea(Mesh3D* pMesh, std::vector<int>& res)
     {
-        Real validArea = 0;
+        double validArea = 0;
         int faceNum = pMesh->GetFaceNumber();
         for (int fid = 0; fid < faceNum; fid++)
         {
@@ -4833,9 +4834,9 @@ namespace MagicDGP
         return true;
     }
 
-    bool PrimitiveDetection::UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, Real acceptScale)
+    bool PrimitiveDetection::UpdateAcceptableAreaEnhance(Mesh3D* pMesh, std::vector<int>& res, double acceptScale)
     {
-        Real validArea = 0;
+        double validArea = 0;
         int faceNum = pMesh->GetFaceNumber();
         for (int fid = 0; fid < faceNum; fid++)
         {
@@ -4863,9 +4864,9 @@ namespace MagicDGP
         return true;
     }
 
-    bool PrimitiveDetection::UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, Real scoreScale)
+    bool PrimitiveDetection::UpdateAcceptableScore(Mesh3D* pMesh, std::vector<int>& res, double scoreScale)
     {
-        Real validArea = 0;
+        double validArea = 0;
         int faceNum = pMesh->GetFaceNumber();
         for (int fid = 0; fid < faceNum; fid++)
         {
@@ -4897,7 +4898,7 @@ namespace MagicDGP
     void PrimitiveDetection::CalFeatureBoundary(Mesh3D* pMesh, std::vector<int>& features)
     {
         int vertNum = pMesh->GetVertexNumber();
-        Real scale = 5;
+        double scale = 5;
         if (vertNum > 100000)
         {
             scale = 6;
@@ -4926,8 +4927,8 @@ namespace MagicDGP
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != pVert->GetEdge());
 
-            MagicDGP::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
-            MagicDGP::Real nDev = 0;
+            MagicMath::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
+            double nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
                 nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
@@ -4945,10 +4946,10 @@ namespace MagicDGP
         }
     }
 
-    void PrimitiveDetection::CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
+    void PrimitiveDetection::CalScaleGradient(std::vector<double>& scaleField, std::vector<MagicMath::Vector3>& gradientField, 
             const MagicDGP::Mesh3D* pMesh)
     {
-        std::vector<MagicDGP::Vector3> faceGradient;
+        std::vector<MagicMath::Vector3> faceGradient;
         int faceNum = pMesh->GetFaceNumber();
 		for (int fid = 0; fid < faceNum; fid++)
 		{
@@ -4957,10 +4958,10 @@ namespace MagicDGP
             const MagicDGP::Vertex3D* v2 = pEdge->GetNext()->GetVertex();
             const MagicDGP::Vertex3D* v3 = pEdge->GetPre()->GetVertex();
 
-			MagicDGP::Vector3 orignal, newV1, newV2, newV3, newY, newX, dirG;
-            MagicDGP::Vector3 vec1 = v1->GetPosition() - v2->GetPosition();
-            MagicDGP::Vector3 vec2 = v3->GetPosition() - v2->GetPosition();
-            MagicDGP::Real a = (vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec2[2] * vec1[2]) / 
+			MagicMath::Vector3 orignal, newV1, newV2, newV3, newY, newX, dirG;
+            MagicMath::Vector3 vec1 = v1->GetPosition() - v2->GetPosition();
+            MagicMath::Vector3 vec2 = v3->GetPosition() - v2->GetPosition();
+            double a = (vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec2[2] * vec1[2]) / 
 			(vec1[0] * vec1[0] + vec1[1] *vec1[1] + vec1[2] * vec1[2]);
             //
             orignal = v1->GetPosition() * a + v2->GetPosition() * (1 - a);
@@ -4969,17 +4970,17 @@ namespace MagicDGP
 			newX.Normalise();
 			newY.Normalise();
 
-			newV3 = MagicDGP::Vector3(0, (v3->GetPosition() - orignal).Length(), 0);
-			newV2 = MagicDGP::Vector3(-(v2->GetPosition() - orignal).Length(), 0, 0);
-			newV1 = MagicDGP::Vector3((v1->GetPosition() - orignal).Length(), 0, 0);
+			newV3 = MagicMath::Vector3(0, (v3->GetPosition() - orignal).Length(), 0);
+			newV2 = MagicMath::Vector3(-(v2->GetPosition() - orignal).Length(), 0, 0);
+			newV1 = MagicMath::Vector3((v1->GetPosition() - orignal).Length(), 0, 0);
 
-            dirG = MagicDGP::Vector3((scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) / 
+            dirG = MagicMath::Vector3((scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) / 
 				(newV1[0] - newV2[0]), (scaleField.at(v3->GetId()) - scaleField.at(v1->GetId()) +
 				newV1[0] * (scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) /
 				( newV1[0] - newV2[0])) / newV3[1], 0);
 
-			MagicDGP::Real gV = dirG.Length();
-			MagicDGP::Vector3 gDir = newX * dirG[0] + newY * dirG[1];
+			double gV = dirG.Length();
+			MagicMath::Vector3 gDir = newX * dirG[0] + newY * dirG[1];
 			gDir.Normalise();
 			faceGradient.push_back(gDir * gV);	
 		}
@@ -4990,7 +4991,7 @@ namespace MagicDGP
 		{
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
             const MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-			MagicDGP::Vector3 vertG(0.f, 0.f, 0.f);
+			MagicMath::Vector3 vertG(0.f, 0.f, 0.f);
 			int neighborNum = 0;
 			do 
 			{
@@ -5010,10 +5011,10 @@ namespace MagicDGP
         }
     }
 
-    void PrimitiveDetection::CalFeatureScoreByGradient(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores)
+    void PrimitiveDetection::CalFeatureScoreByGradient(Mesh3D* pMesh, std::vector<int>& features, std::vector<double>& scores)
     {
         int vertNum = pMesh->GetVertexNumber();
-        std::vector<MagicDGP::Real> norDev(vertNum);
+        std::vector<double> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -5030,11 +5031,11 @@ namespace MagicDGP
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != pVert->GetEdge());
 
-            MagicDGP::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
-            MagicDGP::Real nDev = 0;
+            MagicMath::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
+            double nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
-                MagicDGP::Real cosA = normal * (pMesh->GetVertex(*neigItr)->GetNormal());
+                double cosA = normal * (pMesh->GetVertex(*neigItr)->GetNormal());
                 cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
                 nDev += acos(cosA);
             }
@@ -5044,17 +5045,17 @@ namespace MagicDGP
             }
             norDev.at(vid) = nDev;
         }
-        std::vector<MagicDGP::Vector3> norGrad;
+        std::vector<MagicMath::Vector3> norGrad;
         CalScaleGradient(norDev, norGrad, pMesh);
         int smoothNum = 1;
         for (int sid = 0; sid < smoothNum; sid++)
         {
-            std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
+            std::vector<MagicMath::Vector3> smoothNorGrad(vertNum);
             for (int vid = 0; vid < vertNum; vid++)
             {
                 MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
                 MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-                MagicDGP::Vector3 avgGrad(0, 0, 0);
+                MagicMath::Vector3 avgGrad(0, 0, 0);
                 int neigNum = 0;
                 do
                 {
@@ -5082,7 +5083,7 @@ namespace MagicDGP
         scores.resize(vertNum);
         for (int vid  = 0; vid  < vertNum; vid ++)
         {
-            Real gradLen = norGrad.at(vid).Length();
+            double gradLen = norGrad.at(vid).Length();
             scores.at(vid) = gradLen;
             if (gradLen > 6)
             {
@@ -5092,10 +5093,10 @@ namespace MagicDGP
         }
     }
 
-    void PrimitiveDetection::CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<Real>& scores)
+    void PrimitiveDetection::CalFeatureScore(Mesh3D* pMesh, std::vector<int>& features, std::vector<double>& scores)
     {
         int vertNum = pMesh->GetVertexNumber();
-        Real scale = 5;
+        double scale = 5;
         //if (vertNum > 100000)
         //{
         //    scale = 6;
@@ -5108,7 +5109,7 @@ namespace MagicDGP
         //{
         //    scale = 8;
         //}
-        std::vector<MagicDGP::Real> norDev(vertNum);
+        std::vector<double> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -5125,12 +5126,12 @@ namespace MagicDGP
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != pVert->GetEdge());
 
-            MagicDGP::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
-            MagicDGP::Real nDev = 0;
+            MagicMath::Vector3 normal = pMesh->GetVertex(vid)->GetNormal();
+            double nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
                 //nDev += (normal - (pMesh->GetVertex(*neigItr)->GetNormal())).Length();
-                Real cosA = normal * (pMesh->GetVertex(*neigItr)->GetNormal());
+                double cosA = normal * (pMesh->GetVertex(*neigItr)->GetNormal());
                 cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
                 nDev += acos(cosA);
             }
@@ -5146,7 +5147,7 @@ namespace MagicDGP
         {
             MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
             MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-            MagicDGP::Real devGrad = 0;
+            double devGrad = 0;
             int neigNum = 0;
             do
             {
@@ -5171,8 +5172,8 @@ namespace MagicDGP
         }
     }
 
-    int PrimitiveDetection::RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<Real, int>& refitedPotentials,
-            Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<Real>& vertWeightList)
+    int PrimitiveDetection::RefitPotentials(std::vector<ShapeCandidate* >& candidates, std::vector<int>& potentials, std::map<double, int>& refitedPotentials,
+            Mesh3D* pMesh, std::vector<int>& resFlag, std::vector<double>& vertWeightList)
     {
         refitedPotentials.clear();
         for (std::vector<int>::iterator itr = potentials.begin(); itr != potentials.end(); ++itr)

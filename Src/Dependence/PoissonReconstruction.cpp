@@ -38,7 +38,7 @@ namespace MagicDependence
         PoissonRecon(7, argv1, pPC, vertices, polygons);
 
         Real pcDensity = pPC->GetDensity();
-        MagicDGP::Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pPC->GetBBox(bboxMin, bboxMax);
         Real pcLen = (bboxMax - bboxMin).Length();
         Real relativeDensity = pcDensity / pcLen;
@@ -64,7 +64,7 @@ namespace MagicDependence
         PoissonRecon(7, argv1, pPC, vertices, polygons);
 
         Real pcDensity = pPC->GetDensity();
-        MagicDGP::Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         pPC->GetBBox(bboxMin, bboxMax);
         Real pcLen = (bboxMax - bboxMin).Length();
         Real relativeDensity = pcDensity / pcLen;
@@ -468,7 +468,7 @@ namespace MagicDependence
             for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
             {
                 PlyValueVertex< float > vert = vertices.at(pIndex);
-                MagicDGP::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
+                MagicMath::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
                 pExportMesh->InsertVertex(vertPos);
             }
             for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)
@@ -616,7 +616,7 @@ namespace MagicDependence
     //        for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
     //        {
     //            PlyValueVertex< float > vert = vertices.at(pIndex);
-    //            MagicDGP::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
+    //            MagicMath::Vector3 vertPos(vert.point[0], vert.point[1], vert.point[2]);
     //            pExportMesh->InsertVertex(vertPos);
     //        }
     //        for (int pIndex = 0; pIndex < gtPolygons.size(); pIndex++)

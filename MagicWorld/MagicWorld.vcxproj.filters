@@ -123,12 +123,6 @@
     <ClInclude Include="..\Src\Common\GUISystem.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DGP\DGPDefines.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DGP\Vector3.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\DGP\PointCloud3D.h">
       <Filter>DGP</Filter>
     </ClInclude>
@@ -154,9 +148,6 @@
       <Filter>DGP</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\DGP\MeshReconstruction.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DGP\HomoMatrix4.h">
       <Filter>DGP</Filter>
     </ClInclude>
     <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h">
@@ -273,12 +264,6 @@
     <ClInclude Include="..\Src\Tool\PickPointTool.h">
       <Filter>Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DGP\Vector2.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DGP\HomoVector4.h">
-      <Filter>DGP</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Application\PointShopApp.h">
       <Filter>Application\PointShopApp</Filter>
     </ClInclude>
@@ -354,6 +339,18 @@
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Math\Vector2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Math\Vector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Math\HomoMatrix4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Math\HomoVector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -392,16 +389,10 @@
     <ClCompile Include="..\Src\Common\GUISystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DGP\Vector3.cpp">
-      <Filter>DGP</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\DGP\PointCloud3D.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Parser.cpp">
-      <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DGP\DGPDefines.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Tool\ViewTool.cpp">
@@ -423,9 +414,6 @@
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp">
-      <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DGP\HomoMatrix4.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
@@ -493,12 +481,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
       <Filter>Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DGP\Vector2.cpp">
-      <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DGP\HomoVector4.cpp">
-      <Filter>DGP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\PointShopApp.cpp">
       <Filter>Application\PointShopApp</Filter>
@@ -571,6 +553,18 @@
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp">
       <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\Vector2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\Vector3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\HomoMatrix4.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\HomoVector4.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

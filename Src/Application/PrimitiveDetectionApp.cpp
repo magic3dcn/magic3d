@@ -9,7 +9,7 @@
 #include "../DGP/Consolidation.h"
 #include "../DGP/Sampling.h"
 #include "../Tool/PickPointTool.h"
-#include "../DGP/HomoMatrix4.h"
+#include "../Math/HomoMatrix4.h"
 #include "../Tool/ThreadPool.h"
 //#include "../Common/MagicOgre.h"
 
@@ -18,7 +18,7 @@ namespace
     class NormalDeviationTask : public MagicTool::ITask
     {
     public:
-        NormalDeviationTask(int taskId, int taskCount, MagicDGP::Mesh3D* pMesh, std::vector<MagicDGP::Real>& normDeviation) : 
+        NormalDeviationTask(int taskId, int taskCount, MagicDGP::Mesh3D* pMesh, std::vector<double>& normDeviation) : 
             mTaskId(taskId),
             mTaskCount(taskCount),
             mpMesh(pMesh),
@@ -46,11 +46,11 @@ namespace
                     pEdge = pEdge->GetPair()->GetNext();
                 } while (pEdge != pVert->GetEdge());
 
-                MagicDGP::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
-                MagicDGP::Real nDev = 0;
+                MagicMath::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
+                double nDev = 0;
                 for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
                 {
-                    MagicDGP::Real cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
+                    double cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
                     cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
                     nDev += acos(cosA);
                 }
@@ -70,7 +70,7 @@ namespace
         int mTaskId;
         int mTaskCount;
         MagicDGP::Mesh3D* mpMesh;
-        std::vector<MagicDGP::Real>& mNormDeviation;
+        std::vector<double>& mNormDeviation;
     };
 
 }
@@ -138,13 +138,13 @@ namespace MagicApp
         {
             if (mpMesh != NULL)
             {
-                MagicDGP::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
+                MagicMath::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
                 int pickIndex = MagicTool::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos, true);
                 if (pickIndex != -1)
                 {
                     PrimitiveSelection(pickIndex);
-                    mpMesh->GetVertex(pickIndex)->SetColor(MagicDGP::Vector3(0, 0, 0));
+                    mpMesh->GetVertex(pickIndex)->SetColor(MagicMath::Vector3(0, 0, 0));
                     MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
                 }
             }
@@ -261,7 +261,7 @@ namespace MagicApp
         for (int i = 0; i < vertNum; i++)
         {
             float cv = res.at(i) * 0.2f;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
+            MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
             mpMesh->GetVertex(i)->SetColor(color);
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
@@ -279,12 +279,12 @@ namespace MagicApp
             {
                 if (res.at(i) == MagicDGP::PrimitiveType::None)
                 {
-                    mpMesh->GetVertex(i)->SetColor(MagicDGP::Vector3(0.9, 0.9, 0.9));
+                    mpMesh->GetVertex(i)->SetColor(MagicMath::Vector3(0.9, 0.9, 0.9));
                 }
                 else
                 {
                     float cv = res.at(i) * 0.2f;
-                    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
+                    MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
                     mpMesh->GetVertex(i)->SetColor(color);
                 }
             }
@@ -305,13 +305,13 @@ namespace MagicApp
             if (candType == MagicDGP::PrimitiveType::Plane)
             {
                 MagicDGP::PlaneCandidate* planeCand = dynamic_cast<MagicDGP::PlaneCandidate* >(pCand);
-                MagicDGP::Vector3 centerPos = planeCand->mCenter;
-                MagicDGP::Vector3 normal = planeCand->mNormal;
-                MagicDGP::HomoMatrix4 rotateMat;
-                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), normal);
-                MagicDGP::HomoMatrix4 translateMat;
+                MagicMath::Vector3 centerPos = planeCand->mCenter;
+                MagicMath::Vector3 normal = planeCand->mNormal;
+                MagicMath::HomoMatrix4 rotateMat;
+                rotateMat.GenerateVectorToVectorRotation(MagicMath::Vector3(0, 0, 1), normal);
+                MagicMath::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(centerPos);
-                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                MagicMath::HomoMatrix4 totalMat = translateMat * rotateMat;
                 MagicDGP::Mesh3D* planeMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/plane.obj");
                 if (planeMesh != NULL)
                 {
@@ -319,7 +319,7 @@ namespace MagicApp
                     for (int vid = 0; vid < vertNum; vid++)
                     {
                         MagicDGP::Vertex3D* pVert = planeMesh->GetVertex(vid);
-                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        MagicMath::Vector3 pos = pVert->GetPosition();
                         pos = totalMat.TransformPoint(pos);
                         pVert->SetPosition(pos);
                     }
@@ -330,9 +330,9 @@ namespace MagicApp
             else if (candType == MagicDGP::PrimitiveType::Sphere)
             {
                 MagicDGP::SphereCandidate* sphereCand = dynamic_cast<MagicDGP::SphereCandidate* >(pCand);
-                MagicDGP::Vector3 centerPos = sphereCand->mCenter;
-                MagicDGP::Real radius = sphereCand->mRadius;
-                MagicDGP::HomoMatrix4 translateMat;
+                MagicMath::Vector3 centerPos = sphereCand->mCenter;
+                double radius = sphereCand->mRadius;
+                MagicMath::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(centerPos);
                 MagicDGP::Mesh3D* sphereMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/sphere.obj");
                 if (sphereCand != NULL)
@@ -341,7 +341,7 @@ namespace MagicApp
                     for (int vid = 0; vid < vertNum; vid++)
                     {
                         MagicDGP::Vertex3D* pVert = sphereMesh->GetVertex(vid);
-                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        MagicMath::Vector3 pos = pVert->GetPosition();
                         pos *= radius;
                         pos = translateMat.TransformPoint(pos);
                         pVert->SetPosition(pos);
@@ -354,14 +354,14 @@ namespace MagicApp
             {
                 MagicDGP::CylinderCandidate* cylinderCand = dynamic_cast<MagicDGP::CylinderCandidate* >(pCand);
                 //cylinderCand->Rectify(mpMesh);
-                MagicDGP::Vector3 centerPos = cylinderCand->mCenter;
-                MagicDGP::Vector3 direction = cylinderCand->mDir;
-                MagicDGP::Real radius = cylinderCand->mRadius;
-                MagicDGP::HomoMatrix4 rotateMat;
-                rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
-                MagicDGP::HomoMatrix4 translateMat;
+                MagicMath::Vector3 centerPos = cylinderCand->mCenter;
+                MagicMath::Vector3 direction = cylinderCand->mDir;
+                double radius = cylinderCand->mRadius;
+                MagicMath::HomoMatrix4 rotateMat;
+                rotateMat.GenerateVectorToVectorRotation(MagicMath::Vector3(0, 0, 1), direction);
+                MagicMath::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(centerPos);
-                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                MagicMath::HomoMatrix4 totalMat = translateMat * rotateMat;
                 MagicDGP::Mesh3D* cylinderMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/cylinder.obj");
                 if (cylinderMesh != NULL)
                 {
@@ -369,7 +369,7 @@ namespace MagicApp
                     for (int vid = 0; vid < vertNum; vid++)
                     {
                         MagicDGP::Vertex3D* pVert = cylinderMesh->GetVertex(vid);
-                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        MagicMath::Vector3 pos = pVert->GetPosition();
                         pos *= radius;
                         pos = totalMat.TransformPoint(pos);
                         pVert->SetPosition(pos);
@@ -381,27 +381,27 @@ namespace MagicApp
             else if (candType == MagicDGP::PrimitiveType::Cone)
             {
                 MagicDGP::ConeCandidate* coneCand = dynamic_cast<MagicDGP::ConeCandidate* >(pCand);
-                MagicDGP::Vector3 apex = coneCand->mApex;
-                MagicDGP::Vector3 direction = coneCand->mDir;
-                MagicDGP::Real angle = coneCand->mAngle;
-                MagicDGP::Real radius = tan(angle);
-                MagicDGP::HomoMatrix4 rotateMat;
-                MagicDGP::Vector3 zAxis(0, 0, 1);
-                if ((zAxis.CrossProduct(direction)).LengthSquared() < MagicDGP::Epsilon &&
+                MagicMath::Vector3 apex = coneCand->mApex;
+                MagicMath::Vector3 direction = coneCand->mDir;
+                double angle = coneCand->mAngle;
+                double radius = tan(angle);
+                MagicMath::HomoMatrix4 rotateMat;
+                MagicMath::Vector3 zAxis(0, 0, 1);
+                if ((zAxis.CrossProduct(direction)).LengthSquared() < 1.0e-15 &&
                     zAxis * direction < 0)
                 {
-                    MagicDGP::HomoMatrix4 rotateTemp0, rotateTemp1;
-                    rotateTemp0.GenerateVectorToVectorRotation(zAxis, MagicDGP::Vector3(0, 1, 0));
-                    rotateTemp1.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 1, 0), direction);
+                    MagicMath::HomoMatrix4 rotateTemp0, rotateTemp1;
+                    rotateTemp0.GenerateVectorToVectorRotation(zAxis, MagicMath::Vector3(0, 1, 0));
+                    rotateTemp1.GenerateVectorToVectorRotation(MagicMath::Vector3(0, 1, 0), direction);
                     rotateMat = rotateTemp1 * rotateTemp0;
                 }
                 else
                 {
-                    rotateMat.GenerateVectorToVectorRotation(MagicDGP::Vector3(0, 0, 1), direction);
+                    rotateMat.GenerateVectorToVectorRotation(MagicMath::Vector3(0, 0, 1), direction);
                 }
-                MagicDGP::HomoMatrix4 translateMat;
+                MagicMath::HomoMatrix4 translateMat;
                 translateMat.GenerateTranslation(apex);
-                MagicDGP::HomoMatrix4 totalMat = translateMat * rotateMat;
+                MagicMath::HomoMatrix4 totalMat = translateMat * rotateMat;
                 MagicDGP::Mesh3D* coneMesh = MagicDGP::Parser::ParseMesh3D("../../Media/Model/cone.obj");
                 if (coneMesh != NULL)
                 {
@@ -409,7 +409,7 @@ namespace MagicApp
                     for (int vid = 0; vid < vertNum; vid++)
                     {
                         MagicDGP::Vertex3D* pVert = coneMesh->GetVertex(vid);
-                        MagicDGP::Vector3 pos = pVert->GetPosition();
+                        MagicMath::Vector3 pos = pVert->GetPosition();
                         pos[0] = pos[0] * radius;
                         pos[1] = pos[1] * radius;
                         pos = totalMat.TransformPoint(pos);
@@ -433,19 +433,19 @@ namespace MagicApp
     void PrimitiveDetectionApp::CalMeshCurvature()
     {
         mpMesh->CalculateBBox();
-        MagicDGP::Vector3 bboxMin, bboxMax;
+        MagicMath::Vector3 bboxMin, bboxMax;
         mpMesh->GetBBox(bboxMin, bboxMax);
-        MagicDGP::Real bboxSize = (bboxMax - bboxMin).Length();
-        MagicDGP::Real bboxArea = bboxSize * bboxSize;
+        double bboxSize = (bboxMax - bboxMin).Length();
+        double bboxArea = bboxSize * bboxSize;
         mpMesh->CalculateFaceArea();
 
         int filterNum = 3;
         int vertNum = mpMesh->GetVertexNumber();
-        std::vector<MagicDGP::Real> gaussianCurvList(vertNum, 0);
+        std::vector<double> gaussianCurvList(vertNum, 0);
         for (int filterIdx = 0; filterIdx < filterNum; filterIdx++)
         {
             MagicDGP::Consolidation::SimpleMeshSmooth(mpMesh);
-            std::vector<MagicDGP::Real> localGaussianCurvList;
+            std::vector<double> localGaussianCurvList;
             MagicDGP::Curvature::CalGaussianCurvature(mpMesh, localGaussianCurvList);
             for (int vid = 0; vid < vertNum; vid++)
             {
@@ -456,7 +456,7 @@ namespace MagicApp
         {
             gaussianCurvList.at(vid) /= filterNum;
         }
-        //std::vector<MagicDGP::Real> gaussianCurvList;
+        //std::vector<double> gaussianCurvList;
         //MagicDGP::Curvature::CalGaussianCurvature(mpMesh, gaussianCurvList);
         //int vertNum = mpMesh->GetVertexNumber();
 
@@ -464,7 +464,7 @@ namespace MagicApp
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
             MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-            MagicDGP::Real area = 0;
+            double area = 0;
             do
             {
                 MagicDGP::Face3D* pFace = pEdge->GetFace();
@@ -490,16 +490,16 @@ namespace MagicApp
             //    cv = 0.6;
             //}
             MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Gaussian: " << cv << std::endl;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
+            MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 
-    void PrimitiveDetectionApp::CalScaleGradient(std::vector<MagicDGP::Real>& scaleField, std::vector<MagicDGP::Vector3>& gradientField, 
+    void PrimitiveDetectionApp::CalScaleGradient(std::vector<double>& scaleField, std::vector<MagicMath::Vector3>& gradientField, 
             const MagicDGP::Mesh3D* pMesh)
     {
-        std::vector<MagicDGP::Vector3> faceGradient;
+        std::vector<MagicMath::Vector3> faceGradient;
         int faceNum = pMesh->GetFaceNumber();
 		for (int fid = 0; fid < faceNum; fid++)
 		{
@@ -508,13 +508,13 @@ namespace MagicApp
             const MagicDGP::Vertex3D* v2 = pEdge->GetNext()->GetVertex();
             const MagicDGP::Vertex3D* v3 = pEdge->GetPre()->GetVertex();
 
-			MagicDGP::Vector3 orignal, newV1, newV2, newV3, newY, newX, dirG;
-            //MagicDGP::Real a;
+			MagicMath::Vector3 orignal, newV1, newV2, newV3, newY, newX, dirG;
+            //double a;
 			//a = computeCoeff(v1, v2, v3);
             //
-            MagicDGP::Vector3 vec1 = v1->GetPosition() - v2->GetPosition();
-            MagicDGP::Vector3 vec2 = v3->GetPosition() - v2->GetPosition();
-            MagicDGP::Real a = (vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec2[2] * vec1[2]) / 
+            MagicMath::Vector3 vec1 = v1->GetPosition() - v2->GetPosition();
+            MagicMath::Vector3 vec2 = v3->GetPosition() - v2->GetPosition();
+            double a = (vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec2[2] * vec1[2]) / 
 			(vec1[0] * vec1[0] + vec1[1] *vec1[1] + vec1[2] * vec1[2]);
             //
             orignal = v1->GetPosition() * a + v2->GetPosition() * (1 - a);
@@ -523,17 +523,17 @@ namespace MagicApp
 			newX.Normalise();
 			newY.Normalise();
 
-			newV3 = MagicDGP::Vector3(0, (v3->GetPosition() - orignal).Length(), 0);
-			newV2 = MagicDGP::Vector3(-(v2->GetPosition() - orignal).Length(), 0, 0);
-			newV1 = MagicDGP::Vector3((v1->GetPosition() - orignal).Length(), 0, 0);
+			newV3 = MagicMath::Vector3(0, (v3->GetPosition() - orignal).Length(), 0);
+			newV2 = MagicMath::Vector3(-(v2->GetPosition() - orignal).Length(), 0, 0);
+			newV1 = MagicMath::Vector3((v1->GetPosition() - orignal).Length(), 0, 0);
 
-            dirG = MagicDGP::Vector3((scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) / 
+            dirG = MagicMath::Vector3((scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) / 
 				(newV1[0] - newV2[0]), (scaleField.at(v3->GetId()) - scaleField.at(v1->GetId()) +
 				newV1[0] * (scaleField.at(v1->GetId()) - scaleField.at(v2->GetId())) /
 				( newV1[0] - newV2[0])) / newV3[1], 0);
 
-			MagicDGP::Real gV = dirG.Length();
-			MagicDGP::Vector3 gDir = newX * dirG[0] + newY * dirG[1];
+			double gV = dirG.Length();
+			MagicMath::Vector3 gDir = newX * dirG[0] + newY * dirG[1];
 			gDir.Normalise();
 			faceGradient.push_back(gDir * gV);	
 		}
@@ -544,7 +544,7 @@ namespace MagicApp
 		{
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(vid);
             const MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-			MagicDGP::Vector3 vertG(0.f, 0.f, 0.f);
+			MagicMath::Vector3 vertG(0.f, 0.f, 0.f);
 			int neighborNum = 0;
 			do 
 			{
@@ -570,28 +570,28 @@ namespace MagicApp
         //mpMesh->CalculateFaceArea();
         //mpMesh->UpdateBoundaryFlag();
         //int vertNum = mpMesh->GetVertexNumber();
-        //std::vector<MagicDGP::Real> meanCurv;
+        //std::vector<double> meanCurv;
         //MagicDGP::Curvature::CalMeanCurvature(mpMesh, meanCurv);
-        //std::vector<MagicDGP::Vector3> curvGrad;
+        //std::vector<MagicMath::Vector3> curvGrad;
         //CalScaleGradient(meanCurv, curvGrad, mpMesh);
-        //std::vector<MagicDGP::Real> curvGradValue(vertNum);
+        //std::vector<double> curvGradValue(vertNum);
         //for (int vid = 0; vid < vertNum; vid++)
         //{
         //    curvGradValue.at(vid) = curvGrad.at(vid).Length();
         //}
-        //std::vector<MagicDGP::Vector3> curvGradGrad;
+        //std::vector<MagicMath::Vector3> curvGradGrad;
         //CalScaleGradient(curvGradValue, curvGradGrad, mpMesh);
         //for (int vid = 0; vid < vertNum; vid++)
         //{
-        //    MagicDGP::Vector3 gradDir = curvGrad.at(vid);
+        //    MagicMath::Vector3 gradDir = curvGrad.at(vid);
         //    gradDir.Normalise();
-        //    MagicDGP::Real value = gradDir * curvGradGrad.at(vid);
-        //    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(value / 10000 + 0.7);
+        //    double value = gradDir * curvGradGrad.at(vid);
+        //    MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(value / 10000 + 0.7);
         //    //DebugLog << "mean curv: " << value / 10000 << std::endl;
         //    mpMesh->GetVertex(vid)->SetColor(color);
         //}
         int vertNum = mpMesh->GetVertexNumber();
-        std::vector<MagicDGP::Real> norDev(vertNum);
+        std::vector<double> norDev(vertNum);
         for (int vid = 0; vid < vertNum; vid++)
         {
             std::vector<int> neighborList;
@@ -608,12 +608,12 @@ namespace MagicApp
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != pVert->GetEdge());
 
-            MagicDGP::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
-            MagicDGP::Real nDev = 0;
+            MagicMath::Vector3 normal = mpMesh->GetVertex(vid)->GetNormal();
+            double nDev = 0;
             for (std::vector<int>::iterator neigItr = neighborList.begin(); neigItr != neighborList.end(); ++neigItr)
             {
                 //nDev += (normal - (mpMesh->GetVertex(*neigItr)->GetNormal())).Length();
-                MagicDGP::Real cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
+                double cosA = normal * (mpMesh->GetVertex(*neigItr)->GetNormal());
                 cosA = cosA > 1 ? 1 : (cosA < -1 ? -1 : cosA);
                 nDev += acos(cosA);
             }
@@ -624,21 +624,21 @@ namespace MagicApp
             norDev.at(vid) = nDev;
             nDev = nDev * 10 + 0.2;
             //DebugLog << "nDev: " << nDev << std::endl;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(nDev);
+            MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(nDev);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
-        //std::vector<MagicDGP::Vector3> norGrad;
+        //std::vector<MagicMath::Vector3> norGrad;
         //CalScaleGradient(norDev, norGrad, mpMesh);
         //static int smoothNum = 1;
         ////smoothNum = smoothNum % 2;
         //for (int sid = 0; sid < smoothNum; sid++)
         //{
-        //    std::vector<MagicDGP::Vector3> smoothNorGrad(vertNum);
+        //    std::vector<MagicMath::Vector3> smoothNorGrad(vertNum);
         //    for (int vid = 0; vid < vertNum; vid++)
         //    {
         //        MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
         //        MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-        //        MagicDGP::Vector3 avgGrad(0, 0, 0);
+        //        MagicMath::Vector3 avgGrad(0, 0, 0);
         //        int neigNum = 0;
         //        do
         //        {
@@ -666,23 +666,23 @@ namespace MagicApp
         ////smooth
         //for (int vid  = 0; vid  < vertNum; vid ++)
         //{
-        //    MagicDGP::Real v = norGrad.at(vid).Length() / 10 + 0.2;
+        //    double v = norGrad.at(vid).Length() / 10 + 0.2;
         //    /*if (v < 0.8)
         //    {
         //        v = 0.25;
         //    }*/
-        //    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(v);
+        //    MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(v);
         //    //DebugLog << "norGrad: " << norGrad.at(vid).Length() / 10 << std::endl;
         //    mpMesh->GetVertex(vid)->SetColor(color);
         //}
 
         //double scale = 5;
-        ////std::map<MagicDGP::Real, int> scoreMap;
+        ////std::map<double, int> scoreMap;
         //for (int vid = 0; vid < vertNum; vid++)
         //{
         //    MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
         //    MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-        //    MagicDGP::Real devGrad = 0;
+        //    double devGrad = 0;
         //    int neigNum = 0;
         //    do
         //    {
@@ -708,14 +708,14 @@ namespace MagicApp
         //        devGrad = 0.4;
         //    }*/
         //    //scoreMap[devGrad] = vid;
-        //    MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
+        //    MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
         //    mpMesh->GetVertex(vid)->SetColor(color);
         //}
 
         /*int validNum = vertNum / 2;
         int validIndex = 0;
-        MagicDGP::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
-        for (std::map<MagicDGP::Real, int>::iterator itr = scoreMap.begin(); itr != scoreMap.end(); ++itr)
+        MagicMath::Vector3 color(77.0 / 255.0, 0, 153.0 / 255.0);
+        for (std::map<double, int>::iterator itr = scoreMap.begin(); itr != scoreMap.end(); ++itr)
         {
             mpMesh->GetVertex(itr->second)->SetColor(color);
             validIndex++;
@@ -732,7 +732,7 @@ namespace MagicApp
     {
         float timeStart = MagicCore::ToolKit::GetTime();
         int vertNum = mpMesh->GetVertexNumber();
-        std::vector<MagicDGP::Real> norDev(vertNum);
+        std::vector<double> norDev(vertNum);
         int threadCount = MagicTool::GetNumberOfProcessors();
         DebugLog << "Processor number: " << threadCount << std::endl;
         MagicTool::ThreadPool threadPool(threadCount);
@@ -748,7 +748,7 @@ namespace MagicApp
         {
             MagicDGP::Vertex3D* pVert = mpMesh->GetVertex(vid);
             MagicDGP::Edge3D* pEdge = pVert->GetEdge();
-            MagicDGP::Real devGrad = 0;
+            double devGrad = 0;
             int neigNum = 0;
             do
             {
@@ -765,7 +765,7 @@ namespace MagicApp
                 devGrad /= neigNum;
             }
             devGrad = devGrad * scale + 0.2;
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
+            MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(devGrad);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
         DebugLog << "CalNormalDeviationByMT: total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
@@ -778,7 +778,7 @@ namespace MagicApp
         {
             std::vector<int> sampleIndex;
             MagicDGP::Sampling::MeshVertexUniformSampling(mpMesh, 200, sampleIndex);
-            MagicDGP::Vector3 color = MagicCore::ToolKit::ColorCoding(0.2);
+            MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(0.2);
             for (int sid = 0; sid < sampleIndex.size(); sid++)
             {
                 mpMesh->GetVertex(sampleIndex.at(sid))->SetColor(color);

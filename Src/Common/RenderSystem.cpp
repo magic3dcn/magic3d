@@ -133,9 +133,9 @@ namespace MagicCore
                 {
                     continue;
                 }
-                MagicDGP::Vector3 pos = pPoint->GetPosition();
-                MagicDGP::Vector3 nor = pPoint->GetNormal();
-                MagicDGP::Vector3 color = pPoint->GetColor();
+                MagicMath::Vector3 pos = pPoint->GetPosition();
+                MagicMath::Vector3 nor = pPoint->GetNormal();
+                MagicMath::Vector3 color = pPoint->GetColor();
                 pMObj->position(pos[0], pos[1], pos[2]);
                 pMObj->normal(nor[0], nor[1], nor[2]);
                 pMObj->colour(color[0], color[1], color[2]);
@@ -153,8 +153,8 @@ namespace MagicCore
                 {
                     continue;
                 }
-                MagicDGP::Vector3 pos = pPoint->GetPosition();
-                MagicDGP::Vector3 color = pPoint->GetColor();
+                MagicMath::Vector3 pos = pPoint->GetPosition();
+                MagicMath::Vector3 color = pPoint->GetColor();
                 pMObj->position(pos[0], pos[1], pos[2]);
                 pMObj->colour(color[0], color[1], color[2]);
             }
@@ -163,7 +163,7 @@ namespace MagicCore
         
     }
 
-    void RenderSystem::RenderPoint3DSet(std::string psName, std::string psMaterialName, const MagicDGP::Point3DSet* pPS, const MagicDGP::HomoMatrix4& transform)
+    void RenderSystem::RenderPoint3DSet(std::string psName, std::string psMaterialName, const MagicDGP::Point3DSet* pPS, const MagicMath::HomoMatrix4& transform)
     {
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(psName))
@@ -192,9 +192,9 @@ namespace MagicCore
             {
                 continue;
             }
-            MagicDGP::Vector3 pos = transform.TransformPoint( pPoint->GetPosition() );
-            MagicDGP::Vector3 nor = transform.RotateVector( pPoint->GetNormal() );
-            MagicDGP::Vector3 color = pPoint->GetColor();
+            MagicMath::Vector3 pos = transform.TransformPoint( pPoint->GetPosition() );
+            MagicMath::Vector3 nor = transform.RotateVector( pPoint->GetNormal() );
+            MagicMath::Vector3 color = pPoint->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
             pMObj->colour(color[0], color[1], color[2]);
@@ -202,7 +202,7 @@ namespace MagicCore
         pMObj->end();
     }
 
-    void RenderSystem::RenderLineSegments(std::string lsName, std::string materialName, const std::vector<MagicDGP::Vector3>& startPos, const std::vector<MagicDGP::Vector3>& endPos)
+    void RenderSystem::RenderLineSegments(std::string lsName, std::string materialName, const std::vector<MagicMath::Vector3>& startPos, const std::vector<MagicMath::Vector3>& endPos)
     {
         Ogre::ManualObject* pMObj = NULL;
         if (mpSceneMgr->hasManualObject(lsName))
@@ -226,8 +226,8 @@ namespace MagicCore
         int lineNum = startPos.size();
         for (int i = 0; i < lineNum; i++)
         {
-            MagicDGP::Vector3 start = startPos.at(i);
-            MagicDGP::Vector3 end = endPos.at(i);
+            MagicMath::Vector3 start = startPos.at(i);
+            MagicMath::Vector3 end = endPos.at(i);
             pMObj->position(start[0], start[1], start[2]);
             pMObj->position(end[0], end[1], end[2]);
         }
@@ -260,9 +260,9 @@ namespace MagicCore
         for (int i = 0; i < vertNum; i++)
         {
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
-            MagicDGP::Vector3 pos = pVert->GetPosition();
-            MagicDGP::Vector3 nor = pVert->GetNormal();
-            MagicDGP::Vector3 color = pVert->GetColor();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 color = pVert->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
             pMObj->colour(color[0], color[1], color[2]);
@@ -305,9 +305,9 @@ namespace MagicCore
         for (int i = 0; i < vertNum; i++)
         {
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
-            MagicDGP::Vector3 pos = pVert->GetPosition();
-            MagicDGP::Vector3 nor = pVert->GetNormal();
-            MagicDGP::Vector3 color = pVert->GetColor();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 color = pVert->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
             pMObj->colour(color[0], color[1], color[2], alpha);
@@ -347,9 +347,9 @@ namespace MagicCore
         for (int i = 0; i < vertNum; i++)
         {
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
-            MagicDGP::Vector3 pos = pVert->GetPosition();
-            MagicDGP::Vector3 nor = pVert->GetNormal();
-            MagicDGP::Vector3 color = pVert->GetColor();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 color = pVert->GetColor();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
             pMObj->colour(color[0], color[1], color[2]);
@@ -389,9 +389,9 @@ namespace MagicCore
         for (int i = 0; i < vertNum; i++)
         {
             const MagicDGP::Vertex3D* pVert = pMesh->GetVertex(i);
-            MagicDGP::Vector3 pos = pVert->GetPosition();
-            MagicDGP::Vector3 nor = pVert->GetNormal();
-            MagicDGP::Vector3 texCord = pVert->GetTexCord();
+            MagicMath::Vector3 pos = pVert->GetPosition();
+            MagicMath::Vector3 nor = pVert->GetNormal();
+            MagicMath::Vector3 texCord = pVert->GetTexCord();
             pMObj->position(pos[0], pos[1], pos[2]);
             pMObj->normal(nor[0], nor[1], nor[2]);
             pMObj->textureCoord(texCord[0], texCord[1]);

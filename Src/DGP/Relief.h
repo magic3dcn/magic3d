@@ -9,12 +9,12 @@ namespace MagicDGP
     {
     public:
         ReliefGeneration();
-        static LightMesh3D* PlaneReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY);
-        static LightMesh3D* CylinderReliefFromHeightField(std::vector<Real>& heightField, int resX, int resY);
+        static LightMesh3D* PlaneReliefFromHeightField(std::vector<double>& heightField, int resX, int resY);
+        static LightMesh3D* CylinderReliefFromHeightField(std::vector<double>& heightField, int resX, int resY);
         ~ReliefGeneration();
 
     private:
-        static void CompressHeightField(std::vector<Real>& heightField, int resX, int resY);
+        static void CompressHeightField(std::vector<double>& heightField, int resX, int resY);
 
     };
 

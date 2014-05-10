@@ -1,5 +1,6 @@
   //#include "StdAfx.h"
 #include "Mesh3D.h"
+#include "../Common/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -12,7 +13,7 @@ namespace MagicDGP
     {
     }
 
-    Vertex3D::Vertex3D(const Vector3& pos) :
+    Vertex3D::Vertex3D(const MagicMath::Vector3& pos) :
         mPosition(pos), 
         mColor(0.86, 0.86, 0.86),
         mpEdge(NULL),
@@ -23,7 +24,7 @@ namespace MagicDGP
 
     }
 
-    Vertex3D::Vertex3D(const Vector3& pos, const Vector3& nor) : 
+    Vertex3D::Vertex3D(const MagicMath::Vector3& pos, const MagicMath::Vector3& nor) : 
         mPosition(pos),
         mNormal(nor),
         mColor(0.86, 0.86, 0.86),
@@ -39,42 +40,42 @@ namespace MagicDGP
     {
     }
 
-    Vector3 Vertex3D::GetPosition() const
+    MagicMath::Vector3 Vertex3D::GetPosition() const
     {
         return mPosition;
     }
 
-    void Vertex3D::SetPosition(const Vector3& pos)
+    void Vertex3D::SetPosition(const MagicMath::Vector3& pos)
     {
         mPosition = pos;
     }
 
-    Vector3 Vertex3D::GetNormal() const
+    MagicMath::Vector3 Vertex3D::GetNormal() const
     {
         return mNormal;
     }
 
-    void Vertex3D::SetNormal(const Vector3& nor)
+    void Vertex3D::SetNormal(const MagicMath::Vector3& nor)
     {
         mNormal = nor;
     }
 
-    Vector3 Vertex3D::GetTexCord() const
+    MagicMath::Vector3 Vertex3D::GetTexCord() const
     {
         return mTexCord;
     }
 
-    void Vertex3D::SetTexCord(const Vector3& tex)
+    void Vertex3D::SetTexCord(const MagicMath::Vector3& tex)
     {
         mTexCord = tex;
     }
 
-    Vector3 Vertex3D::GetColor() const
+    MagicMath::Vector3 Vertex3D::GetColor() const
     {
         return mColor;
     }
 
-    void Vertex3D::SetColor(const Vector3& color)
+    void Vertex3D::SetColor(const MagicMath::Vector3& color)
     {
         mColor = color;
     }
@@ -271,27 +272,27 @@ namespace MagicDGP
         mpEdge = pEdge;
     }
 
-    Vector3 Face3D::GetNormal() const
+    MagicMath::Vector3 Face3D::GetNormal() const
     {
         return mNormal;
     }
 
-    void Face3D::SetNormal(const Vector3& nor)
+    void Face3D::SetNormal(const MagicMath::Vector3& nor)
     {
         mNormal = nor;
     }
 
     void Face3D::CalArea()
     {
-        Vector3 pos0 = mpEdge->GetVertex()->GetPosition();
-        Vector3 pos1 = mpEdge->GetNext()->GetVertex()->GetPosition();
-        Vector3 pos2 = mpEdge->GetPre()->GetVertex()->GetPosition();
-        Vector3 dir1 = pos1 - pos0;
-        Vector3 dir2 = pos2 - pos0;
+        MagicMath::Vector3 pos0 = mpEdge->GetVertex()->GetPosition();
+        MagicMath::Vector3 pos1 = mpEdge->GetNext()->GetVertex()->GetPosition();
+        MagicMath::Vector3 pos2 = mpEdge->GetPre()->GetVertex()->GetPosition();
+        MagicMath::Vector3 dir1 = pos1 - pos0;
+        MagicMath::Vector3 dir2 = pos2 - pos0;
         mArea = (dir1.CrossProduct(dir2)).Length();
     }
 
-    Real Face3D::GetArea() const
+    double Face3D::GetArea() const
     {
         return mArea;
     }
@@ -385,7 +386,7 @@ namespace MagicDGP
         return mFaceList.size();
     }
 
-    Vertex3D* Mesh3D::InsertVertex(const Vector3& pos)
+    Vertex3D* Mesh3D::InsertVertex(const MagicMath::Vector3& pos)
     {
         Vertex3D* pVert = new Vertex3D(pos);
         pVert->SetId(mVertexList.size());
@@ -443,14 +444,13 @@ namespace MagicDGP
         return pFace;
     }
 
-    void Mesh3D::UnifyPosition(Real size)
+    void Mesh3D::UnifyPosition(double size)
     {
-        DebugLog << "Mesh3D::UnifyPosition" << std::endl;
-        Vector3 posMin(10e10, 10e10, 10e10);
-        Vector3 posMax(-10e10, -10e10, -10e10);
+        MagicMath::Vector3 posMin(10e10, 10e10, 10e10);
+        MagicMath::Vector3 posMax(-10e10, -10e10, -10e10);
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
         {
-            Vector3 pos = (*itr)->GetPosition();
+            MagicMath::Vector3 pos = (*itr)->GetPosition();
             posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
             posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
             posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
@@ -458,8 +458,8 @@ namespace MagicDGP
             posMax[1] = posMax[1] > pos[1] ? posMax[1] : pos[1];
             posMax[2] = posMax[2] > pos[2] ? posMax[2] : pos[2];
         }
-        Vector3 scale3 = posMax - posMin;
-        Real scaleMax = scale3[0];
+        MagicMath::Vector3 scale3 = posMax - posMin;
+        double scaleMax = scale3[0];
         if (scaleMax < scale3[1])
         {
             scaleMax = scale3[1];
@@ -468,10 +468,10 @@ namespace MagicDGP
         {
             scaleMax = scale3[2];
         }
-        if (scaleMax > Epsilon)
+        if (scaleMax > 1.0e-15)
         {
-            Real scaleV = size / scaleMax;
-            Vector3 centerPos = (posMin + posMax) / 2.0;
+            double scaleV = size / scaleMax;
+            MagicMath::Vector3 centerPos = (posMin + posMax) / 2.0;
             for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
             {
                 (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
@@ -481,12 +481,11 @@ namespace MagicDGP
 
     void Mesh3D::UpdateNormal()
     {
-        DebugLog << "Update Mesh Normal" << std::endl;
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
         {
             Vertex3D* pVert = *itr;
             Edge3D* pEdge = pVert->GetEdge();
-            Vector3 nor(0, 0, 0);
+            MagicMath::Vector3 nor(0, 0, 0);
             do
             {
                 if (pEdge->GetFace() != NULL)
@@ -501,8 +500,8 @@ namespace MagicDGP
                 }
                 pEdge = pEdge->GetPair()->GetNext();
             } while (pEdge != NULL && pEdge != pVert->GetEdge());
-            Real norLen = nor.Normalise();
-            if (norLen < Epsilon)
+            double norLen = nor.Normalise();
+            if (norLen < 1.0e-15)
             {
                 DebugLog << "normal lenth too small" << std::endl;
                 nor[0] = 1.0;
@@ -542,10 +541,9 @@ namespace MagicDGP
                 (*vertItr)->GetEdge()->SetPre(pEdge->GetPair());
             }
         }
-        DebugLog << "Mesh3D::UpdateBoundaryFlag" << std::endl; 
     }
 
-    void Mesh3D::GetBBox(Vector3& bboxMin, Vector3& bboxMax) const
+    void Mesh3D::GetBBox(MagicMath::Vector3& bboxMin, MagicMath::Vector3& bboxMax) const
     {
         bboxMin = mBBoxMin;
         bboxMax = mBBoxMax;
@@ -553,14 +551,14 @@ namespace MagicDGP
 
     void Mesh3D::CalculateBBox()
     {
-        Vector3 posTemp = mVertexList.at(0)->GetPosition(); //mPointSet.at(0)->GetPosition();
+        MagicMath::Vector3 posTemp = mVertexList.at(0)->GetPosition(); //mPointSet.at(0)->GetPosition();
         mBBoxMin[0] = mBBoxMax[0] = posTemp[0];
         mBBoxMin[1] = mBBoxMax[1] = posTemp[1];
         mBBoxMin[2] = mBBoxMax[2] = posTemp[2];
         int vertNum = mVertexList.size();
         for (int i = 0; i < vertNum; i++)
         {
-            Vector3 pos = mVertexList.at(i)->GetPosition();
+            MagicMath::Vector3 pos = mVertexList.at(i)->GetPosition();
             for (int k = 0; k < 3; k++)
             {
                 if (mBBoxMin[k] > pos[k])
@@ -573,8 +571,6 @@ namespace MagicDGP
                 }
             }
         }
-        DebugLog << "BBoxMin: " << mBBoxMin[0] << " " << mBBoxMin[1] << " " << mBBoxMin[2] << " "
-            << "BBoxMax: " << mBBoxMax[0] << " " << mBBoxMax[1] << " " << mBBoxMax[2] << std::endl;
     }
 
     void Mesh3D::CalculateFaceArea()
@@ -651,7 +647,7 @@ namespace MagicDGP
         return mFaceList.size();
     }
 
-    Vertex3D* LightMesh3D::InsertVertex(const Vector3& pos)
+    Vertex3D* LightMesh3D::InsertVertex(const MagicMath::Vector3& pos)
     {
         Vertex3D* pVert = new Vertex3D(pos);
         pVert->SetId(mVertexList.size());
@@ -664,14 +660,13 @@ namespace MagicDGP
         mFaceList.push_back(fi);
     }
 
-    void LightMesh3D::UnifyPosition(Real size)
+    void LightMesh3D::UnifyPosition(double size)
     {
-        DebugLog << "LightMesh3D::UnifyPosition" << std::endl;
-        Vector3 posMin(10e10, 10e10, 10e10);
-        Vector3 posMax(-10e10, -10e10, -10e10);
+        MagicMath::Vector3 posMin(10e10, 10e10, 10e10);
+        MagicMath::Vector3 posMax(-10e10, -10e10, -10e10);
         for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
         {
-            Vector3 pos = (*itr)->GetPosition();
+            MagicMath::Vector3 pos = (*itr)->GetPosition();
             posMin[0] = posMin[0] < pos[0] ? posMin[0] : pos[0];
             posMin[1] = posMin[1] < pos[1] ? posMin[1] : pos[1];
             posMin[2] = posMin[2] < pos[2] ? posMin[2] : pos[2];
@@ -679,8 +674,8 @@ namespace MagicDGP
             posMax[1] = posMax[1] > pos[1] ? posMax[1] : pos[1];
             posMax[2] = posMax[2] > pos[2] ? posMax[2] : pos[2];
         }
-        Vector3 scale3 = posMax - posMin;
-        Real scaleMax = scale3[0];
+        MagicMath::Vector3 scale3 = posMax - posMin;
+        double scaleMax = scale3[0];
         if (scaleMax < scale3[1])
         {
             scaleMax = scale3[1];
@@ -689,10 +684,10 @@ namespace MagicDGP
         {
             scaleMax = scale3[2];
         }
-        if (scaleMax > Epsilon)
+        if (scaleMax > 1.0e-15)
         {
-            Real scaleV = size / scaleMax;
-            Vector3 centerPos = (posMin + posMax) / 2.0;
+            double scaleV = size / scaleMax;
+            MagicMath::Vector3 centerPos = (posMin + posMax) / 2.0;
             for (std::vector<Vertex3D* >::iterator itr = mVertexList.begin(); itr != mVertexList.end(); ++itr)
             {
                 (*itr)->SetPosition(((*itr)->GetPosition() - centerPos) * scaleV);
@@ -703,23 +698,23 @@ namespace MagicDGP
     void LightMesh3D::UpdateNormal()
     {
         int vertNum = mVertexList.size();
-        std::vector<Vector3> normList(vertNum, Vector3(0, 0, 0));
+        std::vector<MagicMath::Vector3> normList(vertNum, MagicMath::Vector3(0, 0, 0));
         int faceNum = mFaceList.size();
         for (int fid = 0; fid < faceNum; fid++)
         {
             FaceIndex faceIdx = mFaceList.at(fid);
-            Vector3 pos0 = mVertexList.at(faceIdx.mIndex[0])->GetPosition();
-            Vector3 pos1 = mVertexList.at(faceIdx.mIndex[1])->GetPosition();
-            Vector3 pos2 = mVertexList.at(faceIdx.mIndex[2])->GetPosition();
-            Vector3 faceNorm = (pos1 - pos0).CrossProduct(pos2 - pos0);
+            MagicMath::Vector3 pos0 = mVertexList.at(faceIdx.mIndex[0])->GetPosition();
+            MagicMath::Vector3 pos1 = mVertexList.at(faceIdx.mIndex[1])->GetPosition();
+            MagicMath::Vector3 pos2 = mVertexList.at(faceIdx.mIndex[2])->GetPosition();
+            MagicMath::Vector3 faceNorm = (pos1 - pos0).CrossProduct(pos2 - pos0);
             normList.at(faceIdx.mIndex[0]) += faceNorm;
             normList.at(faceIdx.mIndex[1]) += faceNorm;
             normList.at(faceIdx.mIndex[2]) += faceNorm;
         }
         for (int vid = 0; vid < vertNum; vid++)
         {
-            Real norLen = normList.at(vid).Normalise();
-            if (norLen < Epsilon)
+            double norLen = normList.at(vid).Normalise();
+            if (norLen < 1.0e-15)
             {
                 DebugLog << "normal lenth too small" << std::endl;
                 normList.at(vid)[0] = 1.0;

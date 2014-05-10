@@ -58,7 +58,7 @@ namespace MagicApp
         MouseMode mMouseMode;
         bool mPickIgnoreBack;
         MagicTool::PickPointTool mPickTool;
-        MagicDGP::Vector3 mDefaultColor;
+        MagicMath::Vector3 mDefaultColor;
         std::set<int> mPickIndexSet;
     };
 
