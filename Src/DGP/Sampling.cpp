@@ -1,5 +1,5 @@
 #include "Sampling.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "flann/flann.h"
 #include "Eigen/Eigenvalues"
@@ -18,19 +18,19 @@ namespace MagicDGP
 
     Point3DSet* Sampling::PointSetWLOPSampling(const Point3DSet* pPS, int sampleNum)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::PointSetWLOPSampling" << std::endl;
+        DebugLog << "Begin Sampling::PointSetWLOPSampling" << std::endl;
         std::vector<MagicMath::Vector3> samplePosList;
         InitialSampling(pPS, sampleNum, samplePosList);
         sampleNum = samplePosList.size();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Finsh Initial Sampling: " << sampleNum << std::endl;
+        DebugLog << "Finsh Initial Sampling: " << sampleNum << std::endl;
         WLOPIteration(pPS, samplePosList);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Finish WLOP Iteration" << std::endl;
+        DebugLog << "Finish WLOP Iteration" << std::endl;
         std::vector<MagicMath::Vector3> norList;
         LocalPCANormalEstimate(samplePosList, norList);
         NormalConsistent(pPS, samplePosList, norList);
         sampleNum = samplePosList.size();
         //NormalSmooth(samplePosList, norList);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Finish Normal Estimate" << std::endl;
+        DebugLog << "Finish Normal Estimate" << std::endl;
         Point3DSet* pNewPS = new Point3DSet;
         for (int i = 0; i < sampleNum; i++)
         {
@@ -46,7 +46,7 @@ namespace MagicDGP
         int delta = psNum / sampleNum;
         if (delta < 1)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sample number less than point set number" << std::endl;
+            DebugLog << "Sample number less than point set number" << std::endl;
             delta = 1;
             sampleNum = psNum;
         }
@@ -62,7 +62,7 @@ namespace MagicDGP
     void Sampling::WLOPIteration(const Point3DSet* pPS, std::vector<MagicMath::Vector3> & samplePosList)
     {
         float timeStart = MagicCore::ToolKit::GetTime();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Begin Sampling::WLOPIteration" << std::endl;
+        DebugLog << "Begin Sampling::WLOPIteration" << std::endl;
         int iNum = samplePosList.size();
         int jNum = pPS->GetPointNumber();
         int iterNum = 20;
@@ -82,7 +82,7 @@ namespace MagicDGP
         //double supportSize = 0.03f;
         double supportSize = pPS->GetDensity() * 500;
         double thetaScale = 100 / supportSize / supportSize;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Density: " << pPS->GetDensity() << " supportSize: " << supportSize << " thetaScale: " << thetaScale << std::endl; 
+        DebugLog << "Density: " << pPS->GetDensity() << " supportSize: " << supportSize << " thetaScale: " << thetaScale << std::endl; 
         MagicMath::Vector3 deltaBBox = bboxMax - bboxMin;
         int resolutionX = int(deltaBBox[0] / supportSize) + 1;
         int resolutionY = int(deltaBBox[1] / supportSize) + 1;
@@ -97,7 +97,7 @@ namespace MagicDGP
             int index = int(deltaPos[0] / supportSize) * resolutionYZ + int(deltaPos[1] / supportSize) * resolutionZ + int(deltaPos[2] / supportSize);
             pcIndexMap[index].push_back(pcIndex);
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Iteration prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "Iteration prepare time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         for (int kk = 0; kk < iterNum; kk++)
         {
             float iterateTimeStart = MagicCore::ToolKit::GetTime();
@@ -186,10 +186,10 @@ namespace MagicDGP
 
             } //end for i
 
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "WLOPIteration: " << kk << " time: " << MagicCore::ToolKit::GetTime() - iterateTimeStart << std::endl;
+            DebugLog << "WLOPIteration: " << kk << " time: " << MagicCore::ToolKit::GetTime() - iterateTimeStart << std::endl;
         }//end for k
 
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Iteration total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "Iteration total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     void Sampling::LocalPCANormalEstimate(const std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
@@ -231,7 +231,7 @@ namespace MagicDGP
         delete []dataSet;
         delete []searchSet;
 
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::LocalPCANormalEstimate, prepare time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        DebugLog << "Sampling::LocalPCANormalEstimate, prepare time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
 
         Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es;
         for (int i = 0; i < pointNum; i++)
@@ -262,7 +262,7 @@ namespace MagicDGP
             double norLen = nor.Normalise();
             if (norLen < 1.0e-15)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Error: small normal length" << std::endl;
+                DebugLog << "Error: small normal length" << std::endl;
             }
             norList.push_back(nor);
         }
@@ -305,7 +305,7 @@ namespace MagicDGP
             delete []pDist;
             pDist = NULL;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::LocalPCANormalEstimate, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        DebugLog << "Sampling::LocalPCANormalEstimate, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
     void Sampling::NormalConsistent(const Point3DSet* pPS, std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
@@ -383,7 +383,7 @@ namespace MagicDGP
             delete []pDist;
             pDist = NULL;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::NormalConsistent, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        DebugLog << "Sampling::NormalConsistent, total time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
     void Sampling::NormalSmooth(std::vector<MagicMath::Vector3>& samplePosList, std::vector<MagicMath::Vector3>& norList)
@@ -465,7 +465,7 @@ namespace MagicDGP
             delete []pDist;
             pDist = NULL;
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sampling::NormalSmooth: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+        DebugLog << "Sampling::NormalSmooth: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
     Point3DSet* Sampling::PointSetUniformSampling(Point3DSet* pPS, int sampleNum)

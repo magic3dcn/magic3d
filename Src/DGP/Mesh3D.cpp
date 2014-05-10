@@ -1,6 +1,6 @@
   //#include "StdAfx.h"
 #include "Mesh3D.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDGP
 {

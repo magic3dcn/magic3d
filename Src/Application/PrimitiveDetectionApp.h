@@ -1,6 +1,6 @@
 #pragma once
 #include "../Common/AppBase.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 #include "PrimitiveDetectionAppUI.h"
 #include "../DGP/Mesh3D.h"
 #include "../DGP/PrimitiveDetection.h"
@@ -39,7 +39,7 @@ namespace MagicApp
 
     private:
         PrimitiveDetectionAppUI mUI;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         MagicDGP::Mesh3D* mpMesh;
         bool mIsPickingMode;
     };

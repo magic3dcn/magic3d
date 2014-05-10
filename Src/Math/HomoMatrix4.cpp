@@ -1,7 +1,7 @@
 //#include "StdAfx.h"
 #include "HomoMatrix4.h"
 #include "Eigen/Geometry"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicMath
 {

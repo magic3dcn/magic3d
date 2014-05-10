@@ -1,6 +1,6 @@
 //#include "StdAfx.h"
 #include "SignedDistanceFunction.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "Parser.h"
 
 namespace MagicDGP
@@ -27,7 +27,7 @@ namespace MagicDGP
 
     void SignedDistanceFunction::UpdateSDF(const Point3DSet* pPC, const MagicMath::HomoMatrix4* pTransform)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SignedDistanceFunction::UpdateSDF" << std::endl;
+        //DebugLog << "SignedDistanceFunction::UpdateSDF" << std::endl;
         int pcNum = pPC->GetPointNumber();
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
@@ -120,12 +120,12 @@ namespace MagicDGP
                 }
             }
         }
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PC index: " << mPCIndex.size() << std::endl;
+        //DebugLog << "PC index: " << mPCIndex.size() << std::endl;
     }
 
     void SignedDistanceFunction::UpdateFineSDF(const Point3DSet* pPC, const MagicMath::HomoMatrix4* pTransform)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SignedDistanceFunction::UpdateFineSDF" << std::endl;
+        DebugLog << "SignedDistanceFunction::UpdateFineSDF" << std::endl;
         int pcNum = pPC->GetPointNumber();
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
@@ -222,12 +222,12 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "PC index: " << mPCIndex.size() << std::endl;
+        DebugLog << "PC index: " << mPCIndex.size() << std::endl;
     }
 
     Point3DSet* SignedDistanceFunction::ExtractPointCloud()
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SignedDistanceFunction::PointCloudPrediction" << std::endl;
+        DebugLog << "SignedDistanceFunction::PointCloudPrediction" << std::endl;
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
@@ -271,7 +271,7 @@ namespace MagicDGP
                 }
                 else
                 {
-                   // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Zero" << std::endl;
+                   // DebugLog << "Normal Zero: Zero" << std::endl;
                     //norZero[2] = -1.f;
                     //posList.push_back(posZero);
                     //norList.push_back(norZero);
@@ -320,7 +320,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: X Direction" << std::endl;
+                        DebugLog << "Normal Zero: X Direction" << std::endl;
                     }
                 }
             }
@@ -365,7 +365,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Y direction" << std::endl;
+                        DebugLog << "Normal Zero: Y direction" << std::endl;
                     }
                 }
             }
@@ -411,14 +411,14 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Z Direction" << std::endl;
+                        DebugLog << "Normal Zero: Z Direction" << std::endl;
                     }
                 }
             }
         }
 
         int posNum = posList.size();
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Export point size: " << posNum << std::endl;
+        DebugLog << "Export point size: " << posNum << std::endl;
         if (posNum > 0)
         {
             Point3DSet* pPC = new Point3DSet;
@@ -438,7 +438,7 @@ namespace MagicDGP
 
     Point3DSet* SignedDistanceFunction::ExtractFinePointCloud()
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "SignedDistanceFunction::ExtractFinePointCloud" << std::endl;
+        //DebugLog << "SignedDistanceFunction::ExtractFinePointCloud" << std::endl;
         float deltaX = (mMaxX - mMinX) / mResolutionX;
         float deltaY = (mMaxY - mMinY) / mResolutionY;
         float deltaZ = (mMaxZ - mMinZ) / mResolutionZ;
@@ -482,7 +482,7 @@ namespace MagicDGP
                 }
                 else
                 {
-                   // MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Zero" << std::endl;
+                   // DebugLog << "Normal Zero: Zero" << std::endl;
                     //norZero[2] = -1.f;
                     //posList.push_back(posZero);
                     //norList.push_back(norZero);
@@ -532,7 +532,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: X Direction" << std::endl;
+                        DebugLog << "Normal Zero: X Direction" << std::endl;
                     }
                 }
             }
@@ -578,7 +578,7 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Y direction" << std::endl;
+                        DebugLog << "Normal Zero: Y direction" << std::endl;
                     }
                 }
             }
@@ -625,14 +625,14 @@ namespace MagicDGP
                     }
                     else
                     {
-                        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Normal Zero: Z Direction" << std::endl;
+                        DebugLog << "Normal Zero: Z Direction" << std::endl;
                     }
                 }
             }
         }
 
         int posNum = posList.size();
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Export point size: " << posNum << std::endl;
+        //DebugLog << "Export point size: " << posNum << std::endl;
         if (posNum > 0)
         {
             Point3DSet* pPC = new Point3DSet;

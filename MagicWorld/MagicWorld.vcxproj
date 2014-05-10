@@ -148,7 +148,6 @@
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
     <ClInclude Include="..\Src\Common\InputSystem.h" />
-    <ClInclude Include="..\Src\Common\LogSystem.h" />
     <ClInclude Include="..\Src\Common\MagicFramework.h" />
     <ClInclude Include="..\Src\Common\MagicListener.h" />
     <ClInclude Include="..\Src\Common\MagicOgre.h" />
@@ -161,12 +160,14 @@
     <ClInclude Include="..\Src\DGP\Mesh3D.h" />
     <ClInclude Include="..\Src\DGP\MeshReconstruction.h" />
     <ClInclude Include="..\Src\DGP\Parser.h" />
+    <ClInclude Include="..\Src\DGP\PickPointTool.h" />
     <ClInclude Include="..\Src\DGP\PointCloud3D.h" />
     <ClInclude Include="..\Src\DGP\PrimitiveDetection.h" />
     <ClInclude Include="..\Src\DGP\Registration.h" />
     <ClInclude Include="..\Src\DGP\Relief.h" />
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
+    <ClInclude Include="..\Src\DGP\ViewTool.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
@@ -179,9 +180,8 @@
     <ClInclude Include="..\Src\Math\HomoVector4.h" />
     <ClInclude Include="..\Src\Math\Vector2.h" />
     <ClInclude Include="..\Src\Math\Vector3.h" />
-    <ClInclude Include="..\Src\Tool\PickPointTool.h" />
+    <ClInclude Include="..\Src\Tool\LogSystem.h" />
     <ClInclude Include="..\Src\Tool\ThreadPool.h" />
-    <ClInclude Include="..\Src\Tool\ViewTool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -287,7 +287,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\Common\InputSystem.cpp" />
-    <ClCompile Include="..\Src\Common\LogSystem.cpp" />
     <ClCompile Include="..\Src\Common\MagicFramework.cpp" />
     <ClCompile Include="..\Src\Common\MagicListener.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -310,12 +309,18 @@
     <ClCompile Include="..\Src\DGP\Mesh3D.cpp" />
     <ClCompile Include="..\Src\DGP\MeshReconstruction.cpp" />
     <ClCompile Include="..\Src\DGP\Parser.cpp" />
+    <ClCompile Include="..\Src\DGP\PickPointTool.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\DGP\PointCloud3D.cpp" />
     <ClCompile Include="..\Src\DGP\PrimitiveDetection.cpp" />
     <ClCompile Include="..\Src\DGP\Registration.cpp" />
     <ClCompile Include="..\Src\DGP\Relief.cpp" />
     <ClCompile Include="..\Src\DGP\Sampling.cpp" />
     <ClCompile Include="..\Src\DGP\SignedDistanceFunction.cpp" />
+    <ClCompile Include="..\Src\DGP\ViewTool.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
@@ -328,15 +333,8 @@
     <ClCompile Include="..\Src\Math\HomoVector4.cpp" />
     <ClCompile Include="..\Src\Math\Vector2.cpp" />
     <ClCompile Include="..\Src\Math\Vector3.cpp" />
-    <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\Src\Tool\LogSystem.cpp" />
     <ClCompile Include="..\Src\Tool\ThreadPool.cpp" />
-    <ClCompile Include="..\Src\Tool\ViewTool.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

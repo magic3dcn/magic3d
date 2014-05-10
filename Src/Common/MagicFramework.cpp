@@ -6,7 +6,7 @@
 #include "ResourceManager.h"
 #include "AppManager.h"
 #include "GUISystem.h"
-#include "LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicCore
 {
@@ -45,7 +45,7 @@ namespace MagicCore
 
     void MagicFramework::Update(float timeElapsed)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MagicFramework update: " << mTimeAccumulate << std::endl;
+        //DebugLog << "MagicFramework update: " << mTimeAccumulate << std::endl;
         InputSystem::GetSingleton()->Update();
         AppManager::GetSingleton()->Update(timeElapsed);
         mTimeAccumulate += timeElapsed;

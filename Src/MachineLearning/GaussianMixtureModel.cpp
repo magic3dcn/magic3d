@@ -1,7 +1,7 @@
 #include "GaussianMixtureModel.h"
 #include "Clustering.h"
 #include "Eigen/Dense"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicML
 {

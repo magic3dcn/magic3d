@@ -1,6 +1,6 @@
 ////#include "StdAfx.h"
 #include "InputSystem.h"
-#include "LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "MagicListener.h"
 //#include "../Common/MagicOgre.h"
 #include "OgreRenderWindow.h"
@@ -24,7 +24,7 @@ namespace MagicCore
 
     void InputSystem::Init(Ogre::RenderWindow* pWin)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "InputSystem init....";
+        DebugLog << "InputSystem init....";
         // OIS setup
         OIS::ParamList paramList;
         size_t windowHnd = 0;
@@ -59,12 +59,12 @@ namespace MagicCore
         const OIS::MouseState& mouseState = mpMouse->getMouseState();
         mouseState.width = width;
         mouseState.height = height;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "OK" << std::endl;
+        DebugLog << "OK" << std::endl;
     }
 
     void InputSystem::Update()
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    InputSystem::Update" << std::endl;
+        //DebugLog << "    InputSystem::Update" << std::endl;
         mpMouse->capture();
         mpKeyboard->capture();
         Ogre::WindowEventUtilities::messagePump();

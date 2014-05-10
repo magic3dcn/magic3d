@@ -3,7 +3,7 @@
 #include "Eigen/Eigenvalues"
 #include "Eigen/Sparse"
 #include "Eigen/SparseLU"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -902,7 +902,7 @@ namespace MagicDGP
         solver.compute(matA);
         if(solver.info()!= Eigen::Success) 
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: SuperLU Failed" << std::endl;
+            DebugLog << "Relief: SuperLU Failed" << std::endl;
         }
         Eigen::VectorXd resX = solver.solve(bx);
         Eigen::VectorXd resY = solver.solve(by);

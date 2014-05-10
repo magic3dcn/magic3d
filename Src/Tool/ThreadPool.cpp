@@ -1,5 +1,6 @@
 #include "ThreadPool.h"
 #include <process.h>
+#include "LogSystem.h"
 
 namespace MagicTool
 {

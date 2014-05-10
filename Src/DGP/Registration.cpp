@@ -3,7 +3,7 @@
 #include "Eigen/Dense"
 //#include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -41,11 +41,11 @@ namespace MagicDGP
             float timeCorres = MagicCore::ToolKit::GetTime();
             std::vector<int> correspondIndex;
             ICPFindCorrespondance(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
+            DebugLog << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
             float timeMinimize = MagicCore::ToolKit::GetTime();
             MagicMath::HomoMatrix4 transDelta;
             ICPEnergyMinimization(pRef, pOrigin, pTransRes, sampleIndex, correspondIndex, &transDelta);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
+            DebugLog << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
             //*pTransRes *= transDelta;
             *pTransRes = transDelta * (*pTransRes);
             //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
@@ -56,14 +56,14 @@ namespace MagicDGP
             //    fabs(transDelta.GetValue(1, 3)) < 1.f && 
             //    fabs(transDelta.GetValue(2, 3)) < 1.f)
             //{
-            //    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ICP iterator number: " << k + 1 << std::endl;
+            //    DebugLog << "ICP iterator number: " << k + 1 << std::endl;
             //    break;
             //}
             if (fabs(transDelta.GetValue(0, 3)) < 0.01f && 
                 fabs(transDelta.GetValue(1, 3)) < 0.01f && 
                 fabs(transDelta.GetValue(2, 3)) < 0.01f)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ICP iterator number: " << k + 1 << std::endl;
+                DebugLog << "ICP iterator number: " << k + 1 << std::endl;
                 break;
             }
         }
@@ -71,7 +71,7 @@ namespace MagicDGP
 
     void Registration::ICPSamplePoint(const Point3DSet* pPC, std::vector<int>& sampleIndex)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Registration::ICPSamplePoint" << std::endl;
+        //DebugLog << "Registration::ICPSamplePoint" << std::endl;
         int pcNum = pPC->GetPointNumber();
         static int startIndex = 0;
         int sampleNum;
@@ -147,13 +147,13 @@ namespace MagicDGP
 	    mSearchPara.checks = 64;
         float speedup;
         mFlannIndex = flann_build_index(mDataSet, refNum, dim, &speedup, &mSearchPara);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "      ICPInitRefData: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "      ICPInitRefData: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
     }
 
     void Registration::ICPFindCorrespondance(const Point3DSet* pRef, const Point3DSet* pOrigin, const MagicMath::HomoMatrix4* pTransInit,
             std::vector<int>& sampleIndex,  std::vector<int>& correspondIndex)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Registration::ICPFindCorrespondance" << std::endl;
+        //DebugLog << "Registration::ICPFindCorrespondance" << std::endl;
         //float timeStart = MagicCore::ToolKit::GetTime();
         /*int dim = 3;
         int refNum = pRef->GetPointNumber();
@@ -174,7 +174,7 @@ namespace MagicDGP
 	    searchPara.checks = 64;
         float speedup;
         flann_index_t indexId = flann_build_index(dataSet, refNum, dim, &speedup, &searchPara);
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        Flann: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;*/
+        DebugLog << "        Flann: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;*/
         int nn = 1;
         int dim = 3;
         int searchNum = sampleIndex.size();
@@ -204,19 +204,19 @@ namespace MagicDGP
         {
             if (pDist[i] > distThre)
             {
-        //        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Large dist: " << pDist[i] << std::endl;
+        //        DebugLog << "Large dist: " << pDist[i] << std::endl;
                 continue;
             }
             float norDist = pRef->GetPoint(pIndex[i])->GetNormal() * (pTransInit->RotateVector( pOrigin->GetPoint(sampleIndexBak.at(i))->GetNormal() ));
             if (norDist < norThre || norDist > 1.0)
             {
-         //       MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Large Nor: " << norDist << std::endl;
+         //       DebugLog << "Large Nor: " << norDist << std::endl;
                 continue;
             }
             sampleIndex.push_back(sampleIndexBak.at(i));
             correspondIndex.push_back(pIndex[i]);
         }
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Sample Number: " << sampleIndex.size() << std::endl;
+        //DebugLog << "Sample Number: " << sampleIndex.size() << std::endl;
         delete []pIndex;
         delete []pDist;
     }
@@ -224,7 +224,7 @@ namespace MagicDGP
     void Registration::ICPEnergyMinimization(const Point3DSet* pRef, const Point3DSet* pOrigin, const MagicMath::HomoMatrix4* pTransInit, 
             std::vector<int>& sampleIndex, std::vector<int>& correspondIndex, MagicMath::HomoMatrix4* pTransDelta)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Registration::ICPEnergyMinimization" << std::endl;
+        //DebugLog << "Registration::ICPEnergyMinimization" << std::endl;
         int pcNum = sampleIndex.size();
         Eigen::MatrixXd matA(pcNum, 6);
         Eigen::VectorXd vecB(pcNum, 1);
@@ -257,10 +257,10 @@ namespace MagicDGP
         pTransDelta->SetValue(2, 1, res(0));
         pTransDelta->SetValue(2, 3, res(5));
         //print result
-        /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "MatA: " << std::endl;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << 1 << " " << -res(2) << " " << res(1) << " " << res(3) << std::endl;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;*/
+        /*DebugLog << "MatA: " << std::endl;
+        DebugLog << 1 << " " << -res(2) << " " << res(1) << " " << res(3) << std::endl;
+        DebugLog << res(2) << " " << 1 << " " << -res(0) << " " << res(4) << std::endl;
+        DebugLog << -res(1) << " " << res(0) << " " << 1 << " " << res(5) << std::endl;*/
     }
 
     void Registration::ICPRegistrateEnhance(const Point3DSet* pRefPC, Point3DSet* pNewPC, const MagicMath::HomoMatrix4* pTransInit, MagicMath::HomoMatrix4* pTransRes, openni::VideoStream& depthStream)
@@ -271,15 +271,15 @@ namespace MagicDGP
         {
             std::vector<int> sampleIndex;
             ICPSamplePointEnhance(pRefPC, sampleIndex, pTransRes, depthStream);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPSamplePointEnhance" << std::endl;
+            DebugLog << "        ICPSamplePointEnhance" << std::endl;
             float timeCorres = MagicCore::ToolKit::GetTime();
             std::vector<int> correspondIndex;
             ICPFindCorrespondanceEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, depthStream);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
+            DebugLog << "        ICPCorres: " << MagicCore::ToolKit::GetTime() - timeCorres << std::endl;
             float timeMinimize = MagicCore::ToolKit::GetTime();
             MagicMath::HomoMatrix4 transDelta;
             ICPEnergyMinimizationEnhance(pRefPC, pNewPC, pTransRes, sampleIndex, correspondIndex, &transDelta);
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
+            DebugLog << "        ICPMinimize: " << MagicCore::ToolKit::GetTime() - timeMinimize << std::endl;
             *pTransRes = transDelta * (*pTransRes);
             //MagicCore::RenderSystem::GetSingleton()->RenderPoint3DSet("newPC", "SimplePoint_Green", pOrigin, *pTransRes);
             //MagicCore::RenderSystem::GetSingleton()->Update();
@@ -287,7 +287,7 @@ namespace MagicDGP
                 fabs(transDelta.GetValue(1, 3)) < 0.01f && 
                 fabs(transDelta.GetValue(2, 3)) < 0.01f)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ICP iterator number: " << k + 1 << std::endl;
+                DebugLog << "ICP iterator number: " << k + 1 << std::endl;
                 break;
             }
         }
@@ -305,14 +305,14 @@ namespace MagicDGP
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
             if (res != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        res != openni::STATUS_OK: " << res << std::endl;
+                DebugLog << "        res != openni::STATUS_OK: " << res << std::endl;
                 continue;
             }
             if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
             {
                 continue;
             }
-            //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "depth: " << depthX << " " << depthY << " " << depthZ << std::endl;
+            //DebugLog << "depth: " << depthX << " " << depthY << " " << depthZ << std::endl;
             if (depthCache.at(depthX * mDepthResolutionY + depthY) == 0)
             {
                 depthCache.at(depthX * mDepthResolutionY + depthY) = depthZ;
@@ -330,7 +330,7 @@ namespace MagicDGP
             openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos[0], pos[1], pos[2], &depthX, &depthY, &depthZ);
             if (res != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "        res != openni::STATUS_OK: " << res << std::endl;
+                DebugLog << "        res != openni::STATUS_OK: " << res << std::endl;
                 continue;
             }
             if (depthX > mDepthResolutionX || depthX < 0 || depthY > mDepthResolutionY || depthY < 0)
@@ -402,7 +402,7 @@ namespace MagicDGP
             }
         }
         sampleIndex = newSampleIndex;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    sample number: " << sampleIndex.size() << std::endl;
+        DebugLog << "    sample number: " << sampleIndex.size() << std::endl;
     }
 
     void Registration::ICPEnergyMinimizationEnhance(const Point3DSet* pRefPC, const Point3DSet* pNewPC, const MagicMath::HomoMatrix4* pTransInit,

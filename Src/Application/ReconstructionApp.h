@@ -4,7 +4,7 @@
 #include "OpenNI.h"
 #include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 
 namespace MagicApp
 {
@@ -43,7 +43,7 @@ namespace MagicApp
 
     private:
         ReconstructionAppUI mUI;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         bool mUsingViewTool;
         openni::Device mDevice;
         openni::VideoStream mDepthStream;

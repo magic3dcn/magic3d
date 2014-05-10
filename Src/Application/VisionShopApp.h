@@ -3,7 +3,7 @@
 #include "VisionShopAppUI.h"
 #include "opencv2/opencv.hpp"
 #include "../DGP/PointCloud3D.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 
 namespace MagicApp
 {
@@ -62,7 +62,7 @@ namespace MagicApp
         MagicDGP::Point3DSet* mpPointSet;
         bool mIsPointSetMode;
         bool mIsNewImage;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         std::vector<int> mDeformationMarks;
         bool mIsDeformMarkSelected;
         int mSelectedDeformMarkIndex;

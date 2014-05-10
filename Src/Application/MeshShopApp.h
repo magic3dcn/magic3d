@@ -1,9 +1,9 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "MeshShopAppUI.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 #include "../DGP/Mesh3D.h"
-#include "../Tool/PickPointTool.h"
+#include "../DGP/PickPointTool.h"
 
 namespace MagicApp
 {
@@ -53,11 +53,11 @@ namespace MagicApp
 
     private:
         MeshShopAppUI mUI;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         MagicDGP::LightMesh3D* mpLightMesh;
         MouseMode mMouseMode;
         bool mPickIgnoreBack;
-        MagicTool::PickPointTool mPickTool;
+        MagicDGP::PickPointTool mPickTool;
         MagicMath::Vector3 mDefaultColor;
         std::set<int> mPickIndexSet;
     };

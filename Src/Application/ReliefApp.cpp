@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ReliefApp.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
@@ -45,13 +45,31 @@ namespace MagicApp
 
     bool ReliefApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        mViewTool.MouseMoved(arg);
+        MagicDGP::ViewTool::MouseMode mm;
+        if (arg.state.buttonDown(OIS::MB_Left))
+        {
+            mm = MagicDGP::ViewTool::MM_Left_Down;
+        }
+        else if (arg.state.buttonDown(OIS::MB_Middle))
+        {
+            mm = MagicDGP::ViewTool::MM_Middle_Down;
+        }
+        else if (arg.state.buttonDown(OIS::MB_Right))
+        {
+            mm = MagicDGP::ViewTool::MM_Right_Down;
+        }
+        else
+        {
+            mm = MagicDGP::ViewTool::MM_None;
+        }
+        mViewTool.MouseMoved(arg.state.X.abs, arg.state.Y.abs, mm);
+
         return true;
     }
 
     bool ReliefApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        mViewTool.MousePressed(arg);
+        mViewTool.MousePressed(arg.state.X.abs, arg.state.Y.abs);
         return true;
     }
 

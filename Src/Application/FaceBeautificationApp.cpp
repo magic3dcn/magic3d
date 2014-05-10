@@ -1,7 +1,7 @@
 #include "FaceBeautificationApp.h"
 #include "flann/flann.h"
 #include "../DIP/Deformation.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DIP/Saliency.h"
 
@@ -27,7 +27,7 @@ namespace MagicApp
         }
     }
 
-    void FaceFeaturePoint::Load(const std::string fileName)
+    void FaceFeaturePoint::Load(const std::string& fileName)
     {
         std::ifstream fin(fileName);
         int leftBrowNum;
@@ -1437,7 +1437,12 @@ namespace MagicApp
         mPca.Analyse(pcaData, dataDim, pcaDim);
 
         //Save Pca
-        mPca.Save();
+        std::string fileName;
+        char filterName[] = "PCA Files(*.pca)\0*.pca\0";
+        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+        {
+            mPca.Save(fileName);
+        }
 
         //free memory
         for (int fileId = 0; fileId < fileNum; fileId++)
@@ -1451,7 +1456,12 @@ namespace MagicApp
 
     void FaceBeautificationApp::LoadPca(void)
     {
-        mPca.Load();
+        std::string fileName;
+        char filterName[] = "PCA Files(*.pca)\0*.pca\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mPca.Load(fileName);
+        }
     }
 
     void FaceBeautificationApp::ObservePca(void)

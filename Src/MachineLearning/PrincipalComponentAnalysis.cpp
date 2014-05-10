@@ -1,7 +1,7 @@
 #include "PrincipalComponentAnalysis.h"
 #include "Eigen/Eigenvalues"
 #include "../Common/ToolKit.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicML
 {
@@ -133,63 +133,53 @@ namespace MagicML
         return projectVec;
     }
 
-    void PrincipalComponentAnalysis::Load(void)
+    void PrincipalComponentAnalysis::Load(const std::string& fileName)
     {
-        std::string fileName;
-        char filterName[] = "PCA Files(*.pca)\0*.pca\0";
-        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        Clear();
+        std::ifstream fin(fileName);
+        fin >> mDataDim >> mPcaDim;
+            
+        mEigenValues.resize(mPcaDim);
+        for (int vid = 0; vid < mPcaDim; vid++)
         {
-            Clear();
-            std::ifstream fin(fileName);
-            fin >> mDataDim >> mPcaDim;
-            
-            mEigenValues.resize(mPcaDim);
-            for (int vid = 0; vid < mPcaDim; vid++)
-            {
-                fin >> mEigenValues.at(vid);
-            }
-
-            int vSize = mDataDim * mPcaDim;
-            mEigenVectors.resize(vSize);
-            for (int vid = 0; vid < vSize; vid++)
-            {
-                fin >> mEigenVectors.at(vid);
-            }
-            
-            mAvgVector.resize(mDataDim);
-            for (int vid = 0; vid < mDataDim; vid++)
-            {
-                fin >> mAvgVector.at(vid);
-            }
-            fin.close();
+            fin >> mEigenValues.at(vid);
         }
+
+        int vSize = mDataDim * mPcaDim;
+        mEigenVectors.resize(vSize);
+        for (int vid = 0; vid < vSize; vid++)
+        {
+            fin >> mEigenVectors.at(vid);
+        }
+            
+        mAvgVector.resize(mDataDim);
+        for (int vid = 0; vid < mDataDim; vid++)
+        {
+            fin >> mAvgVector.at(vid);
+        }
+        fin.close();
     }
 
-    void PrincipalComponentAnalysis::Save(void)
+    void PrincipalComponentAnalysis::Save(const std::string& fileName)
     {
-        std::string fileName;
-        char filterName[] = "PCA Files(*.pca)\0*.pca\0";
-        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+        std::ofstream fout(fileName);
+        fout << mDataDim << " " << mPcaDim << std::endl;
+            
+        for (int vid = 0; vid < mPcaDim; vid++)
         {
-            std::ofstream fout(fileName);
-            fout << mDataDim << " " << mPcaDim << std::endl;
-            
-            for (int vid = 0; vid < mPcaDim; vid++)
-            {
-                fout << mEigenValues.at(vid) << std::endl;
-            }
-
-            int vSize = mDataDim * mPcaDim;
-            for (int vid = 0; vid < vSize; vid++)
-            {
-                fout << mEigenVectors.at(vid) << " ";
-            }
-            
-            for (int vid = 0; vid < mDataDim; vid++)
-            {
-                fout << mAvgVector.at(vid) << " ";
-            }
-            fout.close();
+            fout << mEigenValues.at(vid) << std::endl;
         }
+
+        int vSize = mDataDim * mPcaDim;
+        for (int vid = 0; vid < vSize; vid++)
+        {
+            fout << mEigenVectors.at(vid) << " ";
+        }
+            
+        for (int vid = 0; vid < mDataDim; vid++)
+        {
+            fout << mAvgVector.at(vid) << " ";
+        }
+        fout.close();
     }
 }

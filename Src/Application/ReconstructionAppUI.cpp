@@ -1,6 +1,6 @@
 #include "ReconstructionAppUI.h"
 #include "../Common/ResourceManager.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/AppManager.h"
 #include "../Common/ToolKit.h"
 #include "ReconstructionApp.h"
@@ -147,7 +147,7 @@ namespace MagicApp
 
     void ReconstructionAppUI::PointSetAlign(MyGUI::Widget* pSender)
     {
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ReconstructionAppUI::PointSetAlign" << std::endl;
+        DebugLog << "ReconstructionAppUI::PointSetAlign" << std::endl;
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         pRA->PointSetRegistration();

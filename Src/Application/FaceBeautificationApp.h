@@ -25,7 +25,7 @@ namespace MagicApp
         FaceFeaturePoint();
         
         void Load();
-        void Load(const std::string fileName);
+        void Load(const std::string& fileName);
         void Load(int browNum, int eyeNum, int noseNum, int mouseNum, int borderNum, const std::vector<int>& posList);
         void Save();
         bool Select(int hid, int wid);

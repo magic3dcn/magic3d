@@ -1,6 +1,6 @@
 #include "Saliency.h"
 #include "../Math/Vector3.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDIP
 {

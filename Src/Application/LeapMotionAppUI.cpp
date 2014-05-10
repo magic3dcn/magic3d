@@ -1,6 +1,6 @@
 #include "LeapMotionAppUI.h"
 #include "../Common/ResourceManager.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
 #include "LeapMotionApp.h"

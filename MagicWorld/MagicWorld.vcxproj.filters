@@ -105,9 +105,6 @@
     <ClInclude Include="..\Src\Common\RenderSystem.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Common\LogSystem.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Common\AppBase.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -128,9 +125,6 @@
     </ClInclude>
     <ClInclude Include="..\Src\DGP\Parser.h">
       <Filter>DGP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Tool\ViewTool.h">
-      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\HomepageUI.h">
       <Filter>Application\Homepage</Filter>
@@ -261,9 +255,6 @@
     <ClInclude Include="..\Src\DGP\Curvature.h">
       <Filter>DGP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Tool\PickPointTool.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Application\PointShopApp.h">
       <Filter>Application\PointShopApp</Filter>
     </ClInclude>
@@ -351,6 +342,15 @@
     <ClInclude Include="..\Src\Math\HomoVector4.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DGP\PickPointTool.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DGP\ViewTool.h">
+      <Filter>DGP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tool\LogSystem.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -369,9 +369,6 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Common\RenderSystem.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Common\LogSystem.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Common\AppBase.cpp">
@@ -394,9 +391,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Parser.cpp">
       <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Tool\ViewTool.cpp">
-      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\Homepage.cpp">
       <Filter>Application\Homepage</Filter>
@@ -478,9 +472,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\DGP\Curvature.cpp">
       <Filter>DGP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Tool\PickPointTool.cpp">
-      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\PointShopApp.cpp">
       <Filter>Application\PointShopApp</Filter>
@@ -565,6 +556,15 @@
     </ClCompile>
     <ClCompile Include="..\Src\Math\HomoVector4.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\PickPointTool.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DGP\ViewTool.cpp">
+      <Filter>DGP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tool\LogSystem.cpp">
+      <Filter>Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

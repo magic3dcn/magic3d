@@ -3,7 +3,7 @@
 #include "../Common/AppBase.h"
 #include "LeapMotionAppUI.h"
 #include "../DGP/Mesh3D.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 
 namespace MagicApp
 {
@@ -59,7 +59,7 @@ namespace MagicApp
 
     private:
         LeapMotionAppUI mUI;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         MagicDGP::Mesh3D* mpMesh;
         Leap::Controller mLeapCtrl;
         Leap::Frame mLastFrame;

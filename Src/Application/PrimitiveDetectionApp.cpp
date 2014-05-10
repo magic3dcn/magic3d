@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PrimitiveDetectionApp.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
@@ -8,10 +8,9 @@
 #include "../DGP/Curvature.h"
 #include "../DGP/Consolidation.h"
 #include "../DGP/Sampling.h"
-#include "../Tool/PickPointTool.h"
+#include "../DGP/PickPointTool.h"
 #include "../Math/HomoMatrix4.h"
 #include "../Tool/ThreadPool.h"
-//#include "../Common/MagicOgre.h"
 
 namespace
 {
@@ -116,7 +115,24 @@ namespace MagicApp
     {
         if (mIsPickingMode == false)
         {
-            mViewTool.MouseMoved(arg);
+            MagicDGP::ViewTool::MouseMode mm;
+            if (arg.state.buttonDown(OIS::MB_Left))
+            {
+                mm = MagicDGP::ViewTool::MM_Left_Down;
+            }
+            else if (arg.state.buttonDown(OIS::MB_Middle))
+            {
+                mm = MagicDGP::ViewTool::MM_Middle_Down;
+            }
+            else if (arg.state.buttonDown(OIS::MB_Right))
+            {
+                mm = MagicDGP::ViewTool::MM_Right_Down;
+            }
+            else
+            {
+                mm = MagicDGP::ViewTool::MM_None;
+            }
+            mViewTool.MouseMoved(arg.state.X.abs, arg.state.Y.abs, mm);
         }
 
         return true;
@@ -126,7 +142,7 @@ namespace MagicApp
     {
         if (mIsPickingMode == false)
         {
-            mViewTool.MousePressed(arg);
+            mViewTool.MousePressed(arg.state.X.abs, arg.state.Y.abs);
         }
 
         return true;
@@ -140,7 +156,7 @@ namespace MagicApp
             {
                 MagicMath::Vector2 mousePos(arg.state.X.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getWidth() - 1.0, 
                     1.0 - arg.state.Y.abs * 2.0 / MagicCore::RenderSystem::GetSingleton()->GetRenderWindow()->getHeight());
-                int pickIndex = MagicTool::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos, true);
+                int pickIndex = MagicDGP::PickPointTool::PickMeshVertexByPoint(mpMesh, mousePos, true);
                 if (pickIndex != -1)
                 {
                     PrimitiveSelection(pickIndex);
@@ -421,7 +437,7 @@ namespace MagicApp
             }
             else
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "No Type" << std::endl;
+                DebugLog << "No Type" << std::endl;
             }
         }
         else
@@ -489,7 +505,7 @@ namespace MagicApp
             //{
             //    cv = 0.6;
             //}
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Gaussian: " << cv << std::endl;
+            DebugLog << "Gaussian: " << cv << std::endl;
             MagicMath::Vector3 color = MagicCore::ToolKit::ColorCoding(cv);
             mpMesh->GetVertex(vid)->SetColor(color);
         }
@@ -724,7 +740,7 @@ namespace MagicApp
                 break;
             }
         }*/
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        DebugLog << "CalNormalDeviation: total time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         MagicCore::RenderSystem::GetSingleton()->RenderMesh3D("Mesh3D", "MyCookTorrance", mpMesh);
     }
 

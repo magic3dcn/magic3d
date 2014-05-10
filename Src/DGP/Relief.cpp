@@ -3,7 +3,7 @@
 #include "Eigen/Sparse"
 #include "Eigen/SparseLU"
 #include "../Common/ToolKit.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDGP
 {
@@ -272,7 +272,7 @@ namespace MagicDGP
                 }
             }
         }
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relief: Solve Matrix" << std::endl;
+        DebugLog << "Relief: Solve Matrix" << std::endl;
         Eigen::SparseMatrix<double, Eigen::ColMajor> matA(vertNum,vertNum);
         matA.setFromTriplets(tripletList.begin(), tripletList.end());
         Eigen::SparseLU<Eigen::SparseMatrix<double, Eigen::ColMajor> > solver;

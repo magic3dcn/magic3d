@@ -18,7 +18,7 @@
 #include "omp.h"
 #include <stdarg.h>
 #include "MultiGridOctreeData.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDependence
 {
@@ -42,7 +42,7 @@ namespace MagicDependence
         pPC->GetBBox(bboxMin, bboxMax);
         Real pcLen = (bboxMax - bboxMin).Length();
         Real relativeDensity = pcDensity / pcLen;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relative density: " << relativeDensity << std::endl;
+        DebugLog << "Relative density: " << relativeDensity << std::endl;
         if (relativeDensity > 1.0e-4)
         {
             char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
@@ -68,7 +68,7 @@ namespace MagicDependence
         pPC->GetBBox(bboxMin, bboxMax);
         Real pcLen = (bboxMax - bboxMin).Length();
         Real relativeDensity = pcDensity / pcLen;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Relative density: " << relativeDensity << std::endl;
+        DebugLog << "Relative density: " << relativeDensity << std::endl;
         if (relativeDensity > 1.0e-4)
         {
             char* argv2[] = {"--in", "pc.ply", "--out", "pct.ply", "--trim", "6", "--aRatio", "0"};
@@ -304,8 +304,8 @@ namespace MagicDependence
             polygons.clear();
             int incorePointNum = int( mesh.inCorePoints.size() );
             int outofcorePointNum = mesh.outOfCorePointCount();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "incorePointNum: " << incorePointNum << std::endl;
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "outofcorePointNum: " << outofcorePointNum << std::endl;
+            DebugLog << "incorePointNum: " << incorePointNum << std::endl;
+            DebugLog << "outofcorePointNum: " << outofcorePointNum << std::endl;
             mesh.resetIterator();
             for(int pIndex = 0 ; pIndex < incorePointNum ; pIndex++ )
             {
@@ -322,7 +322,7 @@ namespace MagicDependence
                 //ply_put_element(ply, (void *) &vertex);
             }
             int polyNum = mesh.polygonCount();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "polyNum: " << polyNum << std::endl;
+            DebugLog << "polyNum: " << polyNum << std::endl;
             for (int pIndex = 0; pIndex < polyNum; pIndex++)
             {
                 std::vector< CoredVertexIndex > coreIndex;
@@ -341,12 +341,12 @@ namespace MagicDependence
                 }
                 if (coreIndex.size() != 3)
                 {
-                    MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Error: coreIndex.size: " << coreIndex.size() << std::endl;
+                    DebugLog << "Error: coreIndex.size: " << coreIndex.size() << std::endl;
                 }
                 polygons.push_back(pureIndex);
             }
             //just for test
-            /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Export inter object" << std::endl;
+            /*DebugLog << "Export inter object" << std::endl;
             std::ofstream fout("pc_inter.obj");
             for (int pIndex = 0; pIndex < vertices.size(); pIndex++)
             {

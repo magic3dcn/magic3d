@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "RenderSystem.h"
-#include "LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "MagicListener.h"
 //#include "../Common/MagicOgre.h"
 

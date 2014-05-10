@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <vector>
 #include <list>
-#include "../Common/LogSystem.h"
 
 namespace MagicTool
 {

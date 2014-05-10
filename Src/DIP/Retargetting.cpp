@@ -1,7 +1,6 @@
 #include "Retargetting.h"
 #include <vector>
 #include <math.h>
-#include "../Common/ToolKit.h"
 
 namespace MagicDIP
 {

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ScanningApp.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
@@ -146,19 +146,19 @@ namespace MagicApp
         openni::Status rc  = mRecorder.create(fileName.c_str());
         if (rc != openni::STATUS_OK)
         {
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Recorder create failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            DebugLog << "Recorder create failed: " << openni::OpenNI::getExtendedError() << std::endl;
         }
         if (mRecorder.isValid())
         {
             rc = mRecorder.attach(mColorStream, true);
             if (rc != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "ColorStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                DebugLog << "ColorStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
             }
             rc = mRecorder.attach(mDepthStream, false);
             if (rc != openni::STATUS_OK)
             {
-                MagicLog(MagicCore::LOGLEVEL_DEBUG) << "DepthStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
+                DebugLog << "DepthStream attach failed: " << openni::OpenNI::getExtendedError() << std::endl;
             }
             mRecorder.start();
         }

@@ -1,5 +1,5 @@
 #include "ReliefAppUI.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/AppManager.h"
 #include "../Common/ToolKit.h"

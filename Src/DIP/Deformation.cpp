@@ -1,8 +1,7 @@
 #include "Deformation.h"
 #include "../Math/Vector2.h"
 #include "../Math/Vector3.h"
-#include "../Common/LogSystem.h"
-#include "../Common/ToolKit.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicDIP
 {
@@ -17,7 +16,6 @@ namespace MagicDIP
     cv::Mat Deformation::DeformByMovingLeastSquares(const cv::Mat& inputImg, 
             const std::vector<int>& originIndex, const std::vector<int>& targetIndex)
     {
-        double startTime = MagicCore::ToolKit::GetTime();
         int imgW = inputImg.cols;
         int imgH = inputImg.rows;
         cv::Size imgSize(imgW, imgH);
@@ -39,7 +37,7 @@ namespace MagicDIP
         }
         std::vector<std::vector<double> > aMatList(markNum);
         std::vector<bool> visitFlag(imgW * imgH, 0);
-        DebugLog << "Prepare time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
+
         for (int hid = 0; hid < imgH; hid++)
         {
             for (int wid = 0; wid < imgW; wid++)
@@ -134,8 +132,7 @@ namespace MagicDIP
                 }
             }
         }
-        DebugLog << "Deform time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
-        startTime = MagicCore::ToolKit::GetTime();
+
         std::vector<int> unVisitVecH;
         std::vector<int> unVisitVecW;
         for (int hid = 0; hid < imgH; hid++)
@@ -300,7 +297,6 @@ namespace MagicDIP
                 }
             }
         }*/
-        DebugLog << "Fill hole time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
         return resImg;
     }
 }

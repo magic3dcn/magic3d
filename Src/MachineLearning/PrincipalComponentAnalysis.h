@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 namespace MagicML
 {
@@ -14,8 +15,8 @@ namespace MagicML
         double GetEigenValue(int k);
         std::vector<double> GetAvgVector(void);
         std::vector<double> Project(const std::vector<double>& data);
-        void Load(void);
-        void Save(void);
+        void Load(const std::string& fileName);
+        void Save(const std::string& fileName);
 
     private:
         void Clear(void);

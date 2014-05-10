@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "LeapMotionApp.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../Common/RenderSystem.h"
-//#include "../Common/MagicOgre.h"
 
 namespace MagicApp
 {
@@ -43,7 +42,7 @@ namespace MagicApp
                 frameSize++;
             }
             fin.close();
-            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionData: " << frameSize << " frames" << std::endl;
+            DebugLog << "LeapMotionData: " << frameSize << " frames" << std::endl;
         }
     }
 
@@ -263,9 +262,9 @@ namespace MagicApp
 
     void LeapMotionApp::onFrame(const Leap::Controller& controller)
     {
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << "LeapMotionApp::onFrame" << std::endl;
+        //DebugLog << "LeapMotionApp::onFrame" << std::endl;
         //const Leap::Frame frame = controller.frame();
-        /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
+        /*DebugLog << "Frame id: " << frame.id() << " hands: " << frame.hands().count() << " fingers: "
             << frame.fingers().count() << " tools: " << frame.tools().count() << " gestures: "
             << frame.gestures().count() << std::endl;*/
         //const Leap::Vector translate = frame.translation(mLastFrame);
@@ -275,10 +274,10 @@ namespace MagicApp
         //float rotateProb = frame.rotationProbability(mLastFrame);
         //float scale = frame.scaleFactor(mLastFrame);
         //float scaleProb = frame.scaleProbability(mLastFrame);
-        /*MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
-        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "  scale: " << scale << " " << scaleProb << std::endl;*/
-        //MagicLog(MagicCore::LOGLEVEL_DEBUG) << std::endl;
+        /*DebugLog << "  translate: " << translate.x << " " << translate.y << " " << translate.z << " " << translateProb << std::endl;
+        DebugLog << "  rotate: " << rotateAxis.x << " " << rotateAxis.y << " " << rotateAxis.z << " " << rotateAngle << " " << rotateProb << std::endl;
+        DebugLog << "  scale: " << scale << " " << scaleProb << std::endl;*/
+        //DebugLog << std::endl;
         //bool isSwipe = false;
         //Leap::GestureList gestList = frame.gestures();
         //Leap::Vector swipeDir;
@@ -294,7 +293,7 @@ namespace MagicApp
         //            Leap::SwipeGesture swipeGes = gestList[i];
         //            swipeDir = swipeGes.direction(); 
         //            swipeSpeed = swipeGes.speed();
-        //            MagicLog(MagicCore::LOGLEVEL_DEBUG) << "    Swipe detect: " << swipeSpeed << 
+        //            DebugLog << "    Swipe detect: " << swipeSpeed << 
         //                " " << swipeDir.x << " " << swipeDir.y << " " << swipeDir.z << std::endl << std::endl;
         //            break;
         //        }
@@ -308,7 +307,7 @@ namespace MagicApp
         //    palmVelocity = handList[0].palmVelocity();
         //    if (palmVelocity.magnitude() > minSpeed)
         //    {
-        //        MagicLog(MagicCore::LOGLEVEL_DEBUG) << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
+        //        DebugLog << "Time: " << frame.timestamp() << " Palm: " << palmVelocity.magnitude() << " "  << palmVelocity.x << " " 
         //            << palmVelocity.y << " " << palmVelocity.z << std::endl;
         //    }
         //    if (palmVelocity.magnitude() > minSpeed)

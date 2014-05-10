@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MeshShopApp.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
@@ -51,11 +51,28 @@ namespace MagicApp
     {
         if (mMouseMode == MM_View)
         {
-            mViewTool.MouseMoved(arg);
+            MagicDGP::ViewTool::MouseMode mm;
+            if (arg.state.buttonDown(OIS::MB_Left))
+            {
+                mm = MagicDGP::ViewTool::MM_Left_Down;
+            }
+            else if (arg.state.buttonDown(OIS::MB_Middle))
+            {
+                mm = MagicDGP::ViewTool::MM_Middle_Down;
+            }
+            else if (arg.state.buttonDown(OIS::MB_Right))
+            {
+                mm = MagicDGP::ViewTool::MM_Right_Down;
+            }
+            else
+            {
+                mm = MagicDGP::ViewTool::MM_None;
+            }
+            mViewTool.MouseMoved(arg.state.X.abs, arg.state.Y.abs, mm);
         }
-        else if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
+        else if ((mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle) && arg.state.buttonDown(OIS::MB_Left))
         {
-            mPickTool.MouseMoved(arg);
+            mPickTool.MouseMoved(arg.state.X.abs, arg.state.Y.abs);
         }
         return true;
     }
@@ -64,17 +81,17 @@ namespace MagicApp
     {
         if (mMouseMode == MM_View)
         {
-            mViewTool.MousePressed(arg);
+            mViewTool.MousePressed(arg.state.X.abs, arg.state.Y.abs);
         }
         else if (mMouseMode == MM_Pick_Rectangle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Rectangle, mPickIgnoreBack, mpLightMesh, NULL, NULL);
-            mPickTool.MousePressed(arg);
+            mPickTool.SetPickParameter(MagicDGP::PM_Rectangle, mPickIgnoreBack, mpLightMesh, NULL, NULL);
+            mPickTool.MousePressed(arg.state.X.abs, arg.state.Y.abs);
         }
         else if (mMouseMode == MM_Pick_Cycle)
         {
-            mPickTool.SetPickParameter(MagicTool::PM_Cycle, mPickIgnoreBack, mpLightMesh, NULL, NULL);
-            mPickTool.MousePressed(arg);
+            mPickTool.SetPickParameter(MagicDGP::PM_Cycle, mPickIgnoreBack, mpLightMesh, NULL, NULL);
+            mPickTool.MousePressed(arg.state.X.abs, arg.state.Y.abs);
         }
         return true;
     }
@@ -83,7 +100,7 @@ namespace MagicApp
     {
         if (mMouseMode == MM_Pick_Rectangle || mMouseMode == MM_Pick_Cycle)
         {
-            mPickTool.MouseReleased(arg);
+            mPickTool.MouseReleased(arg.state.X.abs, arg.state.Y.abs);
             std::vector<int> pickIndex;
             mPickTool.GetPickLightMeshIndex(pickIndex);
             MagicMath::Vector3 pickColor(0.663, 0.506, 0.459);

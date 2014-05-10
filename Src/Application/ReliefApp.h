@@ -1,7 +1,7 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "ReliefAppUI.h"
-#include "../Tool/ViewTool.h"
+#include "../DGP/ViewTool.h"
 #include "../DGP/Mesh3D.h"
 
 namespace MagicApp
@@ -30,7 +30,7 @@ namespace MagicApp
 
     private:
         ReliefAppUI mUI;
-        MagicTool::ViewTool mViewTool;
+        MagicDGP::ViewTool mViewTool;
         MagicDGP::LightMesh3D* mpLightMesh;
     };
 }

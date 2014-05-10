@@ -1,8 +1,8 @@
 #pragma once
 #include "../Common/AppBase.h"
 #include "PointShopAppUI.h"
-#include "../Tool/ViewTool.h"
-#include "../Tool/PickPointTool.h"
+#include "../DGP/ViewTool.h"
+#include "../DGP/PickPointTool.h"
 #include "../DGP/PointCloud3D.h"
 
 namespace MagicApp
@@ -56,8 +56,8 @@ namespace MagicApp
     private:
         PointShopAppUI mUI;
         MagicDGP::Point3DSet* mpPointSet;
-        MagicTool::ViewTool mViewTool;
-        MagicTool::PickPointTool mPickTool;
+        MagicDGP::ViewTool mViewTool;
+        MagicDGP::PickPointTool mPickTool;
         MouseMode mMouseMode;
         bool mPickIgnoreBack;
         MagicMath::Vector3 mDefaultColor;

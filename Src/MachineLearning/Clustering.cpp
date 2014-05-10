@@ -1,5 +1,5 @@
 #include "Clustering.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "Eigen/Eigenvalues"
 #include "flann/flann.h"
 

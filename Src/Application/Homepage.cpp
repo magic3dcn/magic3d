@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Homepage.h"
 #include "MyGUI.h"
-#include "../Common/LogSystem.h"
+#include "../Tool/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "PrimitiveDetectionApp.h"
 #include "AugmentedRealityApp.h"
