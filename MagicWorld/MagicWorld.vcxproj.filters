@@ -351,6 +351,9 @@
     <ClInclude Include="..\Src\Tool\LogSystem.h">
       <Filter>Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\LinearRegression.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -565,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Tool\LogSystem.cpp">
       <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp">
+      <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
