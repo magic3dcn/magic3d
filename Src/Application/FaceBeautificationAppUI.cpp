@@ -179,7 +179,8 @@ namespace MagicApp
         {
             //pFB->AlignToMean();
             //pFB->AlignAllToMean();
-            pFB->CalMeanFace();
+            //pFB->CalMeanFace();
+            pFB->DeformMeanToIndividual();
         }
     }
 

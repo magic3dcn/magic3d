@@ -88,6 +88,7 @@ namespace MagicApp
         void AlignToMean(void);
         void AlignAllToMean(void);
         void CalMeanFace(void);
+        void DeformMeanToIndividual(void);
         void SaveFeaturePoint(void);
         bool OpenRefImage(void);
         void LoadRefFeaturePoint(void);
