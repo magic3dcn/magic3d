@@ -79,6 +79,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{3bb80eae-4d0e-4423-85a2-ebf5ab024ba3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AppModules">
+      <UniqueIdentifier>{f06b2a08-b2ea-452a-be97-c31b496f4607}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -354,6 +357,9 @@
     <ClInclude Include="..\Src\MachineLearning\LinearRegression.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\AppModules\Face2D.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -571,6 +577,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp">
       <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\Face2D.cpp">
+      <Filter>AppModules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

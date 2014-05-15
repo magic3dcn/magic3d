@@ -10,7 +10,7 @@ namespace MagicApp
         FaceBeautificationAppUI();
         ~FaceBeautificationAppUI();
 
-        void Setup();
+        void Setup(int* maxFaceWidth, int* maxFaceHeight);
         void Shutdown();
 
         void UpdateLeftImage(const cv::Mat& image);
@@ -23,19 +23,18 @@ namespace MagicApp
     private:
         void UpdateImageTexture(MyGUI::ITexture** pImageTex, const cv::Mat& image, const std::string& texName);
         void OpenImage(MyGUI::Widget* pSender);
-        void LoadFeaturePoint(MyGUI::Widget* pSender);
-        void MoveFeaturePoint(MyGUI::Widget* pSender);
-        void SaveFeaturePoint(MyGUI::Widget* pSender);
-        void AutoMoveFeaturePoint(MyGUI::Widget* pSender);
-        void AlignToMean(MyGUI::Widget* pSender);
+        void EditFeaturePoint(MyGUI::Widget* pSender);
+        void DeformImageFeature(MyGUI::Widget* pSender);
+        void DeformImageColor(MyGUI::Widget* pSender);
         void OpenReferenceImage(MyGUI::Widget* pSender);
-        void LoadRefFeaturePoint(MyGUI::Widget* pSender);
-        void ProjectRefFeaturePoint(MyGUI::Widget* pSender);
-        void AlignFeaturePoint(MyGUI::Widget* pSender);
-        void DeformOriginFace(MyGUI::Widget* pSender);
-        void DoPca(MyGUI::Widget* pSender);
-        void LoadPca(MyGUI::Widget* pSender);
-        void ObservePca(MyGUI::Widget* pSender);
+        void CalReferenceImage(MyGUI::Widget* pSender);
+        void DoFeaturePca(MyGUI::Widget* pSender);
+        void DoColorPca(MyGUI::Widget* pSender);
+        void DoMixPca(MyGUI::Widget* pSender);
+        void CalMeanFace(MyGUI::Widget* pSender);
+        void DeformFeatureToMeanFace(MyGUI::Widget* pSender);
+        void DeformColorToMeanFace(MyGUI::Widget* pSender);
+        void DeformToMeanFace(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
         void Contact(MyGUI::Widget* pSender);
 
