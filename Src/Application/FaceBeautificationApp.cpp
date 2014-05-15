@@ -362,7 +362,7 @@ namespace MagicApp
     bool FaceBeautificationApp::OpenImage(void)
     {
         std::string fileName;
-        char filterName[] = "Image Files(*.*)\0*.*\0";
+        char filterName[] = "Image Files(*.jpg)\0*.jpg\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mFace2D.LoadImage(fileName);
