@@ -66,6 +66,7 @@ namespace MagicApp
 
         bool LoadImage(const std::string& fileName);
         cv::Mat GetImage(void);
+        void GetImageSize(int* imgW, int* imgH);
         bool LoadFps(const std::string& fileName);
         FaceFeaturePoint* GetFps(void);
         bool LoadRefImage(const std::string& fileName);
