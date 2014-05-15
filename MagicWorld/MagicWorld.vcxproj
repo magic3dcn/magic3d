@@ -144,6 +144,7 @@
     <ClInclude Include="..\Src\Application\VideoRecordingAppUI.h" />
     <ClInclude Include="..\Src\Application\VisionShopApp.h" />
     <ClInclude Include="..\Src\Application\VisionShopAppUI.h" />
+    <ClInclude Include="..\Src\AppModules\Face2D.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
     <ClInclude Include="..\Src\MachineLearning\Clustering.h" />
     <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h" />
+    <ClInclude Include="..\Src\MachineLearning\LinearRegression.h" />
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix4.h" />
@@ -280,6 +282,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp" />
+    <ClCompile Include="..\Src\AppModules\Face2D.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp">
@@ -327,6 +330,7 @@
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
     <ClCompile Include="..\Src\MachineLearning\Clustering.cpp" />
     <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp" />
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix4.cpp" />

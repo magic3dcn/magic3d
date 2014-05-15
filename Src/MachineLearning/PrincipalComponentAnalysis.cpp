@@ -1,6 +1,5 @@
 #include "PrincipalComponentAnalysis.h"
 #include "Eigen/Eigenvalues"
-#include "../Common/ToolKit.h"
 #include "../Tool/LogSystem.h"
 
 namespace MagicML
