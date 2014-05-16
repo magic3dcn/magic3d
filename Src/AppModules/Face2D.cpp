@@ -709,4 +709,123 @@ namespace MagicApp
             *mpRefImage = resizedImg.clone();
         }
     }
+
+    void Face2D::DoFeaturePca(const std::string& path, int imgCount)
+    {
+        //Load feature data
+        std::vector<FaceFeaturePoint*> fpsList(imgCount, NULL);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            std::stringstream ss;
+            ss << path << imgId << ".fp";
+            std::string fileName;
+            ss >> fileName;
+            fpsList.at(imgId) = new FaceFeaturePoint;
+            fpsList.at(imgId)->Load(fileName);
+        }
+
+        //Calculate mean face
+        std::vector<int> firstFps;
+        fpsList.at(0)->GetFPs(firstFps);
+        int fpsSize = firstFps.size() / 2;
+        std::vector<cv::Point2f> cvMeanFps(fpsSize);
+        std::vector<cv::Point2f> cvSumFps(fpsSize);
+        std::vector<cv::Point2f> cvCurFps(fpsSize);
+        int iterCount = 1;
+        for (int iterIndex = 0; iterIndex < iterCount; iterIndex++)
+        {
+            if (iterIndex == 0)
+            {
+                for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+                {
+                    cvMeanFps.at(fpsId).x = firstFps.at(fpsId * 2 + 1);
+                    cvMeanFps.at(fpsId).y = firstFps.at(fpsId * 2);
+                }
+            }
+            for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+            {
+                cvSumFps.at(fpsId).x = 0;
+                cvSumFps.at(fpsId).y = 0;
+            }
+            for (int imgId = 0; imgId < imgCount; imgId++)
+            {
+                std::vector<int> curFps;
+                fpsList.at(imgId)->GetFPs(curFps);
+                for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+                {
+                    cvCurFps.at(fpsId).x = curFps.at(fpsId * 2 + 1);
+                    cvCurFps.at(fpsId).y = curFps.at(fpsId * 2);
+                }
+                cv::Mat transMat = cv::estimateRigidTransform(cvCurFps, cvMeanFps, false);
+                MagicMath::HomoMatrix3 homoMat;
+                homoMat.SetValue(0, 0, transMat.at<double>(0, 0));
+                homoMat.SetValue(0, 1, transMat.at<double>(0, 1));
+                homoMat.SetValue(0, 2, transMat.at<double>(0, 2));
+                homoMat.SetValue(1, 0, transMat.at<double>(1, 0));
+                homoMat.SetValue(1, 1, transMat.at<double>(1, 1));
+                homoMat.SetValue(1, 2, transMat.at<double>(1, 2));
+                for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+                {
+                    double xRes, yRes;
+                    homoMat.TransformPoint(cvCurFps.at(fpsId).x, cvCurFps.at(fpsId).y, xRes, yRes);
+                    cvSumFps.at(fpsId).x += xRes;
+                    cvSumFps.at(fpsId).y += yRes;
+                }
+            }
+            for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+            {
+                cvMeanFps.at(fpsId).x /= imgCount;
+                cvMeanFps.at(fpsId).y /= imgCount;
+            }
+        }
+
+        //align to mean features and collect pca data
+        int dataDim = fpsSize * 2;
+        std::vector<double> pcaData(dataDim * imgCount);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            std::vector<int> curFps;
+            fpsList.at(imgId)->GetFPs(curFps);
+            for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+            {
+                cvCurFps.at(fpsId).x = curFps.at(fpsId * 2 + 1);
+                cvCurFps.at(fpsId).y = curFps.at(fpsId * 2);
+            }
+            cv::Mat transMat = cv::estimateRigidTransform(cvCurFps, cvMeanFps, false);
+            MagicMath::HomoMatrix3 homoMat;
+            homoMat.SetValue(0, 0, transMat.at<double>(0, 0));
+            homoMat.SetValue(0, 1, transMat.at<double>(0, 1));
+            homoMat.SetValue(0, 2, transMat.at<double>(0, 2));
+            homoMat.SetValue(1, 0, transMat.at<double>(1, 0));
+            homoMat.SetValue(1, 1, transMat.at<double>(1, 1));
+            homoMat.SetValue(1, 2, transMat.at<double>(1, 2));
+            int baseIndex = imgId * dataDim;
+            for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+            {
+                double xRes, yRes;
+                homoMat.TransformPoint(cvCurFps.at(fpsId).x, cvCurFps.at(fpsId).y, xRes, yRes);
+                pcaData.at(baseIndex + fpsId * 2) = yRes;
+                pcaData.at(baseIndex + fpsId * 2 + 1) = xRes;
+            }
+        }
+
+        //Do Pca
+        int pcaDim = 40;
+        if (mpFeaturePca == NULL)
+        {
+            mpFeaturePca = new MagicML::PrincipalComponentAnalysis;
+        }
+        mpFeaturePca->Analyse(pcaData, dataDim, pcaDim);
+
+        //Save Pca
+        std::string pcaFileName = path + ".pca";
+        mpFeaturePca->Save(pcaFileName);
+
+        //free memory
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            delete fpsList.at(imgId);
+            fpsList.at(imgId) = NULL;
+        }
+    }
 }

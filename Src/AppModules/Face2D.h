@@ -77,6 +77,7 @@ namespace MagicApp
         cv::Mat DeformImageByFeature(void);
         void SetMaxImageSize(int width, int height);
         void SetMaxRefImageSize(int width, int height);
+        void DoFeaturePca(const std::string& path, int imgCount);
 
     private:
         cv::Mat* mpImage;

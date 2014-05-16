@@ -189,7 +189,11 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::DoFeaturePca(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->DoFeaturePca();
+        }
     }
 
     void FaceBeautificationAppUI::DoColorPca(MyGUI::Widget* pSender)
