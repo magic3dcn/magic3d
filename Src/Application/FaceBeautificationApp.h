@@ -89,6 +89,7 @@ namespace MagicApp
         MouseMode mMouseMode;
         int mMaxFaceWidth;
         int mMaxFaceHeight;
+        std::string mFpsPath;
         //MagicML::PrincipalComponentAnalysis mPca;
         //ASM
         //std::vector<cv::Mat*> mTrainingImages;

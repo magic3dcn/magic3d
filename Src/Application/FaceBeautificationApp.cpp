@@ -4,6 +4,7 @@
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DIP/Saliency.h"
+#include <stdio.h>
 
 namespace MagicApp
 {
@@ -43,7 +44,7 @@ namespace MagicApp
 
     bool FaceBeautificationApp::MouseMoved( const OIS::MouseEvent &arg )
     {
-        /*if (mMouseMode == MM_Move_Origin_Feature)
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
             if (arg.state.buttonDown(OIS::MB_Left))
             {
@@ -51,60 +52,63 @@ namespace MagicApp
                 {
                     int hPos = arg.state.Y.abs - 50;
                     int wPos = arg.state.X.abs - 90;
-                    int imgH = mImage.rows;
-                    int imgW = mImage.cols;
+                    int imgH, imgW;
+                    mFace2D.GetImageSize(&imgW, &imgH);
                     if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
                     {
-                        mOriginFPs.MoveTo(hPos, wPos);
-                        std::vector<int> markIndex;
-                        mOriginFPs.GetDPs(markIndex);
-                        std::vector<int> featureIndex;
-                        mOriginFPs.GetFPs(featureIndex);
-                        UpdateLeftDisplayImage(&markIndex, &featureIndex);
+                        mFace2D.GetFps()->MoveTo(hPos, wPos);
+                        std::vector<int> fpsList;
+                        mFace2D.GetFps()->GetFPs(fpsList);
+                        std::vector<int> dpsList;
+                        mFace2D.GetFps()->GetDPs(dpsList);
+                        UpdateLeftDisplayImage(&dpsList, &fpsList);
                         mUI.UpdateLeftImage(mLeftDisplayImage);
                     }
                 }
             }
-        }*/
+        }
         
         return true;
     }
 
     bool FaceBeautificationApp::MousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        /*if (mMouseMode == MM_Move_Origin_Feature)
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
             if (id == OIS::MB_Left)
             {
                 int hPos = arg.state.Y.abs - 50;
                 int wPos = arg.state.X.abs - 90;
-                int tol = 5;
-                mFeaturePointSelected = mOriginFPs.Select(hPos, wPos);
+                mFeaturePointSelected = mFace2D.GetFps()->Select(hPos, wPos);
             }
-        }*/
+        }
         
         return true;
     }
 
     bool FaceBeautificationApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
-        /*if (mMouseMode == MM_Move_Origin_Feature)
+        if (mMouseMode == MM_Move_Origin_Feature)
         {
             if (id == OIS::MB_Left)
             {
                 if (mFeaturePointSelected)
                 {
+                    std::vector<int> fpsList;
+                    mFace2D.GetFps()->GetFPs(fpsList);
+                    UpdateLeftDisplayImage(NULL, &fpsList);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
                     mFeaturePointSelected = false;
                 }
             }
-        }*/
+        }
         
         return true;
     }
 
     bool FaceBeautificationApp::KeyPressed( const OIS::KeyEvent &arg )
     {
-        /*if (mFeaturePointSelected)
+        if (mFeaturePointSelected)
         {
             int deltaH = 0;
             int deltaW = 0;
@@ -124,14 +128,14 @@ namespace MagicApp
             {
                 deltaH = 1;
             }
-            mOriginFPs.MoveDelta(deltaH, deltaW);
-            std::vector<int> markIndex;
-            mOriginFPs.GetDPs(markIndex);
-            std::vector<int> featureIndex;
-            mOriginFPs.GetFPs(featureIndex);
-            UpdateLeftDisplayImage(&markIndex, &featureIndex);
+            mFace2D.GetFps()->MoveDelta(deltaH, deltaW);
+            std::vector<int> fpsList;
+            mFace2D.GetFps()->GetFPs(fpsList);
+            std::vector<int> dpsList;
+            mFace2D.GetFps()->GetDPs(dpsList);
+            UpdateLeftDisplayImage(&dpsList, &fpsList);
             mUI.UpdateLeftImage(mLeftDisplayImage);
-        }*/
+        }
         
         return true;
     }
@@ -188,9 +192,9 @@ namespace MagicApp
     void FaceBeautificationApp::UpdateLeftDisplayImage(const std::vector<int>* dpsList, const std::vector<int>* fpsList)
     {
         mLeftDisplayImage.release();
-        mLeftDisplayImage = mFace2D.GetImage();
-        MarkPointsToImage(mLeftDisplayImage, dpsList, 0, 0, 255, 1);
-        MarkPointsToImage(mLeftDisplayImage, fpsList, 0, 255, 255, 1);
+        mLeftDisplayImage = mFace2D.GetImage().clone();
+        MarkPointsToImage(mLeftDisplayImage, dpsList, 0, 255, 255, 1);
+        MarkPointsToImage(mLeftDisplayImage, fpsList, 0, 0, 255, 1);
     }
 
     /*void FaceBeautificationApp::UpdateMidDisplayImage(const std::vector<int>* markIndex)
@@ -366,10 +370,10 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mFace2D.LoadImage(fileName);
-            std::string fpsName = fileName;
-            std::string::size_type pos = fpsName.rfind(".");
-            fpsName.replace(pos, 4, ".fp");
-            if (!mFace2D.LoadFps(fpsName))
+            mFpsPath = fileName;
+            std::string::size_type pos = mFpsPath.rfind(".");
+            mFpsPath.replace(pos, 4, ".fp");
+            if (!mFace2D.LoadFps(mFpsPath))
             {
                 mFace2D.LoadFps("../../Media/FaceData/mean.fp");
             }
@@ -378,7 +382,7 @@ namespace MagicApp
             //update app state
             mMouseMode = MM_View;
             mLeftDisplayImage.release();
-            mLeftDisplayImage = mFace2D.GetImage();
+            UpdateLeftDisplayImage(NULL, NULL);
             mUI.UpdateLeftImage(mLeftDisplayImage);
 
             return true;
@@ -405,6 +409,9 @@ namespace MagicApp
             mMouseMode = MM_View;
             UpdateLeftDisplayImage(NULL, NULL);
             mUI.UpdateLeftImage(mLeftDisplayImage);
+            std::string fpsBakName = mFpsPath + ".bak";
+            rename(mFpsPath.c_str(), fpsBakName.c_str());
+            mFace2D.GetFps()->Save(mFpsPath);
         }
     }
 

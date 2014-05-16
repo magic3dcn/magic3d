@@ -524,6 +524,12 @@ namespace MagicApp
         return mImage;
     }
 
+    void Face2D::GetImageSize(int* imgW, int* imgH)
+    {
+        *imgW = mImage.cols;
+        *imgH = mImage.rows;
+    }
+
     bool Face2D::LoadFps(const std::string& fileName)
     {
         return mFps.Load(fileName);
