@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "opencv2/opencv.hpp"
+#include "../MachineLearning/PrincipalComponentAnalysis.h"
 
 namespace MagicApp
 {
@@ -71,16 +72,18 @@ namespace MagicApp
         FaceFeaturePoint* GetFps(void);
         bool LoadRefImage(const std::string& fileName);
         cv::Mat GetRefImage(void);
-        bool LoadrefFps(const std::string& fileName);
+        bool LoadRefFps(const std::string& fileName);
         FaceFeaturePoint* GetRefFps(void);
+        cv::Mat DeformImageByFeature(void);
         void SetMaxImageSize(int width, int height);
         void SetMaxRefImageSize(int width, int height);
 
     private:
-        cv::Mat mImage;
-        FaceFeaturePoint mFps;
-        cv::Mat mRefImage;
-        FaceFeaturePoint mRefFps;
+        cv::Mat* mpImage;
+        FaceFeaturePoint* mpFps;
+        cv::Mat* mpRefImage;
+        FaceFeaturePoint* mpRefFps;
+        MagicML::PrincipalComponentAnalysis* mpFeaturePca;
     };
 
 }

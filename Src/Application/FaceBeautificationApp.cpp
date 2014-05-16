@@ -197,6 +197,19 @@ namespace MagicApp
         MarkPointsToImage(mLeftDisplayImage, fpsList, 0, 0, 255, 1);
     }
 
+    void FaceBeautificationApp::UpdateRightDisplayImage(const std::vector<int>* fpsList)
+    {
+        mRightDisplayImage.release();
+        mRightDisplayImage = mFace2D.GetRefImage().clone();
+        MarkPointsToImage(mRightDisplayImage, fpsList, 0, 0, 255, 1);
+    }
+
+    void FaceBeautificationApp::UpdateMidDisplayImage(const cv::Mat& img)
+    {
+        mMidDisplayImage.release();
+        mMidDisplayImage = img.clone();
+    }
+
     /*void FaceBeautificationApp::UpdateMidDisplayImage(const std::vector<int>* markIndex)
     {
         mMidDisplayImage.release();
@@ -376,12 +389,12 @@ namespace MagicApp
             if (!mFace2D.LoadFps(mFpsPath))
             {
                 mFace2D.LoadFps("../../Media/FaceData/mean.fp");
+                mFace2D.GetFps()->Save(mFpsPath);
             }
             //scale image to max size
             mFace2D.SetMaxImageSize(mMaxFaceWidth, mMaxFaceHeight);
             //update app state
             mMouseMode = MM_View;
-            mLeftDisplayImage.release();
             UpdateLeftDisplayImage(NULL, NULL);
             mUI.UpdateLeftImage(mLeftDisplayImage);
 
@@ -417,7 +430,9 @@ namespace MagicApp
 
     void FaceBeautificationApp::DeformImageFeature(void)
     {
-
+        cv::Mat deformImg = mFace2D.DeformImageByFeature();
+        UpdateMidDisplayImage(deformImg);
+        mUI.UpdateMiddleImage(mMidDisplayImage);
     }
 
     void FaceBeautificationApp::DeformImageColor(void)
@@ -427,7 +442,32 @@ namespace MagicApp
 
     bool FaceBeautificationApp::OpenReferenceImage(void)
     {
-        return true;
+        std::string fileName;
+        char filterName[] = "Image Files(*.jpg)\0*.jpg\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mFace2D.LoadRefImage(fileName);
+            std::string fpsName = fileName;
+            std::string::size_type pos = fpsName.rfind(".");
+            fpsName.replace(pos, 4, ".fp");
+            if (!mFace2D.LoadRefFps(fpsName))
+            {
+                return false;
+            }
+            //scale image to max size
+            mFace2D.SetMaxRefImageSize(mMaxFaceWidth, mMaxFaceHeight);
+            //update app state
+            std::vector<int> refFps;
+            mFace2D.GetRefFps()->GetFPs(refFps);
+            UpdateRightDisplayImage(&refFps);
+            mUI.UpdateRightImage(mRightDisplayImage);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     bool FaceBeautificationApp::CalReferenceImage(void)
@@ -921,65 +961,6 @@ namespace MagicApp
     //    std::vector<int> originMarkIndex;
     //    mOriginFPs.GetDPs(originMarkIndex);
     //    UpdateRightDisplayImage(mImage, &originMarkIndex, &refMarkIndex, mRefFPTranform);
-    //    mUI.UpdateRightImage(mRightDisplayImage);
-    //}
-
-    //void FaceBeautificationApp::AlignFeature(void)
-    //{
-    //    std::vector<int> originFeatures, refFeatures;
-    //    mOriginFPs.GetFPs(originFeatures);
-    //    mRefFPs.GetFPs(refFeatures);
-    //    int featureSize = originFeatures.size() / 2;
-    //    std::vector<cv::Point2f> cvOriginFeatures(featureSize);
-    //    std::vector<cv::Point2f> cvRefFeatures(featureSize);
-    //    for (int fid = 0; fid < featureSize; fid++)
-    //    {
-    //        cvOriginFeatures.at(fid).x = originFeatures.at(fid * 2 + 1);
-    //        cvOriginFeatures.at(fid).y = originFeatures.at(fid * 2);
-    //        cvRefFeatures.at(fid).x = refFeatures.at(fid * 2 + 1);
-    //        cvRefFeatures.at(fid).y = refFeatures.at(fid * 2 );
-    //    }
-    //    cv::Mat transMat = cv::estimateRigidTransform(cvRefFeatures, cvOriginFeatures, false);
-    //    DebugLog << "transMat: " << std::endl << transMat << std::endl;
-    //    mRefFPTranform.Unit();
-    //    mRefFPTranform.SetValue(0, 0, transMat.at<double>(0, 0));
-    //    mRefFPTranform.SetValue(0, 1, transMat.at<double>(0, 1));
-    //    mRefFPTranform.SetValue(0, 2, transMat.at<double>(0, 2));
-    //    mRefFPTranform.SetValue(1, 0, transMat.at<double>(1, 0));
-    //    mRefFPTranform.SetValue(1, 1, transMat.at<double>(1, 1));
-    //    mRefFPTranform.SetValue(1, 2, transMat.at<double>(1, 2));
-
-    //    std::vector<int> originMark;
-    //    mOriginFPs.GetDPs(originMark);
-    //    std::vector<int> refMark;
-    //    mRefFPs.GetDPs(refMark);
-    //    UpdateRightDisplayImage(mImage, &originMark, &refMark, mRefFPTranform);
-    //    mUI.UpdateRightImage(mRightDisplayImage);
-    //}
-
-    //void FaceBeautificationApp::DeformOriginFace(void)
-    //{
-    //    std::vector<int> originMarkIndex;
-    //    mOriginFPs.GetDPs(originMarkIndex);
-    //    std::vector<int> refMarkIndex;
-    //    mRefFPs.GetDPs(refMarkIndex);
-    //    //Update index w and h
-    //    int markSize = originMarkIndex.size() / 2;
-    //    for (int mid = 0; mid < markSize; mid++)
-    //    {
-    //        int temp = originMarkIndex.at(2 * mid);
-    //        originMarkIndex.at(2 * mid) = originMarkIndex.at(2 * mid + 1);
-    //        originMarkIndex.at(2 * mid + 1) = temp;
-    //        //transform ref
-    //        double xRes, yRes;
-    //        mRefFPTranform.TransformPoint(refMarkIndex.at(2 * mid + 1), refMarkIndex.at(2 * mid), xRes, yRes);
-    //        refMarkIndex.at(2 * mid) = xRes;
-    //        refMarkIndex.at(2 * mid + 1) = yRes;
-    //    }
-    //    //Deform
-    //    cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(mImage, originMarkIndex, refMarkIndex);
-    //    //UpdateRightDisplayImage(deformImg, &originMarkIndex, &refMarkIndex, mRefFPTranform);
-    //    UpdateRightDisplayImage(deformImg, NULL, NULL, mRefFPTranform);
     //    mUI.UpdateRightImage(mRightDisplayImage);
     //}
 

@@ -66,6 +66,8 @@ namespace MagicApp
         void MarkPointsToImage(cv::Mat& img, const std::vector<int>* markList, 
             unsigned char blue, unsigned char green, unsigned char red, int markWidth);
         void UpdateLeftDisplayImage(const std::vector<int>* dpsList, const std::vector<int>* fpsList);
+        void UpdateRightDisplayImage(const std::vector<int>* fpsList);
+        void UpdateMidDisplayImage(const cv::Mat& img);
         //void UpdateMidDisplayImage(const std::vector<int>* markIndex);
         //void UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
         //    const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform);

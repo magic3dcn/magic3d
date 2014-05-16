@@ -1,5 +1,7 @@
 #include "Face2D.h"
 #include <fstream>
+#include "../Math/HomoMatrix3.h"
+#include "../DIP/Deformation.h"
 
 namespace MagicApp
 {
@@ -184,8 +186,8 @@ namespace MagicApp
 
     void FaceFeaturePoint::UpdateDPs()
     {
-        ConstructOneDPs(mLeftBrowFPs, true, 2, mLeftBrowDPs);
-        ConstructOneDPs(mRightBrowFPs, true, 2, mRightBrowDPs);
+        ConstructOneDPs(mLeftBrowFPs, true, 3, mLeftBrowDPs);
+        ConstructOneDPs(mRightBrowFPs, true, 3, mRightBrowDPs);
         ConstructOneDPs(mLeftEyeFPs, true, 2, mLeftEyeDPs);
         ConstructOneDPs(mRightEyeFPs, true, 2, mRightEyeDPs);
         ConstructOneDPs(mNoseFPs, false, 2, mNoseDPs);
@@ -495,21 +497,48 @@ namespace MagicApp
         borderNum = mBorderFPs.size() / 2;
     }
 
-    Face2D::Face2D()
+    Face2D::Face2D() : 
+        mpImage(NULL),
+        mpFps(NULL),
+        mpRefImage(NULL),
+        mpRefFps(NULL),
+        mpFeaturePca(NULL)
     {
     }
 
     Face2D::~Face2D()
     {
-        mImage.release();
-        mRefImage.release();
+        if (mpImage != NULL)
+        {
+            delete mpImage;
+        }
+        if (mpFps != NULL)
+        {
+            delete mpFps;
+        }
+        if (mpRefImage != NULL)
+        {
+            delete mpRefImage;
+        }
+        if (mpRefFps != NULL)
+        {
+            delete mpRefFps;
+        }
+        if (mpFeaturePca != NULL)
+        {
+            delete mpFeaturePca;
+        }
     }
 
     bool Face2D::LoadImage(const std::string& fileName)
     {
-        mImage.release();
-        mImage = cv::imread(fileName);
-        if (mImage.data != NULL)
+        if (mpImage == NULL)
+        {
+            mpImage = new cv::Mat;
+        }
+        mpImage->release();
+        *mpImage = cv::imread(fileName);
+        if (mpImage->data != NULL)
         {
             return true;
         }
@@ -521,30 +550,38 @@ namespace MagicApp
 
     cv::Mat Face2D::GetImage(void)
     {
-        return mImage;
+        return *mpImage;
     }
 
     void Face2D::GetImageSize(int* imgW, int* imgH)
     {
-        *imgW = mImage.cols;
-        *imgH = mImage.rows;
+        *imgW = mpImage->cols;
+        *imgH = mpImage->rows;
     }
 
     bool Face2D::LoadFps(const std::string& fileName)
     {
-        return mFps.Load(fileName);
+        if (mpFps == NULL)
+        {
+            mpFps = new FaceFeaturePoint;
+        }
+        return mpFps->Load(fileName);
     }
 
     FaceFeaturePoint* Face2D::GetFps(void)
     {
-        return &mFps;
+        return mpFps;
     }
 
     bool Face2D::LoadRefImage(const std::string& fileName)
     {
-        mRefImage.release();
-        mRefImage = cv::imread(fileName);
-        if (mRefImage.data != NULL)
+        if (mpRefImage == NULL)
+        {
+            mpRefImage = new cv::Mat;
+        }
+        mpRefImage->release();
+        *mpRefImage = cv::imread(fileName);
+        if (mpRefImage->data != NULL)
         {
             return true;
         }
@@ -556,23 +593,73 @@ namespace MagicApp
 
     cv::Mat Face2D::GetRefImage(void)
     {
-        return mRefImage;
+        return *mpRefImage;
     }
 
-    bool Face2D::LoadrefFps(const std::string& fileName)
+    bool Face2D::LoadRefFps(const std::string& fileName)
     {
-        return mRefFps.Load(fileName);
+        if (mpRefFps == NULL)
+        {
+            mpRefFps = new FaceFeaturePoint;
+        }
+        return mpRefFps->Load(fileName);
     }
 
     FaceFeaturePoint* Face2D::GetRefFps(void)
     {
-        return &mRefFps;
+        return mpRefFps;
+    }
+
+    cv::Mat Face2D::DeformImageByFeature(void)
+    {
+        //Calculate transform first
+        std::vector<int> fpsList, refFpsList;
+        mpFps->GetFPs(fpsList);
+        mpRefFps->GetFPs(refFpsList);
+        int featureSize = fpsList.size() / 2;
+        std::vector<cv::Point2f> cvFpsList(featureSize);
+        std::vector<cv::Point2f> cvRefFpsList(featureSize);
+        for (int mid = 0; mid < featureSize; mid++)
+        {
+            cvFpsList.at(mid).x = fpsList.at(mid * 2 + 1);
+            cvFpsList.at(mid).y = fpsList.at(mid * 2);
+            cvRefFpsList.at(mid).x = refFpsList.at(mid * 2 + 1);
+            cvRefFpsList.at(mid).y = refFpsList.at(mid * 2);
+        }
+        cv::Mat transMat = cv::estimateRigidTransform(cvRefFpsList, cvFpsList, false);
+        MagicMath::HomoMatrix3 fpsTransform;
+        fpsTransform.SetValue(0, 0, transMat.at<double>(0, 0));
+        fpsTransform.SetValue(0, 1, transMat.at<double>(0, 1));
+        fpsTransform.SetValue(0, 2, transMat.at<double>(0, 2));
+        fpsTransform.SetValue(1, 0, transMat.at<double>(1, 0));
+        fpsTransform.SetValue(1, 1, transMat.at<double>(1, 1));
+        fpsTransform.SetValue(1, 2, transMat.at<double>(1, 2));
+        
+        //Deform image
+        std::vector<int> dpsList, refDpsList;
+        mpFps->GetDPs(dpsList);
+        mpRefFps->GetDPs(refDpsList);
+        int dpsSize = dpsList.size() / 2;
+        for (int mid = 0; mid < dpsSize; mid++)
+        {
+            int temp = dpsList.at(mid * 2);
+            dpsList.at(mid * 2) = dpsList.at(mid * 2 + 1);
+            dpsList.at(mid * 2 + 1) = temp;
+
+            double xRes, yRes;
+            fpsTransform.TransformPoint(refDpsList.at(mid * 2 + 1), refDpsList.at(mid * 2), xRes, yRes);
+            refDpsList.at(mid * 2) = xRes;
+            refDpsList.at(mid * 2 + 1) = yRes;
+        }
+        cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(*mpImage, dpsList, refDpsList);
+
+        return deformImg;
     }
 
     void Face2D::SetMaxImageSize(int width, int height)
     {
-        int imgW = mImage.cols;
-        int imgH = mImage.rows;
+        int imgW = mpImage->cols;
+        int imgH = mpImage->rows;
         bool resized = false;
         if (imgW > width)
         {
@@ -590,16 +677,16 @@ namespace MagicApp
         {
             cv::Size vcSize(imgW, imgH);
             cv::Mat resizedImg(vcSize, CV_8UC3);
-            cv::resize(mImage, resizedImg, vcSize);
-            mImage.release();
-            mImage = resizedImg.clone();
+            cv::resize(*mpImage, resizedImg, vcSize);
+            mpImage->release();
+            *mpImage = resizedImg.clone();
         }
     }
 
     void Face2D::SetMaxRefImageSize(int width, int height)
     {
-        int imgW = mRefImage.cols;
-        int imgH = mRefImage.rows;
+        int imgW = mpRefImage->cols;
+        int imgH = mpRefImage->rows;
         bool resized = false;
         if (imgW > width)
         {
@@ -617,9 +704,9 @@ namespace MagicApp
         {
             cv::Size vcSize(imgW, imgH);
             cv::Mat resizedImg(vcSize, CV_8UC3);
-            cv::resize(mRefImage, resizedImg, vcSize);
-            mRefImage.release();
-            mRefImage = resizedImg.clone();
+            cv::resize(*mpRefImage, resizedImg, vcSize);
+            mpRefImage->release();
+            *mpRefImage = resizedImg.clone();
         }
     }
 }

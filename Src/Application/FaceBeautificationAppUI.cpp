@@ -157,7 +157,11 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::DeformImageFeature(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->DeformImageFeature();
+        }
     }
 
     void FaceBeautificationAppUI::DeformImageColor(MyGUI::Widget* pSender)
@@ -167,7 +171,15 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::OpenReferenceImage(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            if (pFB->OpenReferenceImage())
+            {
+                mRoot.at(0)->findWidget("But_DeformFeature")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_DeformColor")->castType<MyGUI::Button>()->setEnabled(true);
+            }
+        }
     }
 
     void FaceBeautificationAppUI::CalReferenceImage(MyGUI::Widget* pSender)
