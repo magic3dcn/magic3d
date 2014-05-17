@@ -323,12 +323,53 @@ namespace MagicApp
 
     bool FaceBeautificationApp::CalReferenceImage(void)
     {
+        std::vector<int> imgIndex;
+        ReadImgIndex(&imgIndex);
+        mFace2D.CalRefFpsByProjectPca("../../Media/FaceData/g", imgIndex);
+
+        //Deform projected fps to img
+        std::vector<int> fps, refFps;
+        mFace2D.GetFps()->GetFPs(fps);
+        mFace2D.GetRefFps()->GetFPs(refFps);
+        int fpsSize = fps.size() / 2;
+        std::vector<cv::Point2f> cvFps(fpsSize);
+        std::vector<cv::Point2f> cvRefFps(fpsSize);
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+        {
+            cvFps.at(fpsId).x = fps.at(fpsId * 2 + 1);
+            cvFps.at(fpsId).y = fps.at(fpsId * 2);
+            cvRefFps.at(fpsId).x = refFps.at(fpsId * 2 + 1);
+            cvRefFps.at(fpsId).y = refFps.at(fpsId * 2);
+        }
+        cv::Mat transMat = cv::estimateRigidTransform(cvRefFps, cvFps, false);
+        MagicMath::HomoMatrix3 homoTransMat;
+        homoTransMat.SetValue(0, 0, transMat.at<double>(0, 0));
+        homoTransMat.SetValue(0, 1, transMat.at<double>(0, 1));
+        homoTransMat.SetValue(0, 2, transMat.at<double>(0, 2));
+        homoTransMat.SetValue(1, 0, transMat.at<double>(1, 0));
+        homoTransMat.SetValue(1, 1, transMat.at<double>(1, 1));
+        homoTransMat.SetValue(1, 2, transMat.at<double>(1, 2));
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+        {
+            double xRes, yRes;
+            homoTransMat.TransformPoint(cvRefFps.at(fpsId).x, cvRefFps.at(fpsId).y, xRes, yRes);
+            refFps.at(fpsId * 2) = floor(yRes + 0.5);
+            refFps.at(fpsId * 2 + 1) = floor(xRes + 0.5);
+        }
+        //update display
+        mRightDisplayImage.release();
+        mRightDisplayImage = mFace2D.GetImage().clone();
+        MarkPointsToImage(mRightDisplayImage, &refFps, 0, 0, 255, 1);
+        mUI.UpdateRightImage(mRightDisplayImage);
+
         return true;
     }
 
     void FaceBeautificationApp::DoFeaturePca(void)
     {
-        mFace2D.DoFeaturePca("../../Media/FaceData/g", 41);
+        std::vector<int> imgIndex;
+        ReadImgIndex(&imgIndex);
+        mFace2D.DoFeaturePca("../../Media/FaceData/g", imgIndex);
         std::vector<double> meanVec = mFace2D.GetFeaturePca()->GetMeanVector();
         std::vector<int> meanFps(meanVec.size());
         for (int i = 0; i < meanVec.size(); i++)
@@ -349,14 +390,31 @@ namespace MagicApp
 
     }
 
+    void FaceBeautificationApp::ReadImgIndex(std::vector<int>* imgIndex)
+    {
+        std::ifstream fin("../../Media/FaceData/g.cfg");
+        int imgCount;
+        fin >> imgCount;
+        imgIndex->clear();
+        imgIndex->resize(imgCount);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            fin >> imgIndex->at(imgId);
+        }
+    }
+
     void FaceBeautificationApp::CalMeanFace(void)
     {
-        mFace2D.CalMeanFace("../../Media/FaceData/g", 41);
+        std::vector<int> imgIndex;
+        ReadImgIndex(&imgIndex);
+        mFace2D.CalMeanFace("../../Media/FaceData/g", imgIndex);
     }
 
     void FaceBeautificationApp::DeformFeatureToMeanFace(void)
     {
-        mFace2D.DeformFeatureToMeanFace("../../Media/FaceData/g", 41);
+        std::vector<int> imgIndex;
+        ReadImgIndex(&imgIndex);
+        mFace2D.DeformFeatureToMeanFace("../../Media/FaceData/g", imgIndex);
     }
 
     void FaceBeautificationApp::DeformColorToMeanFace(void)

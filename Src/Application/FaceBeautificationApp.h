@@ -52,6 +52,7 @@ namespace MagicApp
         void UpdateRightDisplayImage(const std::vector<int>* fpsList);
         void UpdateMidDisplayImage(const cv::Mat& img);
         void UpdateMidDisplayImage(const std::vector<int>& markList);
+        void ReadImgIndex(std::vector<int>* imgIndex);
 
     private:
         FaceBeautificationAppUI mUI;

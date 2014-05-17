@@ -132,6 +132,33 @@ namespace MagicML
         return projectVec;
     }
 
+    std::vector<double> PrincipalComponentAnalysis::TruncateProject(const std::vector<double>& data, double truncateCoef)
+    {
+        std::vector<double> deltaVec(mDataDim);
+        std::vector<double> projectVec(mDataDim);
+        for (int dim = 0; dim < mDataDim; dim++)
+        {
+            projectVec.at(dim) = mMeanVector.at(dim);
+            deltaVec.at(dim) = data.at(dim) - mMeanVector.at(dim);
+        }
+        for (int pcaId = 0; pcaId < mPcaDim; pcaId++)
+        {
+            double coef = 0.0;
+            int baseIndex = pcaId * mDataDim;
+            for (int dim = 0; dim < mDataDim; dim++)
+            {
+                coef += deltaVec.at(dim) * mEigenVectors.at(baseIndex + dim);
+            }
+            double maxCoef = truncateCoef * sqrt(mEigenValues.at(pcaId));
+            coef = coef > maxCoef ? maxCoef : (coef < -maxCoef ? -maxCoef : coef);
+            for (int dim = 0; dim < mDataDim; dim++)
+            {
+                projectVec.at(dim) += mEigenVectors.at(baseIndex + dim) * coef;
+            }
+        }
+        return projectVec;
+    }
+
     void PrincipalComponentAnalysis::Load(const std::string& fileName)
     {
         Clear();

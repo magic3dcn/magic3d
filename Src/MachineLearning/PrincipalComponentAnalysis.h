@@ -15,6 +15,7 @@ namespace MagicML
         double GetEigenValue(int k);
         std::vector<double> GetMeanVector(void);
         std::vector<double> Project(const std::vector<double>& data);
+        std::vector<double> TruncateProject(const std::vector<double>& data, double truncateCoef);
         void Load(const std::string& fileName);
         void Save(const std::string& fileName);
 

@@ -184,7 +184,15 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::CalReferenceImage(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            if (pFB->CalReferenceImage())
+            {
+                mRoot.at(0)->findWidget("But_DeformFeature")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_DeformColor")->castType<MyGUI::Button>()->setEnabled(true);
+            }
+        }
     }
 
     void FaceBeautificationAppUI::DoFeaturePca(MyGUI::Widget* pSender)

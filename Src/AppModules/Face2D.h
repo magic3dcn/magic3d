@@ -73,17 +73,21 @@ namespace MagicApp
         bool LoadRefImage(const std::string& fileName);
         cv::Mat GetRefImage(void);
         bool LoadRefFps(const std::string& fileName);
+        void CalRefFpsByProjectPca(const std::string& path, const std::vector<int>& imgIndex);
         FaceFeaturePoint* GetRefFps(void);
         cv::Mat DeformImageByFeature(void);
         void SetMaxImageSize(int width, int height);
         void SetMaxRefImageSize(int width, int height);
         void DoFeaturePca(const std::string& path, int imgCount);
+        void DoFeaturePca(const std::string& path, const std::vector<int>& imgIndex);
         MagicML::PrincipalComponentAnalysis* GetFeaturePca(void);
         void DeformFeatureToMeanFace(const std::string& path, int imgCount);
+        void DeformFeatureToMeanFace(const std::string& path, std::vector<int>& imgIndex);
         void CalMeanFace(const std::string& path, int imgCount);
+        void CalMeanFace(const std::string& path, std::vector<int>& imgIndex);
 
     private:
-        void CalMeanFeature(const std::string& path, int imgCount, std::vector<FaceFeaturePoint*>* fpsList,
+        void CalMeanFeature(const std::string& path, const std::vector<int>& imgIndex, std::vector<FaceFeaturePoint*>* fpsList,
             std::vector<cv::Point2f>* cvMeanFps);
 
     private:

@@ -606,6 +606,33 @@ namespace MagicApp
         return mpRefFps->Load(fileName);
     }
 
+    void Face2D::CalRefFpsByProjectPca(const std::string& path, const std::vector<int>& imgIndex)
+    {
+        DoFeaturePca(path, imgIndex);
+        //Project fps to pca
+        std::vector<int> fps;
+        mpFps->GetFPs(fps);
+        std::vector<double> fps_d(fps.size());
+        int fpsSize = fps.size() / 2;
+        for (int fpsId = 0; fpsId < fpsSize * 2; fpsId++)
+        {
+            fps_d.at(fpsId) = fps.at(fpsId);
+        }
+        std::vector<double> projFps_d = mpFeaturePca->TruncateProject(fps_d, 1.5);
+        std::vector<int> projFps(projFps_d.size());
+        for (int fpsId = 0; fpsId < fpsSize * 2; fpsId++)
+        {
+            projFps.at(fpsId) = floor(projFps_d.at(fpsId) + 0.5);
+        }
+        int browNum, eyeNum, noseNum, mouseNum, borderNum;
+        mpFps->GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
+        if (mpRefFps == NULL)
+        {
+            mpRefFps = new FaceFeaturePoint;
+        }
+        mpRefFps->Load(browNum, eyeNum, noseNum, mouseNum, borderNum, projFps);
+    }
+
     FaceFeaturePoint* Face2D::GetRefFps(void)
     {
         return mpRefFps;
@@ -711,16 +738,17 @@ namespace MagicApp
         }
     }
 
-    void Face2D::CalMeanFeature(const std::string& path, int imgCount, std::vector<FaceFeaturePoint*>* fpsList,
+    void Face2D::CalMeanFeature(const std::string& path, const std::vector<int>& imgIndex, std::vector<FaceFeaturePoint*>* fpsList,
             std::vector<cv::Point2f>* cvMeanFps)
     {
         //Load feature data
+        int imgCount = imgIndex.size();
         fpsList->clear();
         fpsList->resize(imgCount);
         for (int imgId = 0; imgId < imgCount; imgId++)
         {
             std::stringstream ss;
-            ss << path << imgId << ".fp";
+            ss << path << imgIndex.at(imgId) << ".fp";
             std::string fileName;
             ss >> fileName;
             fpsList->at(imgId) = new FaceFeaturePoint;
@@ -784,16 +812,17 @@ namespace MagicApp
         }
     }
 
-    void Face2D::DoFeaturePca(const std::string& path, int imgCount)
+    void Face2D::DoFeaturePca(const std::string& path, const std::vector<int>& imgIndex)
     {
         std::vector<FaceFeaturePoint*> fpsList;
         std::vector<cv::Point2f> cvMeanFps;
-        CalMeanFeature(path, imgCount, &fpsList, &cvMeanFps);
+        CalMeanFeature(path, imgIndex, &fpsList, &cvMeanFps);
         int fpsSize = cvMeanFps.size();
 
         //align to mean features and collect pca data
         std::vector<cv::Point2f> cvCurFps(fpsSize);
         int dataDim = fpsSize * 2;
+        int imgCount = imgIndex.size();
         std::vector<double> pcaData(dataDim * imgCount);
         for (int imgId = 0; imgId < imgCount; imgId++)
         {
@@ -823,7 +852,7 @@ namespace MagicApp
         }
 
         //Do Pca
-        int pcaDim = 40;
+        int pcaDim = imgCount - 1;
         if (mpFeaturePca == NULL)
         {
             mpFeaturePca = new MagicML::PrincipalComponentAnalysis;
@@ -842,17 +871,27 @@ namespace MagicApp
         }
     }
 
+    void Face2D::DoFeaturePca(const std::string& path, int imgCount)
+    {
+        std::vector<int> imgIndex(imgCount);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            imgIndex.at(imgId) = imgId;
+        }
+        DoFeaturePca(path, imgIndex);
+    }
+
     MagicML::PrincipalComponentAnalysis* Face2D::GetFeaturePca(void)
     {
         return mpFeaturePca;
     }
 
-    void Face2D::DeformFeatureToMeanFace(const std::string& path, int imgCount)
+    void Face2D::DeformFeatureToMeanFace(const std::string& path, std::vector<int>& imgIndex)
     {
         //Calculate mean feature
         std::vector<FaceFeaturePoint*> fpsList;
         std::vector<cv::Point2f> cvMeanFps;
-        CalMeanFeature(path, imgCount, &fpsList, &cvMeanFps);
+        CalMeanFeature(path, imgIndex, &fpsList, &cvMeanFps);
 
         //Calculate meanDps
         int fpsSize = cvMeanFps.size();
@@ -878,6 +917,7 @@ namespace MagicApp
 
         //Deform to mean
         std::vector<cv::Point2f> cvCurFps(fpsSize);
+        int imgCount = imgIndex.size();
         for (int imgId = 0; imgId < imgCount; imgId++)
         {
             //Calculate transformation
@@ -899,7 +939,7 @@ namespace MagicApp
 
             //Load image
             std::stringstream ss;
-            ss << path << imgId << ".jpg";
+            ss << path << imgIndex.at(imgId) << ".jpg";
             std::string imgName;
             ss >> imgName;
             ss.clear();
@@ -920,7 +960,7 @@ namespace MagicApp
             cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(uniformImg, curDps, meanDps);
 
             //Write image
-            ss << path << "ToMean" << imgId << ".jpg";
+            ss << path << "ToMean" << imgIndex.at(imgId) << ".jpg";
             std::string transImgName;
             ss >> transImgName;
             ss.clear();
@@ -928,16 +968,27 @@ namespace MagicApp
         }
     }
 
-    void Face2D::CalMeanFace(const std::string& path, int imgCount)
+    void Face2D::DeformFeatureToMeanFace(const std::string& path, int imgCount)
     {
-        //DeformFeatureToMeanFace(path, imgCount);
+        std::vector<int> imgIndex(imgCount);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            imgIndex.at(imgId) = imgId;
+        }
+        DeformFeatureToMeanFace(path, imgIndex);
+    }
+
+    void Face2D::CalMeanFace(const std::string& path, std::vector<int>& imgIndex)
+    {
+        DeformFeatureToMeanFace(path, imgIndex);
         int imgW, imgH;
         std::vector<int> sumBlue, sumGreen, sumRed;
+        int imgCount = imgIndex.size();
         for (int imgId = 0; imgId < imgCount; imgId++)
         {
             //Load file
             std::stringstream ss;
-            ss << path << "ToMean" << imgId << ".jpg";
+            ss << path << "ToMean" << imgIndex.at(imgId) << ".jpg";
             std::string imgName;
             ss >> imgName;
             cv::Mat img = cv::imread(imgName);
@@ -976,5 +1027,15 @@ namespace MagicApp
         }
         std::string meanImgName = path + "Mean.jpg";
         cv::imwrite(meanImgName, meanImg); 
+    }
+
+    void Face2D::CalMeanFace(const std::string& path, int imgCount)
+    {
+        std::vector<int> imgIndex(imgCount);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            imgIndex.at(imgId) = imgId;
+        }
+        CalMeanFace(path, imgIndex);
     }
 }
