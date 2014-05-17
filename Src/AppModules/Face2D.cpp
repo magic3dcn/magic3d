@@ -2,6 +2,7 @@
 #include <fstream>
 #include "../Math/HomoMatrix3.h"
 #include "../DIP/Deformation.h"
+#include "../Tool/LogSystem.h"
 
 namespace MagicApp
 {
@@ -710,36 +711,39 @@ namespace MagicApp
         }
     }
 
-    void Face2D::DoFeaturePca(const std::string& path, int imgCount)
+    void Face2D::CalMeanFeature(const std::string& path, int imgCount, std::vector<FaceFeaturePoint*>* fpsList,
+            std::vector<cv::Point2f>* cvMeanFps)
     {
         //Load feature data
-        std::vector<FaceFeaturePoint*> fpsList(imgCount, NULL);
+        fpsList->clear();
+        fpsList->resize(imgCount);
         for (int imgId = 0; imgId < imgCount; imgId++)
         {
             std::stringstream ss;
             ss << path << imgId << ".fp";
             std::string fileName;
             ss >> fileName;
-            fpsList.at(imgId) = new FaceFeaturePoint;
-            fpsList.at(imgId)->Load(fileName);
+            fpsList->at(imgId) = new FaceFeaturePoint;
+            fpsList->at(imgId)->Load(fileName);
         }
 
         //Calculate mean face
         std::vector<int> firstFps;
-        fpsList.at(0)->GetFPs(firstFps);
+        fpsList->at(0)->GetFPs(firstFps);
         int fpsSize = firstFps.size() / 2;
-        std::vector<cv::Point2f> cvMeanFps(fpsSize);
+        cvMeanFps->clear();
+        cvMeanFps->resize(fpsSize);
         std::vector<cv::Point2f> cvSumFps(fpsSize);
         std::vector<cv::Point2f> cvCurFps(fpsSize);
-        int iterCount = 1;
+        int iterCount = 3;
         for (int iterIndex = 0; iterIndex < iterCount; iterIndex++)
         {
             if (iterIndex == 0)
             {
                 for (int fpsId = 0; fpsId < fpsSize; fpsId++)
                 {
-                    cvMeanFps.at(fpsId).x = firstFps.at(fpsId * 2 + 1);
-                    cvMeanFps.at(fpsId).y = firstFps.at(fpsId * 2);
+                    cvMeanFps->at(fpsId).x = firstFps.at(fpsId * 2 + 1);
+                    cvMeanFps->at(fpsId).y = firstFps.at(fpsId * 2);
                 }
             }
             for (int fpsId = 0; fpsId < fpsSize; fpsId++)
@@ -750,13 +754,13 @@ namespace MagicApp
             for (int imgId = 0; imgId < imgCount; imgId++)
             {
                 std::vector<int> curFps;
-                fpsList.at(imgId)->GetFPs(curFps);
+                fpsList->at(imgId)->GetFPs(curFps);
                 for (int fpsId = 0; fpsId < fpsSize; fpsId++)
                 {
                     cvCurFps.at(fpsId).x = curFps.at(fpsId * 2 + 1);
                     cvCurFps.at(fpsId).y = curFps.at(fpsId * 2);
                 }
-                cv::Mat transMat = cv::estimateRigidTransform(cvCurFps, cvMeanFps, false);
+                cv::Mat transMat = cv::estimateRigidTransform(cvCurFps, *cvMeanFps, false);
                 MagicMath::HomoMatrix3 homoMat;
                 homoMat.SetValue(0, 0, transMat.at<double>(0, 0));
                 homoMat.SetValue(0, 1, transMat.at<double>(0, 1));
@@ -774,12 +778,21 @@ namespace MagicApp
             }
             for (int fpsId = 0; fpsId < fpsSize; fpsId++)
             {
-                cvMeanFps.at(fpsId).x /= imgCount;
-                cvMeanFps.at(fpsId).y /= imgCount;
+                cvMeanFps->at(fpsId).x = cvSumFps.at(fpsId).x / imgCount;
+                cvMeanFps->at(fpsId).y = cvSumFps.at(fpsId).y / imgCount;
             }
         }
+    }
+
+    void Face2D::DoFeaturePca(const std::string& path, int imgCount)
+    {
+        std::vector<FaceFeaturePoint*> fpsList;
+        std::vector<cv::Point2f> cvMeanFps;
+        CalMeanFeature(path, imgCount, &fpsList, &cvMeanFps);
+        int fpsSize = cvMeanFps.size();
 
         //align to mean features and collect pca data
+        std::vector<cv::Point2f> cvCurFps(fpsSize);
         int dataDim = fpsSize * 2;
         std::vector<double> pcaData(dataDim * imgCount);
         for (int imgId = 0; imgId < imgCount; imgId++)
@@ -827,5 +840,141 @@ namespace MagicApp
             delete fpsList.at(imgId);
             fpsList.at(imgId) = NULL;
         }
+    }
+
+    MagicML::PrincipalComponentAnalysis* Face2D::GetFeaturePca(void)
+    {
+        return mpFeaturePca;
+    }
+
+    void Face2D::DeformFeatureToMeanFace(const std::string& path, int imgCount)
+    {
+        //Calculate mean feature
+        std::vector<FaceFeaturePoint*> fpsList;
+        std::vector<cv::Point2f> cvMeanFps;
+        CalMeanFeature(path, imgCount, &fpsList, &cvMeanFps);
+
+        //Calculate meanDps
+        int fpsSize = cvMeanFps.size();
+        int browNum, eyeNum, noseNum, mouseNum, borderNum;
+        fpsList.at(0)->GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
+        std::vector<int> meanFps(fpsSize * 2);
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+        {
+            meanFps.at(fpsId * 2) = floor(cvMeanFps.at(fpsId).y + 0.5);
+            meanFps.at(fpsId * 2 + 1) = floor(cvMeanFps.at(fpsId).x + 0.5);
+        }
+        FaceFeaturePoint meanFfp;
+        meanFfp.Load(browNum, eyeNum, noseNum, mouseNum, borderNum, meanFps);
+        std::vector<int> meanDps;
+        meanFfp.GetDPs(meanDps);
+        int dpsSize = meanDps.size() / 2;
+        for (int dpsId = 0; dpsId < dpsSize; dpsId++)
+        {
+            int temp = meanDps.at(dpsId * 2);
+            meanDps.at(dpsId * 2) = meanDps.at(dpsId * 2 + 1);
+            meanDps.at(dpsId * 2 + 1) = temp;
+        }
+
+        //Deform to mean
+        std::vector<cv::Point2f> cvCurFps(fpsSize);
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            //Calculate transformation
+            std::vector<int> curFps;
+            fpsList.at(imgId)->GetFPs(curFps);
+            for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+            {
+                cvCurFps.at(fpsId).x = curFps.at(fpsId * 2 + 1);
+                cvCurFps.at(fpsId).y = curFps.at(fpsId * 2);
+            }
+            cv::Mat transMat = cv::estimateRigidTransform(cvCurFps, cvMeanFps, false);
+            MagicMath::HomoMatrix3 homoTransMat;
+            homoTransMat.SetValue(0, 0, transMat.at<double>(0, 0));
+            homoTransMat.SetValue(0, 1, transMat.at<double>(0, 1));
+            homoTransMat.SetValue(0, 2, transMat.at<double>(0, 2));
+            homoTransMat.SetValue(1, 0, transMat.at<double>(1, 0));
+            homoTransMat.SetValue(1, 1, transMat.at<double>(1, 1));
+            homoTransMat.SetValue(1, 2, transMat.at<double>(1, 2));
+
+            //Load image
+            std::stringstream ss;
+            ss << path << imgId << ".jpg";
+            std::string imgName;
+            ss >> imgName;
+            ss.clear();
+            cv::Mat img = cv::imread(imgName);
+            cv::Mat uniformImg(img.rows, img.cols, img.type());
+            cv::warpAffine(img, uniformImg, transMat, uniformImg.size());
+
+            //Deform
+            std::vector<int> curDps;
+            fpsList.at(imgId)->GetDPs(curDps);
+            for (int dpsId = 0; dpsId < dpsSize; dpsId++)
+            {
+                double xRes, yRes;
+                homoTransMat.TransformPoint(curDps.at(dpsId * 2 + 1), curDps.at(dpsId * 2), xRes, yRes);
+                curDps.at(dpsId * 2) = floor(xRes + 0.5);
+                curDps.at(dpsId * 2 + 1) = floor(yRes + 0.5);
+            }
+            cv::Mat deformImg = MagicDIP::Deformation::DeformByMovingLeastSquares(uniformImg, curDps, meanDps);
+
+            //Write image
+            ss << path << "ToMean" << imgId << ".jpg";
+            std::string transImgName;
+            ss >> transImgName;
+            ss.clear();
+            cv::imwrite(transImgName, deformImg);
+        }
+    }
+
+    void Face2D::CalMeanFace(const std::string& path, int imgCount)
+    {
+        //DeformFeatureToMeanFace(path, imgCount);
+        int imgW, imgH;
+        std::vector<int> sumBlue, sumGreen, sumRed;
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            //Load file
+            std::stringstream ss;
+            ss << path << "ToMean" << imgId << ".jpg";
+            std::string imgName;
+            ss >> imgName;
+            cv::Mat img = cv::imread(imgName);
+            if (imgId == 0)
+            {
+                imgW = img.cols;
+                imgH = img.rows;
+                int imgSize = imgW * imgH;
+                sumBlue = std::vector<int>(imgSize, 0);
+                sumGreen = std::vector<int>(imgSize, 0);
+                sumRed = std::vector<int>(imgSize, 0);
+            }
+            for (int hid = 0; hid < imgH; hid++)
+            {
+                int baseIndex = hid * imgW;
+                for (int wid = 0; wid < imgW; wid++)
+                {
+                    unsigned char* pixel = img.ptr(hid, wid);
+                    sumBlue.at(baseIndex + wid) += pixel[0];
+                    sumGreen.at(baseIndex + wid) += pixel[1];
+                    sumRed.at(baseIndex + wid) += pixel[2];
+                }
+            }
+        }
+        cv::Mat meanImg(imgH, imgW, CV_8UC3);
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            int baseIndex = hid * imgW;
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                unsigned char* pixel = meanImg.ptr(hid, wid);
+                pixel[0] = float(sumBlue.at(baseIndex + wid)) / imgCount;
+                pixel[1] = float(sumGreen.at(baseIndex + wid)) / imgCount;
+                pixel[2] = float(sumRed.at(baseIndex + wid)) / imgCount;
+            }
+        }
+        std::string meanImgName = path + "Mean.jpg";
+        cv::imwrite(meanImgName, meanImg); 
     }
 }

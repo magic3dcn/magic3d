@@ -9,7 +9,7 @@ namespace MagicML
         mPcaDim(0),
         mEigenVectors(),
         mEigenValues(),
-        mAvgVector()
+        mMeanVector()
     {
     }
 
@@ -24,18 +24,18 @@ namespace MagicML
         mPcaDim = pcaDim;
         int dataCount = data.size() / dataDim;
         DebugLog << "dataCount: " << dataCount << std::endl;
-        mAvgVector = std::vector<double>(dataDim, 0.0);
+        mMeanVector = std::vector<double>(dataDim, 0.0);
         for (int dataId = 0; dataId < dataCount; dataId++)
         {
             int baseIndex = dataId * dataDim;
             for (int dim = 0; dim < dataDim; dim++)
             {
-                mAvgVector.at(dim) += data.at(baseIndex + dim);
+                mMeanVector.at(dim) += data.at(baseIndex + dim);
             }
         }
         for (int dim = 0; dim < dataDim; dim++)
         {
-            mAvgVector.at(dim) /= dataCount;
+            mMeanVector.at(dim) /= dataCount;
         }
         Eigen::MatrixXd mat(dataDim, dataDim);
         for (int rid = 0; rid < dataDim; rid++)
@@ -51,7 +51,7 @@ namespace MagicML
             int baseIndex = dataId * dataDim;
             for (int dim = 0; dim < dataDim; dim++)
             {
-                deltaData.at(dim) = data.at(baseIndex + dim) - mAvgVector.at(dim);
+                deltaData.at(dim) = data.at(baseIndex + dim) - mMeanVector.at(dim);
             }
             for (int rid = 0; rid < dataDim; rid++)
             {
@@ -93,9 +93,9 @@ namespace MagicML
         return mEigenValues.at(k);
     }
 
-    std::vector<double> PrincipalComponentAnalysis::GetAvgVector(void)
+    std::vector<double> PrincipalComponentAnalysis::GetMeanVector(void)
     {
-        return mAvgVector;
+        return mMeanVector;
     }
 
     void PrincipalComponentAnalysis::Clear(void)
@@ -104,7 +104,7 @@ namespace MagicML
         mPcaDim = 0;
         mEigenVectors.clear();
         mEigenValues.clear();
-        mAvgVector.clear();
+        mMeanVector.clear();
     }
 
     std::vector<double> PrincipalComponentAnalysis::Project(const std::vector<double>& data)
@@ -113,8 +113,8 @@ namespace MagicML
         std::vector<double> projectVec(mDataDim);
         for (int dim = 0; dim < mDataDim; dim++)
         {
-            projectVec.at(dim) = mAvgVector.at(dim);
-            deltaVec.at(dim) = data.at(dim) - mAvgVector.at(dim);
+            projectVec.at(dim) = mMeanVector.at(dim);
+            deltaVec.at(dim) = data.at(dim) - mMeanVector.at(dim);
         }
         for (int pcaId = 0; pcaId < mPcaDim; pcaId++)
         {
@@ -151,10 +151,10 @@ namespace MagicML
             fin >> mEigenVectors.at(vid);
         }
             
-        mAvgVector.resize(mDataDim);
+        mMeanVector.resize(mDataDim);
         for (int vid = 0; vid < mDataDim; vid++)
         {
-            fin >> mAvgVector.at(vid);
+            fin >> mMeanVector.at(vid);
         }
         fin.close();
     }
@@ -177,7 +177,7 @@ namespace MagicML
             
         for (int vid = 0; vid < mDataDim; vid++)
         {
-            fout << mAvgVector.at(vid) << " ";
+            fout << mMeanVector.at(vid) << " ";
         }
         fout.close();
     }

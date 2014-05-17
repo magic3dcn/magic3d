@@ -43,23 +43,6 @@ namespace MagicApp
         void DeformColorToMeanFace(void);
         void DeformToMeanFace(void);
 
-        //void LoadFeaturePoint(void);
-        //void EditOriginFeaturePoint(void);
-        //void AutoMoveOriginFeaturePoint(void);
-        //void AlignToMean(void);
-        //void AlignAllToMean(void);
-        /*void CalMeanFace(void);
-        void DeformMeanToIndividual(void);
-        void SaveFeaturePoint(void);
-        bool OpenRefImage(void);
-        void LoadRefFeaturePoint(void);
-        void AlignFeature(void);
-        void DeformOriginFace(void);
-        void DoPca(void);
-        void LoadPca(void);
-        void ObservePca(void);
-        void ProjectRefFeatures(void);*/
-
     private:
         void SetupScene(void);
         void ShutdownScene(void);
@@ -68,34 +51,19 @@ namespace MagicApp
         void UpdateLeftDisplayImage(const std::vector<int>* dpsList, const std::vector<int>* fpsList);
         void UpdateRightDisplayImage(const std::vector<int>* fpsList);
         void UpdateMidDisplayImage(const cv::Mat& img);
-        //void UpdateMidDisplayImage(const std::vector<int>* markIndex);
-        //void UpdateRightDisplayImage(const cv::Mat& img, const std::vector<int>* leftMarkIndex, 
-        //    const std::vector<int>* midMarkIndex, const MagicMath::HomoMatrix3& midTransform);
-        //void UpdateRightDisplayImage(const std::vector<FaceFeaturePoint*>& faceFeatureList, 
-        //    const std::vector<MagicMath::HomoMatrix3*>& transformList);
-        //void UpdateRightDisplayImage(const std::vector<int>& markIndex);
-        //cv::Mat ResizeInputImageToCanvas(const cv::Mat& img) const;
+        void UpdateMidDisplayImage(const std::vector<int>& markList);
 
     private:
         FaceBeautificationAppUI mUI;
         Face2D mFace2D;
-        //cv::Mat mImage;
         cv::Mat mLeftDisplayImage;
-        //cv::Mat mRefImage;
         cv::Mat mMidDisplayImage;
         cv::Mat mRightDisplayImage;
-        //FaceFeaturePoint mOriginFPs;
-        //FaceFeaturePoint mRefFPs;
-        //MagicMath::HomoMatrix3 mRefFPTranform;
         bool mFeaturePointSelected;
         MouseMode mMouseMode;
         int mMaxFaceWidth;
         int mMaxFaceHeight;
         std::string mFpsPath;
-        //MagicML::PrincipalComponentAnalysis mPca;
-        //ASM
-        //std::vector<cv::Mat*> mTrainingImages;
-        //std::vector<FaceFeaturePoint*> mTrainingTransforms;
     };
 
     

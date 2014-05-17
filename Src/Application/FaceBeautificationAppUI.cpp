@@ -208,12 +208,20 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::CalMeanFace(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->CalMeanFace();
+        }
     }
 
     void FaceBeautificationAppUI::DeformFeatureToMeanFace(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->DeformFeatureToMeanFace();
+        }
     }
 
     void FaceBeautificationAppUI::DeformColorToMeanFace(MyGUI::Widget* pSender)

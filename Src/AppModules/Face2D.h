@@ -78,6 +78,13 @@ namespace MagicApp
         void SetMaxImageSize(int width, int height);
         void SetMaxRefImageSize(int width, int height);
         void DoFeaturePca(const std::string& path, int imgCount);
+        MagicML::PrincipalComponentAnalysis* GetFeaturePca(void);
+        void DeformFeatureToMeanFace(const std::string& path, int imgCount);
+        void CalMeanFace(const std::string& path, int imgCount);
+
+    private:
+        void CalMeanFeature(const std::string& path, int imgCount, std::vector<FaceFeaturePoint*>* fpsList,
+            std::vector<cv::Point2f>* cvMeanFps);
 
     private:
         cv::Mat* mpImage;
