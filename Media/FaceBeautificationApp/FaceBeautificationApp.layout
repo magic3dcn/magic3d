@@ -29,5 +29,8 @@
         </Widget>
         <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_DoColorPCA"/>
         <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_DoMixPca"/>
+        <Widget type="Button" skin="Button" position="160 520 60 60" align="Left Top" name="But_AutoAlignFeature">
+            <Property key="Enabled" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>

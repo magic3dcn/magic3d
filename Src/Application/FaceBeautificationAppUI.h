@@ -24,6 +24,7 @@ namespace MagicApp
         void UpdateImageTexture(MyGUI::ITexture** pImageTex, const cv::Mat& image, const std::string& texName);
         void OpenImage(MyGUI::Widget* pSender);
         void EditFeaturePoint(MyGUI::Widget* pSender);
+        void AutoAlignFeature(MyGUI::Widget* pSender);
         void DeformImageFeature(MyGUI::Widget* pSender);
         void DeformImageColor(MyGUI::Widget* pSender);
         void OpenReferenceImage(MyGUI::Widget* pSender);

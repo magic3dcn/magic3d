@@ -14,7 +14,8 @@ namespace MagicApp
         enum MouseMode
         {
             MM_View,
-            MM_Move_Origin_Feature
+            MM_Move_Origin_Feature,
+            MM_Auto_Align_Feature
         };
 
         FaceBeautificationApp();
@@ -31,6 +32,7 @@ namespace MagicApp
 
         bool OpenImage(void);
         void EditFeaturePoint(void);
+        void AutoAlignFeature(void);
         void DeformImageFeature(void);
         void DeformImageColor(void);
         bool OpenReferenceImage(void);
@@ -64,6 +66,7 @@ namespace MagicApp
         MouseMode mMouseMode;
         int mMaxFaceWidth;
         int mMaxFaceHeight;
+        std::vector<cv::Point2f> mAutoAlignPoints;
         std::string mFpsPath;
     };
 

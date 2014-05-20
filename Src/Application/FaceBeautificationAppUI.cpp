@@ -42,6 +42,7 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("FaceBeautificationApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenImage);
         mRoot.at(0)->findWidget("But_EditFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::EditFeaturePoint);
+        mRoot.at(0)->findWidget("But_AutoAlignFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::AutoAlignFeature);
         mRoot.at(0)->findWidget("But_DeformFeature")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::DeformImageFeature);
         mRoot.at(0)->findWidget("But_DeformColor")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::DeformImageColor);
         mRoot.at(0)->findWidget("But_OpenReference")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceBeautificationAppUI::OpenReferenceImage);
@@ -140,6 +141,7 @@ namespace MagicApp
             if (pFB->OpenImage())
             {
                 mRoot.at(0)->findWidget("But_EditFeature")->castType<MyGUI::Button>()->setEnabled(true);
+                mRoot.at(0)->findWidget("But_AutoAlignFeature")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_OpenReference")->castType<MyGUI::Button>()->setEnabled(true);
                 mRoot.at(0)->findWidget("But_CalReferenceImage")->castType<MyGUI::Button>()->setEnabled(true);
             }
@@ -153,6 +155,11 @@ namespace MagicApp
         {
             pFB->EditFeaturePoint();
         }
+    }
+
+    void FaceBeautificationAppUI::AutoAlignFeature(MyGUI::Widget* pSender)
+    {
+
     }
 
     void FaceBeautificationAppUI::DeformImageFeature(MyGUI::Widget* pSender)

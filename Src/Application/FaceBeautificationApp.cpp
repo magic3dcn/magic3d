@@ -12,7 +12,8 @@ namespace MagicApp
         mFeaturePointSelected(false),
         mMouseMode(MM_View),
         mMaxFaceWidth(0),
-        mMaxFaceHeight(0)
+        mMaxFaceHeight(0),
+        mAutoAlignPoints()
     {
     }
 
@@ -81,6 +82,46 @@ namespace MagicApp
                 int wPos = arg.state.X.abs - 90;
                 mFeaturePointSelected = mFace2D.GetFps()->Select(hPos, wPos);
             }
+            /*if (id == OIS::MB_Left)
+            {
+                int hPos = arg.state.Y.abs - 50;
+                int wPos = arg.state.X.abs - 90;
+                mMarkPoints.push_back(cv::Point2f(wPos, hPos));
+                if (mMarkPoints.size() == 3)
+                {
+                    double eyeLeftX, eyeLeftY, eyeRightX, eyeRightY;
+                    mFace2D.GetFps()->GetEyeCenter(eyeLeftX, eyeLeftY, eyeRightX, eyeRightY);
+                    double mouseX, mouseY;
+                    mFace2D.GetFps()->GetMouseCenter(mouseX, mouseY);
+                    std::vector<cv::Point2f> cvTargetFps(3);
+                    cvTargetFps.at(0) = cv::Point2f(eyeLeftX, eyeLeftY);
+                    cvTargetFps.at(1) = cv::Point2f(eyeRightX, eyeRightY);
+                    cvTargetFps.at(2) = cv::Point2f(mouseX, mouseY);
+                    cv::Mat transMat = cv::estimateRigidTransform(cvTargetFps, mMarkPoints, false);
+                    MagicMath::HomoMatrix3 fpsTransform;
+                    fpsTransform.SetValue(0, 0, transMat.at<double>(0, 0));
+                    fpsTransform.SetValue(0, 1, transMat.at<double>(0, 1));
+                    fpsTransform.SetValue(0, 2, transMat.at<double>(0, 2));
+                    fpsTransform.SetValue(1, 0, transMat.at<double>(1, 0));
+                    fpsTransform.SetValue(1, 1, transMat.at<double>(1, 1));
+                    fpsTransform.SetValue(1, 2, transMat.at<double>(1, 2));
+                    std::vector<int> fpsList;
+                    mFace2D.GetFps()->GetFPs(fpsList);
+                    int fpsSize = fpsList.size() / 2;
+                    for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+                    {
+                        double resX, resY;
+                        fpsTransform.TransformPoint(fpsList.at(fpsId * 2 + 1), fpsList.at(fpsId * 2), resX, resY);
+                        fpsList.at(fpsId * 2 + 1) = resX;
+                        fpsList.at(fpsId * 2) = resY;
+                    }
+                    UpdateLeftDisplayImage(NULL, &fpsList);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                    mMarkPoints.clear();
+                    mMouseMode = MM_View;
+                }
+            }*/
+            
         }
         
         return true;
@@ -276,6 +317,22 @@ namespace MagicApp
             std::string fpsBakName = mFpsPath + ".bak";
             rename(mFpsPath.c_str(), fpsBakName.c_str());
             mFace2D.GetFps()->Save(mFpsPath);
+        }
+    }
+
+    void FaceBeautificationApp::AutoAlignFeature()
+    {
+        if (mMouseMode != MM_Auto_Align_Feature)
+        {
+            mMouseMode = MM_Auto_Align_Feature;
+            mAutoAlignPoints.clear();
+        }
+        else
+        {
+            mMouseMode = MM_View;
+            mAutoAlignPoints.clear();
+            UpdateLeftDisplayImage(NULL, NULL);
+            mUI.UpdateLeftImage(mLeftDisplayImage);
         }
     }
 
