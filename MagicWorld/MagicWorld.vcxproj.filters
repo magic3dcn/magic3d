@@ -285,9 +285,6 @@
     <ClInclude Include="..\Src\Application\VideoRecordingApp.h">
       <Filter>Application\VideoRecordingApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Tool\ThreadPool.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Common\MagicOgre.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -359,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\AppModules\Face2D.h">
       <Filter>AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Common\ThreadPool.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -509,9 +509,6 @@
     <ClCompile Include="..\Src\Application\VideoRecordingApp.cpp">
       <Filter>Application\VideoRecordingApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Tool\ThreadPool.cpp">
-      <Filter>Tool</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp">
       <Filter>Application\VisionShopApp</Filter>
     </ClCompile>
@@ -580,6 +577,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\AppModules\Face2D.cpp">
       <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Common\ThreadPool.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

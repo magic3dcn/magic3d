@@ -10,11 +10,11 @@
 #include "../DGP/Sampling.h"
 #include "../DGP/PickPointTool.h"
 #include "../Math/HomoMatrix4.h"
-#include "../Tool/ThreadPool.h"
+#include "../Common/ThreadPool.h"
 
 namespace
 {
-    class NormalDeviationTask : public MagicTool::ITask
+    class NormalDeviationTask : public MagicCore::ITask
     {
     public:
         NormalDeviationTask(int taskId, int taskCount, MagicDGP::Mesh3D* pMesh, std::vector<double>& normDeviation) : 
@@ -749,9 +749,9 @@ namespace MagicApp
         float timeStart = MagicCore::ToolKit::GetTime();
         int vertNum = mpMesh->GetVertexNumber();
         std::vector<double> norDev(vertNum);
-        int threadCount = MagicTool::GetNumberOfProcessors();
+        int threadCount = MagicCore::GetNumberOfProcessors();
         DebugLog << "Processor number: " << threadCount << std::endl;
-        MagicTool::ThreadPool threadPool(threadCount);
+        MagicCore::ThreadPool threadPool(threadCount);
         for (int tid = 0; tid < threadCount; tid++)
         {
             NormalDeviationTask* pTask = new NormalDeviationTask(tid, threadCount, mpMesh, norDev);

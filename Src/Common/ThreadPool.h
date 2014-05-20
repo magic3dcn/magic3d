@@ -3,7 +3,7 @@
 #include <vector>
 #include <list>
 
-namespace MagicTool
+namespace MagicCore
 {
     extern int GetNumberOfProcessors();
 

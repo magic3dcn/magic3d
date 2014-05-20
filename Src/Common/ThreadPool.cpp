@@ -1,8 +1,8 @@
 #include "ThreadPool.h"
 #include <process.h>
-#include "LogSystem.h"
+#include "../Tool/LogSystem.h"
 
-namespace MagicTool
+namespace MagicCore
 {
     int GetNumberOfProcessors()
     { 

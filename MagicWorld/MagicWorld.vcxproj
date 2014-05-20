@@ -154,6 +154,7 @@
     <ClInclude Include="..\Src\Common\MagicOgre.h" />
     <ClInclude Include="..\Src\Common\RenderSystem.h" />
     <ClInclude Include="..\Src\Common\ResourceManager.h" />
+    <ClInclude Include="..\Src\Common\ThreadPool.h" />
     <ClInclude Include="..\Src\Common\ToolKit.h" />
     <ClInclude Include="..\Src\Dependence\PoissonReconstruction.h" />
     <ClInclude Include="..\Src\DGP\Consolidation.h" />
@@ -183,7 +184,6 @@
     <ClInclude Include="..\Src\Math\Vector2.h" />
     <ClInclude Include="..\Src\Math\Vector3.h" />
     <ClInclude Include="..\Src\Tool\LogSystem.h" />
-    <ClInclude Include="..\Src\Tool\ThreadPool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -303,6 +303,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Src\Common\ThreadPool.cpp" />
     <ClCompile Include="..\Src\Common\ToolKit.cpp" />
     <ClCompile Include="..\Src\Dependence\PoissonReconstruction.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -340,7 +341,6 @@
     <ClCompile Include="..\Src\Math\Vector2.cpp" />
     <ClCompile Include="..\Src\Math\Vector3.cpp" />
     <ClCompile Include="..\Src\Tool\LogSystem.cpp" />
-    <ClCompile Include="..\Src\Tool\ThreadPool.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
