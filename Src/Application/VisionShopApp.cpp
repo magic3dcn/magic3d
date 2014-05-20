@@ -9,6 +9,7 @@
 #include "../MachineLearning/Clustering.h"
 #include "../MachineLearning/GaussianMixtureModel.h"
 #include "../DIP/Deformation.h"
+#include "../DIP/FeatureDetection.h"
 
 namespace MagicApp
 {
@@ -414,7 +415,7 @@ namespace MagicApp
             int h = mImage.rows;
             cv::Size imgSize(w, h);
             mMarkImage.release();
-            mMarkImage = cv::Mat(imgSize, CV_8UC3);
+            mMarkImage = cv::Mat(imgSize, CV_8UC3, cv::Scalar(0));
             mIsNewImage = false;
         }
         //update mDisplayImage
@@ -465,8 +466,6 @@ namespace MagicApp
     void VisionShopApp::FastImageResizing(int w, int h)
     {
         cv::Mat resizedImg = MagicDIP::Retargetting::FastSeamCarvingResizing(mImage, w, h);
-        //cv::Mat resizedImg = MagicDIP::Retargetting::SaliencyBasedSeamCarvingResizing(mImage, w, h);
-        //cv::Mat resizedImg = MagicDIP::Retargetting::ImportanceDiffusionSeamCarvingResizing(mImage, w, h);
         mImage.release();
         mImage = resizedImg.clone();
         mIsNewImage = true;
@@ -477,10 +476,11 @@ namespace MagicApp
 
     void VisionShopApp::SaliencyDetection(void)
     {
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
-        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
+        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGAndGradientSaliency(mImage);
         //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::MultiScaleDoGBandSaliency(mImage, 1, 1);
+        //cv::Mat saliencyImg = MagicDIP::FeatureDetection::CannyEdgeDetection(mImage);
         mImage.release();
         mImage = saliencyImg.clone();
         saliencyImg.release();

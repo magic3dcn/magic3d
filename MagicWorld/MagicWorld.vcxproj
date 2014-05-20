@@ -171,6 +171,7 @@
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\ViewTool.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
+    <ClInclude Include="..\Src\DIP\FeatureDetection.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
@@ -328,6 +329,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
+    <ClCompile Include="..\Src\DIP\FeatureDetection.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
