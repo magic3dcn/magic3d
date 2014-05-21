@@ -159,7 +159,11 @@ namespace MagicApp
 
     void FaceBeautificationAppUI::AutoAlignFeature(MyGUI::Widget* pSender)
     {
-
+        FaceBeautificationApp* pFB = dynamic_cast<FaceBeautificationApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceBeautificationApp"));
+        if (pFB != NULL)
+        {
+            pFB->AutoAlignFeature();
+        }
     }
 
     void FaceBeautificationAppUI::DeformImageFeature(MyGUI::Widget* pSender)

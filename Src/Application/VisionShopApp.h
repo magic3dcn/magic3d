@@ -35,7 +35,9 @@ namespace MagicApp
         bool SwitchDisplayMode(void);
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
-        void SaliencyDetection(void);
+        void ImageGradient(void);
+        void CannyEdgeDetection(void);
+        void DoGBandSaliencyDetection(void);
         void BrushFront(void);
         void BrushBack(void);
         void SegmentImageDo(void);

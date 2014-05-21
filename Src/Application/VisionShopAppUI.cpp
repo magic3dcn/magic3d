@@ -33,6 +33,9 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_ImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoImageResizing);
         mRoot.at(0)->findWidget("But_FastImageResizingDo")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::FastImageResizing);
         mRoot.at(0)->findWidget("But_SaliencyDetection")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SaliencyDetection);
+        mRoot.at(0)->findWidget("But_ImageGradient")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::ImageGradient);
+        mRoot.at(0)->findWidget("But_ImageCannyEdge")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::CannyEdgeDetection);
+        mRoot.at(0)->findWidget("But_ImageDoGSaliency")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::DoGBandSaliency);
         mRoot.at(0)->findWidget("But_Segment")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::SegmentImage);
         mRoot.at(0)->findWidget("But_BrushFront")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BrushFront);
         mRoot.at(0)->findWidget("But_BrushBack")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &VisionShopAppUI::BrushBack);
@@ -146,10 +149,36 @@ namespace MagicApp
 
     void VisionShopAppUI::SaliencyDetection(MyGUI::Widget* pSender)
     {
+        bool isVisiable = mRoot.at(0)->findWidget("But_ImageGradient")->castType<MyGUI::Button>()->isVisible();
+        mRoot.at(0)->findWidget("But_ImageGradient")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+        mRoot.at(0)->findWidget("But_ImageCannyEdge")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+        mRoot.at(0)->findWidget("But_ImageDoGSaliency")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+    }
+
+    void VisionShopAppUI::ImageGradient(MyGUI::Widget* pSender)
+    {
         VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
         if (pVS != NULL)
         {
-            pVS->SaliencyDetection();
+            pVS->ImageGradient();
+        }
+    }
+
+    void VisionShopAppUI::CannyEdgeDetection(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            pVS->CannyEdgeDetection();
+        }
+    }
+
+    void VisionShopAppUI::DoGBandSaliency(MyGUI::Widget* pSender)
+    {
+        VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
+        if (pVS != NULL)
+        {
+            pVS->DoGBandSaliencyDetection();
         }
     }
 

@@ -53,5 +53,14 @@
         <Widget type="Button" skin="But_Deform" position="10 430 60 60" align="Left Top" name="But_Deformation">
             <Property key="Enabled" value="false"/>
         </Widget>
+        <Widget type="Button" skin="Button" position="72 252 28 28" align="Left Top" name="But_ImageCannyEdge">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="105 252 28 28" align="Left Top" name="But_ImageDoGSaliency">
+            <Property key="Visible" value="false"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="72 220 28 28" align="Left Top" name="But_ImageGradient">
+            <Property key="Visible" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>

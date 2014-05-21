@@ -474,13 +474,29 @@ namespace MagicApp
         Display();
     }
 
-    void VisionShopApp::SaliencyDetection(void)
+    void VisionShopApp::ImageGradient(void)
+    {
+        cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
+        mImage.release();
+        mImage = saliencyImg.clone();
+        saliencyImg.release();
+        UpdateAuxiliaryData();
+        Display();
+    }
+
+    void VisionShopApp::CannyEdgeDetection(void)
+    {
+        cv::Mat saliencyImg = MagicDIP::FeatureDetection::CannyEdgeDetection(mImage);
+        mImage.release();
+        mImage = saliencyImg.clone();
+        saliencyImg.release();
+        UpdateAuxiliaryData();
+        Display();
+    }
+
+    void VisionShopApp::DoGBandSaliencyDetection(void)
     {
         cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGBandSaliency(mImage);
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::GradientSaliency(mImage);
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::DoGAndGradientSaliency(mImage);
-        //cv::Mat saliencyImg = MagicDIP::SaliencyDetection::MultiScaleDoGBandSaliency(mImage, 1, 1);
-        //cv::Mat saliencyImg = MagicDIP::FeatureDetection::CannyEdgeDetection(mImage);
         mImage.release();
         mImage = saliencyImg.clone();
         saliencyImg.release();

@@ -123,6 +123,34 @@ namespace MagicApp
             }*/
             
         }
+        else if (mMouseMode == MM_Auto_Align_Feature)
+        {
+            if (id == OIS::MB_Left)
+            {
+                int hPos = arg.state.Y.abs - 50;
+                int wPos = arg.state.X.abs - 90;
+                mAutoAlignPoints.push_back(hPos);
+                mAutoAlignPoints.push_back(wPos);
+                if (mAutoAlignPoints.size() == 6)
+                {
+                    //Generate fps automatically
+                    mFace2D.AutoAlignFps(mAutoAlignPoints);
+                    //Reset mMouseMode
+                    AutoAlignFeature();
+                    //Update display
+                    std::vector<int> fpsList;
+                    mFace2D.GetFps()->GetFPs(fpsList);
+                    UpdateLeftDisplayImage(NULL, &fpsList);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                }
+                else
+                {
+                    //Display mAutoAlignPoints
+                    UpdateLeftDisplayImage(NULL, &mAutoAlignPoints);
+                    mUI.UpdateLeftImage(mLeftDisplayImage);
+                }
+            }
+        }   
         
         return true;
     }
@@ -175,6 +203,15 @@ namespace MagicApp
             std::vector<int> dpsList;
             mFace2D.GetFps()->GetDPs(dpsList);
             UpdateLeftDisplayImage(&dpsList, &fpsList);
+            mUI.UpdateLeftImage(mLeftDisplayImage);
+        }
+        if (arg.key == OIS::KC_V)
+        {
+            mFace2D.AutoAlignFps();
+            //Update display
+            std::vector<int> fpsList;
+            mFace2D.GetFps()->GetFPs(fpsList);
+            UpdateLeftDisplayImage(NULL, &fpsList);
             mUI.UpdateLeftImage(mLeftDisplayImage);
         }
         

@@ -66,7 +66,7 @@ namespace MagicApp
         MouseMode mMouseMode;
         int mMaxFaceWidth;
         int mMaxFaceHeight;
-        std::vector<cv::Point2f> mAutoAlignPoints;
+        std::vector<int> mAutoAlignPoints;
         std::string mFpsPath;
     };
 

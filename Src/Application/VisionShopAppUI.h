@@ -22,6 +22,9 @@ namespace MagicApp
         void SwitchDisplayMode(MyGUI::Widget* pSender);
         void ImageResizing(MyGUI::Widget* pSender);
         void SaliencyDetection(MyGUI::Widget* pSender);
+        void ImageGradient(MyGUI::Widget* pSender);
+        void CannyEdgeDetection(MyGUI::Widget* pSender);
+        void DoGBandSaliency(MyGUI::Widget* pSender);
         void DoImageResizing(MyGUI::Widget* pSender);
         void FastImageResizing(MyGUI::Widget* pSender);
         void SegmentImage(MyGUI::Widget* pSender);
