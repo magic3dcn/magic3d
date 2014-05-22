@@ -512,12 +512,73 @@ namespace MagicApp
         int mouseNum = mMouseFPs.size() / 2;
         int borderNum = mBorderFPs.size() / 2;
         norList.clear();
-        norList.resize(browNum * 2 + eyeNum * 2 + noseNum + mouseNum + borderNum);
+        norList.resize(2 * (browNum * 2 + eyeNum * 2 + noseNum + mouseNum + borderNum));
+        int rightBrowBaseId = browNum * 2;
         for (int fid = 0; fid < browNum; fid++)
         {
             int preId = (fid - 1 + browNum) % browNum;
             int nextId = (fid + 1) % browNum;
-            //norList.at(fid * 2) = mLeftBrowFPs.at(nextId * 2 + 1) - mLeftBrowFPs.at(preId * 2 + 1);
+            norList.at(fid * 2) = mLeftBrowFPs.at(nextId * 2 + 1) - mLeftBrowFPs.at(preId * 2 + 1);
+            norList.at(fid * 2 + 1) = mLeftBrowFPs.at(preId * 2) - mLeftBrowFPs.at(nextId * 2);
+
+            norList.at(rightBrowBaseId + fid * 2) = mRightBrowFPs.at(nextId * 2 + 1) - mRightBrowFPs.at(preId * 2 + 1);
+            norList.at(rightBrowBaseId + fid * 2 + 1) = mRightBrowFPs.at(preId * 2) - mRightBrowFPs.at(nextId * 2);
+        }
+        int leftEysBaseId = browNum * 4;
+        int rightEyeBaseId = leftEysBaseId + eyeNum * 2;
+        for (int fid = 0; fid < eyeNum; fid++)
+        {
+            int preId = (fid - 1 + eyeNum) % eyeNum;
+            int nextId = (fid + 1 + eyeNum) % eyeNum;
+            norList.at(leftEysBaseId + fid * 2) = mLeftEyeFPs.at(nextId * 2 + 1) - mLeftEyeFPs.at(preId * 2 + 1);
+            norList.at(leftEysBaseId + fid * 2 + 1) = mLeftEyeFPs.at(preId * 2) - mLeftEyeFPs.at(nextId * 2);
+
+            norList.at(rightEyeBaseId + fid * 2) = mRightEyeFPs.at(nextId * 2 + 1) - mRightEyeFPs.at(preId * 2 + 1);
+            norList.at(rightEyeBaseId + fid * 2 + 1) = mRightEyeFPs.at(preId * 2) - mRightEyeFPs.at(nextId * 2);
+        }
+        int noseBaseId = browNum * 4 + eyeNum * 4;
+        for (int fid = 0; fid < noseNum; fid++)
+        {
+            int preId = fid - 1;
+            int nextId = fid + 1;
+            if (fid == 0)
+            {
+                preId = 0;
+                nextId = 1;
+            }
+            if (fid == noseNum - 1)
+            {
+                preId = noseNum - 2;
+                nextId = noseNum - 1;
+            }
+            norList.at(noseBaseId + fid * 2) = mNoseFPs.at(nextId * 2 + 1) - mNoseFPs.at(preId * 2 + 1);
+            norList.at(noseBaseId + fid * 2 + 1) = mNoseFPs.at(preId * 2) - mNoseFPs.at(nextId * 2);
+        }
+        int mouseBaseId = browNum * 4 + eyeNum * 4 + noseNum * 2;
+        for (int fid = 0; fid < mouseNum; fid++)
+        {
+            int preId = (fid - 1 + mouseNum) % mouseNum;
+            int nextId = (fid + 1 + mouseNum) % mouseNum;
+            norList.at(mouseBaseId + fid * 2) = mMouseFPs.at(nextId * 2 + 1) - mMouseFPs.at(preId * 2 + 1);
+            norList.at(mouseBaseId + fid * 2 + 1) = mMouseFPs.at(preId * 2) - mMouseFPs.at(nextId * 2);
+        }
+        int borderBaseId = browNum * 4 + eyeNum * 4 + noseNum * 2 + mouseNum * 2;
+        for (int fid = 0; fid < borderNum; fid++)
+        {
+            int preId = fid - 1;
+            int nextId = fid + 1;
+            if (fid == 0)
+            {
+                preId = 0;
+                nextId = 1;
+            }
+            if (fid == borderNum - 1)
+            {
+                preId = borderNum - 2;
+                nextId = borderNum - 1;
+            }
+            norList.at(borderBaseId + fid * 2) = mBorderFPs.at(nextId * 2 + 1) - mBorderFPs.at(preId * 2 + 1);
+            norList.at(borderBaseId + fid * 2 + 1) = mBorderFPs.at(preId * 2) - mBorderFPs.at(nextId * 2);
         }
     }
 
@@ -760,7 +821,7 @@ namespace MagicApp
         mpFps->GetFPs(fpsList);
         int browNum, eyeNum, noseNum, mouseNum, borderNum;
         mpFps->GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
-        int markGrayThre = 10;
+        int markGrayThre = 100;
         int neigSize = 5;
         int fpsSize = fpsList.size() / 2;
         std::vector<cv::Point2f> cvFaceFps;
@@ -776,20 +837,42 @@ namespace MagicApp
             double norX = fpsNorList.at(fpsId * 2 + 1);
             double norY = fpsNorList.at(fpsId * 2);
             double norLen = sqrt(norX * norX + norY * norY);
-            norX /= norLen;
-            norY /= norLen;
-            for (int neigId = -neigSize; neigId <= neigSize; neigId++)
+            if (norLen < 1.0e-15)
             {
-                int curPosX = floor(posX + norX * neigId + 0.5);
-                int curPosY = floor(posY + norY * neigId + 0.5);
-                if (curPosX >= 0 && curPosX < imgW && curPosY >= 0 && curPosY < imgH)
+                DebugLog << "norLen is too small" << std::endl;
+            }
+            else
+            {
+                norX /= norLen;
+                norY /= norLen;
+            }
+            for (int neigId = 0; neigId < neigSize; neigId++)
+            {
+                int curPosiPosX = floor(posX + norX * neigId + 0.5);
+                int curPosiPosY = floor(posY + norY * neigId + 0.5);
+                if (curPosiPosX >= 0 && curPosiPosX < imgW && curPosiPosY >= 0 && curPosiPosY < imgH)
                 {
-                    if (featureImg.ptr(curPosY, curPosX)[0] > maxGray)
+                    if (featureImg.ptr(curPosiPosY, curPosiPosX)[0] > maxGray)
                     {
-                        maxGray = featureImg.ptr(curPosY, curPosX)[0];
-                        maxX = curPosX;
-                        maxY = curPosY;
+                        maxGray = featureImg.ptr(curPosiPosY, curPosiPosX)[0];
+                        maxX = curPosiPosX;
+                        maxY = curPosiPosY;
                     }
+                }
+                int curNegPosX = floor(posX - norX * neigId + 0.5);
+                int curNegPosY = floor(posY - norY * neigId + 0.5);
+                if (curNegPosX >= 0 && curNegPosX < imgW && curNegPosY >= 0 && curNegPosY < imgH)
+                {
+                    if (featureImg.ptr(curNegPosY, curNegPosX)[0] > maxGray)
+                    {
+                        maxGray = featureImg.ptr(curNegPosY, curNegPosX)[0];
+                        maxX = curNegPosX;
+                        maxY = curNegPosY;
+                    }
+                }
+                if (maxGray >= markGrayThre)
+                {
+                    break;
                 }
             }
             if (maxGray >= markGrayThre)
@@ -800,8 +883,12 @@ namespace MagicApp
         }
         if (cvFaceFps.size() > 2)
         {
-            RigidFittingFps(cvFaceFps, cvFaceRefFps, fpsList);
             DebugLog << "Rigid fitting: " << cvFaceFps.size() << " " << fpsSize << std::endl;
+            RigidFittingFps(cvFaceFps, cvFaceRefFps, fpsList);
+        }
+        else
+        {
+            DebugLog << "cvFaceFps.size = " << cvFaceFps.size() << std::endl;
         }
 
         //Update fps
