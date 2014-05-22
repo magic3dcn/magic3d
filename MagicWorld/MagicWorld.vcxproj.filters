@@ -363,6 +363,12 @@
     <ClInclude Include="..\Src\DIP\FeatureDetection.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\AppModules\MagicObject.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\AppModules\MagicObjectManager.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -586,6 +592,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\DIP\FeatureDetection.cpp">
       <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\MagicObject.cpp">
+      <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp">
+      <Filter>AppModules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

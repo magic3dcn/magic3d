@@ -504,6 +504,23 @@ namespace MagicApp
         }
     }
 
+    void FaceFeaturePoint::GetFPsNormal(std::vector<int>& norList) const
+    {
+        int browNum = mLeftBrowFPs.size() / 2;
+        int eyeNum = mLeftEyeFPs.size() / 2;
+        int noseNum = mNoseFPs.size() / 2;
+        int mouseNum = mMouseFPs.size() / 2;
+        int borderNum = mBorderFPs.size() / 2;
+        norList.clear();
+        norList.resize(browNum * 2 + eyeNum * 2 + noseNum + mouseNum + borderNum);
+        for (int fid = 0; fid < browNum; fid++)
+        {
+            int preId = (fid - 1 + browNum) % browNum;
+            int nextId = (fid + 1) % browNum;
+            //norList.at(fid * 2) = mLeftBrowFPs.at(nextId * 2 + 1) - mLeftBrowFPs.at(preId * 2 + 1);
+        }
+    }
+
     void FaceFeaturePoint::GetParameter(int& browNum, int& eyeNum, int& noseNum, int& mouseNum, int& borderNum) const
     {
         browNum = mLeftBrowFPs.size() / 2;
@@ -741,77 +758,37 @@ namespace MagicApp
 
         std::vector<int> fpsList;
         mpFps->GetFPs(fpsList);
+        int browNum, eyeNum, noseNum, mouseNum, borderNum;
+        mpFps->GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
         int markGrayThre = 10;
         int neigSize = 5;
         int fpsSize = fpsList.size() / 2;
         std::vector<cv::Point2f> cvFaceFps;
         std::vector<cv::Point2f> cvFaceRefFps;
+        std::vector<int> fpsNorList;
+        mpFps->GetFPsNormal(fpsNorList);
         for (int fpsId = 0; fpsId < fpsSize; fpsId++)
         {
             int posX = fpsList.at(fpsId * 2 + 1);
             int posY = fpsList.at(fpsId * 2);
             int maxGray = -1;
             int maxX, maxY;
-            for (int neigId = 0; neigId < neigSize; neigId++)
+            double norX = fpsNorList.at(fpsId * 2 + 1);
+            double norY = fpsNorList.at(fpsId * 2);
+            double norLen = sqrt(norX * norX + norY * norY);
+            norX /= norLen;
+            norY /= norLen;
+            for (int neigId = -neigSize; neigId <= neigSize; neigId++)
             {
-                int hStart = posY - neigId;
-                hStart = hStart < 0 ? 0 : hStart;
-                int hEnd = posY + neigId;
-                hEnd = hEnd >= imgH ? imgH - 1 : hEnd;
-                int wLeft = posX - neigId;
-                if (wLeft >= 0)
+                int curPosX = floor(posX + norX * neigId + 0.5);
+                int curPosY = floor(posY + norY * neigId + 0.5);
+                if (curPosX >= 0 && curPosX < imgW && curPosY >= 0 && curPosY < imgH)
                 {
-                    for (int hid = hStart; hid <= hEnd; hid++)
+                    if (featureImg.ptr(curPosY, curPosX)[0] > maxGray)
                     {
-                        if (featureImg.ptr(hid, wLeft)[0] > maxGray)
-                        {
-                            maxGray = featureImg.ptr(hid, wLeft)[0];
-                            maxX = wLeft;
-                            maxY = hid;
-                        }
-                    }
-                }
-                int wRight = posX + neigId;
-                if (wRight < imgW)
-                {
-                    for (int hid = hStart; hid <= hEnd; hid++)
-                    {
-                        if (featureImg.ptr(hid, wRight)[0] > maxGray)
-                        {
-                            maxGray = featureImg.ptr(hid, wRight)[0];
-                            maxX = wRight;
-                            maxY = hid;
-                        }
-                    }
-                }
-                int wStart = posX - neigId + 1;
-                wStart = wStart < 0 ? 0 : wStart;
-                int wEnd = posX + neigId - 1;
-                wEnd = wEnd >= imgW ? imgW - 1 : wEnd;
-                int hTop = posY - neigId;
-                if (hTop >= 0)
-                {
-                    for (int wid = wStart; wid <= wEnd; wid++)
-                    {
-                        if (featureImg.ptr(hTop, wid)[0] > maxGray)
-                        {
-                            maxGray = featureImg.ptr(hTop, wid)[0];
-                            maxX = wid;
-                            maxY = hTop;
-                        }
-                    }
-                }
-                int hDown = posY + neigId;
-                if (hDown < imgH)
-                {
-                    for (int wid = wStart; wid <= wEnd; wid++)
-                    {
-                        if (featureImg.ptr(hDown, wid)[0] > maxGray)
-                        {
-                            maxGray = featureImg.ptr(hDown, wid)[0];
-                            maxX = wid;
-                            maxY = hDown;
-                        }
+                        maxGray = featureImg.ptr(curPosY, curPosX)[0];
+                        maxX = curPosX;
+                        maxY = curPosY;
                     }
                 }
             }
@@ -830,6 +807,105 @@ namespace MagicApp
         //Update fps
         mpFps->Set(fpsList, NULL);
     }
+
+    //void Face2D::AutoAlignFps()
+    //{
+    //    //Align to feature: feature image, fps pca.
+    //    cv::Mat featureImg = MagicDIP::FeatureDetection::CannyEdgeDetection(*mpImage);
+    //    int imgW = mpImage->cols;
+    //    int imgH = mpImage->rows;
+
+    //    std::vector<int> fpsList;
+    //    mpFps->GetFPs(fpsList);
+    //    int markGrayThre = 10;
+    //    int neigSize = 5;
+    //    int fpsSize = fpsList.size() / 2;
+    //    std::vector<cv::Point2f> cvFaceFps;
+    //    std::vector<cv::Point2f> cvFaceRefFps;
+    //    for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+    //    {
+    //        int posX = fpsList.at(fpsId * 2 + 1);
+    //        int posY = fpsList.at(fpsId * 2);
+    //        int maxGray = -1;
+    //        int maxX, maxY;
+    //        for (int neigId = 0; neigId < neigSize; neigId++)
+    //        {
+    //            int hStart = posY - neigId;
+    //            hStart = hStart < 0 ? 0 : hStart;
+    //            int hEnd = posY + neigId;
+    //            hEnd = hEnd >= imgH ? imgH - 1 : hEnd;
+    //            int wLeft = posX - neigId;
+    //            if (wLeft >= 0)
+    //            {
+    //                for (int hid = hStart; hid <= hEnd; hid++)
+    //                {
+    //                    if (featureImg.ptr(hid, wLeft)[0] > maxGray)
+    //                    {
+    //                        maxGray = featureImg.ptr(hid, wLeft)[0];
+    //                        maxX = wLeft;
+    //                        maxY = hid;
+    //                    }
+    //                }
+    //            }
+    //            int wRight = posX + neigId;
+    //            if (wRight < imgW)
+    //            {
+    //                for (int hid = hStart; hid <= hEnd; hid++)
+    //                {
+    //                    if (featureImg.ptr(hid, wRight)[0] > maxGray)
+    //                    {
+    //                        maxGray = featureImg.ptr(hid, wRight)[0];
+    //                        maxX = wRight;
+    //                        maxY = hid;
+    //                    }
+    //                }
+    //            }
+    //            int wStart = posX - neigId + 1;
+    //            wStart = wStart < 0 ? 0 : wStart;
+    //            int wEnd = posX + neigId - 1;
+    //            wEnd = wEnd >= imgW ? imgW - 1 : wEnd;
+    //            int hTop = posY - neigId;
+    //            if (hTop >= 0)
+    //            {
+    //                for (int wid = wStart; wid <= wEnd; wid++)
+    //                {
+    //                    if (featureImg.ptr(hTop, wid)[0] > maxGray)
+    //                    {
+    //                        maxGray = featureImg.ptr(hTop, wid)[0];
+    //                        maxX = wid;
+    //                        maxY = hTop;
+    //                    }
+    //                }
+    //            }
+    //            int hDown = posY + neigId;
+    //            if (hDown < imgH)
+    //            {
+    //                for (int wid = wStart; wid <= wEnd; wid++)
+    //                {
+    //                    if (featureImg.ptr(hDown, wid)[0] > maxGray)
+    //                    {
+    //                        maxGray = featureImg.ptr(hDown, wid)[0];
+    //                        maxX = wid;
+    //                        maxY = hDown;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        if (maxGray >= markGrayThre)
+    //        {
+    //            cvFaceFps.push_back(cv::Point2f(posX, posY));
+    //            cvFaceRefFps.push_back(cv::Point2f(maxX, maxY));
+    //        }
+    //    }
+    //    if (cvFaceFps.size() > 2)
+    //    {
+    //        RigidFittingFps(cvFaceFps, cvFaceRefFps, fpsList);
+    //        DebugLog << "Rigid fitting: " << cvFaceFps.size() << " " << fpsSize << std::endl;
+    //    }
+
+    //    //Update fps
+    //    mpFps->Set(fpsList, NULL);
+    //}
 
     void Face2D::RigidFittingFps(const std::vector<cv::Point2f>& cvSrcList, const std::vector<cv::Point2f>& cvTargetList, 
             std::vector<int>& fps)
@@ -892,16 +968,47 @@ namespace MagicApp
     void Face2D::CalRefFpsByProjectPca(const std::string& path, const std::vector<int>& imgIndex)
     {
         DoFeaturePca(path, imgIndex);
-        //Project fps to pca
+        //Transfer to mean feature
         std::vector<int> fps;
         mpFps->GetFPs(fps);
-        std::vector<double> fps_d(fps.size());
         int fpsSize = fps.size() / 2;
-        for (int fpsId = 0; fpsId < fpsSize * 2; fpsId++)
+        std::vector<double> meanFps = mpFeaturePca->GetMeanVector();
+        std::vector<cv::Point2f> cvFps(fpsSize);
+        std::vector<cv::Point2f> cvMeanFps(fpsSize);
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
         {
-            fps_d.at(fpsId) = fps.at(fpsId);
+            cvFps.at(fpsId).x = fps.at(fpsId * 2 + 1);
+            cvFps.at(fpsId).y = fps.at(fpsId * 2);
+            cvMeanFps.at(fpsId).x = meanFps.at(fpsId * 2 + 1);
+            cvMeanFps.at(fpsId).y = meanFps.at(fpsId * 2);
         }
-        std::vector<double> projFps_d = mpFeaturePca->TruncateProject(fps_d, 1.5);
+        cv::Mat transMat = cv::estimateRigidTransform(cvFps, cvMeanFps, false);
+        MagicMath::HomoMatrix3 fpsTransform;
+        fpsTransform.SetValue(0, 0, transMat.at<double>(0, 0));
+        fpsTransform.SetValue(0, 1, transMat.at<double>(0, 1));
+        fpsTransform.SetValue(0, 2, transMat.at<double>(0, 2));
+        fpsTransform.SetValue(1, 0, transMat.at<double>(1, 0));
+        fpsTransform.SetValue(1, 1, transMat.at<double>(1, 1));
+        fpsTransform.SetValue(1, 2, transMat.at<double>(1, 2));
+        std::vector<double> fps_d(fpsSize * 2);
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+        {
+            double resX, resY;
+            fpsTransform.TransformPoint(cvFps.at(fpsId).x, cvFps.at(fpsId).y, resX, resY);
+            fps_d.at(fpsId * 2 + 1) = resX;
+            fps_d.at(fpsId * 2) = resY;
+        }
+        //Project
+        std::vector<double> projFps_d = mpFeaturePca->TruncateProject(fps_d, 3);
+        //Transfer back
+        MagicMath::HomoMatrix3 revMat = fpsTransform.ReverseRigidTransform();
+        for (int fpsId = 0; fpsId < fpsSize; fpsId++)
+        {
+            double resX, resY;
+            revMat.TransformPoint(projFps_d.at(fpsId * 2 + 1), projFps_d.at(fpsId * 2), resX, resY);
+            projFps_d.at(fpsId * 2 + 1) = resX;
+            projFps_d.at(fpsId * 2) = resY;
+        }
         std::vector<int> projFps(projFps_d.size());
         for (int fpsId = 0; fpsId < fpsSize * 2; fpsId++)
         {
