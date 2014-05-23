@@ -207,7 +207,18 @@ namespace MagicApp
         }
         if (arg.key == OIS::KC_V)
         {
-            mFace2D.AutoAlignFps();
+            mFace2D.RigidAutoAlignFps();
+            //Update display
+            std::vector<int> fpsList;
+            mFace2D.GetFps()->GetFPs(fpsList);
+            UpdateLeftDisplayImage(NULL, &fpsList);
+            mUI.UpdateLeftImage(mLeftDisplayImage);
+        }
+        else if (arg.key == OIS::KC_C)
+        {
+            std::vector<int> imgIndex;
+            ReadImgIndex(&imgIndex);
+            mFace2D.PcaAutoAlignFps("../../Media/FaceData/g", imgIndex);
             //Update display
             std::vector<int> fpsList;
             mFace2D.GetFps()->GetFPs(fpsList);
