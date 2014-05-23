@@ -484,13 +484,29 @@ namespace MagicApp
         Display();
     }
 
-    void VisionShopApp::CannyEdgeDetection(void)
+    void VisionShopApp::CannyEdgeDetection(int threshold)
     {
         cv::Mat saliencyImg = MagicDIP::FeatureDetection::CannyEdgeDetection(mImage);
-        mImage.release();
-        mImage = saliencyImg.clone();
+        mDisplayImage.release();
+        mDisplayImage = saliencyImg.clone();
         saliencyImg.release();
-        UpdateAuxiliaryData();
+        //use threshold
+        int imgW = mDisplayImage.cols;
+        int imgH = mDisplayImage.rows;
+        for (int hid = 0; hid < imgH; hid++)
+        {
+            for (int wid = 0; wid < imgW; wid++)
+            {
+                if (mDisplayImage.ptr(hid, wid)[0] < threshold)
+                {
+                    unsigned char* pixel = mDisplayImage.ptr(hid, wid);
+                    pixel[0] = 0;
+                    pixel[1] = 0;
+                    pixel[2] = 0;
+                }
+            }
+        }
+        //UpdateAuxiliaryData();
         Display();
     }
 

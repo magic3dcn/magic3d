@@ -36,7 +36,7 @@ namespace MagicApp
         void ImageResizing(int w, int h);
         void FastImageResizing(int w, int h);
         void ImageGradient(void);
-        void CannyEdgeDetection(void);
+        void CannyEdgeDetection(int threshold);
         void DoGBandSaliencyDetection(void);
         void BrushFront(void);
         void BrushBack(void);

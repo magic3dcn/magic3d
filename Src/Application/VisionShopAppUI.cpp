@@ -50,6 +50,11 @@ namespace MagicApp
         ss << 5;
         ss >> textString;
         mRoot.at(0)->findWidget("Edit_ClusterNumber")->castType<MyGUI::EditBox>()->setOnlyText(textString);
+        ss.clear();
+        textString.clear();
+        ss << 100;
+        ss >> textString;
+        mRoot.at(0)->findWidget("Edit_CannyEdgeThreshold")->castType<MyGUI::EditBox>()->setOnlyText(textString);
     }
 
     void VisionShopAppUI::Shutdown()
@@ -152,6 +157,7 @@ namespace MagicApp
         bool isVisiable = mRoot.at(0)->findWidget("But_ImageGradient")->castType<MyGUI::Button>()->isVisible();
         mRoot.at(0)->findWidget("But_ImageGradient")->castType<MyGUI::Button>()->setVisible(!isVisiable);
         mRoot.at(0)->findWidget("But_ImageCannyEdge")->castType<MyGUI::Button>()->setVisible(!isVisiable);
+        mRoot.at(0)->findWidget("Edit_CannyEdgeThreshold")->castType<MyGUI::EditBox>()->setVisible(!isVisiable);   
         mRoot.at(0)->findWidget("But_ImageDoGSaliency")->castType<MyGUI::Button>()->setVisible(!isVisiable);
     }
 
@@ -169,7 +175,9 @@ namespace MagicApp
         VisionShopApp* pVS = dynamic_cast<VisionShopApp* >(MagicCore::AppManager::GetSingleton()->GetApp("VisionShopApp"));
         if (pVS != NULL)
         {
-            pVS->CannyEdgeDetection();
+            std::string textString = mRoot.at(0)->findWidget("Edit_CannyEdgeThreshold")->castType<MyGUI::EditBox>()->getOnlyText();
+            int threshold = std::atoi(textString.c_str());
+            pVS->CannyEdgeDetection(threshold);
         }
     }
 
