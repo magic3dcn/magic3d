@@ -8,6 +8,7 @@
 
 namespace MagicApp
 {
+    class Face2DObj;
     class FaceBeautificationApp : public MagicCore::AppBase
     {
     public:
@@ -68,6 +69,7 @@ namespace MagicApp
         int mMaxFaceHeight;
         std::vector<int> mAutoAlignPoints;
         std::string mFpsPath;
+        Face2DObj* mpF2DObj;
     };
 
     

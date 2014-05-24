@@ -146,6 +146,7 @@
     <ClInclude Include="..\Src\Application\VisionShopAppUI.h" />
     <ClInclude Include="..\Src\AppModules\BasicImageProcess.h" />
     <ClInclude Include="..\Src\AppModules\Face2D.h" />
+    <ClInclude Include="..\Src\AppModules\Face2DObj.h" />
     <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h" />
     <ClInclude Include="..\Src\AppModules\MagicObject.h" />
     <ClInclude Include="..\Src\AppModules\MagicObjectManager.h" />
@@ -289,6 +290,7 @@
     <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp" />
     <ClCompile Include="..\Src\AppModules\BasicImageProcess.cpp" />
     <ClCompile Include="..\Src\AppModules\Face2D.cpp" />
+    <ClCompile Include="..\Src\AppModules\Face2DObj.cpp" />
     <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp" />
     <ClCompile Include="..\Src\AppModules\MagicObject.cpp" />
     <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp" />

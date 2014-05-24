@@ -4,6 +4,9 @@
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DIP/Saliency.h"
+#include "../AppModules/Face2D.h"
+#include "../AppModules/MagicObjectManager.h"
+#include "../AppModules/Face2DObj.h"
 #include <stdio.h>
 
 namespace MagicApp
@@ -236,7 +239,11 @@ namespace MagicApp
 
     void FaceBeautificationApp::SetupScene(void)
     {
-
+        if (!(MOMGR->IsObjExist("Face2DObj")))
+        {
+            MOMGR->InsertObj("Face2DObj", new Face2DObj);
+        }
+        mpF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("Face2DObj"));
     }
 
     void FaceBeautificationApp::ShutdownScene(void)
@@ -281,7 +288,9 @@ namespace MagicApp
     void FaceBeautificationApp::UpdateLeftDisplayImage(const std::vector<int>* dpsList, const std::vector<int>* fpsList)
     {
         mLeftDisplayImage.release();
-        mLeftDisplayImage = mFace2D.GetImage().clone();
+        //mLeftDisplayImage = mFace2D.GetImage().clone();
+        Face2DObj* pF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("Face2DObj"));
+        mLeftDisplayImage = pF2DObj->GetFaceImage().clone();
         MarkPointsToImage(mLeftDisplayImage, dpsList, 0, 255, 255, 1);
         MarkPointsToImage(mLeftDisplayImage, fpsList, 0, 0, 255, 1);
     }
@@ -322,17 +331,22 @@ namespace MagicApp
         char filterName[] = "Image Files(*.jpg)\0*.jpg\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            mFace2D.LoadImage(fileName);
+            mpF2DObj->LoadFaceImage(fileName);
+            //mFace2D.LoadImage(fileName);
             mFpsPath = fileName;
             std::string::size_type pos = mFpsPath.rfind(".");
             mFpsPath.replace(pos, 4, ".fp");
-            if (!mFace2D.LoadFps(mFpsPath))
+            //if (!mFace2D.LoadFps(mFpsPath))
+            if (!mpF2DObj->LoadFfp(mFpsPath))
             {
-                mFace2D.LoadFps("../../Media/FaceData/mean.fp");
-                mFace2D.GetFps()->Save(mFpsPath);
+                //mFace2D.LoadFps("../../Media/FaceData/mean.fp");
+                //mFace2D.GetFps()->Save(mFpsPath);
+                mpF2DObj->LoadFfp("../../Media/FaceData/mean.fp");
+                mpF2DObj->SaveFfp(mFpsPath);
             }
             //scale image to max size
-            mFace2D.SetMaxImageSize(mMaxFaceWidth, mMaxFaceHeight);
+            //mFace2D.SetMaxImageSize(mMaxFaceWidth, mMaxFaceHeight);
+            mpF2DObj->ResizeImage(mMaxFaceWidth, mMaxFaceHeight, true);
             //update app state
             mMouseMode = MM_View;
             UpdateLeftDisplayImage(NULL, NULL);
@@ -366,6 +380,33 @@ namespace MagicApp
             rename(mFpsPath.c_str(), fpsBakName.c_str());
             mFace2D.GetFps()->Save(mFpsPath);
         }
+        /*int imgCount = 41;
+        for (int imgId = 0; imgId < imgCount; imgId++)
+        {
+            std::stringstream ss;
+            ss << "../../Media/FaceData/g" << imgId << ".fp";
+            std::string fileName;
+            ss >> fileName;
+            mFace2D.LoadFps(fileName);
+            std::vector<int> fps;
+            mFace2D.GetFps()->GetFPs(fps);
+            std::ofstream fout(fileName);
+            fout << 2 << std::endl;
+            fout << fps.size() / 2 << std::endl;
+            for (int fpsId = 0; fpsId < fps.size(); fpsId++)
+            {
+                fout << fps.at(fpsId) << " ";
+            }
+            fout << 7 << std::endl;
+            fout << 1 << " " << 1 << " " << 1 << " " << 1 << " " << 0 << " " << 1 << " " << 0 << std::endl;
+            int browNum, eyeNum, noseNum, mouseNum, borderNum;
+            mFace2D.GetFps()->GetParameter(browNum, eyeNum, noseNum, mouseNum, borderNum);
+            fout << 0 << " " << browNum << " " << browNum * 2 << " " << browNum * 2 + eyeNum << " " << 
+                browNum * 2 + eyeNum * 2 << " " << browNum * 2 + eyeNum * 2 + noseNum << " " <<
+                browNum * 2 + eyeNum * 2 + noseNum + mouseNum << " " << 
+                browNum * 2 + eyeNum * 2 + noseNum + mouseNum + borderNum << std::endl;
+            fout.close();
+        }*/
     }
 
     void FaceBeautificationApp::AutoAlignFeature()
