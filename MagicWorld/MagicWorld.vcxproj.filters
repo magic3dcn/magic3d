@@ -369,6 +369,9 @@
     <ClInclude Include="..\Src\AppModules\MagicObjectManager.h">
       <Filter>AppModules</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -597,6 +600,9 @@
       <Filter>AppModules</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp">
+      <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp">
       <Filter>AppModules</Filter>
     </ClCompile>
   </ItemGroup>
