@@ -7,6 +7,103 @@
 
 namespace MagicApp
 {
+    Face2DPCA::Face2DPCA() :
+        mpFeaturePca(NULL)
+    {
+    }
+
+    Face2DPCA::~Face2DPCA()
+    {
+        if (mpFeaturePca != NULL)
+        {
+            delete mpFeaturePca;
+            mpFeaturePca = NULL;
+        }
+    }
+
+    void Face2DPCA::DoFeaturePca(const std::string& path, const std::vector<int>& imgIndex)
+    {
+
+    }
+
+    MagicML::PrincipalComponentAnalysis* Face2DPCA::GetFeaturePca(void)
+    {
+
+    }
+
+    void Face2DPCA::DeformFeatureToMeanFace(const std::string& path, std::vector<int>& imgIndex)
+    {
+
+    }
+
+    void Face2DPCA::CalMeanFeature(const std::string& path, const std::vector<int>& imgIndex, 
+            std::vector<Face2DFeaturePoints*>* fpsList, std::vector<cv::Point2f>* cvMeanFps)
+    {
+
+    }
+
+    void Face2DPCA::CalMeanFace(const std::string& path, std::vector<int>& imgIndex)
+    {
+
+    }
+
+    Face2DObj::Face2DObj() :
+        mpImage(NULL),
+        mpFfp(NULL)
+    {
+    }
+
+    Face2DObj::~Face2DObj()
+    {
+        if (mpImage != NULL)
+        {
+            mpImage->release();
+            delete mpImage;
+            mpImage = NULL;
+        }
+    }
+
+    bool Face2DObj::LoadFaceImage(const std::string& fileName)
+    {
+        return true;
+    }
+
+    cv::Mat Face2DObj::GetFaceImage(void)
+    {
+        return *mpImage;
+    }
+
+    bool Face2DObj::LoadFfp(const std::string& fileName)
+    {
+        return true;
+    }
+
+    Face2DFeaturePoints* Face2DObj::GetFfp(void)
+    {
+        return NULL;
+    }
+
+    void Face2DObj::AutoAlignFfp(const std::vector<double>& markPos, const cv::Mat& featureImg,
+        const MagicML::PrincipalComponentAnalysis& featurePca)
+    {
+
+    }
+
+    void Face2DObj::DeformToFeaturePcaSpace(const MagicML::PrincipalComponentAnalysis& featurePca)
+    {
+
+    }
+
+    void Face2DObj::DeformToFeature(const Face2DFeaturePoints& refFfp)
+    {
+
+    }
+
+    void Face2DObj::ResizeImage(int width, int height, bool keepRatio)
+    {
+
+    }
+
     FaceFeaturePoint::FaceFeaturePoint() :
         mSelectIndex(-1),
         mSelectType(FT_None)
