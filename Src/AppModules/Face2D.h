@@ -78,7 +78,7 @@ namespace MagicApp
     private:
         void DeformFeatureToMeanFace(const std::string& path, std::vector<int>& imgIndex);
         void CalMeanFeature(const std::string& path, const std::vector<int>& imgIndex, 
-            std::vector<Face2DFeaturePoints*>* fpsList, std::vector<cv::Point2f>* cvMeanFps);
+            std::vector<Face2DFeaturePoints*>* ffpList, std::vector<cv::Point2f>* cvMeanFps);
 
     private:
         MagicML::PrincipalComponentAnalysis* mpFeaturePca;
