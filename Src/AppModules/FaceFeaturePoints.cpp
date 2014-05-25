@@ -1,5 +1,6 @@
 #include "FaceFeaturePoints.h"
 #include <fstream>
+#include <math.h>
 #include "../Tool/LogSystem.h"
 
 namespace MagicApp

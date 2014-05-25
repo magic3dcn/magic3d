@@ -79,7 +79,7 @@ namespace MagicApp
 
     MagicML::PrincipalComponentAnalysis* Face2DPCA::GetFeaturePca(void)
     {
-
+        return NULL;
     }
 
     void Face2DPCA::DeformFeatureToMeanFace(const std::string& path, std::vector<int>& imgIndex)
