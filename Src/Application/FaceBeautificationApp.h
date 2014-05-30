@@ -9,6 +9,7 @@
 namespace MagicApp
 {
     class Face2DObj;
+    class Face2DPCA;
     class FaceBeautificationApp : public MagicCore::AppBase
     {
     public:
@@ -56,6 +57,7 @@ namespace MagicApp
         void UpdateMidDisplayImage(const cv::Mat& img);
         void UpdateMidDisplayImage(const std::vector<int>& markList);
         void ReadImgIndex(std::vector<int>* imgIndex);
+        void ConvertDoubleToInt(const std::vector<double>& doubleList, std::vector<int>& intList) const;
 
     private:
         FaceBeautificationAppUI mUI;
@@ -70,6 +72,8 @@ namespace MagicApp
         std::vector<int> mAutoAlignPoints;
         std::string mFpsPath;
         Face2DObj* mpF2DObj;
+        Face2DObj* mpRefF2DObj;
+        Face2DPCA* mpF2DPca;
     };
 
     

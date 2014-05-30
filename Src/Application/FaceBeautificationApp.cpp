@@ -16,7 +16,10 @@ namespace MagicApp
         mMouseMode(MM_View),
         mMaxFaceWidth(0),
         mMaxFaceHeight(0),
-        mAutoAlignPoints()
+        mAutoAlignPoints(),
+        mpF2DObj(NULL),
+        mpRefF2DObj(NULL),
+        mpF2DPca(NULL)
     {
     }
 
@@ -56,15 +59,18 @@ namespace MagicApp
                 {
                     int hPos = arg.state.Y.abs - 50;
                     int wPos = arg.state.X.abs - 90;
-                    int imgH, imgW;
-                    mFace2D.GetImageSize(&imgW, &imgH);
+                    int imgH = mpF2DObj->GetFaceImage().rows;
+                    int imgW = mpF2DObj->GetFaceImage().cols;
+                    //mFace2D.GetImageSize(&imgW, &imgH);
                     if (wPos >= 0 && wPos < imgW && hPos >= 0 && hPos < imgH)
                     {
-                        mFace2D.GetFps()->MoveTo(hPos, wPos);
-                        std::vector<int> fpsList;
-                        mFace2D.GetFps()->GetFPs(fpsList);
-                        std::vector<int> dpsList;
-                        mFace2D.GetFps()->GetDPs(dpsList);
+                        mpF2DObj->GetFfp()->MoveTo(hPos, wPos);
+                        std::vector<double> fpsList_d, dpsList_d;
+                        mpF2DObj->GetFfp()->GetFps(&fpsList_d);
+                        mpF2DObj->GetFfp()->GetDefaultDps(&dpsList_d);
+                        std::vector<int> fpsList, dpsList;
+                        ConvertDoubleToInt(fpsList_d, fpsList);
+                        ConvertDoubleToInt(dpsList_d, dpsList);
                         UpdateLeftDisplayImage(&dpsList, &fpsList);
                         mUI.UpdateLeftImage(mLeftDisplayImage);
                     }
@@ -83,7 +89,8 @@ namespace MagicApp
             {
                 int hPos = arg.state.Y.abs - 50;
                 int wPos = arg.state.X.abs - 90;
-                mFeaturePointSelected = mFace2D.GetFps()->Select(hPos, wPos);
+                //mFeaturePointSelected = mFace2D.GetFps()->Select(hPos, wPos);
+                mFeaturePointSelected = mpF2DObj->GetFfp()->Select(hPos, wPos);
             }
             /*if (id == OIS::MB_Left)
             {
@@ -166,8 +173,10 @@ namespace MagicApp
             {
                 if (mFeaturePointSelected)
                 {
+                    std::vector<double> fpsList_d;
+                    mpF2DObj->GetFfp()->GetFps(&fpsList_d);
                     std::vector<int> fpsList;
-                    mFace2D.GetFps()->GetFPs(fpsList);
+                    ConvertDoubleToInt(fpsList_d, fpsList);
                     UpdateLeftDisplayImage(NULL, &fpsList);
                     mUI.UpdateLeftImage(mLeftDisplayImage);
                     mFeaturePointSelected = false;
@@ -176,6 +185,16 @@ namespace MagicApp
         }
         
         return true;
+    }
+
+    void FaceBeautificationApp::ConvertDoubleToInt(const std::vector<double>& doubleList, std::vector<int>& intList) const
+    {
+        intList.clear();
+        intList.resize(doubleList.size());
+        for (int id = 0; id < doubleList.size(); id++)
+        {
+            intList.at(id) = floor(doubleList.at(id) + 0.5);
+        }
     }
 
     bool FaceBeautificationApp::KeyPressed( const OIS::KeyEvent &arg )
@@ -200,11 +219,16 @@ namespace MagicApp
             {
                 deltaH = 1;
             }
-            mFace2D.GetFps()->MoveDelta(deltaH, deltaW);
+            //mFace2D.GetFps()->MoveDelta(deltaH, deltaW);
+            mpF2DObj->GetFfp()->MoveDelta(deltaH, deltaW);
+            std::vector<double> fpsList_d;
+            mpF2DObj->GetFfp()->GetFps(&fpsList_d);
             std::vector<int> fpsList;
-            mFace2D.GetFps()->GetFPs(fpsList);
+            ConvertDoubleToInt(fpsList_d, fpsList);
+            std::vector<double> dpsList_d;
+            mpF2DObj->GetFfp()->GetDefaultDps(&dpsList_d);
             std::vector<int> dpsList;
-            mFace2D.GetFps()->GetDPs(dpsList);
+            ConvertDoubleToInt(dpsList_d, dpsList);
             UpdateLeftDisplayImage(&dpsList, &fpsList);
             mUI.UpdateLeftImage(mLeftDisplayImage);
         }
@@ -244,6 +268,16 @@ namespace MagicApp
             MOMGR->InsertObj("Face2DObj", new Face2DObj);
         }
         mpF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("Face2DObj"));
+        if (!(MOMGR->IsObjExist("RefFace2DObj")))
+        {
+            MOMGR->InsertObj("RefFace2DObj", new Face2DObj);
+        }
+        mpRefF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("RefFace2DObj"));
+        if (!(MOMGR->IsObjExist("Face2DPCA")))
+        {
+            MOMGR->InsertObj("Face2DPCA", new Face2DPCA);
+        }
+        mpF2DPca = dynamic_cast<Face2DPCA*>(MOMGR->GetObj("Face2DPCA"));
     }
 
     void FaceBeautificationApp::ShutdownScene(void)
@@ -289,8 +323,7 @@ namespace MagicApp
     {
         mLeftDisplayImage.release();
         //mLeftDisplayImage = mFace2D.GetImage().clone();
-        Face2DObj* pF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("Face2DObj"));
-        mLeftDisplayImage = pF2DObj->GetFaceImage().clone();
+        mLeftDisplayImage = mpF2DObj->GetFaceImage().clone();
         MarkPointsToImage(mLeftDisplayImage, dpsList, 0, 255, 255, 1);
         MarkPointsToImage(mLeftDisplayImage, fpsList, 0, 0, 255, 1);
     }
@@ -298,7 +331,8 @@ namespace MagicApp
     void FaceBeautificationApp::UpdateRightDisplayImage(const std::vector<int>* fpsList)
     {
         mRightDisplayImage.release();
-        mRightDisplayImage = mFace2D.GetRefImage().clone();
+        mRightDisplayImage = mpRefF2DObj->GetFaceImage().clone();
+        //mRightDisplayImage = mFace2D.GetRefImage().clone();
         MarkPointsToImage(mRightDisplayImage, fpsList, 0, 0, 255, 1);
     }
 
@@ -366,8 +400,10 @@ namespace MagicApp
         {
             mMouseMode = MM_Move_Origin_Feature;
             //Display feature point
+            std::vector<double> fpsList_d;
+            mpF2DObj->GetFfp()->GetFps(&fpsList_d);
             std::vector<int> fpsList;
-            mFace2D.GetFps()->GetFPs(fpsList);
+            ConvertDoubleToInt(fpsList_d, fpsList);
             UpdateLeftDisplayImage(NULL, &fpsList);
             mUI.UpdateLeftImage(mLeftDisplayImage);
         }
@@ -378,7 +414,8 @@ namespace MagicApp
             mUI.UpdateLeftImage(mLeftDisplayImage);
             std::string fpsBakName = mFpsPath + ".bak";
             rename(mFpsPath.c_str(), fpsBakName.c_str());
-            mFace2D.GetFps()->Save(mFpsPath);
+            //mFace2D.GetFps()->Save(mFpsPath);
+            mpF2DObj->GetFfp()->Save(mFpsPath);
         }
         /*int imgCount = 41;
         for (int imgId = 0; imgId < imgCount; imgId++)
@@ -427,8 +464,9 @@ namespace MagicApp
 
     void FaceBeautificationApp::DeformImageFeature(void)
     {
-        cv::Mat deformImg = mFace2D.DeformImageByFeature();
-        UpdateMidDisplayImage(deformImg);
+        //cv::Mat deformImg = mFace2D.DeformImageByFeature();
+        mpF2DObj->DeformToFeature(*mpRefF2DObj->GetFfp());
+        UpdateMidDisplayImage(mpF2DObj->GetFaceImage());
         mUI.UpdateMiddleImage(mMidDisplayImage);
     }
 
@@ -443,19 +481,24 @@ namespace MagicApp
         char filterName[] = "Image Files(*.jpg)\0*.jpg\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            mFace2D.LoadRefImage(fileName);
+            mpRefF2DObj->LoadFaceImage(fileName);
+            //mFace2D.LoadRefImage(fileName);
             std::string fpsName = fileName;
             std::string::size_type pos = fpsName.rfind(".");
             fpsName.replace(pos, 4, ".fp");
-            if (!mFace2D.LoadRefFps(fpsName))
+            //if (!mFace2D.LoadRefFps(fpsName))
+            if (!mpRefF2DObj->LoadFfp(fpsName))
             {
                 return false;
             }
             //scale image to max size
-            mFace2D.SetMaxRefImageSize(mMaxFaceWidth, mMaxFaceHeight);
+            mpRefF2DObj->ResizeImage(mMaxFaceWidth, mMaxFaceHeight, false);
+            //mFace2D.SetMaxRefImageSize(mMaxFaceWidth, mMaxFaceHeight);
             //update app state
+            std::vector<double> refFps_d;
+            mpRefF2DObj->GetFfp()->GetFps(&refFps_d);
             std::vector<int> refFps;
-            mFace2D.GetRefFps()->GetFPs(refFps);
+            ConvertDoubleToInt(refFps_d, refFps);
             UpdateRightDisplayImage(&refFps);
             mUI.UpdateRightImage(mRightDisplayImage);
 
@@ -488,13 +531,12 @@ namespace MagicApp
     {
         std::vector<int> imgIndex;
         ReadImgIndex(&imgIndex);
-        mFace2D.DoFeaturePca("../../Media/FaceData/g", imgIndex);
-        std::vector<double> meanVec = mFace2D.GetFeaturePca()->GetMeanVector();
-        std::vector<int> meanFps(meanVec.size());
-        for (int i = 0; i < meanVec.size(); i++)
-        {
-            meanFps.at(i) = floor(meanVec.at(i) + 0.5);
-        }
+        //mFace2D.DoFeaturePca("../../Media/FaceData/g", imgIndex);
+        mpF2DPca->DoFeaturePca("../../Media/FaceData/g", imgIndex);
+        //std::vector<double> meanVec = mFace2D.GetFeaturePca()->GetMeanVector();
+        std::vector<double> meanVec = mpF2DPca->GetFeaturePca()->GetMeanVector();
+        std::vector<int> meanFps;
+        ConvertDoubleToInt(meanVec, meanFps);
         UpdateMidDisplayImage(meanFps);
         mUI.UpdateMiddleImage(mMidDisplayImage);
     }
@@ -526,7 +568,8 @@ namespace MagicApp
     {
         std::vector<int> imgIndex;
         ReadImgIndex(&imgIndex);
-        mFace2D.CalMeanFace("../../Media/FaceData/g", imgIndex);
+        mpF2DPca->CalMeanFace("../../Media/FaceData/g", imgIndex);
+        //mFace2D.CalMeanFace("../../Media/FaceData/g", imgIndex);
     }
 
     void FaceBeautificationApp::DeformFeatureToMeanFace(void)
