@@ -589,8 +589,8 @@ namespace MagicApp
             }
         }
         std::vector<int> clusterRes;
-        MagicML::Clustering::OrchardBoumanClustering(inputData, dim, k, clusterRes);
-        //MagicML::Clustering::KMeansClustering(inputData, dim, k, clusterRes);
+        MagicML::Clustering::OrchardBouman(inputData, dim, k, clusterRes);
+        //MagicML::Clustering::KMeans(inputData, dim, k, clusterRes);
         std::vector<int> clusterCount(k, 0);
         std::vector<double> clusterColor(k * dim, 0);
         int pixelIndex = 0;

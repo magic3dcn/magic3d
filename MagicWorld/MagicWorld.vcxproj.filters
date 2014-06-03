@@ -378,6 +378,12 @@
     <ClInclude Include="..\Src\AppModules\Face2DObj.h">
       <Filter>AppModules</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\KMeansCoding.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\SparseCoding.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -616,6 +622,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\AppModules\Face2DObj.cpp">
       <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\KMeansCoding.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp">
+      <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
