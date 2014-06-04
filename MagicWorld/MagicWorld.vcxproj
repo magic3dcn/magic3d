@@ -175,6 +175,7 @@
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\ViewTool.h" />
+    <ClInclude Include="..\Src\DIP\Classification.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
     <ClInclude Include="..\Src\DIP\FeatureDetection.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="..\Src\MachineLearning\LinearRegression.h" />
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
     <ClInclude Include="..\Src\MachineLearning\SparseCoding.h" />
+    <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix4.h" />
     <ClInclude Include="..\Src\Math\HomoVector4.h" />
@@ -340,6 +342,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Src\DIP\Classification.cpp" />
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\Src\DIP\FeatureDetection.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
@@ -351,6 +354,7 @@
     <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp" />
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix4.cpp" />
     <ClCompile Include="..\Src\Math\HomoVector4.cpp" />

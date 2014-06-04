@@ -384,6 +384,12 @@
     <ClInclude Include="..\Src\MachineLearning\SparseCoding.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\Classification.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -627,6 +633,12 @@
       <Filter>MachineLearning</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\Classification.cpp">
+      <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp">
       <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
