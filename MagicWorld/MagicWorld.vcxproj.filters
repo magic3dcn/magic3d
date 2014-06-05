@@ -390,6 +390,18 @@
     <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\LogisticRegression.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Math\BasicFunction.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\AdaBoost.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\NaiveBayes.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -639,6 +651,18 @@
       <Filter>DIP</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\LogisticRegression.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\BasicFunction.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\AdaBoost.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\NaiveBayes.cpp">
       <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
