@@ -188,6 +188,7 @@
     <ClInclude Include="..\Src\MachineLearning\LinearRegression.h" />
     <ClInclude Include="..\Src\MachineLearning\LogisticRegression.h" />
     <ClInclude Include="..\Src\MachineLearning\NaiveBayes.h" />
+    <ClInclude Include="..\Src\MachineLearning\NeuralNetworks.h" />
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
     <ClInclude Include="..\Src\MachineLearning\SparseCoding.h" />
     <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h" />
@@ -359,6 +360,7 @@
     <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp" />
     <ClCompile Include="..\Src\MachineLearning\LogisticRegression.cpp" />
     <ClCompile Include="..\Src\MachineLearning\NaiveBayes.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\NeuralNetworks.cpp" />
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp" />
