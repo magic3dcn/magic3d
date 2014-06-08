@@ -7,7 +7,7 @@ namespace MagicML
     {
     public:
         LinkFunction();
-        virtual ~LinkFunction();
+        virtual ~LinkFunction() = 0;
         virtual double GetValue(double x, int order) = 0;
     };
 

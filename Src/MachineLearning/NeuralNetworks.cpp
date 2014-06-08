@@ -40,6 +40,7 @@ namespace MagicML
 
     double NeuralNetworks::Predict(const std::vector<double>& dataX) const
     {
+        return 0;
 
     }
 }
