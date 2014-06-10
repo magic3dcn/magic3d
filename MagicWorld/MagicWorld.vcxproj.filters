@@ -405,6 +405,18 @@
     <ClInclude Include="..\Src\MachineLearning\NeuralNetworks.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\HiddenMarkovModels.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\KernelFunction.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -669,6 +681,18 @@
       <Filter>MachineLearning</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\NeuralNetworks.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\HiddenMarkovModels.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\KernelFunction.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp">
       <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
