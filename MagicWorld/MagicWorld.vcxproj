@@ -183,6 +183,7 @@
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
     <ClInclude Include="..\Src\MachineLearning\AdaBoost.h" />
     <ClInclude Include="..\Src\MachineLearning\Clustering.h" />
+    <ClInclude Include="..\Src\MachineLearning\DeepBeliefNets.h" />
     <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h" />
     <ClInclude Include="..\Src\MachineLearning\HiddenMarkovModels.h" />
     <ClInclude Include="..\Src\MachineLearning\KernelFunction.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
     <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h" />
     <ClInclude Include="..\Src\MachineLearning\SparseCoding.h" />
+    <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h" />
     <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h" />
     <ClInclude Include="..\Src\Math\BasicFunction.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
@@ -359,6 +361,7 @@
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
     <ClCompile Include="..\Src\MachineLearning\AdaBoost.cpp" />
     <ClCompile Include="..\Src\MachineLearning\Clustering.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\DeepBeliefNets.cpp" />
     <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp" />
     <ClCompile Include="..\Src\MachineLearning\HiddenMarkovModels.cpp" />
     <ClCompile Include="..\Src\MachineLearning\KernelFunction.cpp" />
@@ -371,6 +374,7 @@
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
     <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp" />
     <ClCompile Include="..\Src\Math\BasicFunction.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />

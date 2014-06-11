@@ -417,6 +417,12 @@
     <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\DeepBeliefNets.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -693,6 +699,12 @@
       <Filter>MachineLearning</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\DeepBeliefNets.cpp">
+      <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp">
       <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
