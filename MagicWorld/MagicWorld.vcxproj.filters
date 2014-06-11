@@ -82,6 +82,9 @@
     <Filter Include="AppModules">
       <UniqueIdentifier>{f06b2a08-b2ea-452a-be97-c31b496f4607}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\MachineLearningApp">
+      <UniqueIdentifier>{1a1becb8-87a6-4814-ae3d-56cd868ab07c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -423,6 +426,18 @@
     <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Tool\ErrorCodes.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\AppModules\SimpleMLObj.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\MachineLearningTestAppUI.h">
+      <Filter>Application\MachineLearningApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Application\MachineLearningTestApp.h">
+      <Filter>Application\MachineLearningApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -706,6 +721,15 @@
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp">
       <Filter>MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\SimpleMLObj.cpp">
+      <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\MachineLearningTestAppUI.cpp">
+      <Filter>Application\MachineLearningApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Application\MachineLearningTestApp.cpp">
+      <Filter>Application\MachineLearningApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

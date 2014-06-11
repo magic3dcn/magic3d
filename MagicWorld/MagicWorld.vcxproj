@@ -128,6 +128,8 @@
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\LeapMotionApp.h" />
     <ClInclude Include="..\Src\Application\LeapMotionAppUI.h" />
+    <ClInclude Include="..\Src\Application\MachineLearningTestApp.h" />
+    <ClInclude Include="..\Src\Application\MachineLearningTestAppUI.h" />
     <ClInclude Include="..\Src\Application\MeshShopApp.h" />
     <ClInclude Include="..\Src\Application\MeshShopAppUI.h" />
     <ClInclude Include="..\Src\Application\PointShopApp.h" />
@@ -150,6 +152,7 @@
     <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h" />
     <ClInclude Include="..\Src\AppModules\MagicObject.h" />
     <ClInclude Include="..\Src\AppModules\MagicObjectManager.h" />
+    <ClInclude Include="..\Src\AppModules\SimpleMLObj.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -204,6 +207,7 @@
     <ClInclude Include="..\Src\Math\HomoVector4.h" />
     <ClInclude Include="..\Src\Math\Vector2.h" />
     <ClInclude Include="..\Src\Math\Vector3.h" />
+    <ClInclude Include="..\Src\Tool\ErrorCodes.h" />
     <ClInclude Include="..\Src\Tool\LogSystem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -258,6 +262,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\Application\LeapMotionAppUI.cpp" />
+    <ClCompile Include="..\Src\Application\MachineLearningTestApp.cpp" />
+    <ClCompile Include="..\Src\Application\MachineLearningTestAppUI.cpp" />
     <ClCompile Include="..\Src\Application\MeshShopApp.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -309,6 +315,7 @@
     <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp" />
     <ClCompile Include="..\Src\AppModules\MagicObject.cpp" />
     <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp" />
+    <ClCompile Include="..\Src\AppModules\SimpleMLObj.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp">
