@@ -16,6 +16,8 @@ namespace MagicML
     private:
         void Reset(void);
         void SequentialMinimalOptimization(const std::vector<double>& dataX, const std::vector<double>& dataY, double softCoef);
+        double CalU(int index, const std::vector<double>& dataX, const std::vector<double>& dataY);
+
     private:
         KernelFunction* mpKernel;
         double mB;

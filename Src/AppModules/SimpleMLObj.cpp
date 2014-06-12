@@ -1,5 +1,6 @@
 #include "SimpleMLObj.h"
 #include "../MachineLearning/NaiveBayes.h"
+#include "../MachineLearning/SupportVectorMachine.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
 
@@ -9,7 +10,8 @@ namespace MagicApp
         mDataDim(dataDim),
         mDataX(),
         mDataY(),
-        mpNaiveBayes(NULL)
+        mpNaiveBayes(NULL),
+        mpSVM(NULL)
     {
     }
 
@@ -25,6 +27,11 @@ namespace MagicApp
         {
             delete mpNaiveBayes;
             mpNaiveBayes = NULL;
+        }
+        if (mpSVM != NULL)
+        {
+            delete mpSVM;
+            mpSVM = NULL;
         }
     }
 
@@ -120,5 +127,15 @@ namespace MagicApp
         dataX.at(0) = x0;
         dataX.at(1) = x1;
         return mpNaiveBayes->Predict(dataX);
+    }
+
+    void SimpleMLObj::LearnSVM(void)
+    {
+
+    }
+
+    int SimpleMLObj::PrediectBySVM(double x0, double x1)
+    {
+
     }
 }

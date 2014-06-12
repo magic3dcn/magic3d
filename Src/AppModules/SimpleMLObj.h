@@ -5,6 +5,7 @@
 namespace MagicML
 {
     class NaiveBayes;
+    class SupportVectorMachine;
 }
 
 namespace MagicApp
@@ -25,11 +26,15 @@ namespace MagicApp
         void LearnNaiveBayes(int categoryCount);
         int PredictByNaiveBayes(double x0, double x1);
 
+        void LearnSVM(void);
+        int PrediectBySVM(double x0, double x1);
+
     private:
         int mDataDim;
         std::vector<double> mDataX;
         std::vector<int> mDataY;
         MagicML::NaiveBayes* mpNaiveBayes;
+        MagicML::SupportVectorMachine* mpSVM;
     };
 
 }
