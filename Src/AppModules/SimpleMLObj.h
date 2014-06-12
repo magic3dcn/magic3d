@@ -19,6 +19,8 @@ namespace MagicApp
         void InsertTrainingData(const std::vector<double>& dataX, int dataY);
         void InsertTrainingData(double x0, double x1, int dataY);
         void GetTrainingData(std::vector<double>& dataX, std::vector<int>& dataY) const;
+        void Load(const std::string& fileName);
+        void Save(const std::string& fileName) const;
         
         void LearnNaiveBayes(int categoryCount);
         int PredictByNaiveBayes(double x0, double x1);

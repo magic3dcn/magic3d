@@ -49,6 +49,48 @@ namespace MagicApp
         dataX = mDataX;
         dataY = mDataY;
     }
+
+    void SimpleMLObj::Load(const std::string& fileName)
+    {
+        Reset();
+        std::ifstream fin(fileName);
+        fin >> mDataDim;
+        int dataCount;
+        fin >> dataCount;
+        mDataX.resize(dataCount * mDataDim);
+        for (int dataId = 0; dataId < dataCount; dataId++)
+        {
+            for (int dim = 0; dim < mDataDim; dim++)
+            {
+                fin >> mDataX.at(dataId * mDataDim + dim);
+            }
+        }
+        for (int dataId = 0; dataId < dataCount; dataId++)
+        {
+            fin >> mDataY.at(dataId);
+        }
+        fin.close();
+    }
+    
+    void SimpleMLObj::Save(const std::string& fileName) const
+    {
+        std::ofstream fout(fileName);
+        fout << mDataDim << std::endl;
+        int dataCount = mDataY.size();
+        fout << dataCount << std::endl;
+        for (int dataId = 0; dataId < dataCount; dataId++)
+        {
+            for (int dim = 0; dim < mDataDim; dim++)
+            {
+                fout << mDataX.at(dataId * mDataDim + dim) << " ";
+            }
+        }
+        for (int dataId = 0; dataId < dataCount; dataId++)
+        {
+            fout << mDataY.at(dataId) << " ";
+        }
+        fout.close();
+    }
         
     void SimpleMLObj::LearnNaiveBayes(int categoryCount)
     {
@@ -56,7 +98,15 @@ namespace MagicApp
         {
             mpNaiveBayes = new MagicML::NaiveBayes;
         }
-        mpNaiveBayes->Learn(mDataX, mDataY, categoryCount);
+        int errorCode = mpNaiveBayes->Learn(mDataX, mDataY, categoryCount);
+        if (errorCode == MAGIC_NO_ERROR)
+        {
+            DebugLog << "SimpleMLObj::LearnNaiveBayes success" << std::endl;
+        }
+        else
+        {
+            DebugLog << "SimpleMLObj::LearnNaiveBayes fail, error code: " << errorCode << std::endl;
+        }
     }
 
     int SimpleMLObj::PredictByNaiveBayes(double x0, double x1)

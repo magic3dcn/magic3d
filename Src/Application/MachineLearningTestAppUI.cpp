@@ -28,8 +28,9 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_DrawPoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DrawPoint);
         mRoot.at(0)->findWidget("But_LearnNaiveBayes")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnNaiveBayes);
         mRoot.at(0)->findWidget("But_TestPoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestPoint);
+        mRoot.at(0)->findWidget("But_DecisionBoundary")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundary);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::BackHome);
-        UpdateImageTex(NULL, NULL, NULL, NULL);
+        UpdateImageTex(NULL, NULL, 0, NULL, NULL, 0);
     }
 
     void MachineLearningTestAppUI::Shutdown()
@@ -44,8 +45,53 @@ namespace MagicApp
         MagicCore::ResourceManager::UnloadResource("MachineLearningTestApp");
     }
 
-    void MachineLearningTestAppUI::UpdateImageTex(const std::vector<double>* dataX, const std::vector<int>* dataY, 
-            const std::vector<double>* testDataX, const std::vector<int>* testDataY)
+    void MachineLearningTestAppUI::DrawMarkPoint(const std::vector<double>* dataX, const std::vector<int>* dataY, 
+        int texWidth, int texHeight, int pointSize, MyGUI::uint8* pText)
+    {
+        for (int dataId = 0; dataId < dataY->size(); dataId++)
+        {
+            int wPos = dataX->at(dataId * 2);
+            int hPos = dataX->at(dataId * 2 + 1);
+            int hBottom = hPos - pointSize;
+            hBottom = hBottom > 0 ? hBottom : 0;
+            int hUp = hPos + pointSize;
+            hUp = hUp >= texHeight ? texHeight - 1 : hUp;
+            int wLeft = wPos - pointSize;
+            wLeft = wLeft > 0 ? wLeft : 0;
+            int wRight = wPos + pointSize;
+            wRight = wRight >= texWidth ? texWidth - 1 : wRight;
+            for (int hid = hBottom; hid <= hUp; hid++)
+            {
+                for (int wid = wLeft; wid <= wRight; wid++)
+                {
+                    if (dataY->at(dataId) == 0)
+                    {
+                        pText[(hid * texWidth + wid) * 4 + 0] = 255;
+                        pText[(hid * texWidth + wid) * 4 + 1] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 2] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 3] = 255;
+                    }
+                    else if (dataY->at(dataId) == 1)
+                    {
+                        pText[(hid * texWidth + wid) * 4 + 0] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 1] = 255;
+                        pText[(hid * texWidth + wid) * 4 + 2] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 3] = 255;
+                    }
+                    else if (dataY->at(dataId) == 2)
+                    {
+                        pText[(hid * texWidth + wid) * 4 + 0] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 1] = 0;
+                        pText[(hid * texWidth + wid) * 4 + 2] = 255;
+                        pText[(hid * texWidth + wid) * 4 + 3] = 255;
+                    }
+                }
+            }
+        }
+    }
+
+    void MachineLearningTestAppUI::UpdateImageTex(const std::vector<double>* dataX, const std::vector<int>* dataY, int dataSize,
+            const std::vector<double>* testDataX, const std::vector<int>* testDataY, int testDataSize)
     {
         MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
         int texW = pIB->getWidth();
@@ -71,61 +117,11 @@ namespace MagicApp
         }
         if (dataX != NULL && dataY != NULL)
         {
-            for (int dataId = 0; dataId < dataY->size(); dataId++)
-            {
-                int wid = dataX->at(dataId * 2);
-                int hid = dataX->at(dataId * 2 + 1);
-                if (dataY->at(dataId) == 1)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 255;
-                    pDest[(hid * texW + wid) * 4 + 1] = 0;
-                    pDest[(hid * texW + wid) * 4 + 2] = 0;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-                else if (dataY->at(dataId) == 2)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 0;
-                    pDest[(hid * texW + wid) * 4 + 1] = 255;
-                    pDest[(hid * texW + wid) * 4 + 2] = 0;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-                else if (dataY->at(dataId) == 3)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 0;
-                    pDest[(hid * texW + wid) * 4 + 1] = 0;
-                    pDest[(hid * texW + wid) * 4 + 2] = 255;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-            }
+            DrawMarkPoint(dataX, dataY, texW, texH, dataSize, pDest);
         }
         if (testDataX != NULL && testDataY != NULL)
         {
-            for (int dataId = 0; dataId < testDataY->size(); dataId++)
-            {
-                int wid = testDataX->at(dataId * 2);
-                int hid = testDataX->at(dataId * 2 + 1);
-                if (testDataY->at(dataId) == 1)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 255;
-                    pDest[(hid * texW + wid) * 4 + 1] = 0;
-                    pDest[(hid * texW + wid) * 4 + 2] = 0;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-                else if (testDataY->at(dataId) == 2)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 0;
-                    pDest[(hid * texW + wid) * 4 + 1] = 255;
-                    pDest[(hid * texW + wid) * 4 + 2] = 0;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-                else if (testDataY->at(dataId) == 3)
-                {
-                    pDest[(hid * texW + wid) * 4 + 0] = 0;
-                    pDest[(hid * texW + wid) * 4 + 1] = 0;
-                    pDest[(hid * texW + wid) * 4 + 2] = 255;
-                    pDest[(hid * texW + wid) * 4 + 3] = 255;
-                }
-            }
+            DrawMarkPoint(testDataX, testDataY, texW, texH, testDataSize, pDest);
         }
 		mpImageTexture->unlock();
         pIB->setImageTexture("ImageTexture");
@@ -155,6 +151,16 @@ namespace MagicApp
         if (pMLTest != NULL)
         {
             pMLTest->TestPoint();
+        }
+    }
+
+    void MachineLearningTestAppUI::DecisionBoundary(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
+            pMLTest->NaiveBayesBoundary(pIB->getWidth(), pIB->getHeight());
         }
     }
 

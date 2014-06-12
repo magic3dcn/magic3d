@@ -7,7 +7,7 @@ namespace MagicApp
 {
     MachineLearningTestApp::MachineLearningTestApp() : 
         mpMLObj(NULL),
-        mCategoryId(1),
+        mCategoryId(0),
         mMouseMode(MM_View)
     {
     }
@@ -39,11 +39,31 @@ namespace MagicApp
         {
             int wPos = arg.state.X.abs - 80;
             int hPos = arg.state.Y.abs - 10;
-            mpMLObj->InsertTrainingData(wPos, hPos, mCategoryId);
-            std::vector<double> dataX;
-            std::vector<int> dataY;
-            mpMLObj->GetTrainingData(dataX, dataY);
-            mUI.UpdateImageTex(&dataX, &dataY, NULL, NULL);
+            if (wPos >= 0 & hPos >= 0)
+            {
+                mpMLObj->InsertTrainingData(wPos, hPos, mCategoryId);
+                std::vector<double> dataX;
+                std::vector<int> dataY;
+                mpMLObj->GetTrainingData(dataX, dataY);
+                mUI.UpdateImageTex(&dataX, &dataY, 2, NULL, NULL, 0);
+            }
+        }
+        else if (mMouseMode == MM_Test_Point)
+        {
+            int wPos = arg.state.X.abs - 80;
+            int hPos = arg.state.Y.abs - 10;
+            if (wPos >= 0 && hPos >= 0)
+            {
+                std::vector<double> dataX;
+                std::vector<int> dataY;
+                mpMLObj->GetTrainingData(dataX, dataY);
+                std::vector<double> testDataX(2);      
+                testDataX.at(0) = wPos;
+                testDataX.at(1) = hPos;
+                std::vector<int> testDataY(1);
+                testDataY.at(0) = mpMLObj->PredictByNaiveBayes(wPos, hPos);
+                mUI.UpdateImageTex(&dataX, &dataY, 2, &testDataX, &testDataY, 4);
+            }
         }
 
         return true;
@@ -52,9 +72,9 @@ namespace MagicApp
     bool MachineLearningTestApp::KeyPressed( const OIS::KeyEvent &arg )
     {
         int keyNum = arg.key - OIS::KC_ESCAPE;
-        if (keyNum > 0 && keyNum < 10)
+        if (keyNum > 0 && keyNum < 4)
         {
-            mCategoryId = keyNum;
+            mCategoryId = keyNum - 1;
         }
 
         return true;
@@ -72,6 +92,24 @@ namespace MagicApp
     void MachineLearningTestApp::ShutdownScene(void)
     {
 
+    }
+
+    void MachineLearningTestApp::NaiveBayesBoundary(int width, int height)
+    {
+        std::vector<double> testDataX(width * height * 2);
+        std::vector<int> testDataY(width * height);
+        int dataId = 0;
+        for (int wid = 0; wid < width; wid++)
+        {
+            for (int hid = 0; hid < height; hid++)
+            {
+                testDataX.at(dataId * 2) = wid;
+                testDataX.at(dataId * 2 + 1) = hid;
+                testDataY.at(dataId) = mpMLObj->PredictByNaiveBayes(wid, hid);
+                dataId++;
+            }
+        }
+        mUI.UpdateImageTex(NULL, NULL, 0, &testDataX, &testDataY, 1);
     }
 
     void MachineLearningTestApp::DrawPoint(void)

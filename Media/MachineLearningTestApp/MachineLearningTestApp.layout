@@ -6,5 +6,6 @@
         <Widget type="Button" skin="Button" position="10 80 60 60" align="Left Top" name="But_LearnNaiveBayes"/>
         <Widget type="Button" skin="Button" position="10 150 60 60" align="Left Top" name="But_TestPoint"/>
         <Widget type="ImageBox" skin="ImageBox" position="80 10 930 745" align="Left Top" name="Image_Texture"/>
+        <Widget type="Button" skin="Button" position="10 220 60 60" align="Left Top" name="But_DecisionBoundary"/>
     </Widget>
 </MyGUI>

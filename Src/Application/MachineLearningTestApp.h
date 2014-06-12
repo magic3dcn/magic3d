@@ -26,6 +26,7 @@ namespace MagicApp
         void DrawPoint(void);
         void LearnNaiveBayes(void);
         void TestPoint(void);
+        void NaiveBayesBoundary(int width, int height);
 
     private:
         void SetupScene(void);
