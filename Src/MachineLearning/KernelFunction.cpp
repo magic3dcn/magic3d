@@ -6,6 +6,10 @@ namespace MagicML
     {
     }
 
+    KernelFunction::~KernelFunction()
+    {
+    }
+
     EuclidKernel::EuclidKernel()
     {
     }

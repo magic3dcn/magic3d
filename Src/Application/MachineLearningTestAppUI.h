@@ -18,8 +18,11 @@ namespace MagicApp
     private:
         void DrawPoint(MyGUI::Widget* pSender);
         void LearnNaiveBayes(MyGUI::Widget* pSender);
-        void TestPoint(MyGUI::Widget* pSender);
-        void DecisionBoundary(MyGUI::Widget* pSender);
+        void TestNaiveBayes(MyGUI::Widget* pSender);
+        void DecisionBoundaryNaiveBayes(MyGUI::Widget* pSender);
+        void LearnSVM(MyGUI::Widget* pSender);
+        void TestSVM(MyGUI::Widget* pSender);
+        void DecisionBoundarySVM(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
 
         void DrawMarkPoint(const std::vector<double>* dataX, const std::vector<int>* dataY,

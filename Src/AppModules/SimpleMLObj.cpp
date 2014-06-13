@@ -1,5 +1,6 @@
 #include "SimpleMLObj.h"
 #include "../MachineLearning/NaiveBayes.h"
+#include "../MachineLearning/KernelFunction.h"
 #include "../MachineLearning/SupportVectorMachine.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
@@ -131,11 +132,45 @@ namespace MagicApp
 
     void SimpleMLObj::LearnSVM(void)
     {
-
+        if (mpSVM == NULL)
+        {
+            mpSVM = new MagicML::SupportVectorMachine;
+        }
+        MagicML::EuclidKernel* pKernel = new MagicML::EuclidKernel;
+        int dataCount = mDataY.size();
+        std::vector<double> dataY(dataCount);
+        for (int dataId = 0; dataId < dataCount; dataId++)
+        {
+            if (mDataY.at(dataId) == 0)
+            {
+                dataY.at(dataId) = -1;
+            }
+            else
+            {
+                dataY.at(dataId) = 1;
+            }
+        }
+        mpSVM->Learn(mDataX, dataY, pKernel, 1);
     }
 
     int SimpleMLObj::PrediectBySVM(double x0, double x1)
     {
-
+        if (mpSVM == NULL)
+        {
+            DebugLog << "Error: SVM has not been trained." << std::endl;
+            return MAGIC_NON_INITIAL;
+        }
+        std::vector<double> dataX(2);
+        dataX.at(0) = x0;
+        dataX.at(1) = x1;
+        double res = mpSVM->Predict(dataX);
+        if (res > 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 }

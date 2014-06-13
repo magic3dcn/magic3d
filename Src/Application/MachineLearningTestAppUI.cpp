@@ -27,8 +27,11 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("MachineLearningTestApp.layout");
         mRoot.at(0)->findWidget("But_DrawPoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DrawPoint);
         mRoot.at(0)->findWidget("But_LearnNaiveBayes")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnNaiveBayes);
-        mRoot.at(0)->findWidget("But_TestPoint")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestPoint);
-        mRoot.at(0)->findWidget("But_DecisionBoundary")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundary);
+        mRoot.at(0)->findWidget("But_TestNaiveBayes")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestNaiveBayes);
+        mRoot.at(0)->findWidget("But_DecisionBoundaryNaiveBayes")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundaryNaiveBayes);
+        mRoot.at(0)->findWidget("But_LearnSVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnSVM);
+        mRoot.at(0)->findWidget("But_TestSVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestSVM);
+        mRoot.at(0)->findWidget("But_DecisionBoundarySVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundarySVM);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::BackHome);
         UpdateImageTex(NULL, NULL, 0, NULL, NULL, 0);
     }
@@ -145,22 +148,50 @@ namespace MagicApp
         }
     }
 
-    void MachineLearningTestAppUI::TestPoint(MyGUI::Widget* pSender)
+    void MachineLearningTestAppUI::TestNaiveBayes(MyGUI::Widget* pSender)
     {
         MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
         if (pMLTest != NULL)
         {
-            pMLTest->TestPoint();
+            pMLTest->TestNaiveBayes();
         }
     }
 
-    void MachineLearningTestAppUI::DecisionBoundary(MyGUI::Widget* pSender)
+    void MachineLearningTestAppUI::DecisionBoundaryNaiveBayes(MyGUI::Widget* pSender)
     {
         MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
         if (pMLTest != NULL)
         {
             MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
             pMLTest->NaiveBayesBoundary(pIB->getWidth(), pIB->getHeight());
+        }
+    }
+
+    void MachineLearningTestAppUI::LearnSVM(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            pMLTest->LearnSVM();
+        }
+    }
+
+    void MachineLearningTestAppUI::TestSVM(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            pMLTest->TestSVM();
+        }
+    }
+
+    void MachineLearningTestAppUI::DecisionBoundarySVM(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
+            pMLTest->SVMBoundary(pIB->getWidth(), pIB->getHeight());
         }
     }
 
