@@ -76,7 +76,7 @@ namespace MagicML
         int index_j = -1;
         double maxV = -1;
         double E_i = CalF(index_i) - mSupportVecY.at(index_i);
-        for (std::set<int>::iterator itr = nonBoundSet.begin(); itr != nonBoundSet.end(); itr++)
+        /*for (std::set<int>::iterator itr = nonBoundSet.begin(); itr != nonBoundSet.end(); itr++)
         {
             double E_j = CalF(*itr) - mSupportVecY.at(*itr);
             if (fabs(E_i - E_j) > maxV)
@@ -84,7 +84,7 @@ namespace MagicML
                 maxV = fabs(E_i - E_j);
                 index_j = *itr;
             }
-        }
+        }*/
         if (index_j == -1)
         {
             for (int jDataid = 0; jDataid < mSupportVecY.size(); jDataid++)
@@ -111,10 +111,11 @@ namespace MagicML
         mSupportVecY = dataY;
         int dataCount = mSupportVecY.size();
         int dataDim = mSupportVecX.size() / mSupportVecY.size();
+        double initAlpha = softCoef > 1.0 ? 1.0 : softCoef;
         mAlpha.clear();
-        mAlpha = std::vector<double>(dataCount, 0.0);
+        mAlpha = std::vector<double>(dataCount, 0);
         mB = 0.0;
-        double localEpsilon = 0.01;
+        double localEpsilon = 1.0e-10;
 
         int maxIterCount = 1000;
         std::set<int> kktList;
@@ -213,6 +214,11 @@ namespace MagicML
             L = deltaTemp > softCoef ? deltaTemp - softCoef : 0;
             H = deltaTemp > softCoef ? softCoef : deltaTemp;
         }
+        if (L > H)
+        {
+            DebugLog << "Error: L > H" << std::endl;
+            return 1;
+        }
 
         double eta = mpKernel->InnerProduct(mSupportVecX, index_i, index_i, dataDim) + mpKernel->InnerProduct(mSupportVecX, index_j, index_j, dataDim) 
             - 2 * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim);
@@ -222,7 +228,7 @@ namespace MagicML
         }
         double E_i = CalF(index_i) - mSupportVecY.at(index_i);
         double E_j = CalF(index_j) - mSupportVecY.at(index_j);
-        mAlpha.at(index_j) += mSupportVecY.at(index_j) * (E_i - E_j) / eta;
+        mAlpha.at(index_j) = lastAlpha_j + mSupportVecY.at(index_j) * (E_i - E_j) / eta;
         if (mAlpha.at(index_j) < L)
         {
             mAlpha.at(index_j) = L;
@@ -231,7 +237,7 @@ namespace MagicML
         {
             mAlpha.at(index_j) = H;
         }
-        mAlpha.at(index_i) += mSupportVecY.at(index_i) * mSupportVecY.at(index_j) * (lastAlpha_j - mAlpha.at(index_j));
+        mAlpha.at(index_i) = lastAlpha_i + mSupportVecY.at(index_i) * mSupportVecY.at(index_j) * (lastAlpha_j - mAlpha.at(index_j));
         //Update b
         if (mAlpha.at(index_i) > 0 && mAlpha.at(index_i) < softCoef)
         {
@@ -263,7 +269,7 @@ namespace MagicML
         {
             res += mAlpha.at(supId) * mSupportVecY.at(supId) * mpKernel->InnerProduct(mSupportVecX, supId, dataX);
         }
-        res += mB;
+        res -= mB;
 
         return res;
     }
