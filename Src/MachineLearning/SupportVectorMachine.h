@@ -21,6 +21,7 @@ namespace MagicML
         int OptimizeOneStep(int index_i, int index_j, double softCoef);
         bool IsKTT(int index, double softCoef) const;
         int ChooseIndexJ(int index_i, const std::set<int>& nonBoundSet) const;
+        void RemoveZeroAlpha(void);
 
     private:
         KernelFunction* mpKernel;

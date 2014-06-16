@@ -2,6 +2,7 @@
 #include "../Tool/LogSystem.h"
 #include "../AppModules/MagicObjectManager.h"
 #include "../AppModules/SimpleMLObj.h"
+#include "../Common/ToolKit.h"
 
 namespace MagicApp
 {
@@ -78,12 +79,23 @@ namespace MagicApp
 
     bool MachineLearningTestApp::KeyPressed( const OIS::KeyEvent &arg )
     {
-        int keyNum = arg.key - OIS::KC_ESCAPE;
-        if (keyNum > 0 && keyNum < 4)
+        if (arg.key == OIS::KC_S)
         {
-            mCategoryId = keyNum - 1;
+            SaveMarkPoints();
         }
-
+        else if (arg.key == OIS::KC_L)
+        {
+            LoadMarkPoints();
+        }
+        else
+        {
+            int keyNum = arg.key - OIS::KC_ESCAPE;
+            if (keyNum > 0 && keyNum < 4)
+            {
+                mCategoryId = keyNum - 1;
+            }
+        }
+        
         return true;
     }
 
@@ -119,6 +131,30 @@ namespace MagicApp
         mUI.UpdateImageTex(NULL, NULL, 0, &testDataX, &testDataY, 1);
     }
 
+    void MachineLearningTestApp::LoadMarkPoints(void)
+    {
+        std::string fileName;
+        char filterName[] = "Mark Points Files(*.mp)\0*.mp\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpMLObj->Load(fileName);
+            std::vector<double> dataX;
+            std::vector<int> dataY;
+            mpMLObj->GetTrainingData(dataX, dataY);
+            mUI.UpdateImageTex(&dataX, &dataY, 2, NULL, NULL, 0);
+        }
+    }
+
+    void MachineLearningTestApp::SaveMarkPoints(void)
+    {
+        std::string fileName;
+        char filterName[] = "Mark Points Files(*.mp)\0*.mp\0";
+        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+        {
+            mpMLObj->Save(fileName);
+        }
+    }
+
     void MachineLearningTestApp::DrawPoint(void)
     {
         if (mMouseMode == MM_Draw_Point)
@@ -150,7 +186,9 @@ namespace MagicApp
 
     void MachineLearningTestApp::LearnSVM(void)
     {
+        double startTime = MagicCore::ToolKit::GetTime();
         mpMLObj->LearnSVM();
+        DebugLog << "SVM learn time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
     void MachineLearningTestApp::TestSVM(void)

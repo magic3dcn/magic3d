@@ -73,6 +73,7 @@ namespace MagicApp
                 fin >> mDataX.at(dataId * mDataDim + dim);
             }
         }
+        mDataY.resize(dataCount);
         for (int dataId = 0; dataId < dataCount; dataId++)
         {
             fin >> mDataY.at(dataId);

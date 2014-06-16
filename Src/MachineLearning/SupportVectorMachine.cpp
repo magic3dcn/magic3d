@@ -76,7 +76,7 @@ namespace MagicML
         int index_j = -1;
         double maxV = -1;
         double E_i = CalF(index_i) - mSupportVecY.at(index_i);
-        /*for (std::set<int>::iterator itr = nonBoundSet.begin(); itr != nonBoundSet.end(); itr++)
+        for (std::set<int>::iterator itr = nonBoundSet.begin(); itr != nonBoundSet.end(); itr++)
         {
             double E_j = CalF(*itr) - mSupportVecY.at(*itr);
             if (fabs(E_i - E_j) > maxV)
@@ -84,7 +84,7 @@ namespace MagicML
                 maxV = fabs(E_i - E_j);
                 index_j = *itr;
             }
-        }*/
+        }
         if (index_j == -1)
         {
             for (int jDataid = 0; jDataid < mSupportVecY.size(); jDataid++)
@@ -111,17 +111,18 @@ namespace MagicML
         mSupportVecY = dataY;
         int dataCount = mSupportVecY.size();
         int dataDim = mSupportVecX.size() / mSupportVecY.size();
-        double initAlpha = softCoef > 1.0 ? 1.0 : softCoef;
         mAlpha.clear();
         mAlpha = std::vector<double>(dataCount, 0);
         mB = 0.0;
-        double localEpsilon = 1.0e-10;
+        double localEpsilon = 1.0e-15;
 
         int maxIterCount = 1000;
+
         std::set<int> kktList;
         for (int iterId = 0; iterId < maxIterCount; iterId++)
         {
             //first pass all variables
+            int kttCount = 0;
             std::set<int> nonBoundSet;
             for (int dataId = 0; dataId < dataCount; dataId++)
             {
@@ -129,6 +130,7 @@ namespace MagicML
                 int index_i = -1;
                 if (IsKTT(dataId, softCoef))
                 {
+                    kttCount++;
                     continue;
                 }
                 else
@@ -153,6 +155,13 @@ namespace MagicML
                 }
             } //first pass
 
+            DebugLog << "Ktt proportion: " << double(kttCount) / double(dataCount) << std::endl;
+            if (kttCount == dataCount)
+            {
+                DebugLog << "Ktt condition is satisfied" << std::endl;
+                break;
+            }
+
             //second pass nonBoundSet
             int maxNonBoundIterNum = 100;
             for (int nonBoundIterId = 0; nonBoundIterId < maxNonBoundIterNum; nonBoundIterId++)
@@ -161,12 +170,14 @@ namespace MagicML
                 {
                     break;
                 }
+                int nonBoundKttCount = 0;
                 for (std::set<int>::iterator itr = nonBoundSet.begin(); itr != nonBoundSet.end(); itr++)
                 {
                     //choose index_i
                     int index_i = -1;
                     if (IsKTT(*itr, softCoef))
                     {
+                        nonBoundKttCount++;
                         continue;
                     }
                     else
@@ -190,9 +201,59 @@ namespace MagicML
                         nonBoundSet.insert(index_j);
                     }
                 } //nonBound pass
+                if (nonBoundKttCount == nonBoundSet.size())
+                {
+                    break;
+                }
             } //second pass
         }
         DebugLog << "SupportVectorMachine::SequentialMinimalOptimization finished" << std::endl;
+        int nonZeroAlpha = 0;
+        for (int dataId = 0; dataId < mAlpha.size(); dataId++)
+        {
+            if (mAlpha.at(dataId) > 0)
+            {
+                nonZeroAlpha++;
+                DebugLog << "alpha " << dataId << " : " << mAlpha.at(dataId) << std::endl;
+            }
+        }
+        DebugLog << "Alpha Non Zero: " << nonZeroAlpha << "   total: " << mAlpha.size() << std::endl;
+        RemoveZeroAlpha();
+    }
+
+    void SupportVectorMachine::RemoveZeroAlpha(void)
+    {
+        int validCount = 0;
+        for (int dataId = 0; dataId < mAlpha.size(); dataId++)
+        {
+            if (mAlpha.at(dataId) > 0)
+            {
+                validCount++;
+            }
+        }
+        int dataDim = mSupportVecX.size() / mSupportVecY.size();
+        std::vector<double> validAlpha(validCount);
+        std::vector<double> validSupX(validCount * dataDim);
+        std::vector<double> validSupY(validCount);
+        int validId = 0;
+        for (int dataId = 0; dataId < mAlpha.size(); dataId++)
+        {
+            if (mAlpha.at(dataId) > 0)
+            {
+                validAlpha.at(validId) = mAlpha.at(dataId);
+                validSupY.at(validId) = mSupportVecY.at(dataId);
+                int validBaseIndex = validId * dataDim;
+                int originBaseIndex = dataId * dataDim;
+                for (int dimId = 0; dimId < dataDim; dimId++)
+                {
+                    validSupX.at(validBaseIndex + dimId) = mSupportVecX.at(originBaseIndex + dimId);
+                }
+                validId++;
+            }
+        }
+        mAlpha = validAlpha;
+        mSupportVecX = validSupX;
+        mSupportVecY = validSupY;
     }
 
     int SupportVectorMachine::OptimizeOneStep(int index_i, int index_j, double softCoef)

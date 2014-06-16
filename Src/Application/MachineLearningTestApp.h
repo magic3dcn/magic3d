@@ -35,6 +35,8 @@ namespace MagicApp
     private:
         void SetupScene(void);
         void ShutdownScene(void);
+        void LoadMarkPoints(void);
+        void SaveMarkPoints(void);
 
     private:
         MachineLearningTestAppUI mUI;
