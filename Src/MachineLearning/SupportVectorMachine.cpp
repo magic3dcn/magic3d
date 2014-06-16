@@ -8,10 +8,13 @@ namespace MagicML
 {
     SupportVectorMachine::SupportVectorMachine() :
         mpKernel(NULL),
+        mDataDim(0),
         mB(0),
         mAlpha(),
         mSupportVecX(),
-        mSupportVecY()
+        mSupportVecY(),
+        mInnerValid(),
+        mInnerCache()
     {
     }
 
@@ -31,10 +34,14 @@ namespace MagicML
             delete mpKernel;
             mpKernel = NULL;
         }
+        mDataDim = 0;
         mB = 0;
         mAlpha.clear();
         mSupportVecX.clear();
         mSupportVecY.clear();
+        //clear cache
+        mInnerValid.clear();
+        mInnerCache.clear();
     }
 
     void SupportVectorMachine::Learn(const std::vector<double>& dataX, const std::vector<double>& dataY, 
@@ -45,19 +52,18 @@ namespace MagicML
         SequentialMinimalOptimization(dataX, dataY, softCoef);
     }
 
-    double SupportVectorMachine::CalF(int index) const // Could be optimized
+    double SupportVectorMachine::CalF(int index) // Could be optimized
     {
         double res = 0;
-        int dataDim = mSupportVecX.size() / mSupportVecY.size();
         for (int i = 0; i < mAlpha.size(); i++)
         {
-            res += mAlpha.at(i) * mSupportVecY.at(i) * mpKernel->InnerProduct(mSupportVecX, index, i, dataDim);
+            res += mAlpha.at(i) * mSupportVecY.at(i) * KernelInnerProductX(index, i);
         }
         res -= mB;
         return res;
     }
 
-    bool SupportVectorMachine::IsKTT(int index, double softCoef) const
+    bool SupportVectorMachine::IsKTT(int index, double softCoef)
     {
         double F = CalF(index);
         if ((mSupportVecY.at(index) * F < 1 && mAlpha.at(index) < softCoef) ||
@@ -71,7 +77,7 @@ namespace MagicML
         }
     }
 
-    int SupportVectorMachine::ChooseIndexJ(int index_i, const std::set<int>& nonBoundSet) const
+    int SupportVectorMachine::ChooseIndexJ(int index_i, const std::set<int>& nonBoundSet)
     {
         int index_j = -1;
         double maxV = -1;
@@ -110,11 +116,15 @@ namespace MagicML
         mSupportVecX = dataX;
         mSupportVecY = dataY;
         int dataCount = mSupportVecY.size();
-        int dataDim = mSupportVecX.size() / mSupportVecY.size();
+        mDataDim = mSupportVecX.size() / mSupportVecY.size();
         mAlpha.clear();
         mAlpha = std::vector<double>(dataCount, 0);
         mB = 0.0;
         double localEpsilon = 1.0e-15;
+        //init cache
+        mInnerValid = std::vector<bool>(dataCount * dataCount, 0);
+        mInnerCache.clear();
+        mInnerCache.resize(dataCount * dataCount);
 
         int maxIterCount = 1000;
 
@@ -155,7 +165,7 @@ namespace MagicML
                 }
             } //first pass
 
-            DebugLog << "Ktt proportion: " << double(kttCount) / double(dataCount) << std::endl;
+            //DebugLog << "Ktt proportion: " << double(kttCount) / double(dataCount) << std::endl;
             if (kttCount == dataCount)
             {
                 DebugLog << "Ktt condition is satisfied" << std::endl;
@@ -207,14 +217,14 @@ namespace MagicML
                 }
             } //second pass
         }
-        DebugLog << "SupportVectorMachine::SequentialMinimalOptimization finished" << std::endl;
+        //DebugLog << "SupportVectorMachine::SequentialMinimalOptimization finished" << std::endl;
         int nonZeroAlpha = 0;
         for (int dataId = 0; dataId < mAlpha.size(); dataId++)
         {
             if (mAlpha.at(dataId) > 0)
             {
                 nonZeroAlpha++;
-                DebugLog << "alpha " << dataId << " : " << mAlpha.at(dataId) << std::endl;
+                //DebugLog << "alpha " << dataId << " : " << mAlpha.at(dataId) << std::endl;
             }
         }
         DebugLog << "Alpha Non Zero: " << nonZeroAlpha << "   total: " << mAlpha.size() << std::endl;
@@ -256,6 +266,26 @@ namespace MagicML
         mSupportVecY = validSupY;
     }
 
+    double SupportVectorMachine::KernelInnerProductX(int index0, int index1)
+    {
+        //return mpKernel->InnerProduct(mSupportVecX, index0, index1, mDataDim);
+        int innerIndex = index0 * mSupportVecY.size() + index1;
+        if (mInnerValid.at(innerIndex))
+        {
+            return mInnerCache.at(innerIndex);
+        }
+        else
+        {
+            int symIndex = index1 * mSupportVecY.size() + index0;
+            mInnerValid.at(innerIndex) = 1;
+            mInnerValid.at(symIndex) = 1;
+            double res = mpKernel->InnerProduct(mSupportVecX, index0, index1, mDataDim);
+            mInnerCache.at(innerIndex) = res;
+            mInnerCache.at(symIndex) = res;
+            return res;
+        }
+    }
+
     int SupportVectorMachine::OptimizeOneStep(int index_i, int index_j, double softCoef)
     {
         int dataDim = mSupportVecX.size() / mSupportVecY.size();
@@ -281,8 +311,8 @@ namespace MagicML
             return 1;
         }
 
-        double eta = mpKernel->InnerProduct(mSupportVecX, index_i, index_i, dataDim) + mpKernel->InnerProduct(mSupportVecX, index_j, index_j, dataDim) 
-            - 2 * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim);
+        double eta = KernelInnerProductX(index_i, index_i) + KernelInnerProductX(index_j, index_j) 
+            - 2 * KernelInnerProductX(index_i, index_j);
         if (fabs(eta) < 1.0e-15)
         {
             eta += 1.0e-15;
@@ -302,20 +332,20 @@ namespace MagicML
         //Update b
         if (mAlpha.at(index_i) > 0 && mAlpha.at(index_i) < softCoef)
         {
-            mB = mB + E_i + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * mpKernel->InnerProduct(mSupportVecX, index_i, index_i, dataDim) 
-                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim);
+            mB = mB + E_i + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * KernelInnerProductX(index_i, index_i) 
+                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * KernelInnerProductX(index_i, index_j);
         }
         else if (mAlpha.at(index_j) > 0 && mAlpha.at(index_j) < softCoef)
         {
-            mB = mB + E_j + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim) 
-                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * mpKernel->InnerProduct(mSupportVecX, index_j, index_j, dataDim);
+            mB = mB + E_j + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * KernelInnerProductX(index_i, index_j) 
+                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * KernelInnerProductX(index_j, index_j);
         }
         else
         {
-            double b1 = mB + E_i + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * mpKernel->InnerProduct(mSupportVecX, index_i, index_i, dataDim) 
-                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim);
-            double b2 = mB + E_j + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * mpKernel->InnerProduct(mSupportVecX, index_i, index_j, dataDim) 
-                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * mpKernel->InnerProduct(mSupportVecX, index_j, index_j, dataDim);
+            double b1 = mB + E_i + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * KernelInnerProductX(index_i, index_i) 
+                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * KernelInnerProductX(index_i, index_j);
+            double b2 = mB + E_j + mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastAlpha_i) * KernelInnerProductX(index_i, index_j) 
+                + mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastAlpha_j) * KernelInnerProductX(index_j, index_j);
             mB = (b1 + b2) / 2;
         }
         return 0;
@@ -325,7 +355,6 @@ namespace MagicML
     {
         int supCount = mAlpha.size();
         double res = 0;
-        int dataDim = mSupportVecX.size() / mSupportVecY.size();
         for (int supId = 0; supId < supCount; supId++)
         {
             res += mAlpha.at(supId) * mSupportVecY.at(supId) * mpKernel->InnerProduct(mSupportVecX, supId, dataX);
