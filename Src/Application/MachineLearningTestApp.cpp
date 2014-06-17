@@ -220,4 +220,14 @@ namespace MagicApp
         }
         mUI.UpdateImageTex(NULL, NULL, 0, &testDataX, &testDataY, 1);
     }
+
+    void MachineLearningTestApp::LearnLDA(void)
+    {
+
+    }
+
+    void MachineLearningTestApp::TestLDA(void)
+    {
+
+    }
 }

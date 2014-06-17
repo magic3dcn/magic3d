@@ -10,5 +10,7 @@
         <Widget type="Button" skin="Button" position="10 105 20 20" align="Left Top" name="But_LearnSVM"/>
         <Widget type="Button" skin="Button" position="30 105 20 20" align="Left Top" name="But_TestSVM"/>
         <Widget type="Button" skin="Button" position="50 105 20 20" align="Left Top" name="But_DecisionBoundarySVM"/>
+        <Widget type="Button" skin="Button" position="10 130 20 20" align="Left Top" name="But_LearnLDA"/>
+        <Widget type="Button" skin="Button" position="30 130 20 20" align="Left Top" name="But_TestLDA"/>
     </Widget>
 </MyGUI>

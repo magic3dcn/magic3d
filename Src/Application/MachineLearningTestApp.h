@@ -31,6 +31,8 @@ namespace MagicApp
         void LearnSVM(void);
         void TestSVM(void);
         void SVMBoundary(int width, int height);
+        void LearnLDA(void);
+        void TestLDA(void);
 
     private:
         void SetupScene(void);

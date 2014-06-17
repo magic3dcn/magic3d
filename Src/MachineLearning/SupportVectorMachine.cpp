@@ -333,7 +333,9 @@ namespace MagicML
             mAlpha.at(index_j) = H;
         }
         mAlpha.at(index_i) = lastAlpha_i + mSupportVecY.at(index_i) * mSupportVecY.at(index_j) * (lastAlpha_j - mAlpha.at(index_j));
+
         UpdateOmiga(index_i, lastAlpha_i, index_j, lastAlpha_j);
+
         //Update b
         if (mAlpha.at(index_i) > 0 && mAlpha.at(index_i) < softCoef)
         {

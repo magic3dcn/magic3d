@@ -5,7 +5,7 @@
 namespace MagicML
 {
     class KernelFunction;
-    class SupportVectorMachine
+    class SupportVectorMachine  //Kernel SVM is not done.
     {
     public:
         SupportVectorMachine();

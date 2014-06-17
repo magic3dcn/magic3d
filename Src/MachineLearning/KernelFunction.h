@@ -22,4 +22,18 @@ namespace MagicML
         virtual double InnerProduct(const std::vector<double>& vec1, int startId, const std::vector<double>& vec2);
         virtual double InnerProduct(const std::vector<double>& vec, int startId1, int startId2, int dataDim);
     };
+
+    class PolynomialKernel: public KernelFunction
+    {
+    public:
+        PolynomialKernel(double offset, double degress);
+        virtual ~PolynomialKernel();
+        virtual double InnerProduct(const std::vector<double>& vec1, const std::vector<double>& vec2);
+        virtual double InnerProduct(const std::vector<double>& vec1, int startId, const std::vector<double>& vec2);
+        virtual double InnerProduct(const std::vector<double>& vec, int startId1, int startId2, int dataDim);
+
+    private:
+        double mOffset;
+        double mDegree;
+    };
 }

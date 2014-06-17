@@ -137,7 +137,8 @@ namespace MagicApp
         {
             mpSVM = new MagicML::SupportVectorMachine;
         }
-        MagicML::EuclidKernel* pKernel = new MagicML::EuclidKernel;
+        MagicML::KernelFunction* pKernel = new MagicML::EuclidKernel;
+        //MagicML::KernelFunction* pKernel = new MagicML::PolynomialKernel(1, 2);
         int dataCount = mDataY.size();
         std::vector<double> dataY(dataCount);
         for (int dataId = 0; dataId < dataCount; dataId++)
