@@ -3,6 +3,7 @@
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
 #include <set>
+#include <math.h>
 
 namespace MagicML
 {

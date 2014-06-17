@@ -1,4 +1,5 @@
 #include "KernelFunction.h"
+#include <math.h>
 
 namespace MagicML
 {
