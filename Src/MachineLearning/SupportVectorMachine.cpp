@@ -14,7 +14,8 @@ namespace MagicML
         mSupportVecX(),
         mSupportVecY(),
         mInnerValid(),
-        mInnerCache()
+        mInnerCache(),
+        mOmiga()
     {
     }
 
@@ -42,6 +43,7 @@ namespace MagicML
         //clear cache
         mInnerValid.clear();
         mInnerCache.clear();
+        mOmiga.clear();
     }
 
     void SupportVectorMachine::Learn(const std::vector<double>& dataX, const std::vector<double>& dataY, 
@@ -54,11 +56,12 @@ namespace MagicML
 
     double SupportVectorMachine::CalF(int index) // Could be optimized
     {
-        double res = 0;
+        /*double res = 0;
         for (int i = 0; i < mAlpha.size(); i++)
         {
             res += mAlpha.at(i) * mSupportVecY.at(i) * KernelInnerProductX(index, i);
-        }
+        }*/
+        double res = mpKernel->InnerProduct(mSupportVecX, index, mOmiga);
         res -= mB;
         return res;
     }
@@ -125,6 +128,7 @@ namespace MagicML
         mInnerValid = std::vector<bool>(dataCount * dataCount, 0);
         mInnerCache.clear();
         mInnerCache.resize(dataCount * dataCount);
+        mOmiga = std::vector<double>(mDataDim, 0);
 
         int maxIterCount = 1000;
 
@@ -329,6 +333,7 @@ namespace MagicML
             mAlpha.at(index_j) = H;
         }
         mAlpha.at(index_i) = lastAlpha_i + mSupportVecY.at(index_i) * mSupportVecY.at(index_j) * (lastAlpha_j - mAlpha.at(index_j));
+        UpdateOmiga(index_i, lastAlpha_i, index_j, lastAlpha_j);
         //Update b
         if (mAlpha.at(index_i) > 0 && mAlpha.at(index_i) < softCoef)
         {
@@ -349,6 +354,18 @@ namespace MagicML
             mB = (b1 + b2) / 2;
         }
         return 0;
+    }
+
+    void SupportVectorMachine::UpdateOmiga(int index_i, double lastV_i, int index_j, double lastV_j)
+    {
+        int baseIndex_i = index_i * mDataDim;
+        int baseIndex_j = index_j * mDataDim;
+        double delta_i = mSupportVecY.at(index_i) * (mAlpha.at(index_i) - lastV_i);
+        double delta_j = mSupportVecY.at(index_j) * (mAlpha.at(index_j) - lastV_j);
+        for (int dimId = 0; dimId < mDataDim; dimId++)
+        {
+            mOmiga.at(dimId) += (delta_i * mSupportVecX.at(baseIndex_i + dimId) + delta_j * mSupportVecX.at(baseIndex_j + dimId));
+        }
     }
         
     double SupportVectorMachine::Predict(const std::vector<double>& dataX) const

@@ -23,6 +23,7 @@ namespace MagicML
         int ChooseIndexJ(int index_i, const std::set<int>& nonBoundSet);
         void RemoveZeroAlpha(void);
         double KernelInnerProductX(int index0, int index1);
+        void UpdateOmiga(int index_i, double lastV_i, int index_j, double lastV_j);
 
     private:
         KernelFunction* mpKernel;
@@ -34,5 +35,6 @@ namespace MagicML
         //Cache
         std::vector<bool> mInnerValid;
         std::vector<double> mInnerCache;
+        std::vector<double> mOmiga;
     };
 }
