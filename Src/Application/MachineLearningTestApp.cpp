@@ -3,6 +3,7 @@
 #include "../AppModules/MagicObjectManager.h"
 #include "../AppModules/SimpleMLObj.h"
 #include "../Common/ToolKit.h"
+#include "../MachineLearning/PrincipalComponentAnalysis.h"
 
 namespace MagicApp
 {
@@ -221,13 +222,43 @@ namespace MagicApp
         mUI.UpdateImageTex(NULL, NULL, 0, &testDataX, &testDataY, 1);
     }
 
-    void MachineLearningTestApp::LearnLDA(void)
+    void MachineLearningTestApp::TestPCA(void)
     {
-
+        mpMLObj->LearnPCA();
+        std::vector<double> pcaVec = mpMLObj->GetPcaVector();
+        double centerX = 465;
+        double centerY = 372.5;
+        std::vector<double> dataX;
+        std::vector<int> dataY;
+        mpMLObj->GetTrainingData(dataX, dataY);
+        std::vector<double> projDataX(dataX.size());
+        int dataSize = dataX.size() / 2;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            double len = (dataX.at(dataId * 2) - centerX) * pcaVec.at(0) + (dataX.at(dataId * 2 + 1) - centerY) * pcaVec.at(1);
+            projDataX.at(dataId * 2) = centerX + len * pcaVec.at(0);
+            projDataX.at(dataId * 2 + 1) = centerY + len * pcaVec.at(1);
+        }
+        mUI.UpdateImageTex(&dataX, &dataY, 2, &projDataX, &dataY, 1);
     }
 
     void MachineLearningTestApp::TestLDA(void)
     {
-
+        mpMLObj->LearnLDA();
+        std::vector<double> ldaVec = mpMLObj->GetLdaVector();
+        double centerX = 465;
+        double centerY = 372.5;
+        std::vector<double> dataX;
+        std::vector<int> dataY;
+        mpMLObj->GetTrainingData(dataX, dataY);
+        std::vector<double> projDataX(dataX.size());
+        int dataSize = dataX.size() / 2;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            double len = (dataX.at(dataId * 2) - centerX) * ldaVec.at(0) + (dataX.at(dataId * 2 + 1) - centerY) * ldaVec.at(1);
+            projDataX.at(dataId * 2) = centerX + len * ldaVec.at(0);
+            projDataX.at(dataId * 2 + 1) = centerY + len * ldaVec.at(1);
+        }
+        mUI.UpdateImageTex(&dataX, &dataY, 2, &projDataX, &dataY, 1);
     }
 }

@@ -32,7 +32,7 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_LearnSVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnSVM);
         mRoot.at(0)->findWidget("But_TestSVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestSVM);
         mRoot.at(0)->findWidget("But_DecisionBoundarySVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundarySVM);
-        mRoot.at(0)->findWidget("But_LearnLDA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnLDA);
+        mRoot.at(0)->findWidget("But_TestPCA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestPCA);
         mRoot.at(0)->findWidget("But_TestLDA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestLDA);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::BackHome);
         UpdateImageTex(NULL, NULL, 0, NULL, NULL, 0);
@@ -197,12 +197,12 @@ namespace MagicApp
         }
     }
 
-    void MachineLearningTestAppUI::LearnLDA(MyGUI::Widget* pSender)
+    void MachineLearningTestAppUI::TestPCA(MyGUI::Widget* pSender)
     {
         MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
         if (pMLTest != NULL)
         {
-            pMLTest->LearnLDA();
+            pMLTest->TestPCA();
         }
     }
 
