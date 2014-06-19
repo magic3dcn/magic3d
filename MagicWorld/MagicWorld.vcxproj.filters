@@ -438,6 +438,9 @@
     <ClInclude Include="..\Src\Application\MachineLearningTestApp.h">
       <Filter>Application\MachineLearningApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Math\DenseMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -730,6 +733,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\MachineLearningTestApp.cpp">
       <Filter>Application\MachineLearningApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\DenseMatrix.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
