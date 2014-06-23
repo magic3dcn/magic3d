@@ -34,6 +34,9 @@ namespace MagicApp
         mRoot.at(0)->findWidget("But_DecisionBoundarySVM")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundarySVM);
         mRoot.at(0)->findWidget("But_TestPCA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestPCA);
         mRoot.at(0)->findWidget("But_TestLDA")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestLDA);
+        mRoot.at(0)->findWidget("But_LearnLR")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::LearnLR);
+        mRoot.at(0)->findWidget("But_TestLR")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::TestLR);
+        mRoot.at(0)->findWidget("But_DecisionBoundaryLR")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::DecisionBoundaryLR);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &MachineLearningTestAppUI::BackHome);
         UpdateImageTex(NULL, NULL, 0, NULL, NULL, 0);
     }
@@ -194,6 +197,34 @@ namespace MagicApp
         {
             MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
             pMLTest->SVMBoundary(pIB->getWidth(), pIB->getHeight());
+        }
+    }
+
+    void MachineLearningTestAppUI::LearnLR(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            pMLTest->LearnLR();
+        }
+    }
+        
+    void MachineLearningTestAppUI::TestLR(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            pMLTest->TestLR();
+        }
+    }
+        
+    void MachineLearningTestAppUI::DecisionBoundaryLR(MyGUI::Widget* pSender)
+    {
+        MachineLearningTestApp* pMLTest = dynamic_cast<MachineLearningTestApp* >(MagicCore::AppManager::GetSingleton()->GetApp("MachineLearningTestApp"));
+        if (pMLTest != NULL)
+        {
+            MyGUI::ImageBox* pIB = mRoot.at(0)->findWidget("Image_Texture")->castType<MyGUI::ImageBox>();
+            pMLTest->LRBoundary(pIB->getWidth(), pIB->getHeight());
         }
     }
 

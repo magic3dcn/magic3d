@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" layer="Back">
+    <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Left Top" layer="Back">
         <Widget type="Button" skin="Button" position="10 570 60 60" align="Left Top" name="But_Home"/>
         <Widget type="Button" skin="Button" position="10 10 60 60" align="Left Top" name="But_DrawPoint"/>
         <Widget type="Button" skin="Button" position="10 80 20 20" align="Left Top" name="But_LearnNaiveBayes"/>
@@ -12,5 +12,8 @@
         <Widget type="Button" skin="Button" position="50 105 20 20" align="Left Top" name="But_DecisionBoundarySVM"/>
         <Widget type="Button" skin="Button" position="10 130 20 20" align="Left Top" name="But_TestPCA"/>
         <Widget type="Button" skin="Button" position="30 130 20 20" align="Left Top" name="But_TestLDA"/>
+        <Widget type="Button" skin="Button" position="10 155 20 20" align="Left Top" name="But_LearnLR"/>
+        <Widget type="Button" skin="Button" position="30 155 20 20" align="Left Top" name="But_TestLR"/>
+        <Widget type="Button" skin="Button" position="50 155 20 20" align="Left Top" name="But_DecisionBoundaryLR"/>
     </Widget>
 </MyGUI>
