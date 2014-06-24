@@ -228,7 +228,10 @@ namespace MagicApp
 
     void MachineLearningTestApp::LearnLR(void)
     {
+        double startTime = MagicCore::ToolKit::GetTime();
         mpMLObj->LearnLR();
+        //mpMLObj->LearnLinearRegression();
+        DebugLog << "LR learn time: " << MagicCore::ToolKit::GetTime() - startTime << std::endl;
     }
 
     void MachineLearningTestApp::TestLR(void)
@@ -254,15 +257,8 @@ namespace MagicApp
             {
                 testDataX.at(dataId * 2) = wid;
                 testDataX.at(dataId * 2 + 1) = hid;
-                double res = mpMLObj->PrediectByLR(wid, hid);
-                if (res > 0.5)
-                {
-                    testDataY.at(dataId) = 1;
-                }
-                else
-                {
-                    testDataY.at(dataId) = 0;
-                }
+                testDataY.at(dataId) = mpMLObj->PrediectByLR(wid, hid);
+                //testDataY.at(dataId) = mpMLObj->PrediectByLinearRegression(wid, hid);
                 dataId++;
             }
         }
