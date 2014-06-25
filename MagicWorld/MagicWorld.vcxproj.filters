@@ -441,6 +441,9 @@
     <ClInclude Include="..\Src\Math\DenseMatrix.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Math\Optimization.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -735,6 +738,9 @@
       <Filter>Application\MachineLearningApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Math\DenseMatrix.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\Optimization.cpp">
       <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>

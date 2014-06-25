@@ -206,6 +206,7 @@
     <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
     <ClInclude Include="..\Src\Math\HomoMatrix4.h" />
     <ClInclude Include="..\Src\Math\HomoVector4.h" />
+    <ClInclude Include="..\Src\Math\Optimization.h" />
     <ClInclude Include="..\Src\Math\Vector2.h" />
     <ClInclude Include="..\Src\Math\Vector3.h" />
     <ClInclude Include="..\Src\Tool\ErrorCodes.h" />
@@ -389,6 +390,7 @@
     <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />
     <ClCompile Include="..\Src\Math\HomoMatrix4.cpp" />
     <ClCompile Include="..\Src\Math\HomoVector4.cpp" />
+    <ClCompile Include="..\Src\Math\Optimization.cpp" />
     <ClCompile Include="..\Src\Math\Vector2.cpp" />
     <ClCompile Include="..\Src\Math\Vector3.cpp" />
     <ClCompile Include="..\Src\Tool\LogSystem.cpp" />
