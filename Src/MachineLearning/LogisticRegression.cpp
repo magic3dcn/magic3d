@@ -159,6 +159,139 @@ namespace
         }
         return energeV;
     }
+
+    class LRNewton : public MagicMath::NewtonMethod
+    {
+    public:
+        LRNewton(const std::vector<double>* pDataX, const std::vector<int>* pDataY, std::vector<double>* pCoef);
+        ~LRNewton();
+
+    protected:
+        virtual void CalInitValue();
+        virtual void CalGradient();
+        virtual bool IsStop();
+        virtual void CalHessian();
+        virtual void UpdateResult();
+
+    private:
+        const std::vector<double>* mpDataX;
+        const std::vector<int>* mpDataY;
+        std::vector<double>* mpCoef;
+        int mDataDim;
+        int mDataCount;
+    };
+
+    LRNewton::LRNewton(const std::vector<double>* pDataX, const std::vector<int>* pDataY, std::vector<double>* pCoef) :
+        MagicMath::NewtonMethod(1000, pDataX->size() / pDataY->size() + 1),
+        mpDataX(pDataX),
+        mpDataY(pDataY),
+        mpCoef(pCoef),
+        mDataDim(pDataX->size() / pDataY->size()),
+        mDataCount(pDataY->size())
+    {
+    }
+
+    LRNewton::~LRNewton()
+    {
+    }
+
+    void LRNewton::CalInitValue()
+    {
+        std::vector<double> dataY_d(mpDataY->size());
+        for (int dataId = 0; dataId < dataY_d.size(); dataId++)
+        {
+            dataY_d.at(dataId) = mpDataY->at(dataId);
+        }
+        MagicML::LinearRegression lr;
+        lr.Learn(*mpDataX, dataY_d, dataY_d.size());
+        std::vector<double> regMat = lr.GetRegMat();
+        mpCoef->clear();
+        mpCoef->resize(regMat.size());
+        for (int regId = 0; regId < regMat.size(); regId++)
+        {
+            mpCoef->at(regId) = regMat.at(regId);
+        }
+    }
+
+    void LRNewton::CalGradient()
+    {
+        for (std::vector<double>::iterator gradIter = mGradVec.begin(); gradIter != mGradVec.end(); gradIter++)
+        {
+            *gradIter = 0;
+        }
+        for (int dataId = 0; dataId < mDataCount; dataId++)
+        {
+            int dataBaseIndex = dataId * mDataDim;
+            double proV = 0;
+            for (int did = 0; did < mDataDim; did++)
+            {
+                proV += mpDataX->at(dataBaseIndex + did) * mpCoef->at(did);
+            }
+            proV += mpCoef->at(mDataDim);
+            proV = MagicMath::BasicFunction::Sigmoid(proV);
+            proV = mpDataY->at(dataId) - proV;
+            for (int did = 0; did < mDataDim; did++)
+            {
+                mGradVec.at(did) += mpDataX->at(dataBaseIndex + did) * proV;
+            }
+            mGradVec.at(mDataDim) += proV;
+        }
+    }
+
+    bool LRNewton::IsStop()
+    {
+        double gradLen = 0.0;
+        for (std::vector<double>::iterator gradIter = mGradVec.begin(); gradIter != mGradVec.end(); gradIter++)
+        {
+            gradLen += (*gradIter) * (*gradIter);
+        }
+        DebugLog << "grad: " << sqrt(gradLen) << std::endl;
+        return (gradLen < 1.0e-15);
+    }
+
+    void LRNewton::CalHessian()
+    {
+        int coefDim = mDataDim + 1;
+        mHessMat = std::vector<double>(coefDim * coefDim, 0);
+        for (int dataId = 0; dataId < mDataCount; dataId++)
+        {
+            int dataBaseIndex = dataId * mDataDim;
+            double proV = 0;
+            for (int did = 0; did < mDataDim; did++)
+            {
+                proV += mpDataX->at(dataBaseIndex + did) * mpCoef->at(did);
+            }
+            proV += mpCoef->at(mDataDim);
+            proV = MagicMath::BasicFunction::Sigmoid(proV);
+            proV = proV * (proV - 1.0);
+            for (int rid = 0; rid < mDataDim; rid++)
+            {
+                int rowBaseIndex = rid * coefDim;
+                for (int cid = 0; cid <= rid; cid++)
+                {
+                    double v = mpDataX->at(dataBaseIndex + rid) * mpDataX->at(dataBaseIndex + cid) * proV;
+                    mHessMat.at(rowBaseIndex + cid) += v;
+                    mHessMat.at(cid * coefDim + rid) += v;
+                }
+            }
+            int lastRowBaseIndex = mDataDim * coefDim;
+            for (int did = 0; did < mDataDim; did++)
+            {
+                double v = mpDataX->at(dataBaseIndex + did) * proV;
+                mHessMat.at(lastRowBaseIndex + did) += v;
+                mHessMat.at(coefDim * did + mDataDim) += v;
+            }
+            mHessMat.at(coefDim * coefDim - 1) += proV;
+        }
+    }
+
+    void LRNewton::UpdateResult()
+    {
+        for (int coefId = 0; coefId < mpCoef->size(); coefId++)
+        {
+            mpCoef->at(coefId) += mStepVec.at(coefId);
+        }
+    }
 }
 
 namespace MagicML
@@ -183,9 +316,12 @@ namespace MagicML
             return MAGIC_INVALID_INPUT;
         }
 
-        LRGradientDescent* pLrgd = new LRGradientDescent(&dataX, &dataY, &mCoef);
+        /*LRGradientDescent* pLrgd = new LRGradientDescent(&dataX, &dataY, &mCoef);
         pLrgd->Run();
-        delete pLrgd;
+        delete pLrgd;*/
+        LRNewton* pLrn = new LRNewton(&dataX, &dataY, &mCoef);
+        pLrn->Run();
+        delete pLrn;
 
         return MAGIC_NO_ERROR;
     }
