@@ -147,6 +147,7 @@
     <ClInclude Include="..\Src\Application\VisionShopApp.h" />
     <ClInclude Include="..\Src\Application\VisionShopAppUI.h" />
     <ClInclude Include="..\Src\AppModules\BasicImageProcess.h" />
+    <ClInclude Include="..\Src\AppModules\BasicPointSetProcess.h" />
     <ClInclude Include="..\Src\AppModules\Face2D.h" />
     <ClInclude Include="..\Src\AppModules\Face2DObj.h" />
     <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h" />
@@ -312,6 +313,7 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp" />
     <ClCompile Include="..\Src\AppModules\BasicImageProcess.cpp" />
+    <ClCompile Include="..\Src\AppModules\BasicPointSetProcess.cpp" />
     <ClCompile Include="..\Src\AppModules\Face2D.cpp" />
     <ClCompile Include="..\Src\AppModules\Face2DObj.cpp" />
     <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp" />

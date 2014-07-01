@@ -31,6 +31,7 @@ namespace MagicApp
         void ChangeFrontRange(int rel);
         void ChangeBackRange(int rel);
         void PointSetRegistration();
+        void ExportPointSet(void);
        
     private:
         void SetupRenderScene();

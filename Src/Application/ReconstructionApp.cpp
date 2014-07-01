@@ -421,6 +421,21 @@ namespace MagicApp
         }
     }
 
+    void ReconstructionApp::ExportPointSet(void)
+    {
+        std::string path = "../../Media/FaceData/PointSet/f";
+        for (int frameId = mFrameStartIndex; frameId < mFrameEndIndex; frameId++)
+        {
+            std::stringstream ss;
+            ss << path << frameId << ".obj";
+            std::string fileName;
+            ss >> fileName;
+            MagicDGP::Point3DSet* pPointSet = GetPointSetFromRecord(frameId);
+            MagicDGP::Parser::ExportPointSet(fileName, pPointSet);
+            delete pPointSet;
+        }
+    }
+
     void ReconstructionApp::PointSetRegistration()
     {
         DebugLog << "Coarse Limit: " << mLeftLimit << " " << mRightLimit << " " << mDownLimit << " " << mTopLimit << 

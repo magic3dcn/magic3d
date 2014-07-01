@@ -37,13 +37,15 @@ namespace MagicApp
         MagicCore::ResourceManager::LoadResource("../../Media/ReconstructionApp", "FileSystem", "ReconstructionApp");
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("RecordPlayback.layout");
         mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::OpenScanRecord);
-        mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_OpenRecord")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::BackHome);
         mRoot.at(0)->findWidget("But_Home")->castType<MyGUI::Button>()->setSize(40, 40);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::Contact);
         mRoot.at(0)->findWidget("But_Contact")->castType<MyGUI::Button>()->setSize(40, 40);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::PointSetAlign);
-        mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setSize(86, 87);
+        mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setSize(60, 60);
+        mRoot.at(0)->findWidget("But_ExportPointSet")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &ReconstructionAppUI::ExportPointSet);
+        mRoot.at(0)->findWidget("But_ExportPointSet")->castType<MyGUI::Button>()->setSize(60, 60);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeDownRange);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setSize(50, 50);
         mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->eventMouseWheel += MyGUI::newDelegate(this, &ReconstructionAppUI::ChangeTopRange);
@@ -65,6 +67,7 @@ namespace MagicApp
         InfoLog << "ReconstructionUI::SetupReconstructProgress" << std::endl;
         mRoot.at(0)->findWidget("Progress_Registrate")->castType<MyGUI::ProgressBar>()->setVisible(true);
         mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(false);
+        mRoot.at(0)->findWidget("But_ExportPointSet")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(false);
         mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setVisible(false);
@@ -94,6 +97,7 @@ namespace MagicApp
         if (pRA->OpenSceneRecord(frameNum))
         {
             mRoot.at(0)->findWidget("But_Align")->castType<MyGUI::Button>()->setVisible(true);
+            mRoot.at(0)->findWidget("But_ExportPointSet")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Down")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Top")->castType<MyGUI::Button>()->setVisible(true);
             mRoot.at(0)->findWidget("But_Left")->castType<MyGUI::Button>()->setVisible(true);
@@ -151,6 +155,12 @@ namespace MagicApp
         SetupReconstructProgress();
         ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
         pRA->PointSetRegistration();
+    }
+
+    void ReconstructionAppUI::ExportPointSet(MyGUI::Widget* pSender)
+    {
+        ReconstructionApp* pRA = dynamic_cast<ReconstructionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("ReconstructionApp"));
+        pRA->ExportPointSet();
     }
 
     void ReconstructionAppUI::ChangeLeftRange(MyGUI::Widget* pSender, int rel)

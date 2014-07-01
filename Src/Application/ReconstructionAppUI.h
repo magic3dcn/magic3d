@@ -27,6 +27,7 @@ namespace MagicApp
         void ChangeFrameStart(MyGUI::ScrollBar* pSender, size_t pos);
         void ChangeFrameEnd(MyGUI::ScrollBar* pSender, size_t pos);
         void PointSetAlign(MyGUI::Widget* pSender);
+        void ExportPointSet(MyGUI::Widget* pSender);
         void ChangeLeftRange(MyGUI::Widget* pSender, int rel);
         void ChangeRightRange(MyGUI::Widget* pSender, int rel);
         void ChangeTopRange(MyGUI::Widget* pSender, int rel);

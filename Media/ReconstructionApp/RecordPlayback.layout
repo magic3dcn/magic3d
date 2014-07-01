@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position_real="0 0 1 1" align="Stretch" layer="Back">
-        <Widget type="Button" skin="But_Open" position_real="0.0136719 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_OpenRecord"/>
+        <Widget type="Button" skin="But_Open" position_real="0.00976563 0.904948 0.0585938 0.078125" align="Left Bottom" name="But_OpenRecord"/>
         <Widget type="Button" skin="But_Home" position_real="0.907227 0.9375 0.0390625 0.0507813" align="Right Bottom" name="But_Home"/>
         <Widget type="Button" skin="But_Down" position_real="0.475586 0.872396 0.0478516 0.0651042" align="HCenter Bottom" name="But_Down">
             <Property key="Visible" value="false"/>
@@ -21,7 +21,7 @@
         <Widget type="Button" skin="But_Back" position_real="0.638672 0.0117188 0.0478516 0.0651042" align="Right Top" name="But_Back">
             <Property key="Visible" value="false"/>
         </Widget>
-        <Widget type="Button" skin="But_Align" position_real="0.117188 0.872396 0.0839844 0.109375" align="Left Bottom" name="But_Align">
+        <Widget type="Button" skin="But_Align" position_real="0.0732422 0.904948 0.0585938 0.078125" align="Left Bottom" name="But_Align">
             <Property key="Visible" value="false"/>
         </Widget>
         <Widget type="ProgressBar" skin="ProgressBar" position_real="0.0976563 0.90625 0.804688 0.0625" align="HStretch Bottom" name="Progress_Registrate">
@@ -40,5 +40,8 @@
             <Property key="MoveToClick" value="false"/>
         </Widget>
         <Widget type="Button" skin="But_Contact" position_real="0.951172 0.9375 0.0390625 0.0507813" align="Right Bottom" name="But_Contact"/>
+        <Widget type="Button" skin="But_Save" position_real="0.141602 0.904948 0.0585938 0.078125" align="Left Bottom" name="But_ExportPointSet">
+            <Property key="Visible" value="false"/>
+        </Widget>
     </Widget>
 </MyGUI>
