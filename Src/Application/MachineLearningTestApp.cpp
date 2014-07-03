@@ -50,7 +50,7 @@ namespace MagicApp
                 mUI.UpdateImageTex(&dataX, &dataY, 2, NULL, NULL, 0);
             }
         }
-        else if (mMouseMode == MM_Test_NaiveBayes || mMouseMode == MM_Test_SVM || mMouseMode == MM_Test_LR)
+        else if (mMouseMode == MM_Test_NaiveBayes || mMouseMode == MM_Test_SVM || mMouseMode == MM_Test_LR || mMouseMode == MM_Test_DT)
         {
             int wPos = arg.state.X.abs - 80;
             int hPos = arg.state.Y.abs - 10;
@@ -74,6 +74,10 @@ namespace MagicApp
                 else if (mMouseMode == MM_Test_LR)
                 {
                     testDataY.at(0) = mpMLObj->PrediectByLR(wPos, hPos);
+                }
+                else if (mMouseMode == MM_Test_DT)
+                {
+                    testDataY.at(0) = mpMLObj->PrediectByDT(wPos, hPos); 
                 }
                 mUI.UpdateImageTex(&dataX, &dataY, 2, &testDataX, &testDataY, 4);
             }
@@ -259,6 +263,41 @@ namespace MagicApp
                 testDataX.at(dataId * 2 + 1) = hid;
                 testDataY.at(dataId) = mpMLObj->PrediectByLR(wid, hid);
                 //testDataY.at(dataId) = mpMLObj->PrediectByLinearRegression(wid, hid);
+                dataId++;
+            }
+        }
+        mUI.UpdateImageTex(NULL, NULL, 0, &testDataX, &testDataY, 1);
+    }
+
+    void MachineLearningTestApp::LearnDT(int width, int height)
+    {
+        mpMLObj->LearnDT(width / 2, height / 2);
+    }
+
+    void MachineLearningTestApp::TestDT(void)
+    {
+        if (mMouseMode == MM_Test_DT)
+        {
+            mMouseMode = MM_View;
+        }
+        else
+        {
+            mMouseMode = MM_Test_DT;
+        }
+    }
+
+    void MachineLearningTestApp::DTBoundary(int width, int height)
+    {
+        std::vector<double> testDataX(width * height * 2);
+        std::vector<int> testDataY(width * height);
+        int dataId = 0;
+        for (int wid = 0; wid < width; wid++)
+        {
+            for (int hid = 0; hid < height; hid++)
+            {
+                testDataX.at(dataId * 2) = wid;
+                testDataX.at(dataId * 2 + 1) = hid;
+                testDataY.at(dataId) = mpMLObj->PrediectByDT(wid, hid);
                 dataId++;
             }
         }

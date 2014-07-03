@@ -14,7 +14,8 @@ namespace MagicApp
             MM_Draw_Point,
             MM_Test_NaiveBayes,
             MM_Test_SVM,
-            MM_Test_LR
+            MM_Test_LR,
+            MM_Test_DT
         };
 
         MachineLearningTestApp();
@@ -37,6 +38,9 @@ namespace MagicApp
         void LearnLR(void);
         void TestLR(void);
         void LRBoundary(int width, int height);
+        void LearnDT(int width, int height);
+        void TestDT(void);
+        void DTBoundary(int width, int height);
 
     private:
         void SetupScene(void);

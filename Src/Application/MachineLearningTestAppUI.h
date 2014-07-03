@@ -28,6 +28,9 @@ namespace MagicApp
         void LearnLR(MyGUI::Widget* pSender);
         void TestLR(MyGUI::Widget* pSender);
         void DecisionBoundaryLR(MyGUI::Widget* pSender);
+        void LearnDT(MyGUI::Widget* pSender);
+        void TestDT(MyGUI::Widget* pSender);
+        void DecisionBoundaryDT(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
 
         void DrawMarkPoint(const std::vector<double>* dataX, const std::vector<int>* dataY,

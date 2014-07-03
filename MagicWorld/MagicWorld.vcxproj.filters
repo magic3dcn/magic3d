@@ -447,6 +447,9 @@
     <ClInclude Include="..\Src\AppModules\BasicPointSetProcess.h">
       <Filter>AppModules</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\DecisionTree.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -748,6 +751,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\AppModules\BasicPointSetProcess.cpp">
       <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\DecisionTree.cpp">
+      <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

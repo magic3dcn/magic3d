@@ -15,5 +15,8 @@
         <Widget type="Button" skin="Button" position="10 155 20 20" align="Left Top" name="But_LearnLR"/>
         <Widget type="Button" skin="Button" position="30 155 20 20" align="Left Top" name="But_TestLR"/>
         <Widget type="Button" skin="Button" position="50 155 20 20" align="Left Top" name="But_DecisionBoundaryLR"/>
+        <Widget type="Button" skin="Button" position="10 180 20 20" align="Left Top" name="But_LearnDT"/>
+        <Widget type="Button" skin="Button" position="30 180 20 20" align="Left Top" name="But_TestDT"/>
+        <Widget type="Button" skin="Button" position="50 180 20 20" align="Left Top" name="But_DecisionBoundaryDT"/>
     </Widget>
 </MyGUI>

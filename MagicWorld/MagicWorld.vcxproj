@@ -187,6 +187,7 @@
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
     <ClInclude Include="..\Src\MachineLearning\AdaBoost.h" />
     <ClInclude Include="..\Src\MachineLearning\Clustering.h" />
+    <ClInclude Include="..\Src\MachineLearning\DecisionTree.h" />
     <ClInclude Include="..\Src\MachineLearning\DeepBeliefNets.h" />
     <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h" />
     <ClInclude Include="..\Src\MachineLearning\HiddenMarkovModels.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
     <ClCompile Include="..\Src\MachineLearning\AdaBoost.cpp" />
     <ClCompile Include="..\Src\MachineLearning\Clustering.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\DecisionTree.cpp" />
     <ClCompile Include="..\Src\MachineLearning\DeepBeliefNets.cpp" />
     <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp" />
     <ClCompile Include="..\Src\MachineLearning\HiddenMarkovModels.cpp" />
