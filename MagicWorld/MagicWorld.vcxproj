@@ -124,6 +124,8 @@
     <ClInclude Include="..\Src\Application\AugmentedRealityAppUI.h" />
     <ClInclude Include="..\Src\Application\FaceBeautificationApp.h" />
     <ClInclude Include="..\Src\Application\FaceBeautificationAppUI.h" />
+    <ClInclude Include="..\Src\Application\FaceFeatureRecognitionApp.h" />
+    <ClInclude Include="..\Src\Application\FaceFeatureRecognitionAppUI.h" />
     <ClInclude Include="..\Src\Application\Homepage.h" />
     <ClInclude Include="..\Src\Application\HomepageUI.h" />
     <ClInclude Include="..\Src\Application\LeapMotionApp.h" />
@@ -253,6 +255,8 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\FaceBeautificationApp.cpp" />
     <ClCompile Include="..\Src\Application\FaceBeautificationAppUI.cpp" />
+    <ClCompile Include="..\Src\Application\FaceFeatureRecognitionApp.cpp" />
+    <ClCompile Include="..\Src\Application\FaceFeatureRecognitionAppUI.cpp" />
     <ClCompile Include="..\Src\Application\Homepage.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>

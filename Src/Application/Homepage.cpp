@@ -9,6 +9,7 @@
 #include "../Common/AppManager.h"
 #include "FaceBeautificationApp.h"
 #include "MachineLearningTestApp.h"
+#include "FaceFeatureRecognitionApp.h"
 
 namespace MagicApp
 {
@@ -45,7 +46,7 @@ namespace MagicApp
             InfoLog << "EnterPrimitiveDetection" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new PrimitiveDetectionApp, "PrimitiveDetectionApp");
         }
-        else if (arg.key == OIS::KC_V)
+        /*else if (arg.key == OIS::KC_V)
         {
             InfoLog << "EnterAugmentedRealityApp" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new AugmentedRealityApp, "AugmentedRealityApp");
@@ -54,7 +55,7 @@ namespace MagicApp
         {
             InfoLog << "EnterVideoRecordingApp" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new VideoRecordingApp, "VideoRecordingApp");
-        }
+        }*/
         else if (arg.key == OIS::KC_F)
         {
             InfoLog << "EnterFaceBeautificationApp" << std::endl;
@@ -64,6 +65,11 @@ namespace MagicApp
         {
             InfoLog << "EnterMachineLearningTestApp" << std::endl;
             MagicCore::AppManager::GetSingleton()->EnterApp(new MachineLearningTestApp, "MachineLearningTestApp");
+        }
+        else if (arg.key == OIS::KC_R)
+        {
+            InfoLog << "EnterFaceFeatureRecognitionApp" << std::endl;
+            MagicCore::AppManager::GetSingleton()->EnterApp(new FaceFeatureRecognitionApp, "FaceFeatureRecognitionApp");
         }
 
         return true;
