@@ -48,7 +48,7 @@ namespace MagicML
         RandomFern();
         ~RandomFern();
 
-        int Learn(const std::vector<bool>& dataX, const std::vector<bool>& dataY, int fernSize);
+        int Learn(const std::vector<bool>& dataX, const std::vector<double>& dataY, int fernSize);
         double Predict(const std::vector<bool>& dataX) const;
 
     private:

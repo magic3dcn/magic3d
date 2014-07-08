@@ -181,6 +181,7 @@
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\ViewTool.h" />
+    <ClInclude Include="..\Src\DIP\CascadedPoseRegression.h" />
     <ClInclude Include="..\Src\DIP\Classification.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
     <ClInclude Include="..\Src\DIP\FeatureDetection.h" />
@@ -370,6 +371,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Src\DIP\CascadedPoseRegression.cpp" />
     <ClCompile Include="..\Src\DIP\Classification.cpp" />
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\Src\DIP\FeatureDetection.cpp" />

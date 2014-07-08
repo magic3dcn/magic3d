@@ -279,7 +279,7 @@ namespace MagicML
     {
     }
 
-    int RandomFern::Learn(const std::vector<bool>& dataX, const std::vector<bool>& dataY, int fernSize)
+    int RandomFern::Learn(const std::vector<bool>& dataX, const std::vector<double>& dataY, int fernSize)
     {
         if (dataY.size() == 0)
         {
