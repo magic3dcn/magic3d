@@ -1,4 +1,5 @@
 #include "CascadedPoseRegression.h"
+#include "../Tool/ErrorCodes.h"
 
 namespace MagicDIP
 {
@@ -15,6 +16,7 @@ namespace MagicDIP
     int CascadedPoseRegression::LearnRegression(const std::string& landFileName)
     {
         Reset();
+        return MAGIC_NO_ERROR;
     }
         
     void CascadedPoseRegression::PoseRegression(const cv::Mat& img, const std::vector<double>& dataX, std::vector<double>&dataY) const
