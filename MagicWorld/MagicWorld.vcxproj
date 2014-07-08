@@ -201,6 +201,7 @@
     <ClInclude Include="..\Src\MachineLearning\NaiveBayes.h" />
     <ClInclude Include="..\Src\MachineLearning\NeuralNetworks.h" />
     <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
+    <ClInclude Include="..\Src\MachineLearning\RandomMethod.h" />
     <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h" />
     <ClInclude Include="..\Src\MachineLearning\SparseCoding.h" />
     <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h" />
@@ -389,6 +390,7 @@
     <ClCompile Include="..\Src\MachineLearning\NaiveBayes.cpp" />
     <ClCompile Include="..\Src\MachineLearning\NeuralNetworks.cpp" />
     <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
+    <ClCompile Include="..\Src\MachineLearning\RandomMethod.cpp" />
     <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp" />
     <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp" />

@@ -459,6 +459,9 @@
     <ClInclude Include="..\Src\Application\FaceFeatureRecognitionApp.h">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\MachineLearning\RandomMethod.h">
+      <Filter>MachineLearning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -769,6 +772,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Application\FaceFeatureRecognitionApp.cpp">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MachineLearning\RandomMethod.cpp">
+      <Filter>MachineLearning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
