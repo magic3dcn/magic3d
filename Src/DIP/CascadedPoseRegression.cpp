@@ -28,6 +28,7 @@ namespace MagicDIP
             return MAGIC_INVALID_INPUT;
         }
         Reset();
+
         mRandomFerns.reserve(fernCount);
         mFeatureSize = featureSize;
         int dataCount = initTheta.size() / thetaDim;
