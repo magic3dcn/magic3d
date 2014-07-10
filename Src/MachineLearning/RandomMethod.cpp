@@ -373,6 +373,28 @@ namespace MagicML
         return predictions;
     }
 
+    std::vector<double> RandomFern::PredictWithValidFeature(const std::vector<bool>& dataX) const
+    {
+        int fernSize = dataX.size();
+        int predictionId = 0;
+        for (int fernId = 0; fernId < fernSize; fernId++)
+        {
+            predictionId += dataX.at(fernId) * mFeatureBases.at(fernId);
+        }
+        std::vector<double> predictions(mPredictionDim);
+        int baseIndex = predictionId * mPredictionDim;
+        for (int dimId = 0; dimId < mPredictionDim; dimId++)
+        {
+            predictions.at(dimId) = mPredictions.at(baseIndex + dimId);
+        }
+        return predictions;
+    }
+
+    const std::vector<int>& RandomFern::GetFeatureIds(void) const
+    {
+        return mFeatureIds;
+    }
+
     void RandomFern::Reset(void)
     {
         mPredictionDim = 0;

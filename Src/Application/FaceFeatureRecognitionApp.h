@@ -6,6 +6,7 @@
 namespace MagicApp
 {
     class Face2DObj;
+    class CascadedFaceFeatureDetection;
     class FaceFeatureRecognitionApp : public MagicCore::AppBase
     {
     public:
@@ -22,6 +23,7 @@ namespace MagicApp
         virtual void WindowResized( Ogre::RenderWindow* rw );
 
         void OpenImage(void);
+        void LearnCascadedRegression(void);
 
     private:
         void SetupScene(void);
@@ -33,6 +35,7 @@ namespace MagicApp
     private:
         FaceFeatureRecognitionAppUI mUI;
         Face2DObj* mpF2DObj;
+        CascadedFaceFeatureDetection* mpFfd;
     };
 
 }

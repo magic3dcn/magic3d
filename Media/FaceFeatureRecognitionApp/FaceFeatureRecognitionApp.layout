@@ -4,5 +4,6 @@
         <Widget type="Button" skin="But_Open" position="10 10 86 86" align="Left Top" name="But_Open"/>
         <Widget type="Button" skin="But_Home" position="10 285 86 86" align="Left Top" name="But_BackHome"/>
         <Widget type="ImageBox" skin="ImageBox" position="110 10 640 480" align="Left Top" name="Image_Canvas"/>
+        <Widget type="Button" skin="Button" position="10 105 86 86" align="Left Top" name="But_CascadedRegression"/>
     </Widget>
 </MyGUI>

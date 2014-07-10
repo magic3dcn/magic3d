@@ -16,6 +16,7 @@ namespace MagicApp
 
     private:
         void OpenImage(MyGUI::Widget* pSender);
+        void LearnCascadedRegression(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
 
     private:

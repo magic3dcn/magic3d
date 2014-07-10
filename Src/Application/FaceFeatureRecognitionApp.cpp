@@ -1,13 +1,15 @@
 #include "FaceFeatureRecognitionApp.h"
 #include "../AppModules/MagicObjectManager.h"
 #include "../AppModules/Face2DObj.h"
+#include "../AppModules/FaceFeatureDetection.h"
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 
 namespace MagicApp
 {
     FaceFeatureRecognitionApp::FaceFeatureRecognitionApp() :
-        mpF2DObj(NULL)
+        mpF2DObj(NULL),
+        mpFfd(NULL)
     {
     }
 
@@ -69,6 +71,11 @@ namespace MagicApp
             MOMGR->InsertObj("Face2DObj", new Face2DObj);
         }
         mpF2DObj = dynamic_cast<Face2DObj*>(MOMGR->GetObj("Face2DObj"));
+        if (!(MOMGR->IsObjExist("CascadedFaceFeatureDetection")))
+        {
+            MOMGR->InsertObj("CascadedFaceFeatureDetection", new CascadedFaceFeatureDetection);
+        }
+        mpFfd = dynamic_cast<CascadedFaceFeatureDetection*>(MOMGR->GetObj("CascadedFaceFeatureDetection"));
     }
 
     void FaceFeatureRecognitionApp::ShutdownScene(void)
@@ -89,6 +96,16 @@ namespace MagicApp
             std::vector<double> fpsList;
             mpF2DObj->GetFfp()->GetFps(&fpsList);
             UpdateDisplayImage(NULL, &fpsList);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::LearnCascadedRegression(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpFfd->LearnRegression(fileName);
         }
     }
 
