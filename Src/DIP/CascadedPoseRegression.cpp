@@ -47,10 +47,11 @@ namespace MagicDIP
 
             //Generate Feature Ids and dataX
             FeaturePatternGeneration(imgFiles, curTheta, deltaTheta, dataCount, featureSize, dataX);
-
+            DebugLog << "  FeaturePatternGeneration done" << std::endl;
             //Learn random fern
             MagicML::RandomFern* pFern = new MagicML::RandomFern;
             pFern->Learn(dataX, featureSize, deltaTheta, thetaDim, fernSize);
+            DebugLog << "  Fern Learn done" << std::endl;
             mRandomFerns.push_back(pFern);
             //Update curTheta
             for (int dataId = 0; dataId < dataCount; dataId++)
@@ -68,10 +69,15 @@ namespace MagicDIP
                 //Predict delta theta
                 std::vector<double> deltaTheta = pFern->PredictWithValidFeature(features);
                 //Update curTheta
-                baseIndex = dataId * featureSize;
+                /*baseIndex = dataId * featureSize;
                 for (int featureId = 0; featureId < featureSize; featureId++)
                 {
                     curTheta.at(baseIndex + featureId) += deltaTheta.at(featureId);
+                }*/
+                baseIndex = dataId * thetaDim;
+                for (int thetaId = 0; thetaId < thetaDim; thetaId++)
+                {
+                    curTheta.at(baseIndex + thetaId) += deltaTheta.at(thetaId);
                 }
             }
         }

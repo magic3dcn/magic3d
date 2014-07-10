@@ -83,7 +83,11 @@ namespace MagicApp
             initialTheta.push_back(avgThetaY);
             initialTheta.push_back(avgThetaX);
         }
-        return mpRegression->LearnRegression(imgFiles, initialTheta, targetTheta, 2, 10, 100, 1000);
+        if (mpRegression == NULL)
+        {
+            mpRegression = new MagicDIP::SimpleCascadedPoseRegression;
+        }
+        return mpRegression->LearnRegression(imgFiles, initialTheta, targetTheta, 2, 1000, 10, 1000);
     }
         
     int CascadedFaceFeatureDetection::PoseRegression(const cv::Mat& img, const std::vector<double>& initPos, std::vector<double>& finalPos) const

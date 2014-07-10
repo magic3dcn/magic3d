@@ -338,7 +338,7 @@ namespace MagicML
             int dataBase = dataId * mPredictionDim;
             for (int dimId = 0; dimId < mPredictionDim; dimId++)
             {
-                mPredictions.at(predBase + dimId) += dataY.at(dataBase + dataId);
+                mPredictions.at(predBase + dimId) += dataY.at(dataBase + dimId);
             }
             predDataNum.at(predId)++;
         }
@@ -352,10 +352,10 @@ namespace MagicML
                     mPredictions.at(predBase + dimId) /= predDataNum.at(predId);
                 }
             }
-            else
+            /*else
             {
                 DebugLog << "Empty fern block: " << predId << std::endl;
-            }
+            }*/
         }
 
         return MAGIC_NO_ERROR;
