@@ -10,6 +10,12 @@ namespace MagicApp
     class FaceFeatureRecognitionApp : public MagicCore::AppBase
     {
     public:
+        enum MouseMode
+        {
+            MM_View,
+            MM_Mark_KeyPoint
+        };
+
         FaceFeatureRecognitionApp();
         ~FaceFeatureRecognitionApp();
 
@@ -24,6 +30,13 @@ namespace MagicApp
 
         void OpenImage(void);
         void LearnCascadedRegression(void);
+        void SaveCascadedRegression(void);
+        void LoadCascadedRegression(void);
+        
+        void OpenTestImage(void);
+        void MarkKeyPoint(void);
+        void SynthesizeData(int keyX, int keyY);
+
 
     private:
         void SetupScene(void);
@@ -34,6 +47,7 @@ namespace MagicApp
 
     private:
         FaceFeatureRecognitionAppUI mUI;
+        MouseMode mMouseMode;
         Face2DObj* mpF2DObj;
         CascadedFaceFeatureDetection* mpFfd;
     };

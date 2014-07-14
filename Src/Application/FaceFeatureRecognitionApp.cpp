@@ -8,6 +8,7 @@
 namespace MagicApp
 {
     FaceFeatureRecognitionApp::FaceFeatureRecognitionApp() :
+        mMouseMode(MM_View),
         mpF2DObj(NULL),
         mpFfd(NULL)
     {
@@ -51,11 +52,35 @@ namespace MagicApp
 
     bool FaceFeatureRecognitionApp::MouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
     {
+        if (mMouseMode == MM_Mark_KeyPoint)
+        {
+            int hPos = arg.state.Y.abs - 10;
+            int wPos = arg.state.X.abs - 110;
+            SynthesizeData(wPos, hPos);
+        }
+
         return true;
     }
 
     bool FaceFeatureRecognitionApp::KeyPressed( const OIS::KeyEvent &arg )
     {
+        if (arg.key == OIS::KC_K)
+        {
+            MarkKeyPoint();
+        }
+        else if (arg.key == OIS::KC_O)
+        {
+            OpenTestImage();
+        }
+        else if (arg.key == OIS::KC_S)
+        {
+            SaveCascadedRegression();
+        }
+        else if (arg.key == OIS::KC_L)
+        {
+            LoadCascadedRegression();
+        }
+
         return true;
     }
 
@@ -106,7 +131,106 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpFfd->LearnRegression(fileName);
+            mpFfd->Save("./simple.cas");
         }
+    }
+
+    void FaceFeatureRecognitionApp::SaveCascadedRegression(void)
+    {
+        std::string fileName;
+        char filterName[] = "Cascade Files(*.cas)\0*.cas\0";
+        if (MagicCore::ToolKit::FileSaveDlg(fileName, filterName))
+        {
+            mpFfd->Save(fileName);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::LoadCascadedRegression(void)
+    {
+        std::string fileName;
+        char filterName[] = "Cascade Files(*.cas)\0*.cas\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpFfd->Load(fileName);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::OpenTestImage(void)
+    {
+        std::string fileName;
+        char filterName[] = "Image Files(*.jpg)\0*.jpg\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpF2DObj->LoadFaceImage(fileName);
+            UpdateDisplayImage(NULL, NULL);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::MarkKeyPoint(void)
+    {
+        if (mMouseMode == MM_Mark_KeyPoint)
+        {
+            mMouseMode = MM_View;
+        }
+        else
+        {
+            mMouseMode = MM_Mark_KeyPoint;
+        }
+    }
+
+    void FaceFeatureRecognitionApp::SynthesizeData(int keyX, int keyY)
+    {
+        std::string folderPath = "./Synthesis";
+        int shiftSize = 10;
+        int fileIndex = 0;
+        std::ofstream layoutFout("./Synthesis/LandName.txt");
+        layoutFout << (2 * shiftSize + 1) * (2 * shiftSize + 1) << std::endl;
+        cv::Mat img = mpF2DObj->GetFaceImage().clone();
+        int imgH = img.rows;
+        int imgW = img.cols;
+        for (int wid = -shiftSize; wid <= shiftSize; wid++)
+        {
+            for (int hid = -shiftSize; hid <= shiftSize; hid++)
+            {
+                layoutFout << "/test" << fileIndex << ".land" << std::endl;
+                
+                std::stringstream ss;
+                ss << folderPath << "/test" << fileIndex << ".land";
+                std::string landName;
+                ss >> landName;
+                ss.clear();
+                std::ofstream landOut(landName);
+                landOut << 1 << std::endl;
+                landOut << wid + keyX << " " << imgH - (hid + keyY) << std::endl;
+                landOut.close();
+
+                ss << folderPath << "/test" << fileIndex << ".jpg";
+                std::string imgName;
+                ss >> imgName;
+                ss.clear();
+                cv::Mat shiftImg(imgH, imgW, CV_8UC3);
+                for (int xid = 0; xid < imgW; xid++)
+                {
+                    for (int yid = 0; yid < imgH; yid++)
+                    {
+                        int wPos = xid + wid;
+                        wPos = wPos < 0 ? 0 : (wPos > imgW - 1 ? imgW - 1 : wPos);
+                        int hPos = yid + hid;
+                        hPos = hPos < 0 ? 0 : (hPos > imgH - 1 ? imgH - 1 : hPos);
+                        unsigned char* shiftPixel = shiftImg.ptr(hPos, wPos);
+                        unsigned char* imgPixel = img.ptr(yid, xid);
+                        shiftPixel[0] = imgPixel[0];
+                        shiftPixel[1] = imgPixel[1];
+                        shiftPixel[2] = imgPixel[2];
+                    }
+                }
+                cv::imwrite(imgName, shiftImg);
+                shiftImg.release();
+                
+                fileIndex++;
+            }
+        }
+        layoutFout.close();
     }
 
     void FaceFeatureRecognitionApp::UpdateDisplayImage(const std::vector<double>* dpsList, const std::vector<double>* fpsList)
