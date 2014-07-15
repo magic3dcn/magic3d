@@ -1,5 +1,6 @@
 #include "CascadedPoseRegression.h"
 #include "../MachineLearning/RandomMethod.h"
+#include "ImageLoader.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
 //#include "../Common/ToolKit.h"
@@ -9,7 +10,8 @@
 namespace MagicDIP
 {
     CascadedPoseRegression::CascadedPoseRegression() :
-        mRandomFerns()
+        mRandomFerns(),
+        mImageLoader()
     {
     }
 
@@ -30,6 +32,12 @@ namespace MagicDIP
             return MAGIC_INVALID_INPUT;
         }
         Reset();
+
+        //ImageLoader imageLoader;
+        //imageLoader.LoadImages(imgFiles, ImageLoader::IT_Gray);
+        DebugLog << "Load Image......";
+        mImageLoader.LoadImages(imgFiles, ImageLoader::IT_Gray);
+        DebugLog << "done" << std::endl;
 
         mRandomFerns.reserve(fernCount);
         int dataCount = initTheta.size() / thetaDim;
@@ -70,7 +78,7 @@ namespace MagicDIP
             avgDelta /= curTheta.size();
             DebugLog << "  AvgDelta: " << avgDelta << std::endl;
             //Generate Feature Ids and dataX
-            FeaturePatternGeneration(imgFiles, curTheta, deltaTheta, dataCount, featureSize, dataX);
+            FeaturePatternGeneration(curTheta, deltaTheta, dataCount, featureSize, dataX);
             DebugLog << "  FeaturePatternGeneration done" << std::endl;
             //Learn random fern
             MagicML::RandomFern* pFern = new MagicML::RandomFern;
@@ -86,12 +94,12 @@ namespace MagicDIP
             {
                 //Load image
                 //cv::Mat img = cv::imread(imgFiles.at(dataId));
-                cv::Mat img = cv::imread(imgFiles.at(dataId));
+                //cv::Mat img = cv::imread(imgFiles.at(dataId));
                 //DebugLog << "    imgOrigin susscess : " << imgFiles.at(dataId) << std::endl;
-                if (img.data == NULL)
-                {
-                    DebugLog << "    error: img.data == NULL" << std::endl;
-                }
+                //if (img.data == NULL)
+                //{
+                //    DebugLog << "    error: img.data == NULL" << std::endl;
+                //}
                 //Generate feature from theta
                 int baseIndex = dataId * thetaDim;
                 for (int thetaId = 0; thetaId < thetaDim; thetaId++)
@@ -99,9 +107,10 @@ namespace MagicDIP
                     theta.at(thetaId) = curTheta.at(baseIndex + thetaId);
                 }
                 std::vector<bool> features;
-                ValidFeatureGeneration(img, theta, fernId, features);
+                //ValidFeatureGeneration(img, theta, fernId, features);
+                ValidFeatureGenerationByImageLoader(dataId, theta, fernId, features);
                 //DebugLog << "    ValidFeatureGeneration" << std::endl;
-                img.release();
+                //img.release();
                 //DebugLog << "    img release" << std::endl;
                 //Predict delta theta
                 std::vector<double> deltaTheta = pFern->PredictWithValidFeature(features);
@@ -164,6 +173,7 @@ namespace MagicDIP
             }
         }
         mRandomFerns.clear();
+        mImageLoader.Reset();
     }
 
     SimpleCascadedPoseRegression::SimpleCascadedPoseRegression() : 
@@ -279,9 +289,8 @@ namespace MagicDIP
         fin.close();
     }
 
-    void SimpleCascadedPoseRegression::FeaturePatternGeneration(const std::vector<std::string>& imgFiles, 
-        const std::vector<double>& theta, const std::vector<double>& dataY, int dataCount, int featureSize, 
-        std::vector<bool>& features)
+    void SimpleCascadedPoseRegression::FeaturePatternGeneration(const std::vector<double>& theta, 
+        const std::vector<double>& dataY, int dataCount, int featureSize, std::vector<bool>& features)
     {
         //Random feature postions
         srand(time(NULL));
@@ -303,7 +312,9 @@ namespace MagicDIP
         //Calculate features
         for (int dataId = 0; dataId < dataCount; dataId++)
         {
-            cv::Mat img = cv::imread(imgFiles.at(dataId));
+            //cv::Mat img = cv::imread(imgFiles.at(dataId));
+            int imgH = mImageLoader.GetImageHeight(dataId);
+            int imgW = mImageLoader.GetImageWidth(dataId);
             int featureBase = featureSize * dataId;
             for (int featureId = 0; featureId < featureSize; featureId++)
             {
@@ -313,15 +324,17 @@ namespace MagicDIP
                 ScaleToPatchCoord(mFeaturePosPairs.at(featureId * 2), imgRowX, imgColX);
                 imgRowX += patchCenRow;
                 imgColX += patchCenCol;
-                imgRowX = imgRowX < 0 ? 0 : (imgRowX > img.rows - 1 ? img.rows - 1 : imgRowX);
-                imgColX = imgColX < 0 ? 0 : (imgColX > img.cols - 1 ? img.cols - 1 : imgColX);
+                imgRowX = imgRowX < 0 ? 0 : (imgRowX > imgH - 1 ? imgH - 1 : imgRowX);
+                imgColX = imgColX < 0 ? 0 : (imgColX > imgW - 1 ? imgW - 1 : imgColX);
                 int imgRowY, imgColY;
                 ScaleToPatchCoord(mFeaturePosPairs.at(featureId * 2 + 1), imgRowY, imgColY);
                 imgRowY += patchCenRow;
                 imgColY += patchCenCol;
-                imgRowY = imgRowY < 0 ? 0 : (imgRowY > img.rows - 1 ? img.rows - 1 : imgRowY);
-                imgColY = imgColY < 0 ? 0 : (imgColY > img.cols - 1 ? img.cols - 1 : imgColY);
-                if (img.ptr(imgRowX, imgColX)[0] > img.ptr(imgRowY, imgColY)[0])
+                imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
+                imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
+                //if (img.ptr(imgRowX, imgColX)[0] > img.ptr(imgRowY, imgColY)[0])
+                if (mImageLoader.GetGrayImageValue(dataId, imgRowX, imgColX) > 
+                    mImageLoader.GetGrayImageValue(dataId, imgRowY, imgColY))
                 {
                     features.at(featureBase + featureId) = 1;
                 }
@@ -330,7 +343,7 @@ namespace MagicDIP
                     features.at(featureBase + featureId) = 0;
                 }
             }
-            img.release();
+            //img.release();
         }
     }
 
@@ -346,6 +359,45 @@ namespace MagicDIP
         {
             mValidFeaturePosPairs.push_back( mFeaturePosPairs.at(*itr * 2) );
             mValidFeaturePosPairs.push_back( mFeaturePosPairs.at(*itr * 2 + 1) );
+        }
+    }
+
+    void SimpleCascadedPoseRegression::ValidFeatureGenerationByImageLoader(int imgId, const std::vector<double>& theta, int fernId, 
+        std::vector<bool>& features) const
+    {
+        features.clear();
+        features.resize(mValidFeatureSize);
+        int baseIndex = fernId * 2 * mValidFeatureSize;
+        int imgH = mImageLoader.GetImageHeight(imgId);
+        int imgW = mImageLoader.GetImageWidth(imgId);
+        for (int featureId = 0; featureId < mValidFeatureSize; featureId++)
+        {
+            //DebugLog << "    " << featureId << " ";
+            int imgRowX, imgColX;
+            ScaleToPatchCoord(mValidFeaturePosPairs.at(baseIndex + 2 * featureId), imgRowX, imgColX);
+            imgRowX += theta.at(0);
+            imgColX += theta.at(1);
+            imgRowX = imgRowX < 0 ? 0 : (imgRowX > imgH - 1 ? imgH - 1 : imgRowX);
+            imgColX = imgColX < 0 ? 0 : (imgColX > imgW - 1 ? imgW - 1 : imgColX);
+            int imgRowY, imgColY;
+            ScaleToPatchCoord(mValidFeaturePosPairs.at(baseIndex + 2 * featureId + 1), imgRowY, imgColY);
+            imgRowY += theta.at(0);
+            imgColY += theta.at(1);
+            imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
+            imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
+            //DebugLog << "imgWidth: " << img.cols << " imgHeight: " << img.rows << " " << imgColX << " " << imgRowX << " " 
+            //    << imgColY << " " << imgRowY;
+            //if (img.ptr(imgRowX, imgColX)[0] > img.ptr(imgRowY, imgColY)[0])
+            if (mImageLoader.GetGrayImageValue(imgId, imgRowX, imgColX) > 
+                mImageLoader.GetGrayImageValue(imgId, imgRowY, imgColY))
+            {
+                features.at(featureId) = 1;
+            }
+            else
+            {
+                features.at(featureId) = 0;
+            }
+            //DebugLog << " done" << std::endl;
         }
     }
      

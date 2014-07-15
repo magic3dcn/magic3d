@@ -468,6 +468,12 @@
     <ClInclude Include="..\Src\AppModules\FaceFeatureDetection.h">
       <Filter>AppModules</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\ExplicitShapeRegression.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\DIP\ImageLoader.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -787,6 +793,12 @@
     </ClCompile>
     <ClCompile Include="..\Src\AppModules\FaceFeatureDetection.cpp">
       <Filter>AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\ExplicitShapeRegression.cpp">
+      <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\ImageLoader.cpp">
+      <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

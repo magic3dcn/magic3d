@@ -185,7 +185,9 @@
     <ClInclude Include="..\Src\DIP\CascadedPoseRegression.h" />
     <ClInclude Include="..\Src\DIP\Classification.h" />
     <ClInclude Include="..\Src\DIP\Deformation.h" />
+    <ClInclude Include="..\Src\DIP\ExplicitShapeRegression.h" />
     <ClInclude Include="..\Src\DIP\FeatureDetection.h" />
+    <ClInclude Include="..\Src\DIP\ImageLoader.h" />
     <ClInclude Include="..\Src\DIP\Retargetting.h" />
     <ClInclude Include="..\Src\DIP\Saliency.h" />
     <ClInclude Include="..\Src\DIP\Segmentation.h" />
@@ -376,7 +378,9 @@
     <ClCompile Include="..\Src\DIP\CascadedPoseRegression.cpp" />
     <ClCompile Include="..\Src\DIP\Classification.cpp" />
     <ClCompile Include="..\Src\DIP\Deformation.cpp" />
+    <ClCompile Include="..\Src\DIP\ExplicitShapeRegression.cpp" />
     <ClCompile Include="..\Src\DIP\FeatureDetection.cpp" />
+    <ClCompile Include="..\Src\DIP\ImageLoader.cpp" />
     <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
     <ClCompile Include="..\Src\DIP\Saliency.cpp" />
     <ClCompile Include="..\Src\DIP\Segmentation.cpp" />

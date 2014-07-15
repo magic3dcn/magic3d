@@ -58,6 +58,19 @@ namespace MagicApp
             int wPos = arg.state.X.abs - 110;
             SynthesizeData(wPos, hPos);
         }
+        else if (mMouseMode == MM_Test_KeyPoint)
+        {
+            int hPos = arg.state.Y.abs - 10;
+            int wPos = arg.state.X.abs - 110;
+            std::vector<double> initPos(2);
+            initPos.at(0) = hPos;
+            initPos.at(1) = wPos;
+            cv::Mat img = mpF2DObj->GetFaceImage();
+            std::vector<double> finalPos;
+            mpFfd->PoseRegression(img, initPos, finalPos);
+            UpdateDisplayImage(&initPos, &finalPos);
+            //UpdateDisplayImage(&initPos, NULL);
+        }
 
         return true;
     }
@@ -79,6 +92,10 @@ namespace MagicApp
         else if (arg.key == OIS::KC_L)
         {
             LoadCascadedRegression();
+        }
+        else if (arg.key == OIS::KC_T)
+        {
+            TestKeyPoint();
         }
 
         return true;
@@ -231,6 +248,18 @@ namespace MagicApp
             }
         }
         layoutFout.close();
+    }
+
+    void FaceFeatureRecognitionApp::TestKeyPoint(void)
+    {
+        if (mMouseMode != MM_Test_KeyPoint)
+        {
+            mMouseMode = MM_Test_KeyPoint;
+        }
+        else
+        {
+            mMouseMode = MM_View;
+        }
     }
 
     void FaceFeatureRecognitionApp::UpdateDisplayImage(const std::vector<double>* dpsList, const std::vector<double>* fpsList)

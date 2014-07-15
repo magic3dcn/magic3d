@@ -13,7 +13,8 @@ namespace MagicApp
         enum MouseMode
         {
             MM_View,
-            MM_Mark_KeyPoint
+            MM_Mark_KeyPoint,
+            MM_Test_KeyPoint
         };
 
         FaceFeatureRecognitionApp();
@@ -36,6 +37,7 @@ namespace MagicApp
         void OpenTestImage(void);
         void MarkKeyPoint(void);
         void SynthesizeData(int keyX, int keyY);
+        void TestKeyPoint(void);
 
 
     private:
