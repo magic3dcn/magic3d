@@ -2,6 +2,8 @@
 #include "../DIP/CascadedPoseRegression.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
+#include <stdio.h>
+#include <time.h>
 #include <fstream>
 
 namespace MagicApp
@@ -36,18 +38,22 @@ namespace MagicApp
         std::ifstream fin(landFile);
         int dataSize;
         fin >> dataSize;
-        //dataSize = 100;
+        dataSize = 5448;
         std::vector<std::string> imgFiles(dataSize);
+        int dataPerImgCount = 16;
         std::vector<double> targetTheta;
-        targetTheta.reserve(dataSize * 2);
-        int imgH;
-        double avgThetaX = 0;
-        double avgThetaY = 0;
-        //std::string testImgName = "D:\\fun\\magic3d\\data\\face\\FaceWarehouse\\Tester_133\\TrainingPose\\pose_10.jpg";
-        int wStart = 150;
+        targetTheta.reserve(dataSize * 2 * dataPerImgCount);
+        std::vector<double> initialTheta;
+        initialTheta.reserve(dataSize * 2 * dataPerImgCount);
+        int imgH, imgW;
+        //double avgThetaX = 0;
+        //double avgThetaY = 0;
+        /*int wStart = 150;
         int hStart = 100;
         int wSize = 320;
-        int hSize = 300;
+        int hSize = 300;*/
+        srand(time(NULL));
+        int randomSize = 50;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
             std::string featureName;
@@ -85,6 +91,7 @@ namespace MagicApp
             {
                 cv::Mat img = cv::imread(grayImgName);
                 imgH = img.rows;
+                imgW = img.cols;
                 img.release();
             }
             std::ifstream landFin(featureName);
@@ -107,11 +114,31 @@ namespace MagicApp
             double thetaX, thetaY;
             landFin >> thetaX >> thetaY;
             thetaY = imgH - thetaY;
-            targetTheta.push_back(thetaY);
-            targetTheta.push_back(thetaX);
-            avgThetaX += thetaX;
-            avgThetaY += thetaY;
             landFin.close();
+            //generate initial data
+            int initialNum = 0;
+            while (initialNum < dataPerImgCount)
+            {
+                int xRand = rand() % (randomSize * 2) - randomSize;
+                int yRand = rand() % (randomSize * 2) - randomSize;
+                if (xRand == 0 && yRand == 0)
+                {
+                    continue;
+                }
+                double initialX = thetaX + xRand;
+                initialX = initialX < 0 ? 0 : (initialX > imgW - 1 ? imgW - 1 : initialX);
+                double initialY = thetaY + yRand;
+                initialY = initialY < 0 ? 0 : (initialY > imgH - 1 ? imgH - 1 : initialY);
+                initialTheta.push_back(initialY);
+                initialTheta.push_back(initialX);
+                targetTheta.push_back(thetaY);
+                targetTheta.push_back(thetaX);
+                initialNum++;
+            }
+            //
+            //avgThetaX += thetaX;
+            //avgThetaY += thetaY;
+            
             /*std::ofstream landFout(featureName);
             landFout << markSize << std::endl;
             for (int markId = 0; markId < markSize; markId++)
@@ -122,21 +149,22 @@ namespace MagicApp
         }
         fin.close();
         //DebugLog << "boundary: " << minX << " " << maxX << " " << minY << " " << maxY << std::endl;
-        avgThetaX /= dataSize;
-        avgThetaY /= dataSize;
-        DebugLog << "avg: " << avgThetaX << " " << avgThetaY << std::endl;
-        std::vector<double> initialTheta;
+        //avgThetaX /= dataSize;
+        //avgThetaY /= dataSize;
+        //DebugLog << "avg: " << avgThetaX << " " << avgThetaY << std::endl;
+        /*std::vector<double> initialTheta;
         initialTheta.reserve(dataSize * 2);
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
             initialTheta.push_back(avgThetaY);
             initialTheta.push_back(avgThetaX);
-        }
+        }*/
         if (mpRegression == NULL)
         {
             mpRegression = new MagicDIP::SimpleCascadedPoseRegression;
         }
-        return mpRegression->LearnRegression(imgFiles, initialTheta, targetTheta, 2, 1000, 5, 64);
+        DebugLog << "LearnRegression" << std::endl;
+        return mpRegression->LearnRegression(imgFiles, initialTheta, targetTheta, dataPerImgCount, 2, 15000, 5, 128);
     }
         
     int CascadedFaceFeatureDetection::PoseRegression(const cv::Mat& img, const std::vector<double>& initPos, std::vector<double>& finalPos) const

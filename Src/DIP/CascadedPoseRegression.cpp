@@ -3,7 +3,7 @@
 #include "ImageLoader.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
-//#include "../Common/ToolKit.h"
+#include "../Common/ToolKit.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -20,14 +20,14 @@ namespace MagicDIP
         Reset();
     }
 
-    int CascadedPoseRegression::LearnRegression(const std::vector<std::string>& imgFiles, const std::vector<double>& initTheta, 
-            const std::vector<double>& finalTheta, int thetaDim, int fernCount, int fernSize, int featureSize)
+    int CascadedPoseRegression::LearnRegression(const std::vector<std::string>& imgFiles, const std::vector<double>& initTheta,
+         const std::vector<double>& finalTheta, int dataPerImgCount, int thetaDim, int fernCount, int fernSize, int featureSize)
     {
         if (thetaDim < 1 || imgFiles.size() == 0)
         {
             return MAGIC_INVALID_INPUT;
         }
-        if (imgFiles.size() != finalTheta.size() / thetaDim)
+        if (imgFiles.size() * dataPerImgCount != finalTheta.size() / thetaDim)
         {
             return MAGIC_INVALID_INPUT;
         }
@@ -57,12 +57,12 @@ namespace MagicDIP
         std::vector<double> deltaTheta(curTheta.size());
         for (int fernId = 0; fernId < fernCount; fernId++)
         {
-            //double timeStart = MagicCore::ToolKit::GetTime();
+            double timeStart = MagicCore::ToolKit::GetTime();
             DebugLog << "fernId: " << fernId << std::endl; 
             //Calculate deltaTheta
             for (int dataId = 0; dataId < dataCount; dataId++)
             {
-                if (dataId % 500 != 0)
+                if (dataId % 5000 != 0)
                 {
                     continue;
                 }
@@ -77,8 +77,12 @@ namespace MagicDIP
             }
             avgDelta /= curTheta.size();
             DebugLog << "  AvgDelta: " << avgDelta << std::endl;
+            /*if (avgDelta < 0.1)
+            {
+                break;
+            }*/
             //Generate Feature Ids and dataX
-            FeaturePatternGeneration(curTheta, deltaTheta, dataCount, featureSize, dataX);
+            FeaturePatternGeneration(curTheta, deltaTheta, dataPerImgCount, dataCount, featureSize, dataX);
             DebugLog << "  FeaturePatternGeneration done" << std::endl;
             //Learn random fern
             MagicML::RandomFern* pFern = new MagicML::RandomFern;
@@ -108,7 +112,8 @@ namespace MagicDIP
                 }
                 std::vector<bool> features;
                 //ValidFeatureGeneration(img, theta, fernId, features);
-                ValidFeatureGenerationByImageLoader(dataId, theta, fernId, features);
+                int imgId = dataId / dataPerImgCount;
+                ValidFeatureGenerationByImageLoader(imgId, theta, fernId, features);
                 //DebugLog << "    ValidFeatureGeneration" << std::endl;
                 //img.release();
                 //DebugLog << "    img release" << std::endl;
@@ -122,7 +127,7 @@ namespace MagicDIP
                     curTheta.at(baseIndex + thetaId) += deltaTheta.at(thetaId);
                 }
             }
-            //DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
 
         //free mImageList
@@ -290,8 +295,20 @@ namespace MagicDIP
     }
 
     void SimpleCascadedPoseRegression::FeaturePatternGeneration(const std::vector<double>& theta, 
-        const std::vector<double>& dataY, int dataCount, int featureSize, std::vector<bool>& features)
+        const std::vector<double>& dataY, int dataPerImgCount, int dataCount, int featureSize, std::vector<bool>& features)
     {
+        //select feature with max correlation
+        //mFeaturePosPairs.clear();
+        //mFeaturePosPairs.reserve(featureSize * 2);
+        //for (int featureId = 0; featureId < featureSize; featureId++)
+        //{
+        //    //generate a random direction for projection
+
+        //    //calculate correlation for every pair
+
+        //    //chose the max correlation value pair
+        //}
+
         //Random feature postions
         srand(time(NULL));
         int maxIndex = mImgPatchSize * mImgPatchSize;
@@ -313,8 +330,9 @@ namespace MagicDIP
         for (int dataId = 0; dataId < dataCount; dataId++)
         {
             //cv::Mat img = cv::imread(imgFiles.at(dataId));
-            int imgH = mImageLoader.GetImageHeight(dataId);
-            int imgW = mImageLoader.GetImageWidth(dataId);
+            int imgId = dataId / dataPerImgCount;
+            int imgH = mImageLoader.GetImageHeight(imgId);
+            int imgW = mImageLoader.GetImageWidth(imgId);
             int featureBase = featureSize * dataId;
             for (int featureId = 0; featureId < featureSize; featureId++)
             {
@@ -333,8 +351,8 @@ namespace MagicDIP
                 imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
                 imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
                 //if (img.ptr(imgRowX, imgColX)[0] > img.ptr(imgRowY, imgColY)[0])
-                if (mImageLoader.GetGrayImageValue(dataId, imgRowX, imgColX) > 
-                    mImageLoader.GetGrayImageValue(dataId, imgRowY, imgColY))
+                if (mImageLoader.GetGrayImageValue(imgId, imgRowX, imgColX) > 
+                    mImageLoader.GetGrayImageValue(imgId, imgRowY, imgColY))
                 {
                     features.at(featureBase + featureId) = 1;
                 }
