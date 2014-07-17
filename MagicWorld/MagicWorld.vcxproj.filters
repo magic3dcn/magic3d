@@ -474,6 +474,9 @@
     <ClInclude Include="..\Src\DIP\ImageLoader.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Math\CorrelationAnalysis.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -799,6 +802,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\DIP\ImageLoader.cpp">
       <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Math\CorrelationAnalysis.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
