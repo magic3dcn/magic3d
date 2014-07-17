@@ -11,10 +11,11 @@ namespace MagicDIP
         ExplicitShapeRegression();
         ~ExplicitShapeRegression();
 
-        int LearnRegression();
+        int LearnRegression(const std::vector<std::string>& imgFiles, const std::vector<double>& initTheta, 
+            const std::vector<double>& finalTheta, int keyPointCount, int outerCount, int innerCount, int fernSize, int featureSize);
         int ShapeRegression(const cv::Mat& img, const std::vector<double>& initTheta, std::vector<double>&finalTheta) const;
-        virtual void Save(const std::string& fileName) const = 0;
-        virtual void Load(const std::string& fileName) = 0;
+        void Save(const std::string& fileName) const;
+        void Load(const std::string& fileName);
 
     private:
 

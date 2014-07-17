@@ -82,6 +82,7 @@ namespace MagicMath
                 double dTemp = dataX.at(baseIndex + dataId) - exception;
                 variance += dTemp * dTemp;
             }
+            variance /= dataCount;
             mVariancesX.push_back(variance);
         }
     }
@@ -100,6 +101,7 @@ namespace MagicMath
             double dTemp = *itr - mExceptionY;
             mVarianceY += dTemp * dTemp;
         }
+        mVarianceY /= dataY.size();
     }
         
     void CorrelationAnalysis::UpdateStatisticXY(const std::vector<double>& dataX, const std::vector<double>& dataY)
@@ -125,6 +127,7 @@ namespace MagicMath
                 double dTemp = dataX.at(baseIndex + dataId) * dataY.at(dataId) - exception;
                 variance += dTemp * dTemp;
             }
+            variance /= dataCount;
             mVariancesXY.push_back(variance);
         }
     }

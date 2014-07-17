@@ -61,7 +61,7 @@ namespace MagicDIP
             double timeStart = MagicCore::ToolKit::GetTime();
             DebugLog << "fernId: " << fernId << std::endl; 
             //Calculate deltaTheta
-            for (int dataId = 0; dataId < dataCount; dataId++)
+            /*for (int dataId = 0; dataId < dataCount; dataId++)
             {
                 if (dataId % 5000 != 0)
                 {
@@ -69,7 +69,7 @@ namespace MagicDIP
                 }
                 DebugLog << "  Cur" << dataId << ": " << curTheta.at(dataId * 2) << " " << curTheta.at(dataId * 2 + 1) << std::endl;
                 DebugLog << "  Tar" << dataId << ": " << finalTheta.at(dataId * 2) << " " << finalTheta.at(dataId * 2 + 1) << std::endl;  
-            }
+            }*/
             double avgDelta = 0;
             for (int thetaId = 0; thetaId < curTheta.size(); thetaId++)
             {
@@ -299,16 +299,22 @@ namespace MagicDIP
         const std::vector<double>& dataY, int dataPerImgCount, int dataCount, int featureSize, std::vector<bool>& features)
     {
         //Chose pixel
-        int pairCount = mImgPatchSize * (mImgPatchSize - 1) / 2;
+        int maxIndex = mImgPatchSize * mImgPatchSize;
+        int pairCount = featureSize * 10;
         std::vector<int> posPairCands;
         posPairCands.reserve(pairCount * 2);
-        for (int xid = 0; xid < mImgPatchSize; xid++)
+        int pairNum = 0;
+        while (pairNum < pairCount)
         {
-            for (int yid = xid + 1; yid < mImgPatchSize; yid++)
+            int indexX = rand() % maxIndex;
+            int indexY = rand() % maxIndex;
+            while (indexX == indexY)
             {
-                posPairCands.push_back(xid);
-                posPairCands.push_back(yid);
+                indexY = rand() % maxIndex;
             }
+            posPairCands.push_back(indexX);
+            posPairCands.push_back(indexY);
+            pairNum++;
         }
 
         int imgCount = dataCount / dataPerImgCount;
@@ -317,26 +323,31 @@ namespace MagicDIP
         caDataX.reserve(imgCount * pairCount);
         for (int pairId = 0; pairId < pairCount; pairId++)
         {
+            int localImgRowX, localImgColX;
+            ScaleToPatchCoord(posPairCands.at(pairId * 2), localImgRowX, localImgColX);
+            int localImgRowY, localImgColY;
+            ScaleToPatchCoord(posPairCands.at(pairId * 2 + 1), localImgRowY, localImgColY);
             //for (int dataId = 0; dataId < dataCount; dataId++)
+            int imgRowX, imgColX, imgRowY, imgColY;
             for (int imgId = 0; imgId < imgCount; imgId++)
             {
                 int dataId = imgId * dataPerImgCount;
+                //int imgId = dataId / dataPerImgCount;
                 int imgH = mImageLoader.GetImageHeight(imgId);
                 int imgW = mImageLoader.GetImageWidth(imgId);
                 int patchCenRow = theta.at(dataId * 2);
                 int patchCenCol = theta.at(dataId * 2 + 1);
-                int imgRowX, imgColX;
-                ScaleToPatchCoord(posPairCands.at(pairId * 2), imgRowX, imgColX);
-                imgRowX += patchCenRow;
-                imgColX += patchCenCol;
+
+                imgRowX = patchCenRow + localImgRowX;
+                imgColX = patchCenCol + localImgColX;
                 imgRowX = imgRowX < 0 ? 0 : (imgRowX > imgH - 1 ? imgH - 1 : imgRowX);
                 imgColX = imgColX < 0 ? 0 : (imgColX > imgW - 1 ? imgW - 1 : imgColX);
-                int imgRowY, imgColY;
-                ScaleToPatchCoord(posPairCands.at(pairId * 2 + 1), imgRowY, imgColY);
-                imgRowY += patchCenRow;
-                imgColY += patchCenCol;
+
+                imgRowY = patchCenRow + localImgRowY;
+                imgColY = patchCenCol + localImgColY;
                 imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
                 imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
+
                 caDataX.push_back( mImageLoader.GetGrayImageValue(imgId, imgRowX, imgColX) - 
                                  mImageLoader.GetGrayImageValue(imgId, imgRowY, imgColY) );
             }
@@ -389,6 +400,7 @@ namespace MagicDIP
                 selectedFeatures.insert(maxIndex);
                 if (selectedFeatures.size() > selectedNum)
                 {
+                    DebugLog << "   Correlation: " << maxCor << " id: " << maxIndex << " dir: " << dirX << " " << dirY << std::endl;
                     selectedNum++;
                     break;
                 }
@@ -432,10 +444,10 @@ namespace MagicDIP
             int imgH = mImageLoader.GetImageHeight(imgId);
             int imgW = mImageLoader.GetImageWidth(imgId);
             int featureBase = featureSize * dataId;
+            int patchCenRow = theta.at(dataId * 2);
+            int patchCenCol = theta.at(dataId * 2 + 1);
             for (int featureId = 0; featureId < featureSize; featureId++)
-            {
-                int patchCenRow = theta.at(dataId * 2);
-                int patchCenCol = theta.at(dataId * 2 + 1);
+            {    
                 int imgRowX, imgColX;
                 ScaleToPatchCoord(mFeaturePosPairs.at(featureId * 2), imgRowX, imgColX);
                 imgRowX += patchCenRow;
