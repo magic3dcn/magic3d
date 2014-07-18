@@ -1,5 +1,6 @@
 #include "FaceFeatureDetection.h"
 #include "../DIP/CascadedPoseRegression.h"
+#include "../DIP/ExplicitShapeRegression.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
 #include <stdio.h>
@@ -189,4 +190,205 @@ namespace MagicApp
         }
         mpRegression->Load(fileName);
     }
+
+    ShapeFaceFeatureDetection::ShapeFaceFeatureDetection() :
+        mpRegression(NULL),
+        mMeanFace()
+    {
+    }
+
+    ShapeFaceFeatureDetection::~ShapeFaceFeatureDetection()
+    {
+        if (mpRegression != NULL)
+        {
+            delete mpRegression;
+            mpRegression = NULL;
+        }
+    }
+
+    int ShapeFaceFeatureDetection::LearnRegression(const std::string& landFile)
+    {
+        CalMeanFace(landFile);
+        std::string landPath = landFile;
+        std::string::size_type pos = landPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = landPath.rfind("\\");
+            if (pos == std::string::npos)
+            {
+                return MAGIC_INVALID_INPUT;
+            }
+        }
+        landPath.erase(pos);
+
+        int dataPerImgCount = 1;
+        std::vector<double> initTheta;
+        std::vector<double> finalTheta;
+        std::ifstream fin(landFile);
+        int dataSize;
+        fin >> dataSize;
+        std::vector<std::string> imgFiles(dataSize);
+        int imgH;
+        int keyPointCount;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            std::string featureName;
+            fin >> featureName;
+            featureName = landPath + featureName;
+            std::string imgName = featureName;
+            std::string::size_type pos = imgName.rfind(".");
+            imgName.replace(pos, 5, ".jpg");
+            std::string grayImgName = imgName;
+            pos = grayImgName.rfind(".");
+            grayImgName.replace(pos, 4, "_gray.jpg");
+            imgFiles.at(dataId) = grayImgName;
+            if (dataId == 0)
+            {   
+                cv::Mat img = cv::imread(grayImgName);
+                imgH = img.rows;
+                img.release();
+            }
+            std::ifstream landFin(featureName);
+            int markCount;
+            landFin >> markCount;
+            if (dataId == 0)
+            {
+                keyPointCount = markCount;
+                initTheta.reserve(2 * markCount * dataSize * dataPerImgCount);
+                finalTheta.reserve(2 * markCount * dataSize);
+            }
+            double cenRow = 0;
+            double cenCol = 0;
+            for (int markId = 0; markId < markCount; markId++)
+            {
+                double r, w;
+                landFin >> w >> r;
+                r = imgH - r;
+                finalTheta.push_back(r);
+                finalTheta.push_back(w);
+                cenRow += r;
+                cenCol += w;
+            }
+            landFin.close();
+            cenRow /= markCount;
+            cenCol /= markCount;
+            for (int markId = 0; markId < markCount; markId++)
+            {
+                initTheta.push_back( mMeanFace.at(markId * 2) + cenRow );
+                initTheta.push_back( mMeanFace.at(markId * 2 + 1) + cenCol );
+            }
+        }
+        fin.close();
+        if (mpRegression == NULL)
+        {
+            mpRegression = new MagicDIP::ExplicitShapeRegression;
+        }
+        DebugLog << "Load Image File Names" << std::endl;
+        return mpRegression->LearnRegression(imgFiles, initTheta, finalTheta, keyPointCount, 10, 500, 5, 2);
+    }
+    
+    int ShapeFaceFeatureDetection::ShapeRegression(const cv::Mat& img, const std::vector<double>& initPos, std::vector<double>& finalPos) const
+    {
+        if (mpRegression == NULL)
+        {
+            return MAGIC_NON_INITIAL;
+        }
+        return mpRegression->ShapeRegression(img, initPos, finalPos);
+    }
+
+    void ShapeFaceFeatureDetection::Save(const std::string& fileName) const
+    {
+        mpRegression->Save(fileName);
+    }
+
+    void ShapeFaceFeatureDetection::Load(const std::string& fileName)
+    {
+        if (mpRegression == NULL)
+        {
+            mpRegression = new MagicDIP::ExplicitShapeRegression;
+        }
+        mpRegression->Load(fileName);
+    }
+
+    std::vector<double> ShapeFaceFeatureDetection::GetMeanFace(void) const
+    {
+        return mMeanFace;
+    }
+
+    int ShapeFaceFeatureDetection::CalMeanFace(const std::string& landFile)
+    {
+        std::string landPath = landFile;
+        std::string::size_type pos = landPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = landPath.rfind("\\");
+            if (pos == std::string::npos)
+            {
+                return MAGIC_INVALID_INPUT;
+            }
+        }
+        landPath.erase(pos);
+        std::ifstream fin(landFile);
+        int dataSize;
+        fin >> dataSize;
+        mMeanFace.clear();
+        int imgH;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            std::string featureName;
+            fin >> featureName;
+            featureName = landPath + featureName;
+            if (dataId == 0)
+            {
+                std::string imgName = featureName;
+                std::string::size_type pos = imgName.rfind(".");
+                imgName.replace(pos, 5, ".jpg");
+                std::string grayImgName = imgName;
+                pos = grayImgName.rfind(".");
+                grayImgName.replace(pos, 4, "_gray.jpg");
+                cv::Mat img = cv::imread(grayImgName);
+                imgH = img.rows;
+                img.release();
+            }
+            std::ifstream landFin(featureName);
+            int markCount;
+            landFin >> markCount;
+            if (dataId == 0)
+            {
+                mMeanFace = std::vector<double>(markCount * 2, 0.0);
+            }
+            for (int markId = 0; markId < markCount; markId++)
+            {
+                double r, w;
+                landFin >> w >> r;
+                r = imgH - r;
+                mMeanFace.at(markId * 2) += r;
+                mMeanFace.at(markId * 2 + 1) += w;
+            }
+            landFin.close();
+        }
+        for (std::vector<double>::iterator itr = mMeanFace.begin(); itr != mMeanFace.end(); itr++)
+        {
+            (*itr) /= dataSize;
+        }
+        fin.close();
+        //Move to (0, 0)
+        double cenR = 0;
+        double cenW = 0;
+        int markCount = mMeanFace.size() / 2;
+        for (int markId = 0; markId < markCount; markId++)
+        {
+            cenR += mMeanFace.at(markId * 2);
+            cenW += mMeanFace.at(markId * 2 + 1);
+        }
+        cenR /= markCount;
+        cenW /= markCount;
+        for (int markId = 0; markId < markCount; markId++)
+        {
+            mMeanFace.at(markId * 2) -= cenR;
+            mMeanFace.at(markId * 2 + 1) -= cenW;
+        }
+        return MAGIC_NO_ERROR;
+    }
+
 }

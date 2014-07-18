@@ -7,6 +7,7 @@ namespace MagicApp
 {
     class Face2DObj;
     class CascadedFaceFeatureDetection;
+    class ShapeFaceFeatureDetection;
     class FaceFeatureRecognitionApp : public MagicCore::AppBase
     {
     public:
@@ -14,7 +15,8 @@ namespace MagicApp
         {
             MM_View,
             MM_Mark_KeyPoint,
-            MM_Test_KeyPoint
+            MM_Test_KeyPoint,
+            MM_Test_Shape
         };
 
         FaceFeatureRecognitionApp();
@@ -33,11 +35,15 @@ namespace MagicApp
         void LearnCascadedRegression(void);
         void SaveCascadedRegression(void);
         void LoadCascadedRegression(void);
+
+        void ShapeRegression(void);
+        void LoadShapeRegression(void);
         
         void OpenTestImage(void);
         void MarkKeyPoint(void);
         void SynthesizeData(int keyX, int keyY);
         void TestKeyPoint(void);
+        void TestShape(void);
 
 
     private:
@@ -52,6 +58,7 @@ namespace MagicApp
         MouseMode mMouseMode;
         Face2DObj* mpF2DObj;
         CascadedFaceFeatureDetection* mpFfd;
+        ShapeFaceFeatureDetection* mpShapeRegression;
     };
 
 }

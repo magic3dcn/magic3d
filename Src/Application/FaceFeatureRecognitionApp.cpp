@@ -10,7 +10,8 @@ namespace MagicApp
     FaceFeatureRecognitionApp::FaceFeatureRecognitionApp() :
         mMouseMode(MM_View),
         mpF2DObj(NULL),
-        mpFfd(NULL)
+        mpFfd(NULL),
+        mpShapeRegression(NULL)
     {
     }
 
@@ -71,6 +72,22 @@ namespace MagicApp
             UpdateDisplayImage(&initPos, &finalPos);
             //UpdateDisplayImage(&initPos, NULL);
         }
+        else if (mMouseMode == MM_Test_Shape)
+        {
+            int hPos = arg.state.Y.abs - 10;
+            int wPos = arg.state.X.abs - 110;
+            cv::Mat img = mpF2DObj->GetFaceImage();
+            std::vector<double> meanFace = mpShapeRegression->GetMeanFace();
+            int markSize = meanFace.size() / 2;
+            for (int markId = 0; markId < markSize; markId++)
+            {
+                meanFace.at(markId * 2) += hPos;
+                meanFace.at(markId * 2 + 1) += wPos;
+            }
+            std::vector<double> finalFace;
+            mpShapeRegression->ShapeRegression(img, meanFace, finalFace);
+            UpdateDisplayImage(&meanFace, &finalFace);
+        }
 
         return true;
     }
@@ -95,7 +112,8 @@ namespace MagicApp
         }
         else if (arg.key == OIS::KC_T)
         {
-            TestKeyPoint();
+            //TestKeyPoint();
+            TestShape();
         }
 
         return true;
@@ -118,6 +136,11 @@ namespace MagicApp
             MOMGR->InsertObj("CascadedFaceFeatureDetection", new CascadedFaceFeatureDetection);
         }
         mpFfd = dynamic_cast<CascadedFaceFeatureDetection*>(MOMGR->GetObj("CascadedFaceFeatureDetection"));
+        if (!(MOMGR->IsObjExist("ShapeRegression")))
+        {
+            MOMGR->InsertObj("ShapeRegression", new ShapeFaceFeatureDetection);
+        }
+        mpShapeRegression = dynamic_cast<ShapeFaceFeatureDetection*>(MOMGR->GetObj("ShapeRegression"));
     }
 
     void FaceFeatureRecognitionApp::ShutdownScene(void)
@@ -169,6 +192,27 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpFfd->Load(fileName);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::ShapeRegression(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpShapeRegression->LearnRegression(fileName);
+            mpShapeRegression->Save("./Regression.shape");
+        }
+    }
+
+    void FaceFeatureRecognitionApp::LoadShapeRegression(void)
+    {
+        std::string fileName;
+        char filterName[] = "Shape Files(*.shape)\0*.shape\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpShapeRegression->Load(fileName);
         }
     }
 
@@ -255,6 +299,24 @@ namespace MagicApp
         if (mMouseMode != MM_Test_KeyPoint)
         {
             mMouseMode = MM_Test_KeyPoint;
+        }
+        else
+        {
+            mMouseMode = MM_View;
+        }
+    }
+
+    void FaceFeatureRecognitionApp::TestShape(void)
+    {
+        if (mMouseMode != MM_Test_Shape)
+        {
+            mMouseMode = MM_Test_Shape;
+            std::string fileName;
+            char filterName[] = "Land Files(*.txt)\0*.txt\0";
+            if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+            {
+                mpShapeRegression->CalMeanFace(fileName);
+            }
         }
         else
         {

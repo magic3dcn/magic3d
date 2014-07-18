@@ -119,13 +119,13 @@ namespace MagicDIP
                 //img.release();
                 //DebugLog << "    img release" << std::endl;
                 //Predict delta theta
-                std::vector<double> deltaTheta = pFern->PredictWithValidFeature(features);
+                std::vector<double> predictDelta = pFern->PredictWithValidFeature(features);
                 //DebugLog << "    Fern Prediction " << deltaTheta.at(0) << " " << deltaTheta.at(1) << std::endl;
                 //Update curTheta
                 baseIndex = dataId * thetaDim;
                 for (int thetaId = 0; thetaId < thetaDim; thetaId++)
                 {
-                    curTheta.at(baseIndex + thetaId) += deltaTheta.at(thetaId);
+                    curTheta.at(baseIndex + thetaId) += predictDelta.at(thetaId);
                 }
             }
             DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
@@ -299,129 +299,129 @@ namespace MagicDIP
         const std::vector<double>& dataY, int dataPerImgCount, int dataCount, int featureSize, std::vector<bool>& features)
     {
         //Chose pixel
-        int maxIndex = mImgPatchSize * mImgPatchSize;
-        int pairCount = featureSize * 10;
-        std::vector<int> posPairCands;
-        posPairCands.reserve(pairCount * 2);
-        int pairNum = 0;
-        while (pairNum < pairCount)
-        {
-            int indexX = rand() % maxIndex;
-            int indexY = rand() % maxIndex;
-            while (indexX == indexY)
-            {
-                indexY = rand() % maxIndex;
-            }
-            posPairCands.push_back(indexX);
-            posPairCands.push_back(indexY);
-            pairNum++;
-        }
+        //int maxIndex = mImgPatchSize * mImgPatchSize;
+        //int pairCount = featureSize * 10;
+        //std::vector<int> posPairCands;
+        //posPairCands.reserve(pairCount * 2);
+        //int pairNum = 0;
+        //while (pairNum < pairCount)
+        //{
+        //    int indexX = rand() % maxIndex;
+        //    int indexY = rand() % maxIndex;
+        //    while (indexX == indexY)
+        //    {
+        //        indexY = rand() % maxIndex;
+        //    }
+        //    posPairCands.push_back(indexX);
+        //    posPairCands.push_back(indexY);
+        //    pairNum++;
+        //}
 
-        int imgCount = dataCount / dataPerImgCount;
-        std::vector<double> caDataX;
-        //caDataX.reserve(dataCount * pairCount);
-        caDataX.reserve(imgCount * pairCount);
-        for (int pairId = 0; pairId < pairCount; pairId++)
-        {
-            int localImgRowX, localImgColX;
-            ScaleToPatchCoord(posPairCands.at(pairId * 2), localImgRowX, localImgColX);
-            int localImgRowY, localImgColY;
-            ScaleToPatchCoord(posPairCands.at(pairId * 2 + 1), localImgRowY, localImgColY);
-            //for (int dataId = 0; dataId < dataCount; dataId++)
-            int imgRowX, imgColX, imgRowY, imgColY;
-            for (int imgId = 0; imgId < imgCount; imgId++)
-            {
-                int dataId = imgId * dataPerImgCount;
-                //int imgId = dataId / dataPerImgCount;
-                int imgH = mImageLoader.GetImageHeight(imgId);
-                int imgW = mImageLoader.GetImageWidth(imgId);
-                int patchCenRow = theta.at(dataId * 2);
-                int patchCenCol = theta.at(dataId * 2 + 1);
+        //int imgCount = dataCount / dataPerImgCount;
+        //std::vector<double> caDataX;
+        ////caDataX.reserve(dataCount * pairCount);
+        //caDataX.reserve(imgCount * pairCount);
+        //for (int pairId = 0; pairId < pairCount; pairId++)
+        //{
+        //    int localImgRowX, localImgColX;
+        //    ScaleToPatchCoord(posPairCands.at(pairId * 2), localImgRowX, localImgColX);
+        //    int localImgRowY, localImgColY;
+        //    ScaleToPatchCoord(posPairCands.at(pairId * 2 + 1), localImgRowY, localImgColY);
+        //    //for (int dataId = 0; dataId < dataCount; dataId++)
+        //    int imgRowX, imgColX, imgRowY, imgColY;
+        //    for (int imgId = 0; imgId < imgCount; imgId++)
+        //    {
+        //        int dataId = imgId * dataPerImgCount;
+        //        //int imgId = dataId / dataPerImgCount;
+        //        int imgH = mImageLoader.GetImageHeight(imgId);
+        //        int imgW = mImageLoader.GetImageWidth(imgId);
+        //        int patchCenRow = theta.at(dataId * 2);
+        //        int patchCenCol = theta.at(dataId * 2 + 1);
 
-                imgRowX = patchCenRow + localImgRowX;
-                imgColX = patchCenCol + localImgColX;
-                imgRowX = imgRowX < 0 ? 0 : (imgRowX > imgH - 1 ? imgH - 1 : imgRowX);
-                imgColX = imgColX < 0 ? 0 : (imgColX > imgW - 1 ? imgW - 1 : imgColX);
+        //        imgRowX = patchCenRow + localImgRowX;
+        //        imgColX = patchCenCol + localImgColX;
+        //        imgRowX = imgRowX < 0 ? 0 : (imgRowX > imgH - 1 ? imgH - 1 : imgRowX);
+        //        imgColX = imgColX < 0 ? 0 : (imgColX > imgW - 1 ? imgW - 1 : imgColX);
 
-                imgRowY = patchCenRow + localImgRowY;
-                imgColY = patchCenCol + localImgColY;
-                imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
-                imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
+        //        imgRowY = patchCenRow + localImgRowY;
+        //        imgColY = patchCenCol + localImgColY;
+        //        imgRowY = imgRowY < 0 ? 0 : (imgRowY > imgH - 1 ? imgH - 1 : imgRowY);
+        //        imgColY = imgColY < 0 ? 0 : (imgColY > imgW - 1 ? imgW - 1 : imgColY);
 
-                caDataX.push_back( mImageLoader.GetGrayImageValue(imgId, imgRowX, imgColX) - 
-                                 mImageLoader.GetGrayImageValue(imgId, imgRowY, imgColY) );
-            }
-        }
+        //        caDataX.push_back( mImageLoader.GetGrayImageValue(imgId, imgRowX, imgColX) - 
+        //                         mImageLoader.GetGrayImageValue(imgId, imgRowY, imgColY) );
+        //    }
+        //}
 
-        MagicMath::CorrelationAnalysis ca;
-        srand(time(NULL));
-        std::vector<double> caDataY(dataCount);
-        std::set<int> selectedFeatures;
-        int selectedNum = 0;
-        for (int featureId = 0; featureId < featureSize; featureId++)
-        {
-            //generate a random direction for projection
-            int randX = rand() % 200 - 100;
-            int randY = rand() % 200 - 100;
-            if (randX == 0 && randY == 0)
-            {
-                randX = 1;
-            }
-            double dirLen = sqrt(randX * randX + randY * randY);
-            double dirX = randX / dirLen;
-            double dirY = randY / dirLen;
-            for (int dataId = 0; dataId < dataCount; dataId++)
-            {
-                caDataY.at(dataId) = dataY.at(dataId * 2) * dirY + dataY.at(dataId * 2 + 1) * dirX;
-            }
-            //calculate correlation for every pair
-            if (featureId == 0)
-            {
-                ca.Analysis(pairCount, caDataX, caDataY);
-            }
-            else
-            {
-                ca.UpdateDataY(caDataX, caDataY);
-            }
-            //chose the max correlation value pair
-            std::vector<double> caValues = ca.GetCorrelations();
-            for (int pairId = 0; pairId < pairCount; pairId++)
-            {
-                double maxCor = caValues.at(0);
-                int maxIndex = 0;
-                for (int innerId = 0; innerId < pairCount; innerId++)
-                {
-                    if (caValues.at(innerId) > maxCor)
-                    {
-                        maxCor = caValues.at(innerId);
-                        maxIndex = innerId;
-                    }
-                }
-                selectedFeatures.insert(maxIndex);
-                if (selectedFeatures.size() > selectedNum)
-                {
-                    DebugLog << "   Correlation: " << maxCor << " id: " << maxIndex << " dir: " << dirX << " " << dirY << std::endl;
-                    selectedNum++;
-                    break;
-                }
-                else
-                {
-                    caValues.at(maxIndex) = -1;
-                }
-            }
-        }
+        //MagicMath::CorrelationAnalysis ca;
+        //srand(time(NULL));
+        //std::vector<double> caDataY(dataCount);
+        //std::set<int> selectedFeatures;
+        //int selectedNum = 0;
+        //for (int featureId = 0; featureId < featureSize; featureId++)
+        //{
+        //    //generate a random direction for projection
+        //    int randX = rand() % 200 - 100;
+        //    int randY = rand() % 200 - 100;
+        //    if (randX == 0 && randY == 0)
+        //    {
+        //        randX = 1;
+        //    }
+        //    double dirLen = sqrt(randX * randX + randY * randY);
+        //    double dirX = randX / dirLen;
+        //    double dirY = randY / dirLen;
+        //    for (int dataId = 0; dataId < dataCount; dataId++)
+        //    {
+        //        caDataY.at(dataId) = dataY.at(dataId * 2) * dirY + dataY.at(dataId * 2 + 1) * dirX;
+        //    }
+        //    //calculate correlation for every pair
+        //    if (featureId == 0)
+        //    {
+        //        ca.Analysis(pairCount, caDataX, caDataY);
+        //    }
+        //    else
+        //    {
+        //        ca.UpdateDataY(caDataX, caDataY);
+        //    }
+        //    //chose the max correlation value pair
+        //    std::vector<double> caValues = ca.GetCorrelations();
+        //    for (int pairId = 0; pairId < pairCount; pairId++)
+        //    {
+        //        double maxCor = caValues.at(0);
+        //        int maxIndex = 0;
+        //        for (int innerId = 0; innerId < pairCount; innerId++)
+        //        {
+        //            if (caValues.at(innerId) > maxCor)
+        //            {
+        //                maxCor = caValues.at(innerId);
+        //                maxIndex = innerId;
+        //            }
+        //        }
+        //        selectedFeatures.insert(maxIndex);
+        //        if (selectedFeatures.size() > selectedNum)
+        //        {
+        //            DebugLog << "   Correlation: " << maxCor << " id: " << maxIndex << " dir: " << dirX << " " << dirY << std::endl;
+        //            selectedNum++;
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            caValues.at(maxIndex) = -1;
+        //        }
+        //    }
+        //}
 
-        //select feature with max correlation
-        mFeaturePosPairs.clear();
-        mFeaturePosPairs.reserve(featureSize * 2);
-        for (std::set<int>::iterator itr = selectedFeatures.begin(); itr != selectedFeatures.end(); itr++)
-        {
-            mFeaturePosPairs.push_back( posPairCands.at((*itr) * 2) );
-            mFeaturePosPairs.push_back( posPairCands.at((*itr) * 2 + 1) );
-        }
+        ////select feature with max correlation
+        //mFeaturePosPairs.clear();
+        //mFeaturePosPairs.reserve(featureSize * 2);
+        //for (std::set<int>::iterator itr = selectedFeatures.begin(); itr != selectedFeatures.end(); itr++)
+        //{
+        //    mFeaturePosPairs.push_back( posPairCands.at((*itr) * 2) );
+        //    mFeaturePosPairs.push_back( posPairCands.at((*itr) * 2 + 1) );
+        //}
 
         //Random feature postions
-        /*srand(time(NULL));
+        srand(time(NULL));
         int maxIndex = mImgPatchSize * mImgPatchSize;
         mFeaturePosPairs.clear();
         mFeaturePosPairs.reserve(featureSize * 2);
@@ -435,7 +435,7 @@ namespace MagicDIP
             }
             mFeaturePosPairs.push_back(indexX);
             mFeaturePosPairs.push_back(indexY);
-        }*/
+        }
         
         //Calculate features
         for (int dataId = 0; dataId < dataCount; dataId++)

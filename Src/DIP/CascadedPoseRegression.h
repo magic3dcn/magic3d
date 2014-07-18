@@ -24,8 +24,8 @@ namespace MagicDIP
         virtual void Load(const std::string& fileName) = 0;
 
     protected:
-        virtual void FeaturePatternGeneration(const std::vector<double>& theta, 
-            const std::vector<double>& dataY, int dataPerImgCount, int dataCount, int featureSize, std::vector<bool>& features) = 0;
+        virtual void FeaturePatternGeneration(const std::vector<double>& theta, const std::vector<double>& dataY, 
+            int dataPerImgCount, int dataCount, int featureSize, std::vector<bool>& features) = 0;
         virtual void UpdateValidFeaturePosPair(const std::vector<int>& validFeatureIds) = 0;
         virtual void ValidFeatureGeneration(const cv::Mat& img, const std::vector<double>& theta, int fernId, std::vector<bool>& features) const = 0;
         virtual void ValidFeatureGenerationByImageLoader(int imgId, const std::vector<double>& theta, int fernId, std::vector<bool>& features) const = 0;

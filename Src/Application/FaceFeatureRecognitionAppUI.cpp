@@ -22,6 +22,7 @@ namespace MagicApp
         mRoot = MyGUI::LayoutManager::getInstance().loadLayout("FaceFeatureRecognitionApp.layout");
         mRoot.at(0)->findWidget("But_Open")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceFeatureRecognitionAppUI::OpenImage);
         mRoot.at(0)->findWidget("But_CascadedRegression")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceFeatureRecognitionAppUI::LearnCascadedRegression);
+        mRoot.at(0)->findWidget("But_ShapeRegression")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceFeatureRecognitionAppUI::ShapeRegression);
         mRoot.at(0)->findWidget("But_BackHome")->castType<MyGUI::Button>()->eventMouseButtonClick += MyGUI::newDelegate(this, &FaceFeatureRecognitionAppUI::BackHome);
     }
 
@@ -77,6 +78,15 @@ namespace MagicApp
         if (pFFR != NULL)
         {
             pFFR->LearnCascadedRegression();
+        }
+    }
+
+    void FaceFeatureRecognitionAppUI::ShapeRegression(MyGUI::Widget* pSender)
+    {
+        FaceFeatureRecognitionApp* pFFR = dynamic_cast<FaceFeatureRecognitionApp* >(MagicCore::AppManager::GetSingleton()->GetApp("FaceFeatureRecognitionApp"));
+        if (pFFR != NULL)
+        {
+            pFFR->ShapeRegression();
         }
     }
 

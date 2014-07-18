@@ -2,8 +2,9 @@
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Widget" skin="PanelEmpty" position="0 0 1024 768" layer="Back">
         <Widget type="Button" skin="But_Open" position="10 10 86 86" align="Left Top" name="But_Open"/>
-        <Widget type="Button" skin="But_Home" position="10 285 86 86" align="Left Top" name="But_BackHome"/>
+        <Widget type="Button" skin="But_Home" position="10 380 86 86" align="Left Top" name="But_BackHome"/>
         <Widget type="ImageBox" skin="ImageBox" position="110 10 640 480" align="Left Top" name="Image_Canvas"/>
         <Widget type="Button" skin="Button" position="10 105 86 86" align="Left Top" name="But_CascadedRegression"/>
+        <Widget type="Button" skin="Button" position="10 205 86 86" align="Left Top" name="But_ShapeRegression"/>
     </Widget>
 </MyGUI>
