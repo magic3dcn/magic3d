@@ -39,6 +39,7 @@ namespace MagicApp
         void Load(const std::string& fileName);
         std::vector<double> GetMeanFace(void) const;
         int CalMeanFace(const std::string& landFile);
+        bool IsMeanFaceExist(void) const;
 
     private:
         MagicDIP::ExplicitShapeRegression* mpRegression;

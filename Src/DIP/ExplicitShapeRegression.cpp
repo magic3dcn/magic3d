@@ -11,7 +11,7 @@ namespace MagicDIP
     ExplicitShapeRegression::ExplicitShapeRegression() :
         mInnerFernCount(0),
         mValidFeatureSize(0),
-        mImgPatchSize(31),
+        mImgPatchSize(11),
         mValidFeaturePosPairs(),
         mRandomFerns(),
         mImageLoader(),
@@ -37,14 +37,14 @@ namespace MagicDIP
     }
 
     int ExplicitShapeRegression::LearnRegression(const std::vector<std::string>& imgFiles, const std::vector<double>& initTheta, 
-            const std::vector<double>& finalTheta, int keyPointCount, int outerCount, int innerCount, int fernSize, int featureSizePerKey)
+            const std::vector<double>& finalTheta, int dataPerImgCount, int keyPointCount, int outerCount, int innerCount, 
+            int fernSize, int featureSizePerKey)
     {
         if (imgFiles.size() == 0 || initTheta.size() == 0 || finalTheta.size() == 0)
         {
             return MAGIC_INVALID_INPUT;
         }
-        int dataPerImgCount = initTheta.size() / finalTheta.size();
-        if (dataPerImgCount * finalTheta.size() != initTheta.size())
+        if (imgFiles.size() * dataPerImgCount != finalTheta.size() / (keyPointCount * 2))
         {
             return MAGIC_INVALID_INPUT;
         }
@@ -56,6 +56,7 @@ namespace MagicDIP
         mImageLoader.LoadImages(imgFiles, ImageLoader::IT_Gray);
         DebugLog << "done" << std::endl;
 
+        srand(time(NULL));
         int thetaDim = keyPointCount * 2;
         int fernCount = outerCount * innerCount;
         mRandomFerns.reserve(fernCount);
@@ -63,14 +64,16 @@ namespace MagicDIP
         std::vector<bool> dataX(featureSizePerKey * keyPointCount * dataCount);
         std::vector<double> theta(thetaDim); //one theta
         std::vector<double> curTheta = initTheta;
+        std::vector<double> interTheta;
         std::vector<double> deltaTheta(curTheta.size());
         for (int outerId = 0; outerId < outerCount; outerId++)
         {
-            for (int thetaId = 0; thetaId < curTheta.size(); thetaId++)
+            interTheta = curTheta;
+            for (int thetaId = 0; thetaId < interTheta.size(); thetaId++)
             {
-                deltaTheta.at(thetaId) = finalTheta.at(thetaId) - curTheta.at(thetaId);
+                deltaTheta.at(thetaId) = finalTheta.at(thetaId) - interTheta.at(thetaId);
             }
-            FeaturePatternGeneration(curTheta, deltaTheta, dataPerImgCount, dataCount, featureSizePerKey, keyPointCount, dataX);
+            FeaturePatternGeneration(interTheta, deltaTheta, dataPerImgCount, dataCount, featureSizePerKey, keyPointCount, dataX);
             int fernBaseId = outerId * mInnerFernCount;
             for (int innerId = 0; innerId < mInnerFernCount; innerId++)
             {
@@ -91,6 +94,12 @@ namespace MagicDIP
                 mRandomFerns.push_back(pFern);
                 //Update Valid Features
                 std::vector<int> validFeatureIds = pFern->GetFeatureIds();
+                /*DebugLog << "  ValidFeatureIds: ";
+                for (std::vector<int>::iterator itr = validFeatureIds.begin(); itr != validFeatureIds.end(); itr++)
+                {
+                    DebugLog << *itr << " ";
+                }
+                DebugLog << std::endl;*/
                 UpdateValidFeaturePosPair(validFeatureIds);
                 //Update curTheta
                 for (int dataId = 0; dataId < dataCount; dataId++)
@@ -99,7 +108,8 @@ namespace MagicDIP
                     int baseIndex = dataId * thetaDim;
                     for (int thetaId = 0; thetaId < thetaDim; thetaId++)
                     {
-                        theta.at(thetaId) = curTheta.at(baseIndex + thetaId);
+                        //theta.at(thetaId) = curTheta.at(baseIndex + thetaId);
+                        theta.at(thetaId) = interTheta.at(baseIndex + thetaId);
                     }
                     std::vector<bool> features;
                     int imgId = dataId / dataPerImgCount;
@@ -154,7 +164,7 @@ namespace MagicDIP
     void ExplicitShapeRegression::FeaturePatternGeneration(const std::vector<double>& theta, const std::vector<double>& dataY, 
         int dataPerImgCount, int dataCount, int featureSizePerKey, int keyPointCount, std::vector<bool>& features)
     {
-        srand(time(NULL));
+        //srand(time(NULL));
         int maxIndex = mImgPatchSize * mImgPatchSize * keyPointCount;
         mFeaturePosPairs.clear();
         int featureSize = featureSizePerKey * keyPointCount;

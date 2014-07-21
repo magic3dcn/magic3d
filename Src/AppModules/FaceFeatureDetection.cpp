@@ -221,14 +221,18 @@ namespace MagicApp
         }
         landPath.erase(pos);
 
-        int dataPerImgCount = 1;
+        int dataPerImgCount = 20;
+        srand(time(NULL));
+        int randomSize = 100;
         std::vector<double> initTheta;
         std::vector<double> finalTheta;
+        std::vector<double> interTheta;
         std::ifstream fin(landFile);
         int dataSize;
         fin >> dataSize;
+        dataSize = 5448;
         std::vector<std::string> imgFiles(dataSize);
-        int imgH;
+        int imgH, imgW;
         int keyPointCount;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
@@ -246,6 +250,7 @@ namespace MagicApp
             {   
                 cv::Mat img = cv::imread(grayImgName);
                 imgH = img.rows;
+                imgW = img.cols;
                 img.release();
             }
             std::ifstream landFin(featureName);
@@ -255,7 +260,8 @@ namespace MagicApp
             {
                 keyPointCount = markCount;
                 initTheta.reserve(2 * markCount * dataSize * dataPerImgCount);
-                finalTheta.reserve(2 * markCount * dataSize);
+                finalTheta.reserve(2 * markCount * dataSize * dataPerImgCount);
+                interTheta = std::vector<double>(markCount * 2, 0);
             }
             double cenRow = 0;
             double cenCol = 0;
@@ -264,18 +270,35 @@ namespace MagicApp
                 double r, w;
                 landFin >> w >> r;
                 r = imgH - r;
-                finalTheta.push_back(r);
-                finalTheta.push_back(w);
+                interTheta.at(markId * 2) = r;
+                interTheta.at(markId * 2 + 1) = w;
                 cenRow += r;
                 cenCol += w;
             }
             landFin.close();
             cenRow /= markCount;
             cenCol /= markCount;
-            for (int markId = 0; markId < markCount; markId++)
+            int initialNum = 0;
+            while (initialNum < dataPerImgCount)
             {
-                initTheta.push_back( mMeanFace.at(markId * 2) + cenRow );
-                initTheta.push_back( mMeanFace.at(markId * 2 + 1) + cenCol );
+                int xRand = rand() % (randomSize * 2) - randomSize;
+                int yRand = rand() % (randomSize * 2) - randomSize;
+                if (xRand == 0 && yRand == 0)
+                {
+                    continue;
+                }
+                double initialY = cenRow + yRand;
+                initialY = initialY < 0 ? 0 : (initialY > imgH - 1 ? imgH - 1 : initialY);
+                double initialX = cenCol + xRand;
+                initialX = initialX < 0 ? 0 : (initialX > imgW - 1 ? imgW - 1 : initialX);
+                for (int markId = 0; markId < markCount; markId++)
+                {
+                    initTheta.push_back( mMeanFace.at(markId * 2) + initialY );
+                    initTheta.push_back( mMeanFace.at(markId * 2 + 1) + initialX );
+                    finalTheta.push_back( interTheta.at(markId * 2) );
+                    finalTheta.push_back( interTheta.at(markId * 2 + 1) );
+                }
+                initialNum++;
             }
         }
         fin.close();
@@ -284,7 +307,7 @@ namespace MagicApp
             mpRegression = new MagicDIP::ExplicitShapeRegression;
         }
         DebugLog << "Load Image File Names" << std::endl;
-        return mpRegression->LearnRegression(imgFiles, initTheta, finalTheta, keyPointCount, 10, 500, 5, 2);
+        return mpRegression->LearnRegression(imgFiles, initTheta, finalTheta, dataPerImgCount, keyPointCount, 100, 100, 5, 2);
     }
     
     int ShapeFaceFeatureDetection::ShapeRegression(const cv::Mat& img, const std::vector<double>& initPos, std::vector<double>& finalPos) const
@@ -389,6 +412,11 @@ namespace MagicApp
             mMeanFace.at(markId * 2 + 1) -= cenW;
         }
         return MAGIC_NO_ERROR;
+    }
+
+    bool ShapeFaceFeatureDetection::IsMeanFaceExist(void) const
+    {
+        return (mMeanFace.size() > 0);
     }
 
 }

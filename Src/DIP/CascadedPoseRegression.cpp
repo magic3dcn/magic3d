@@ -40,6 +40,7 @@ namespace MagicDIP
         mImageLoader.LoadImages(imgFiles, ImageLoader::IT_Gray);
         DebugLog << "done" << std::endl;
 
+        srand(time(NULL));
         mRandomFerns.reserve(fernCount);
         int dataCount = initTheta.size() / thetaDim;
         ////Construct mImageList
@@ -421,7 +422,7 @@ namespace MagicDIP
         //}
 
         //Random feature postions
-        srand(time(NULL));
+        //srand(time(NULL));
         int maxIndex = mImgPatchSize * mImgPatchSize;
         mFeaturePosPairs.clear();
         mFeaturePosPairs.reserve(featureSize * 2);

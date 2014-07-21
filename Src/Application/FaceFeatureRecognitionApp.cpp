@@ -86,7 +86,7 @@ namespace MagicApp
             }
             std::vector<double> finalFace;
             mpShapeRegression->ShapeRegression(img, meanFace, finalFace);
-            UpdateDisplayImage(&meanFace, &finalFace);
+            UpdateDisplayImage(NULL, &finalFace);
         }
 
         return true;
@@ -108,7 +108,8 @@ namespace MagicApp
         }
         else if (arg.key == OIS::KC_L)
         {
-            LoadCascadedRegression();
+            //LoadCascadedRegression();
+            LoadShapeRegression();
         }
         else if (arg.key == OIS::KC_T)
         {
@@ -311,11 +312,14 @@ namespace MagicApp
         if (mMouseMode != MM_Test_Shape)
         {
             mMouseMode = MM_Test_Shape;
-            std::string fileName;
-            char filterName[] = "Land Files(*.txt)\0*.txt\0";
-            if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+            if (!mpShapeRegression->IsMeanFaceExist())
             {
-                mpShapeRegression->CalMeanFace(fileName);
+                std::string fileName;
+                char filterName[] = "Land Files(*.txt)\0*.txt\0";
+                if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+                {
+                    mpShapeRegression->CalMeanFace(fileName);
+                }
             }
         }
         else
