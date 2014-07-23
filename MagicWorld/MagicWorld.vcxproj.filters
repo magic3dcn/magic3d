@@ -477,6 +477,9 @@
     <ClInclude Include="..\Src\Math\CorrelationAnalysis.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\DIP\RealTimeFaceDetection.h">
+      <Filter>DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -805,6 +808,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\Math\CorrelationAnalysis.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DIP\RealTimeFaceDetection.cpp">
+      <Filter>DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

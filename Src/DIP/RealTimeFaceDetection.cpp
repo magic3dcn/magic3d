@@ -1,32 +1,44 @@
-#include "AdaBoost.h"
+#include "RealTimeFaceDetection.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
-#include <math.h>
 
-namespace MagicML
+namespace MagicDIP
 {
-    WeakClassifier::WeakClassifier()
+
+    HaarClassifier::HaarClassifier()
     {
     }
 
-    AdaBoost::AdaBoost() :
-        mClassifiers(),
-        mClassifierWeights(),
-        mThreshold(0)
+    HaarClassifier::~HaarClassifier()
     {
     }
 
-    AdaBoost::~AdaBoost()
+    int HaarClassifier::Learn(const ImageLoader& imgLoader, const std::vector<double>& dataWeights, const std::vector<int>& dataY, 
+            double* trainError)
     {
-        Reset();
+        return MAGIC_NO_ERROR;
+    }
+     
+    int HaarClassifier::Predict(const cv::Mat& img, int sRow, int sCol, float scale) const
+    {
+        return 0;
     }
 
-    int AdaBoost::Learn(const std::vector<double>& dataX, const std::vector<int>& dataY, int levelCount)
+    int HaarClassifier::Predict(const ImageLoader& imgLoader, int dataId) const
     {
-        if (dataX.size() == 0 || dataY.size() == 0)
-        {
-            return MAGIC_EMPTY_INPUT;
-        }
+        return 0;
+    }
+
+    AdaBoostFaceDetection::AdaBoostFaceDetection()
+    {
+    }
+
+    AdaBoostFaceDetection::~AdaBoostFaceDetection()
+    {
+    }
+
+    int AdaBoostFaceDetection::Learn(const ImageLoader& imgLoader, const std::vector<int>& dataY, int levelCount)
+    {
         Reset();
         mClassifiers.reserve(levelCount);
         mClassifierWeights.reserve(levelCount);
@@ -37,7 +49,7 @@ namespace MagicML
         mThreshold = 0.0;
         for (int levelId = 0; levelId < levelCount; levelId++)
         {
-            WeakClassifier* pWeakClassifier = TrainWeakClassifier(dataX, dataY, dataWeights);
+            HaarClassifier* pWeakClassifier = TrainWeakClassifier(imgLoader, dataWeights, dataY);
             if (pWeakClassifier != NULL)
             {
                 mClassifiers.push_back(pWeakClassifier);
@@ -51,7 +63,7 @@ namespace MagicML
             double trainingError = 0.0;
             for (int dataId = 0; dataId < dataCount; dataId++)
             {
-                resFlag.at(dataId) = abs(dataY.at(dataId) - pWeakClassifier->Predict(dataX, dataId));
+                resFlag.at(dataId) = abs(dataY.at(dataId) - pWeakClassifier->Predict(imgLoader, dataId));
                 trainingError += dataWeights.at(dataId) * resFlag.at(dataId);
             }
             if (trainingError < 0.5)
@@ -91,14 +103,14 @@ namespace MagicML
 
         return MAGIC_NO_ERROR;
     }
-
-    int AdaBoost::Predict(const std::vector<double>& dataX) const
+    
+    int AdaBoostFaceDetection::Predict(const cv::Mat& img, int sRow, int sCol, float scale) const
     {
         double res = 0.0;
         int classifierCount = mClassifierWeights.size();
         for (int cid = 0; cid < classifierCount; cid++)
         {
-            res += mClassifiers.at(cid)->Predict(dataX) * mClassifierWeights.at(cid);
+            res += mClassifiers.at(cid)->Predict(img, sRow, sCol, scale) * mClassifierWeights.at(cid);
         }
         if (res > mThreshold)
         {
@@ -110,28 +122,22 @@ namespace MagicML
         }
     }
 
-    double AdaBoost::GetThreshold(void) const
+    HaarClassifier* AdaBoostFaceDetection::TrainWeakClassifier(const ImageLoader& imgLoader, const std::vector<double>& dataWeights,
+            const std::vector<int>& dataY) const
     {
-        return mThreshold;
+        return NULL;
     }
 
-    void AdaBoost::SetThreshold(double thred)
+    void AdaBoostFaceDetection::Reset(void)
     {
-        mThreshold = thred;
+
     }
 
-    void AdaBoost::Reset(void)
+    RealTimeFaceDetection::RealTimeFaceDetection()
     {
-        mClassifierWeights.clear();
-        for (int cid = 0; cid < mClassifiers.size(); cid++)
-        {
-            if (mClassifiers.at(cid) != NULL)
-            {
-                delete mClassifiers.at(cid);
-                mClassifiers.at(cid) = NULL;
-            }
-        }
-        mClassifiers.clear();
-        mThreshold = 0.0;
+    }
+
+    RealTimeFaceDetection::~RealTimeFaceDetection()
+    {
     }
 }

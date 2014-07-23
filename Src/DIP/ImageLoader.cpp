@@ -7,7 +7,8 @@ namespace MagicDIP
 {
     ImageLoader::ImageLoader() :
         mImages(),
-        mImageSize()
+        mImageSize(),
+        mIntegralImage()
     {
     }
 
@@ -56,6 +57,11 @@ namespace MagicDIP
         return MAGIC_NO_ERROR;
     }
 
+    void ImageLoader::GenerateIntegralImage(void)
+    {
+
+    }
+
     const unsigned char* ImageLoader::GetImage(int imgId) const
     {
         return mImages.at(imgId);
@@ -75,8 +81,8 @@ namespace MagicDIP
     {
         return mImages.at(imgId)[hid * mImageSize.at(imgId * 2 + 1) + wid];
     }
-            
-    void ImageLoader::Reset(void)
+
+    void ImageLoader::ClearImageData(void)
     {
         for (std::vector<unsigned char* >::iterator itr = mImages.begin(); itr != mImages.end(); itr++)
         {
@@ -87,6 +93,25 @@ namespace MagicDIP
             }
         }
         mImages.clear();
+    }
+
+    void ImageLoader::ClearIntegralImageData(void)
+    {
+        for (std::vector<unsigned int* >::iterator itr = mIntegralImage.begin(); itr != mIntegralImage.end(); itr++)
+        {
+            if ((*itr) != NULL)
+            {
+                delete (*itr);
+                (*itr) = NULL;
+            }
+        }
+        mIntegralImage.clear();
+    }
+            
+    void ImageLoader::Reset(void)
+    {
+        ClearImageData();
+        ClearIntegralImageData();
         mImageSize.clear();
     }
 }
