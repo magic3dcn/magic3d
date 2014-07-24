@@ -480,6 +480,9 @@
     <ClInclude Include="..\Src\DIP\RealTimeFaceDetection.h">
       <Filter>DIP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\AppModules\FaceDetection.h">
+      <Filter>AppModules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -811,6 +814,9 @@
     </ClCompile>
     <ClCompile Include="..\Src\DIP\RealTimeFaceDetection.cpp">
       <Filter>DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AppModules\FaceDetection.cpp">
+      <Filter>AppModules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

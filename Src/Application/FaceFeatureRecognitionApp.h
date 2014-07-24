@@ -8,6 +8,7 @@ namespace MagicApp
     class Face2DObj;
     class CascadedFaceFeatureDetection;
     class ShapeFaceFeatureDetection;
+    class FaceDetection;
     class FaceFeatureRecognitionApp : public MagicCore::AppBase
     {
     public:
@@ -16,7 +17,8 @@ namespace MagicApp
             MM_View,
             MM_Mark_KeyPoint,
             MM_Test_KeyPoint,
-            MM_Test_Shape
+            MM_Test_Shape,
+            MM_Test_Face_Detection
         };
 
         FaceFeatureRecognitionApp();
@@ -38,13 +40,16 @@ namespace MagicApp
 
         void ShapeRegression(void);
         void LoadShapeRegression(void);
+
+        void RealTimeFaceDetection(void); //to do
+        void RealTimeFaceLoading(void); //to do
         
         void OpenTestImage(void);
         void MarkKeyPoint(void);
         void SynthesizeData(int keyX, int keyY);
         void TestKeyPoint(void);
         void TestShape(void);
-
+        void GenerateFacewareHouseFace(void);
 
     private:
         void SetupScene(void);
@@ -52,6 +57,7 @@ namespace MagicApp
         void UpdateDisplayImage(const std::vector<double>* dpsList, const std::vector<double>* fpsList);
         void MarkPointsToImage(cv::Mat& img, const std::vector<double>* markList, 
             unsigned char blue, unsigned char green, unsigned char red, int markWidth);
+        void TestFaceDetection(void); //to do
 
     private:
         FaceFeatureRecognitionAppUI mUI;
@@ -59,6 +65,7 @@ namespace MagicApp
         Face2DObj* mpF2DObj;
         CascadedFaceFeatureDetection* mpFfd;
         ShapeFaceFeatureDetection* mpShapeRegression;
+        FaceDetection* mpFaceDetection;
     };
 
 }

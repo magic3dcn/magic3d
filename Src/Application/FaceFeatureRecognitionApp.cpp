@@ -2,6 +2,7 @@
 #include "../AppModules/MagicObjectManager.h"
 #include "../AppModules/Face2DObj.h"
 #include "../AppModules/FaceFeatureDetection.h"
+#include "../AppModules/FaceDetection.h"
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 
@@ -11,7 +12,8 @@ namespace MagicApp
         mMouseMode(MM_View),
         mpF2DObj(NULL),
         mpFfd(NULL),
-        mpShapeRegression(NULL)
+        mpShapeRegression(NULL),
+        mpFaceDetection(NULL)
     {
     }
 
@@ -116,6 +118,11 @@ namespace MagicApp
             //TestKeyPoint();
             TestShape();
         }
+        else if (arg.key == OIS::KC_F)
+        {
+            GenerateFacewareHouseFace();
+            //TestFaceDetection();
+        }
 
         return true;
     }
@@ -142,6 +149,11 @@ namespace MagicApp
             MOMGR->InsertObj("ShapeRegression", new ShapeFaceFeatureDetection);
         }
         mpShapeRegression = dynamic_cast<ShapeFaceFeatureDetection*>(MOMGR->GetObj("ShapeRegression"));
+        if (!(MOMGR->IsObjExist("FaceDetection")))
+        {
+            MOMGR->InsertObj("FaceDetection", new FaceDetection);
+        }
+        mpFaceDetection = dynamic_cast<FaceDetection*>(MOMGR->GetObj("FaceDetection"));
     }
 
     void FaceFeatureRecognitionApp::ShutdownScene(void)
@@ -214,6 +226,61 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpShapeRegression->Load(fileName);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::RealTimeFaceDetection(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpFaceDetection->LearnDetector(fileName, FaceDetection::DM_Default);
+            mpFaceDetection->Save("./FaceDetection.rfd");
+        }
+    }
+
+    void FaceFeatureRecognitionApp::RealTimeFaceLoading(void)
+    {
+        std::string fileName;
+        char filterName[] = "Shape Files(*.shape)\0*.shape\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            mpFaceDetection->Load(fileName);
+        }
+    }
+
+    void FaceFeatureRecognitionApp::TestFaceDetection(void)
+    {
+        cv::Mat img = mpF2DObj->GetFaceImage();
+        std::vector<int> faces;
+        int detectNum = mpFaceDetection->DetectFace(img, faces);
+        if (detectNum > 0)
+        {
+            std::vector<double> marks;
+            for (int detectId = 0; detectId < detectNum; detectId++)
+            {
+                int baseId = detectId * 4;
+                int topRow = faces.at(baseId);
+                int downRow =topRow + faces.at(baseId + 3);
+                int leftCol = faces.at(baseId + 1);
+                int rightCol = leftCol + faces.at(baseId + 2);
+                for (int colId = leftCol; colId <= rightCol; colId++)
+                {
+                    marks.push_back(topRow);
+                    marks.push_back(colId);
+                    marks.push_back(downRow);
+                    marks.push_back(colId);
+                }
+                for (int rowId = topRow; rowId <= downRow; rowId++)
+                {
+                    marks.push_back(rowId);
+                    marks.push_back(leftCol);
+                    marks.push_back(rowId);
+                    marks.push_back(rightCol);
+                }
+            }
+            UpdateDisplayImage(&marks, NULL);
         }
     }
 
@@ -326,6 +393,98 @@ namespace MagicApp
         {
             mMouseMode = MM_View;
         }
+    }
+
+    void FaceFeatureRecognitionApp::GenerateFacewareHouseFace(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string landPath = fileName;
+        std::string::size_type pos = landPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = landPath.rfind("\\");
+        }
+        landPath.erase(pos);
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        //dataSize = 1;
+        int imgH, imgW;
+        int marginSize = 10;
+        int outputSize = 64;
+        cv::Size cvOutputSize(outputSize, outputSize);
+        int sRow, sCol, len;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            std::string featureName;
+            fin >> featureName;
+            featureName = landPath + featureName;
+            std::string imgName = featureName;
+            std::string::size_type pos = imgName.rfind(".");
+            imgName.replace(pos, 5, "_gray.jpg");
+            std::string faceName = featureName;
+            pos = faceName.rfind(".");
+            faceName.replace(pos, 5, "_face.jpg");
+
+            cv::Mat img = cv::imread(imgName);
+            imgH = img.rows;
+            imgW = img.cols;
+            
+            std::ifstream landFin(featureName);
+            int markCount;
+            landFin >> markCount;
+            int left = 1.0e10;
+            int right = 0;
+            int top = 1.0e10;
+            int down = 0;
+            for (int markId = 0; markId < markCount; markId++)
+            {
+                double row, col;
+                landFin >> col >> row;
+                row = imgH - row;
+                if (row < top)
+                {
+                    top = row;
+                }
+                if (row > down)
+                {
+                    down = row;
+                }
+                if (col < left)
+                {
+                    left = col;
+                }
+                if (col > right)
+                {
+                    right = col;
+                }
+            }
+            landFin.close();
+            sRow = top - marginSize;
+            sCol = left - marginSize;
+            int w = right - left;
+            int h = down - top;
+            len = w > h ? w : h;
+            len += marginSize * 2;
+            cv::Mat cropImg(len, len, CV_8UC1);
+            for (int hid = 0; hid < len; hid++)
+            {
+                for (int wid = 0; wid < len; wid++)
+                {
+                    cropImg.ptr(hid, wid)[0] = img.ptr(sRow + hid, sCol + wid)[0];
+                }
+            }
+            cv::Mat outputImg(cvOutputSize, CV_8UC1);
+            cv::resize(cropImg, outputImg, cvOutputSize);
+            cv::imwrite(faceName, outputImg);
+            cropImg.release();
+            img.release();
+            outputImg.release();
+        }
+        fin.close();
+        DebugLog << "GenerateFacewareHouseFace Done" << std::endl;
     }
 
     void FaceFeatureRecognitionApp::UpdateDisplayImage(const std::vector<double>* dpsList, const std::vector<double>* fpsList)

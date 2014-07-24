@@ -140,4 +140,38 @@ namespace MagicDIP
     RealTimeFaceDetection::~RealTimeFaceDetection()
     {
     }
+
+    int RealTimeFaceDetection::Learn(const std::vector<std::string>& imgFiles)
+    {
+        return MAGIC_NO_ERROR;
+    }
+
+    int RealTimeFaceDetection::Detect(const cv::Mat& img, std::vector<int>& faces) const
+    {
+        faces.clear();
+        faces.reserve(3 * 4);
+        faces.push_back(100);
+        faces.push_back(100);
+        faces.push_back(30);
+        faces.push_back(30);
+        faces.push_back(50);
+        faces.push_back(150);
+        faces.push_back(60);
+        faces.push_back(60);
+        faces.push_back(78);
+        faces.push_back(87);
+        faces.push_back(20);
+        faces.push_back(20);
+        return 3;
+    }
+
+    void RealTimeFaceDetection::Save(const std::string& fileName) const
+    {
+
+    }
+        
+    void RealTimeFaceDetection::Load(const std::string& fileName)
+    {
+
+    }
 }

@@ -60,6 +60,9 @@ namespace MagicDIP
         ~RealTimeFaceDetection();
 
         int Learn(const std::vector<std::string>& imgFiles);
+        int Detect(const cv::Mat& img, std::vector<int>& faces) const;
+        void Save(const std::string& fileName) const;
+        void Load(const std::string& fileName);
 
     private:
 

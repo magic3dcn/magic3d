@@ -18,6 +18,7 @@ namespace MagicApp
         void OpenImage(MyGUI::Widget* pSender);
         void LearnCascadedRegression(MyGUI::Widget* pSender);
         void ShapeRegression(MyGUI::Widget* pSender);
+        void RealTimeFaceDetection(MyGUI::Widget* pSender);
         void BackHome(MyGUI::Widget* pSender);
 
     private:
