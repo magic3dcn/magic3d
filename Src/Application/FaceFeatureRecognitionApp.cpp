@@ -231,12 +231,17 @@ namespace MagicApp
 
     void FaceFeatureRecognitionApp::RealTimeFaceDetection(void)
     {
-        std::string fileName;
-        char filterName[] = "Land Files(*.txt)\0*.txt\0";
-        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        std::string faceFile;
+        char faceFilterName[] = "face Files(*.txt)\0*.txt\0";
+        if ( MagicCore::ToolKit::FileOpenDlg(faceFile, faceFilterName) )
         {
-            mpFaceDetection->LearnDetector(fileName, FaceDetection::DM_Default);
-            mpFaceDetection->Save("./FaceDetection.rfd");
+            std::string nonFaceFile;
+            char nonFaceFilterName[] = "non-face Files(*.txt)\0*.txt\0";
+            if ( MagicCore::ToolKit::FileOpenDlg(nonFaceFile, nonFaceFilterName) )
+            {
+                mpFaceDetection->LearnDetector(faceFile, nonFaceFile, FaceDetection::DM_Default);
+                mpFaceDetection->Save("./FaceDetection.rfd");
+            }
         }
     }
 

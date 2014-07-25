@@ -6,6 +6,7 @@
 namespace MagicDIP
 {
     ImageLoader::ImageLoader() :
+        mImageCount(0),
         mImages(),
         mImageSize(),
         mIntegralImage()
@@ -19,17 +20,17 @@ namespace MagicDIP
 
     int ImageLoader::LoadImages(const std::vector<std::string>& imgFiles, ImageType it)
     {
-        int imgCount = imgFiles.size();
-        if (imgCount == 0)
+        mImageCount = imgFiles.size();
+        if (mImageCount == 0)
         {
             return MAGIC_EMPTY_INPUT;
         }
         Reset();
         if (it == IT_Gray)
         {
-            mImages.reserve(imgCount);
-            mImageSize.reserve(imgCount * 2);
-            for (int imgId = 0; imgId < imgCount; imgId++)
+            mImages.reserve(mImageCount);
+            mImageSize.reserve(mImageCount * 2);
+            for (int imgId = 0; imgId < mImageCount; imgId++)
             {
                 cv::Mat img = cv::imread(imgFiles.at(imgId));
                 int imgH = img.rows;
@@ -110,8 +111,14 @@ namespace MagicDIP
             
     void ImageLoader::Reset(void)
     {
+        mImageCount = 0;
         ClearImageData();
         ClearIntegralImageData();
         mImageSize.clear();
+    }
+
+    int ImageLoader::GetImageCount(void) const
+    {
+        return mImageCount;
     }
 }

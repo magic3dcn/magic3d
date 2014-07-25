@@ -21,12 +21,12 @@ namespace MagicApp
         }
     }
 
-    int FaceDetection::LearnDetector(const std::string& imgFile, DetectionMethod dm)
+    int FaceDetection::LearnDetector(const std::string& faceFile, const std::string& nonFaceFile, DetectionMethod dm)
     {
         switch (dm)
         {
         case DM_Default:
-            return LearnRealTimeDetector(imgFile);
+            return LearnRealTimeDetector(faceFile, nonFaceFile);
         default:
             return MAGIC_INVALID_INPUT;
         }
@@ -99,12 +99,74 @@ namespace MagicApp
         }
     }
 
-    int FaceDetection::LearnRealTimeDetector(const std::string& imgFile)
+    int FaceDetection::LearnRealTimeDetector(const std::string& faceFile, const std::string& nonFaceFile)
     {
+        std::vector<std::string> faceImgNames, nonFaceImgNames;
+        int res = GetImageNames(faceFile, faceImgNames);
+        if (res != MAGIC_NO_ERROR)
+        {
+            return res;
+        }
+        res = GetImageNames(nonFaceFile, nonFaceImgNames);
+        if (res != MAGIC_NO_ERROR)
+        {
+            return res;
+        }
         if (mpRealTimeDetector == NULL)
         {
             mpRealTimeDetector = new MagicDIP::RealTimeFaceDetection;
         }
+        std::vector<int> layerCount;
+        layerCount.reserve(64);
+        layerCount.push_back(2);
+        layerCount.push_back(10);
+        layerCount.push_back(25);
+        layerCount.push_back(25);
+        for (int layerId = 0; layerId < 4; layerId++)
+        {
+            layerCount.push_back(50);
+        }
+        for (int layerId = 0; layerId < 8; layerId++)
+        {
+            layerCount.push_back(100);
+        }
+        for (int layerId = 0; layerId < 16; layerId++)
+        {
+            layerCount.push_back(200);
+        }
+        for (int layerId = 0; layerId < 32; layerId++)
+        {
+            layerCount.push_back(400);
+        }
+        return mpRealTimeDetector->Learn(faceImgNames, nonFaceImgNames, layerCount);
+    }
+
+    int FaceDetection::GetImageNames(const std::string& imgfile, std::vector<std::string>& imgNames) const
+    {
+        std::string imgPath = imgfile;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+            if (pos == std::string::npos)
+            {
+                return MAGIC_INVALID_INPUT;
+            }
+        }
+        imgPath.erase(pos);
+        imgPath += "/";
+        std::ifstream fin(imgfile);
+        int dataSize;
+        fin >> dataSize;
+        imgNames.clear();
+        imgNames.resize(dataSize);
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            std::string imgName;
+            fin >> imgName;
+            imgNames.at(dataId) = imgName;
+        }
+        fin.close();
         return MAGIC_NO_ERROR;
     }
 }

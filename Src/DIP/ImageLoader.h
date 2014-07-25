@@ -25,8 +25,10 @@ namespace MagicDIP
         void ClearImageData(void);
         void ClearIntegralImageData(void);
         void Reset(void);
+        int GetImageCount(void) const;
 
     private:
+        int mImageCount;
         std::vector<unsigned char* > mImages;
         std::vector<unsigned int* > mIntegralImage;
         std::vector<int> mImageSize;

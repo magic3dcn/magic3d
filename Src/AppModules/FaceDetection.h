@@ -22,13 +22,14 @@ namespace MagicApp
         FaceDetection();
         ~FaceDetection();
 
-        int LearnDetector(const std::string& imgFile, DetectionMethod dm);
+        int LearnDetector(const std::string& faceFile, const std::string& nonFaceFile, DetectionMethod dm);
         int DetectFace(const cv::Mat& img, std::vector<int>& faces);
         void Save(const std::string& fileName) const;
         void Load(const std::string& fileName);
 
     private:
-        int LearnRealTimeDetector(const std::string& imgFile);
+        int LearnRealTimeDetector(const std::string& faceFile, const std::string& nonFaceFile);
+        int GetImageNames(const std::string& imgfile, std::vector<std::string>& imgNames) const;
 
     private:
         DetectionMethod mDm;
