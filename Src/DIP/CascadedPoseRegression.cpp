@@ -4,7 +4,7 @@
 #include "ImageLoader.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
-#include "../Common/ToolKit.h"
+//#include "../Common/ToolKit.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -59,7 +59,7 @@ namespace MagicDIP
         std::vector<double> deltaTheta(curTheta.size());
         for (int fernId = 0; fernId < fernCount; fernId++)
         {
-            double timeStart = MagicCore::ToolKit::GetTime();
+            //double timeStart = MagicCore::ToolKit::GetTime();
             DebugLog << "fernId: " << fernId << std::endl; 
             //Calculate deltaTheta
             /*for (int dataId = 0; dataId < dataCount; dataId++)
@@ -129,7 +129,7 @@ namespace MagicDIP
                     curTheta.at(baseIndex + thetaId) += predictDelta.at(thetaId);
                 }
             }
-            DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+            //DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
         }
 
         //free mImageList

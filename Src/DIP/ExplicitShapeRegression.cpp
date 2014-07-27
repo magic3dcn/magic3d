@@ -2,7 +2,7 @@
 #include "../MachineLearning/RandomMethod.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
-#include "../Common/ToolKit.h"
+//#include "../Common/ToolKit.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -77,7 +77,7 @@ namespace MagicDIP
             int fernBaseId = outerId * mInnerFernCount;
             for (int innerId = 0; innerId < mInnerFernCount; innerId++)
             {
-                double timeStart = MagicCore::ToolKit::GetTime();
+                //double timeStart = MagicCore::ToolKit::GetTime();
                 DebugLog << "fernId: " << fernBaseId + innerId << std::endl; 
 
                 int fernId = fernBaseId + innerId;
@@ -124,7 +124,7 @@ namespace MagicDIP
                     }
                 }
 
-                DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+                //DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
             }
         }
 
