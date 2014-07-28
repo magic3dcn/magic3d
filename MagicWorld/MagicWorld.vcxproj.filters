@@ -447,9 +447,6 @@
     <ClInclude Include="..\Src\Math\Optimization.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\AppModules\BasicPointSetProcess.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\MachineLearning\DecisionTree.h">
       <Filter>MachineLearning</Filter>
     </ClInclude>
@@ -781,9 +778,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\Math\Optimization.cpp">
       <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\BasicPointSetProcess.cpp">
-      <Filter>AppModules</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\MachineLearning\DecisionTree.cpp">
       <Filter>MachineLearning</Filter>

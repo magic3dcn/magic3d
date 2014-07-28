@@ -50,6 +50,7 @@ namespace MagicApp
         void TestKeyPoint(void);
         void TestShape(void);
         void GenerateFacewareHouseFace(void);
+        void GenerateNonFace(void);
 
     private:
         void SetupScene(void);
