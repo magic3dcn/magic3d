@@ -66,11 +66,11 @@ namespace MagicDIP
         }
         else if (mFeature.type == 2)
         {
-
+            return 0;
         }
         else if (mFeature.type == 3)
         {
-
+            return 0;
         }
         else
         {
