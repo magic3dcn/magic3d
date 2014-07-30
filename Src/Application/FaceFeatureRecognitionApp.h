@@ -41,7 +41,7 @@ namespace MagicApp
         void ShapeRegression(void);
         void LoadShapeRegression(void);
 
-        void RealTimeFaceDetection(void); //to do
+        void RealTimeFaceDetection(void);
         void RealTimeFaceLoading(void); //to do
         
         void OpenTestImage(void);

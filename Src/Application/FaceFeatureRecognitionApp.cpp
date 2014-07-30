@@ -243,7 +243,7 @@ namespace MagicApp
             if ( MagicCore::ToolKit::FileOpenDlg(nonFaceFile, nonFaceFilterName) )
             {
                 mpFaceDetection->LearnDetector(faceFile, nonFaceFile, FaceDetection::DM_Default);
-                //mpFaceDetection->Save("./FaceDetection.rfd");
+                mpFaceDetection->Save("./FaceDetection.rfd");
             }
         }
     }
