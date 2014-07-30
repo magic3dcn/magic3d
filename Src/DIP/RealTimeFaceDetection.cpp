@@ -1,7 +1,7 @@
 #include "RealTimeFaceDetection.h"
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
-#include "../Common/ToolKit.h"
+//#include "../Common/ToolKit.h"
 #include <algorithm>
 
 namespace
@@ -689,7 +689,7 @@ namespace MagicDIP
         for (int stageId = 0; stageId < stageCount; stageId++)
         {
             DebugLog << "Stage " << stageId << std::endl;
-            double stageTime = MagicCore::ToolKit::GetTime();
+            //double stageTime = MagicCore::ToolKit::GetTime();
             AdaBoostFaceDetection* pDetector = new AdaBoostFaceDetection;
             int res = pDetector->Learn(faceImgLoader, nonFaceImgLoader, nonFaceValidFlag, layerCounts.at(stageId));
             if (res != MAGIC_NO_ERROR)
@@ -708,7 +708,7 @@ namespace MagicDIP
                     nonFaceValidFlag.at(nonFaceId) = 0;
                 }
             }
-            DebugLog << "time: " << MagicCore::ToolKit::GetTime() - stageTime << std::endl;
+            //DebugLog << "time: " << MagicCore::ToolKit::GetTime() - stageTime << std::endl;
         }
 
         return MAGIC_NO_ERROR;
