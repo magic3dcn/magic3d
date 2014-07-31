@@ -108,12 +108,14 @@ namespace MagicApp
         }
         else if (arg.key == OIS::KC_S)
         {
-            SaveCascadedRegression();
+            //SaveCascadedRegression();
+            mpFaceDetection->Save("./FaceDetection2.rfd");
         }
         else if (arg.key == OIS::KC_L)
         {
             //LoadCascadedRegression();
-            LoadShapeRegression();
+            //LoadShapeRegression();
+            RealTimeFaceLoading();
         }
         else if (arg.key == OIS::KC_T)
         {
@@ -123,8 +125,8 @@ namespace MagicApp
         else if (arg.key == OIS::KC_F)
         {
             //GenerateFacewareHouseFace();
-            GenerateNonFace();
-            //TestFaceDetection();
+            //GenerateNonFace();
+            TestFaceDetection();
         }
 
         return true;
@@ -251,7 +253,7 @@ namespace MagicApp
     void FaceFeatureRecognitionApp::RealTimeFaceLoading(void)
     {
         std::string fileName;
-        char filterName[] = "Shape Files(*.shape)\0*.shape\0";
+        char filterName[] = "Detection Files(*.rfd)\0*.rfd\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpFaceDetection->Load(fileName);
@@ -263,14 +265,17 @@ namespace MagicApp
         cv::Mat img = mpF2DObj->GetFaceImage();
         std::vector<int> faces;
         int detectNum = mpFaceDetection->DetectFace(img, faces);
+        DebugLog << "detect number: " << detectNum << std::endl;
         if (detectNum > 0)
         {
             std::vector<double> marks;
             for (int detectId = 0; detectId < detectNum; detectId++)
             {
                 int baseId = detectId * 4;
+                DebugLog << "detectId: " << detectId << " face: " << faces.at(baseId) << " " << faces.at(baseId + 1) << " " 
+                    << faces.at(baseId + 2) << " " << faces.at(baseId + 3) << std::endl;
                 int topRow = faces.at(baseId);
-                int downRow =topRow + faces.at(baseId + 3);
+                int downRow = topRow + faces.at(baseId + 3);
                 int leftCol = faces.at(baseId + 1);
                 int rightCol = leftCol + faces.at(baseId + 2);
                 for (int colId = leftCol; colId <= rightCol; colId++)
