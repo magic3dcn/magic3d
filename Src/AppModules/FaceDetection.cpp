@@ -50,20 +50,26 @@ namespace MagicApp
         }
     }
      
-    void FaceDetection::Save(const std::string& fileName) const
+    void FaceDetection::Save(const std::string& fileName, const std::string& detectFileName) const
     {
         std::ofstream fout(fileName);
         fout << mDm << std::endl;
-        std::string detectorFile = fileName;
-        std::string::size_type pos = detectorFile.rfind(".");
+        fout << detectFileName << std::endl;
+        std::string filePath = fileName;
+        std::string::size_type pos = filePath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = filePath.rfind("\\");
+        }
+        filePath.erase(pos);
+        filePath += "/";
+        std::string detectFileFullName = filePath + detectFileName;
         switch (mDm)
         {
         case DM_Default:
-            detectorFile.replace(pos, 4, ".abfd");
-            fout << detectorFile << std::endl;
             if (mpRealTimeDetector != NULL)
             {
-                mpRealTimeDetector->Save(detectorFile);
+                mpRealTimeDetector->Save(detectFileFullName);
             }
             else
             {
@@ -85,6 +91,17 @@ namespace MagicApp
         std::string detectorFile;
         fin >> detectorFile;
         fin.close();
+        //
+        std::string filePath = fileName;
+        std::string::size_type pos = filePath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = filePath.rfind("\\");
+        }
+        filePath.erase(pos);
+        filePath += "/";
+        detectorFile = filePath + detectorFile;
+        //
         switch (mDm)
         {
         case DM_Default:
@@ -117,8 +134,8 @@ namespace MagicApp
             mpRealTimeDetector = new MagicDIP::RealTimeFaceDetection;
         }
         std::vector<int> layerCount;
-        layerCount.push_back(2);
-        layerCount.push_back(5);
+        layerCount.push_back(200);
+        //layerCount.push_back(5);
         //layerCount.push_back(100);
         /*layerCount.reserve(64);
         layerCount.push_back(2);

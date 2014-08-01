@@ -109,7 +109,7 @@ namespace MagicApp
         else if (arg.key == OIS::KC_S)
         {
             //SaveCascadedRegression();
-            mpFaceDetection->Save("./FaceDetection2.rfd");
+            mpFaceDetection->Save("./FaceDetection.rfd", "FaceDetection.abfd");
         }
         else if (arg.key == OIS::KC_L)
         {
@@ -245,7 +245,7 @@ namespace MagicApp
             if ( MagicCore::ToolKit::FileOpenDlg(nonFaceFile, nonFaceFilterName) )
             {
                 mpFaceDetection->LearnDetector(faceFile, nonFaceFile, FaceDetection::DM_Default);
-                mpFaceDetection->Save("./FaceDetection.rfd");
+                mpFaceDetection->Save("./FaceDetection.rfd", "FaceDetection.abfd");
             }
         }
     }
