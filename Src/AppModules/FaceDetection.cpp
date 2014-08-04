@@ -116,6 +116,11 @@ namespace MagicApp
         }
     }
 
+    void FaceDetection::SaveFeatureAsImage(const std::string& filePath) const
+    {
+        mpRealTimeDetector->SaveFeatureAsImage(filePath);
+    }
+
     int FaceDetection::LearnRealTimeDetector(const std::string& faceFile, const std::string& nonFaceFile)
     {
         std::vector<std::string> faceImgNames, nonFaceImgNames;
@@ -134,7 +139,48 @@ namespace MagicApp
             mpRealTimeDetector = new MagicDIP::RealTimeFaceDetection;
         }
         std::vector<int> layerCount;
+        layerCount.push_back(2);
+        layerCount.push_back(10);
+        layerCount.push_back(25);
+        layerCount.push_back(25);
+        layerCount.push_back(50);
+        layerCount.push_back(50);
+        layerCount.push_back(50);
+        layerCount.push_back(50);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
+        layerCount.push_back(100);
         layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(200);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
+        layerCount.push_back(400);
         //layerCount.push_back(5);
         //layerCount.push_back(100);
         /*layerCount.reserve(64);

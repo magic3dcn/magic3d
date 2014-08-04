@@ -51,6 +51,7 @@ namespace MagicApp
         void TestShape(void);
         void GenerateFacewareHouseFace(void);
         void GenerateNonFace(void);
+        void GenerateNonFaceFromFace(void);
 
     private:
         void SetupScene(void);

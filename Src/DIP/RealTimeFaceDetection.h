@@ -33,6 +33,8 @@ namespace MagicDIP
         int Predict(const ImageLoader& imgLoader, int dataId) const;
         void Save(std::ofstream& fout) const;
         void Load(std::ifstream& fin);
+        double CalFeatureSimilarity(const HaarFeature& hf) const;
+        void SaveFeatureAsImage(const std::string& imgName, int baseSize) const;
 
     private:
         int CalFeatureValue(const ImageLoader& imgLoader, int dataId) const;
@@ -40,6 +42,7 @@ namespace MagicDIP
         int CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const;
         int ImgBoxValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, int eRow, int eCol) const;
         unsigned int GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const;
+        int CalCulateLineSegmentOverlap(int sa, int la, int sb, int lb) const;
 
     private:
         HaarFeature mFeature;
@@ -59,9 +62,11 @@ namespace MagicDIP
         int Predict(const ImageLoader& imgLoader, int dataId) const;
         void Save(std::ofstream& fout) const;
         void Load(std::ifstream& fin);
+        void SaveFeatureAsImage(const std::string& filePath, int baseSize, int detectorId) const;
 
     private:
         void GenerateClassifierCadidates(int baseImgSize);
+        void RemoveSimilarClassifierCandidates(const HaarFeature& hf);
         void ClearClassifierCadidates(void);
         int TrainWeakClassifier(const ImageLoader& faceImgLoader, const std::vector<double>& faceDataWeights, 
             const ImageLoader& nonFaceImgLoader, const std::vector<double>& nonFaceDataWeights, 
@@ -87,6 +92,7 @@ namespace MagicDIP
         int Detect(const cv::Mat& img, std::vector<int>& faces) const;
         void Save(const std::string& fileName) const;
         void Load(const std::string& fileName);
+        void SaveFeatureAsImage(const std::string& filePath) const;
 
     private:
         int DetectOneFace(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, double scale) const;

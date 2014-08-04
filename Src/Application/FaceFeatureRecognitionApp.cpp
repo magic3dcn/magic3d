@@ -109,7 +109,8 @@ namespace MagicApp
         else if (arg.key == OIS::KC_S)
         {
             //SaveCascadedRegression();
-            mpFaceDetection->Save("./FaceDetection.rfd", "FaceDetection.abfd");
+            //mpFaceDetection->Save("./FaceDetection.rfd", "FaceDetection.abfd");
+            mpFaceDetection->SaveFeatureAsImage("./");
         }
         else if (arg.key == OIS::KC_L)
         {
@@ -126,6 +127,7 @@ namespace MagicApp
         {
             //GenerateFacewareHouseFace();
             //GenerateNonFace();
+            //GenerateNonFaceFromFace();
             TestFaceDetection();
         }
 
@@ -406,6 +408,72 @@ namespace MagicApp
         {
             mMouseMode = MM_View;
         }
+    }
+
+    void FaceFeatureRecognitionApp::GenerateNonFaceFromFace(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string imgPath = fileName;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+        }
+        imgPath.erase(pos);
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        int cropSize = 40;
+        int outputSize = 64;
+        cv::Size cvOutputSize(outputSize, outputSize);
+        int imgNumPerData = 1;
+        srand(time(NULL));
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            std::string imgName;
+            fin >> imgName;
+            imgName = imgPath + imgName;
+            pos = imgName.rfind(".");
+            imgName.replace(pos, 5, "_gray.jpg");
+            /*cv::Mat imgOrigin = cv::imread(imgName);
+            cv::Mat grayImg;
+            cv::cvtColor(imgOrigin, grayImg, CV_BGR2GRAY);
+            imgOrigin.release();*/
+            cv::Mat grayImg = cv::imread(imgName);
+            int imgH = grayImg.rows;
+            int hMax = imgH - cropSize;
+            int imgW = grayImg.cols;
+            int wMax = imgW - cropSize;
+            int synImgNum = 0;
+            while (synImgNum < imgNumPerData)
+            {
+                int sH = rand() % hMax;
+                int sW = rand() % wMax;
+                cv::Mat cropImg(cropSize, cropSize, CV_8UC1);
+                for (int hid = 0; hid < cropSize; hid++)
+                {
+                    for (int wid = 0; wid < cropSize; wid++)
+                    {
+                        cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
+                    }
+                }
+                cv::Mat outputImg(cvOutputSize, CV_8UC1);
+                cv::resize(cropImg, outputImg, cvOutputSize);
+                cropImg.release();
+                std::stringstream ss;
+                ss << "./nonFaceFromFace/nonFace" << dataId << "_" << synImgNum << "_40.jpg";
+                std::string outputName;
+                ss >> outputName;
+                cv::imwrite(outputName, outputImg);
+                outputImg.release();
+                synImgNum++;
+            }
+            grayImg.release();
+        }
+        fin.close();
+        DebugLog << "GenerateNonFaceFromFace Done" << std::endl; 
     }
 
     void FaceFeatureRecognitionApp::GenerateNonFace(void)
