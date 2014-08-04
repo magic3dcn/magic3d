@@ -52,6 +52,7 @@ namespace MagicApp
         void GenerateFacewareHouseFace(void);
         void GenerateNonFace(void);
         void GenerateNonFaceFromFace(void);
+        void GenerateStrongNonFace(void);
 
     private:
         void SetupScene(void);

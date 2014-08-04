@@ -128,7 +128,8 @@ namespace MagicApp
             //GenerateFacewareHouseFace();
             //GenerateNonFace();
             //GenerateNonFaceFromFace();
-            TestFaceDetection();
+            GenerateStrongNonFace();
+            //TestFaceDetection();
         }
 
         return true;
@@ -474,6 +475,98 @@ namespace MagicApp
         }
         fin.close();
         DebugLog << "GenerateNonFaceFromFace Done" << std::endl; 
+    }
+
+    void FaceFeatureRecognitionApp::GenerateStrongNonFace(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string imgPath = fileName;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+        }
+        imgPath.erase(pos);
+        imgPath += "/";
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        std::vector<std::string> imgNameList(dataSize);
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            fin.getline(pLine, maxSize);
+            std::string imgName(pLine);
+            imgName = imgPath + imgName;
+            imgNameList.at(dataId) = imgName;
+        }
+        fin.close();
+        int maxCropSize = 40;
+        int minCropSize = 10;
+        int outputSize = 64;
+        cv::Size cvOutputSize(outputSize, outputSize);
+        int rawNum = 0;
+        int strongDataNum = 0;
+        int acceptedNum = 10000;
+        srand(time(NULL));
+        while (strongDataNum < acceptedNum)
+        {
+            rawNum++;
+            int imgId = rand() % dataSize;
+            //DebugLog << " readImg" << std::endl;
+            cv::Mat grayImg = cv::imread(imgNameList.at(imgId));
+            //DebugLog << "   done" << std::endl;
+            int cropSize = minCropSize + rand() % (maxCropSize - minCropSize); 
+            int imgH = grayImg.rows;
+            int hMax = imgH - cropSize;
+            int imgW = grayImg.cols;
+            int wMax = imgW - cropSize;
+            int sH = rand() % hMax;
+            int sW = rand() % wMax;
+            cv::Mat cropImg(cropSize, cropSize, CV_8UC1);
+            //DebugLog << " copy cropImg: cropSize: " << cropSize << " sH: " << sH << " sW:" << sW << " "
+            //    << imgNameList.at(imgId) << std::endl;
+            for (int hid = 0; hid < cropSize; hid++)
+            {
+                for (int wid = 0; wid < cropSize; wid++)
+                {
+                    cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
+                }
+            }
+            //DebugLog << "   done" << std::endl;
+            grayImg.release();
+            cv::Mat outputImg(cvOutputSize, CV_8UC1);
+            cv::resize(cropImg, outputImg, cvOutputSize);
+            cropImg.release();
+            //detect if this is a face
+            std::vector<int> faces;
+            //DebugLog << " detect img" << std::endl;
+            if (mpFaceDetection->DetectFace(outputImg, faces) > 0)
+            {
+                //DebugLog << "   done yes" << std::endl;
+                std::stringstream ss;
+                ss << "./StrongNonFace/strongNonFace_" << strongDataNum << ".jpg";
+                std::string outputName;
+                ss >> outputName;
+                cv::imwrite(outputName, outputImg);
+                strongDataNum++;
+                DebugLog << "Radio: " << float(strongDataNum) / float(rawNum) << std::endl;
+            }
+            //DebugLog << "   done" << std::endl;
+            outputImg.release();
+        }
+        std::ofstream fout("./StrongNonFace/strongNonFace.txt");
+        fout << acceptedNum << std::endl;
+        for (int imgId = 0; imgId < acceptedNum; imgId++)
+        {
+            fout << "strongNonFace_" << imgId << ".jpg" << std::endl;
+        }
+        fout.close();
+        DebugLog << "GenerateStrongNonFace Done" << std::endl; 
     }
 
     void FaceFeatureRecognitionApp::GenerateNonFace(void)
