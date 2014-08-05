@@ -128,8 +128,12 @@ namespace MagicApp
             //GenerateFacewareHouseFace();
             //GenerateNonFace();
             //GenerateNonFaceFromFace();
+            //GenerateStrongNonFace();
+            TestFaceDetection();
+        }
+        else if (arg.key == OIS::KC_G)
+        {
             GenerateStrongNonFace();
-            //TestFaceDetection();
         }
 
         return true;
@@ -505,67 +509,74 @@ namespace MagicApp
             imgNameList.at(dataId) = imgName;
         }
         fin.close();
-        int maxCropSize = 40;
+        int maxCropSize = 100;
         int minCropSize = 10;
         int outputSize = 64;
         cv::Size cvOutputSize(outputSize, outputSize);
         int rawNum = 0;
         int strongDataNum = 0;
-        int acceptedNum = 10000;
+        int acceptedNum = 1000;
         srand(time(NULL));
         while (strongDataNum < acceptedNum)
         {
-            rawNum++;
             int imgId = rand() % dataSize;
-            //DebugLog << " readImg" << std::endl;
             cv::Mat grayImg = cv::imread(imgNameList.at(imgId));
-            //DebugLog << "   done" << std::endl;
-            int cropSize = minCropSize + rand() % (maxCropSize - minCropSize); 
-            int imgH = grayImg.rows;
-            int hMax = imgH - cropSize;
-            int imgW = grayImg.cols;
-            int wMax = imgW - cropSize;
-            int sH = rand() % hMax;
-            int sW = rand() % wMax;
-            cv::Mat cropImg(cropSize, cropSize, CV_8UC1);
-            //DebugLog << " copy cropImg: cropSize: " << cropSize << " sH: " << sH << " sW:" << sW << " "
-            //    << imgNameList.at(imgId) << std::endl;
-            for (int hid = 0; hid < cropSize; hid++)
+            if (grayImg.data == NULL)
             {
-                for (int wid = 0; wid < cropSize; wid++)
+                DebugLog << "error: grayImg.data == NULL: " << imgNameList.at(imgId) << std::endl;
+                continue;
+            }
+            int localSampleNum = 0;
+            while (localSampleNum < 1000)
+            {
+                localSampleNum++;
+                rawNum++;
+                int cropSize = minCropSize + rand() % (maxCropSize - minCropSize);
+                int imgH = grayImg.rows;
+                int hMax = imgH - cropSize;
+                int imgW = grayImg.cols;
+                int wMax = imgW - cropSize;
+                int sH = rand() % hMax;
+                int sW = rand() % wMax;
+                cv::Mat cropImg(cropSize, cropSize, CV_8UC1);
+                for (int hid = 0; hid < cropSize; hid++)
                 {
-                    cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
+                    for (int wid = 0; wid < cropSize; wid++)
+                    {
+                        cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
+                    }
                 }
-            }
-            //DebugLog << "   done" << std::endl;
+                cv::Mat outputImg(cvOutputSize, CV_8UC1);
+                cv::resize(cropImg, outputImg, cvOutputSize);
+                cropImg.release();
+                //detect if this is a face
+                std::vector<int> faces;
+                if (mpFaceDetection->DetectFace(outputImg, faces) > 0)
+                {
+                    std::stringstream ss;
+                    ss << "./WeakNonFace/bigNonface2_" << strongDataNum << ".jpg";
+                    std::string outputName;
+                    ss >> outputName;
+                    cv::imwrite(outputName, outputImg);
+                    strongDataNum++;
+                    outputImg.release();
+                    DebugLog << "Radio: " << float(strongDataNum) / float(rawNum) << std::endl;
+                    break;
+                }
+                else
+                {
+                    outputImg.release();
+                }
+            }     
             grayImg.release();
-            cv::Mat outputImg(cvOutputSize, CV_8UC1);
-            cv::resize(cropImg, outputImg, cvOutputSize);
-            cropImg.release();
-            //detect if this is a face
-            std::vector<int> faces;
-            //DebugLog << " detect img" << std::endl;
-            if (mpFaceDetection->DetectFace(outputImg, faces) > 0)
-            {
-                //DebugLog << "   done yes" << std::endl;
-                std::stringstream ss;
-                ss << "./StrongNonFace/strongNonFace_" << strongDataNum << ".jpg";
-                std::string outputName;
-                ss >> outputName;
-                cv::imwrite(outputName, outputImg);
-                strongDataNum++;
-                DebugLog << "Radio: " << float(strongDataNum) / float(rawNum) << std::endl;
-            }
-            //DebugLog << "   done" << std::endl;
-            outputImg.release();
         }
-        std::ofstream fout("./StrongNonFace/strongNonFace.txt");
+        /*std::ofstream fout("./StrongNonFace/strongNonFace.txt");
         fout << acceptedNum << std::endl;
         for (int imgId = 0; imgId < acceptedNum; imgId++)
         {
             fout << "strongNonFace_" << imgId << ".jpg" << std::endl;
         }
-        fout.close();
+        fout.close();*/
         DebugLog << "GenerateStrongNonFace Done" << std::endl; 
     }
 

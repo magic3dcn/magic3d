@@ -74,6 +74,7 @@ namespace MagicDIP
         void Reset(void);
 
     private:
+        double mDetectionRate;
         std::vector<HaarClassifier*> mClassifiers;
         std::vector<double> mClassifierWeights;
         double mThreshold;

@@ -296,8 +296,8 @@ namespace MagicDIP
     {
         int lRow = floor(mFeature.lRow * scale + 0.5);
         int lCol = floor(mFeature.lCol * scale + 0.5);
-        int sRowAbs = mFeature.sRow + sRow;
-        int sColAbs = mFeature.sCol + sCol;
+        int sRowAbs = floor(mFeature.sRow * scale + 0.5) + sRow;
+        int sColAbs = floor(mFeature.sCol * scale + 0.5) + sCol;
         if (mFeature.type == 0)
         {
             int posValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs, 
@@ -371,6 +371,14 @@ namespace MagicDIP
 
     unsigned int HaarClassifier::GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const
     {
+        int imgH = integralImg.size() / imgW;
+        if (hid >= imgH || wid >= imgW)
+        {
+            DebugLog << "error: hid: " << hid << " imgH: " << imgH << " wid: " << wid << " imgW: " << imgW << std::endl;
+        }
+        hid = hid >= imgH ? (imgH - 1) : hid;
+        wid = wid >= imgW ? (imgW - 1) : wid;
+
         return integralImg.at(hid * imgW + wid);
     }
 
@@ -520,6 +528,7 @@ namespace MagicDIP
     }
 
     AdaBoostFaceDetection::AdaBoostFaceDetection() :
+        mDetectionRate(0.999),
         mClassifiers(),
         mClassifierWeights(),
         mThreshold(0),
@@ -564,7 +573,7 @@ namespace MagicDIP
         std::vector<int> faceResFlag(faceCount);
         std::vector<int> nonFaceResFlag(nonFaceCount);
         double epsilon = 1.0e-10;
-        mThreshold = 0.0;
+        //mThreshold = 0.0;
         for (int levelId = 0; levelId < levelCount; levelId++)
         {
             double levelTime = MagicCore::ToolKit::GetTime();
@@ -633,7 +642,7 @@ namespace MagicDIP
             double weight = log(1.0 / beta);
             DebugLog << "  weight: " << weight << " beta: " << beta << std::endl;
             mClassifierWeights.push_back(weight);
-            mThreshold += weight;
+            //mThreshold += weight;
 
             //Update dataWeights
             double weightSum = 0.0;
@@ -657,7 +666,22 @@ namespace MagicDIP
             }
             DebugLog << "  time: " << MagicCore::ToolKit::GetTime() - levelTime << std::endl;
         }
-        mThreshold *= 0.5;
+        //mThreshold *= 0.5;
+        //Calculate mThreshold
+        std::vector<double> faceDetectValues(faceCount);
+        int thresholdIndex = floor(faceCount * (1.0 - mDetectionRate) + 0.5);
+        for (int faceId = 0; faceId < faceCount; faceId++)
+        {
+            double res = 0.0;
+            for (int cid = 0; cid < levelCount; cid++)
+            {
+                res += mClassifiers.at(cid)->Predict(faceImgLoader, faceId) * mClassifierWeights.at(cid);
+            }
+            faceDetectValues.at(faceId) = res;
+        }
+        std::nth_element(faceDetectValues.begin(), faceDetectValues.begin() + thresholdIndex, faceDetectValues.end());
+        mThreshold = faceDetectValues.at(thresholdIndex);
+        DebugLog << "  mThreshold: " << mThreshold << " index: " << thresholdIndex << std::endl; 
 
         ClearClassifierCadidates();
 
@@ -872,6 +896,7 @@ namespace MagicDIP
 
     void AdaBoostFaceDetection::Reset(void)
     {
+        mDetectionRate = 0.999;
         mThreshold = 0;
         for (std::vector<HaarClassifier*>::iterator itr = mClassifiers.begin(); itr != mClassifiers.end(); itr++)
         {
