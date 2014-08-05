@@ -509,13 +509,13 @@ namespace MagicApp
             imgNameList.at(dataId) = imgName;
         }
         fin.close();
-        int maxCropSize = 100;
+        int maxCropSize = 64;
         int minCropSize = 10;
         int outputSize = 64;
         cv::Size cvOutputSize(outputSize, outputSize);
         int rawNum = 0;
         int strongDataNum = 0;
-        int acceptedNum = 1000;
+        int acceptedNum = 4000;
         srand(time(NULL));
         while (strongDataNum < acceptedNum)
         {
@@ -554,7 +554,7 @@ namespace MagicApp
                 if (mpFaceDetection->DetectFace(outputImg, faces) > 0)
                 {
                     std::stringstream ss;
-                    ss << "./WeakNonFace/bigNonface2_" << strongDataNum << ".jpg";
+                    ss << "./WeakNonFace2/weakNonFace2_" << strongDataNum << ".jpg";
                     std::string outputName;
                     ss >> outputName;
                     cv::imwrite(outputName, outputImg);
