@@ -42,7 +42,6 @@ namespace MagicDIP
         int CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const;
         int ImgBoxValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, int eRow, int eCol) const;
         unsigned int GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const;
-        int CalCulateLineSegmentOverlap(int sa, int la, int sb, int lb) const;
 
     private:
         HaarFeature mFeature;
@@ -97,6 +96,8 @@ namespace MagicDIP
 
     private:
         int DetectOneFace(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, double scale) const;
+        void PostProcessFaces(std::vector<int>& faces) const;
+        bool IsTheSameFace(int sRowA, int sColA, int lRowA, int lColA, int sRowB, int sColB, int lRowB, int lColB) const;
         void Reset(void);
 
     private:

@@ -139,8 +139,8 @@ namespace MagicApp
             mpRealTimeDetector = new MagicDIP::RealTimeFaceDetection;
         }
         std::vector<int> layerCount;
-        layerCount.push_back(5);
-        layerCount.push_back(5);
+        layerCount.push_back(10);
+        layerCount.push_back(10);
         layerCount.push_back(10);
         layerCount.push_back(10);
         layerCount.push_back(25);

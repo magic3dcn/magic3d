@@ -61,6 +61,7 @@ namespace MagicApp
         void MarkPointsToImage(cv::Mat& img, const std::vector<double>* markList, 
             unsigned char blue, unsigned char green, unsigned char red, int markWidth);
         void TestFaceDetection(void); //to do
+        void TestFaceDetectionInFile(void);
 
     private:
         FaceFeatureRecognitionAppUI mUI;

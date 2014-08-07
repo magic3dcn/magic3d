@@ -39,6 +39,23 @@ namespace
     {
         return mValue < vi.mValue;
     }
+
+    static int CalCulateLineSegmentOverlap(int sa, int la, int sb, int lb)
+    {
+        int sMin = sa < sb ? sa : sb;
+        int ea = sa + la;
+        int eb = sb + lb;
+        int eMax = ea > eb ? ea : eb;
+        int interLen = la + lb - (eMax - sMin);
+        if (interLen > 0)
+        {
+            return interLen;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
 
 namespace MagicDIP
@@ -508,23 +525,6 @@ namespace MagicDIP
 
         cv::imwrite(imgName, featureImg);
         featureImg.release();
-    }
-
-    int HaarClassifier::CalCulateLineSegmentOverlap(int sa, int la, int sb, int lb) const
-    {
-        int sMin = sa < sb ? sa : sb;
-        int ea = sa + la;
-        int eb = sb + lb;
-        int eMax = ea > eb ? ea : eb;
-        int interLen = la + lb - (eMax - sMin);
-        if (interLen > 0)
-        {
-            return interLen;
-        }
-        else
-        {
-            return 0;
-        }
     }
 
     AdaBoostFaceDetection::AdaBoostFaceDetection() :
@@ -1070,6 +1070,7 @@ namespace MagicDIP
             curStep = stepSize * curScale;
             //break;
         }
+        PostProcessFaces(faces);
         return (faces.size() / 4);
     }
 
@@ -1122,6 +1123,122 @@ namespace MagicDIP
             }
         }
         return 1;
+    }
+
+    void RealTimeFaceDetection::PostProcessFaces(std::vector<int>& faces) const
+    {
+        if (faces.size() > 4)
+        {
+            int faceCount = faces.size() / 4;
+            std::vector<int> faceLabels(faceCount, -1);
+            int newLabel = 0;
+            for (int faceId = 0; faceId < faceCount; faceId++)
+            {
+                int curLabel = faceLabels.at(faceId);
+                if (curLabel == -1)
+                {
+                    curLabel = newLabel;
+                    newLabel++;
+                    faceLabels.at(faceId) = curLabel;
+                }
+                for (int compareId = faceId + 1; compareId < faceCount; compareId++)
+                {
+                    if (faceLabels.at(faceId) == faceLabels.at(compareId))
+                    {
+                        continue;
+                    }
+                    else if (faceLabels.at(compareId) == -1)
+                    {
+                        int faceBaseId = faceId * 4;
+                        int compareBaseId = compareId * 4;
+                        if ( IsTheSameFace(faces.at(faceBaseId), faces.at(faceBaseId + 1), faces.at(faceBaseId + 2), faces.at(faceBaseId + 3),
+                            faces.at(compareBaseId), faces.at(compareBaseId + 1), faces.at(compareBaseId + 2), faces.at(compareBaseId + 3)) )
+                        {
+                            faceLabels.at(compareId) = curLabel;
+                        }
+                    }
+                    else
+                    {
+                        int faceBaseId = faceId * 4;
+                        int compareBaseId = compareId * 4;
+                        if ( IsTheSameFace(faces.at(faceBaseId), faces.at(faceBaseId + 1), faces.at(faceBaseId + 2), faces.at(faceBaseId + 3),
+                            faces.at(compareBaseId), faces.at(compareBaseId + 1), faces.at(compareBaseId + 2), faces.at(compareBaseId + 3)) )
+                        {
+                            int preChangeLabel, postChangeLabel; 
+                            if (faceLabels.at(compareId) < faceLabels.at(faceId))
+                            {
+                                preChangeLabel = faceLabels.at(faceId);
+                                postChangeLabel = faceLabels.at(compareId);
+                                curLabel = postChangeLabel;
+                            }
+                            else
+                            {
+                                preChangeLabel = faceLabels.at(compareId);
+                                postChangeLabel = faceLabels.at(faceId);
+                            }
+                            for (int changeId = 0; changeId < faceCount; changeId++)
+                            {
+                                if (faceLabels.at(changeId) == preChangeLabel)
+                                {
+                                    faceLabels.at(changeId) = postChangeLabel;
+                                }
+                            }
+                        }
+                    } // end of else
+                } // end of compareId for
+            } // end of faceId for
+
+            std::vector<int> facesCopy = faces;
+            faces.clear();
+            for (int faceId = 0; faceId < faceCount; faceId++)
+            {
+                if (faceLabels.at(faceId) == -1)
+                {
+                    continue;
+                }
+                std::vector<int> clusters;
+                int curLabel = faceLabels.at(faceId);
+                for (int compareId = faceId; compareId < faceCount; compareId++)
+                {
+                    if (faceLabels.at(compareId) == curLabel)
+                    {
+                        clusters.push_back(compareId);
+                        faceLabels.at(compareId) = -1;
+                    }
+                }
+                //Process clusters
+                //simple average
+                int sRow = 0;
+                int sCol = 0;
+                int lRow = 0;
+                int lCol = 0;
+                for (std::vector<int>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
+                {
+                    int baseIndex = (*itr) * 4;
+                    sRow += facesCopy.at(baseIndex);
+                    sCol += facesCopy.at(baseIndex + 1);
+                    lRow += facesCopy.at(baseIndex + 2);
+                    lCol += facesCopy.at(baseIndex + 3);
+                }
+                float clusterCount = clusters.size();
+                faces.push_back(sRow / clusterCount);
+                faces.push_back(sCol / clusterCount);
+                faces.push_back(lRow / clusterCount);
+                faces.push_back(lCol / clusterCount);
+            }
+        }
+    }
+
+    bool RealTimeFaceDetection::IsTheSameFace(int sRowA, int sColA, int lRowA, int lColA, int sRowB, int sColB, int lRowB, int lColB) const
+    {
+        int wOverlap = CalCulateLineSegmentOverlap(sColA, lColA, sColB, lColB);
+        int hOverlap = CalCulateLineSegmentOverlap(sRowA, lRowA, sRowB, lRowB);
+        float overlapArea = float(wOverlap * hOverlap);
+        float areaA = float(lRowA * lColA);
+        float areaB = float(lRowB * lColB);
+        float simA = overlapArea / areaA;
+        float simB = overlapArea / areaB;
+        return (simA > 0.5f || simB > 0.5f);
     }
 
     void RealTimeFaceDetection::Reset(void)
