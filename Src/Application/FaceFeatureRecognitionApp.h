@@ -54,6 +54,9 @@ namespace MagicApp
         void GenerateNonFaceFromFace(void);
         void GenerateStrongNonFace(void);
 
+        void TransferColorToGray(void);
+        void GenerateTrainingFaces(void);
+
     private:
         void SetupScene(void);
         void ShutdownScene(void);
