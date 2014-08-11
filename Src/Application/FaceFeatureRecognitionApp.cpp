@@ -9,6 +9,38 @@
 #include <time.h>
 #include <stdio.h>
 
+namespace
+{
+    static int CalCulateLineSegmentOverlap(int sa, int la, int sb, int lb)
+    {
+        int sMin = sa < sb ? sa : sb;
+        int ea = sa + la;
+        int eb = sb + lb;
+        int eMax = ea > eb ? ea : eb;
+        int interLen = la + lb - (eMax - sMin);
+        if (interLen > 0)
+        {
+            return interLen;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    static double CalculateOverlapRate(int rowA, int colA, int lenA, int rowB, int colB, int lenB)
+    {
+        int overlapRow = CalCulateLineSegmentOverlap(rowA, lenA, rowB, lenB);
+        int overLapCol = CalCulateLineSegmentOverlap(colA, lenA, colB, lenB);
+        double areaA = lenA * lenA;
+        double areaB = lenB * lenB;
+        double areaCommon = overlapRow * overLapCol;
+        double rateA = areaCommon / areaA;
+        double rateB = areaCommon / areaB;
+        return (rateA < rateB ? rateA : rateB);
+    }
+}
+
 namespace MagicApp
 {
     FaceFeatureRecognitionApp::FaceFeatureRecognitionApp() :
@@ -132,8 +164,10 @@ namespace MagicApp
             //GenerateStrongNonFace();
             //TestFaceDetection();
             //TestFaceDetectionInFile();
+            
             //TransferColorToGray();
-            GenerateTrainingFaces();
+            //GenerateTrainingFaces();
+            GenerataRandomNonFace();
         }
         else if (arg.key == OIS::KC_G)
         {
@@ -588,6 +622,98 @@ namespace MagicApp
             colorImg.release();
             cv::imwrite(imgName, grayImg);
             grayImg.release();
+        }
+        fin.close();
+    }
+
+    void FaceFeatureRecognitionApp::GenerateFalsePositives(void)
+    {
+
+    }
+
+    void FaceFeatureRecognitionApp::GenerataRandomNonFace(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string imgPath = fileName;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+        }
+        imgPath.erase(pos);
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        srand(time(NULL));
+        double maxOverlapRate = 0.64;
+        std::string outputPath = "./RandowNonFace/randonNonFace_fw_";
+        int outputSize = 32;
+        int minLen = 10;
+        int imgId = 0;
+        int perImgCount = 2;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            fin.getline(pLine, maxSize);
+            std::string landName(pLine);
+            landName = imgPath + landName;
+            std::string imgName = landName;
+            std::string posName = landName;
+            std::string::size_type pos = imgName.rfind(".");
+            imgName.replace(pos, 5, ".jpg");
+            pos = posName.rfind(".");
+            posName.replace(pos, 5, ".pos");
+            
+            std::ifstream posFin(posName);
+            int faceRow, faceCol, faceLen;
+            posFin >> faceRow >> faceCol >> faceLen;
+            posFin.close();
+
+            cv::Mat img = cv::imread(imgName);
+            int imgH = img.rows;
+            int imgW = img.cols;
+            for (int perId = 0; perId < perImgCount; perId++)
+            {
+                std::stringstream ss;
+                ss << outputPath << imgId << ".jpg";
+                std::string outputName;
+                ss >> outputName;
+                ss.clear();
+                imgId++;
+                int cropRow, cropCol, cropLen;
+                while (true)
+                {
+                    cropRow = rand() % (imgH - minLen);
+                    cropCol = rand() % (imgW - minLen);
+                    int maxRowLen = imgH - cropRow;
+                    int maxColLen = imgW - cropCol;
+                    int maxLen = maxRowLen < maxColLen ? maxRowLen : maxColLen;
+                    cropLen = rand() % (maxLen - minLen) + minLen;
+                    if (CalculateOverlapRate(faceRow, faceCol, faceLen, cropRow, cropCol, cropLen) < maxOverlapRate)
+                    {
+                        break;
+                    }
+                }
+                cv::Mat cropImg(cropLen, cropLen, CV_8UC1);
+                for (int hid = 0; hid < cropLen; hid++)
+                {
+                    for (int wid = 0; wid < cropLen; wid++)
+                    {
+                        cropImg.ptr(hid, wid)[0] = img.ptr(cropRow + hid, cropCol + wid)[0];
+                    }
+                }
+                cv::Size cvOutputSize(outputSize, outputSize);
+                cv::Mat outputImg(cvOutputSize, CV_8UC1);
+                cv::resize(cropImg, outputImg, cvOutputSize);
+                cropImg.release();
+                cv::imwrite(outputName, outputImg);
+                outputImg.release();
+            }
+            img.release();
         }
         fin.close();
     }

@@ -56,6 +56,8 @@ namespace MagicApp
 
         void TransferColorToGray(void);
         void GenerateTrainingFaces(void);
+        void GenerataRandomNonFace(void);
+        void GenerateFalsePositives(void);
 
     private:
         void SetupScene(void);

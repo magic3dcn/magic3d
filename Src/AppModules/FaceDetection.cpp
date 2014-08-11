@@ -146,6 +146,7 @@ namespace MagicApp
         layerCount.push_back(25);
         layerCount.push_back(25);
         layerCount.push_back(25);
+        layerCount.push_back(25);
         layerCount.push_back(50);
         layerCount.push_back(50);
         layerCount.push_back(50);

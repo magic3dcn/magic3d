@@ -775,45 +775,46 @@ namespace MagicDIP
     void AdaBoostFaceDetection::GenerateClassifierCadidates(int baseImgSize)
     {
         //Enhancement: use uniform sampling strategy.
-        for (int sRow = 0; sRow < baseImgSize; sRow += 4)
+        for (int sRow = 0; sRow < baseImgSize; sRow += 2)
         {
-            for (int sCol = 0; sCol < baseImgSize; sCol += 4)
+            for (int sCol = 0; sCol < baseImgSize; sCol += 2)
             {
-                int halfImgSize = baseImgSize / 2;
                 int colMaxLen = baseImgSize - sCol;
-                //colMaxLen = colMaxLen > halfImgSize ? halfImgSize : colMaxLen;
                 int rowMaxLen = baseImgSize - sRow;
-                //rowMaxLen = rowMaxLen > halfImgSize ? halfImgSize : rowMaxLen;
-                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+
+                for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
                 {
-                    for (int lCol = 8; lCol <= colMaxLen; lCol += 8)
+                    for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
                     {
                         HaarFeature feature = {sRow, sCol, lRow, lCol, 0};
                         HaarClassifier* pClassifier = new HaarClassifier(feature);
                         mClassifierCandidates.push_back(pClassifier);
                     }
                 }
-                for (int lRow = 8; lRow <= rowMaxLen; lRow += 8)
+
+                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
                 {
-                    for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
+                    for (int lCol = 2; lCol <= colMaxLen; lCol += 2)
                     {
                         HaarFeature feature = {sRow, sCol, lRow, lCol, 1};
                         HaarClassifier* pClassifier = new HaarClassifier(feature);
                         mClassifierCandidates.push_back(pClassifier);
                     }
                 }
-                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+
+                for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
                 {
-                    for (int lCol = 12; lCol <= colMaxLen; lCol += 12)
+                    for (int lCol = 6; lCol <= colMaxLen; lCol += 6)
                     {
                         HaarFeature feature = {sRow, sCol, lRow, lCol, 2};
                         HaarClassifier* pClassifier = new HaarClassifier(feature);
                         mClassifierCandidates.push_back(pClassifier);
                     }
                 }
-                for (int lRow = 8; lRow <= rowMaxLen; lRow += 8)
+
+                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
                 {
-                    for (int lCol = 8; lCol <= colMaxLen; lCol += 8)
+                    for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
                     {
                         HaarFeature feature = {sRow, sCol, lRow, lCol, 3};
                         HaarClassifier* pClassifier = new HaarClassifier(feature);
