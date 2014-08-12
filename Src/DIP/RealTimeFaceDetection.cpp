@@ -389,10 +389,10 @@ namespace MagicDIP
     unsigned int HaarClassifier::GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const
     {
         int imgH = integralImg.size() / imgW;
-        if (hid >= imgH || wid >= imgW)
+        /*if (hid >= imgH || wid >= imgW)
         {
             DebugLog << "error: hid: " << hid << " imgH: " << imgH << " wid: " << wid << " imgW: " << imgW << std::endl;
-        }
+        }*/
         hid = hid >= imgH ? (imgH - 1) : hid;
         wid = wid >= imgW ? (imgW - 1) : wid;
 
@@ -1239,7 +1239,7 @@ namespace MagicDIP
         float areaB = float(lRowB * lColB);
         float simA = overlapArea / areaA;
         float simB = overlapArea / areaB;
-        return (simA > 0.5f || simB > 0.5f);
+        return (simA > 0.75f && simB > 0.75f);
     }
 
     void RealTimeFaceDetection::Reset(void)

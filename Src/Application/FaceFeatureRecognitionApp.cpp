@@ -167,7 +167,8 @@ namespace MagicApp
             
             //TransferColorToGray();
             //GenerateTrainingFaces();
-            GenerataRandomNonFace();
+            //GenerataRandomNonFace();
+            GenerateFalsePositives();
         }
         else if (arg.key == OIS::KC_G)
         {
@@ -628,7 +629,79 @@ namespace MagicApp
 
     void FaceFeatureRecognitionApp::GenerateFalsePositives(void)
     {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string imgPath = fileName;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+        }
+        imgPath.erase(pos);
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        srand(time(NULL));
+        double maxOverlapRate = 0.64;
+        std::string outputPath = "./NonFace1/nonFace1_lfw_";
+        int outputSize = 32;
+        int outputId = 0;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            fin.getline(pLine, maxSize);
+            std::string landName(pLine);
+            landName = imgPath + landName;
+            std::string imgName = landName;
+            std::string posName = landName;
+            std::string::size_type pos = imgName.rfind(".");
+            imgName.replace(pos, 5, ".jpg");
+            pos = posName.rfind(".");
+            posName.replace(pos, 5, ".pos");
+            
+            std::ifstream posFin(posName);
+            int faceRow, faceCol, faceLen;
+            posFin >> faceRow >> faceCol >> faceLen;
+            posFin.close();
 
+            cv::Mat img = cv::imread(imgName);
+            std::vector<int> faces;
+            int detectNum = mpFaceDetection->DetectFace(img, faces);
+            for (int detectId = 0; detectId < detectNum; detectId++)
+            {
+                int detectBase = detectId * 4;
+                int detectRow = faces.at(detectBase);
+                int detectCol = faces.at(detectBase + 1);
+                int detectLen = faces.at(detectBase + 2);
+                if (CalculateOverlapRate(faceRow, faceCol, faceLen, detectRow, detectCol, detectLen) < maxOverlapRate)
+                {
+                    cv::Mat detectImg(detectLen, detectLen, CV_8UC1);
+                    for (int hid = 0; hid < detectLen; hid++)
+                    {
+                        for (int wid = 0; wid < detectLen; wid++)
+                        {
+                            detectImg.ptr(hid, wid)[0] = img.ptr(detectRow + hid, detectCol + wid)[0];
+                        }
+                    }
+                    cv::Size cvOutputSize(outputSize, outputSize);
+                    cv::Mat outputImg(cvOutputSize, CV_8UC1);
+                    cv::resize(detectImg, outputImg, cvOutputSize);
+                    detectImg.release();
+                    std::stringstream ss;
+                    ss << outputPath << outputId << ".jpg";
+                    std::string outputImgName;
+                    ss >> outputImgName;
+                    outputId++;
+                    cv::imwrite(outputImgName, outputImg);
+                    outputImg.release();
+                }
+            }
+            img.release();
+        }
+        fin.close();
     }
 
     void FaceFeatureRecognitionApp::GenerataRandomNonFace(void)
