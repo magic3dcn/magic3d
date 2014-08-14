@@ -169,6 +169,7 @@ namespace MagicApp
             //GenerateTrainingFaces();
             //GenerataRandomNonFace();
             GenerateFalsePositives();
+            //GenerateFalsePositivesFromNonFace();
         }
         else if (arg.key == OIS::KC_G)
         {
@@ -645,13 +646,13 @@ namespace MagicApp
         const int maxSize = 512;
         char pLine[maxSize];
         fin.getline(pLine, maxSize);
-        srand(time(NULL));
-        double maxOverlapRate = 0.64;
-        std::string outputPath = "./NonFace1/nonFace1_lfw_";
+        double maxOverlapRate = 0.5;
+        std::string outputPath = "./NonFacefw2/nonFace2_fw_";
         int outputSize = 32;
         int outputId = 0;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
+            DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
             fin.getline(pLine, maxSize);
             std::string landName(pLine);
             landName = imgPath + landName;
@@ -668,8 +669,14 @@ namespace MagicApp
             posFin.close();
 
             cv::Mat img = cv::imread(imgName);
+            cv::Size cvHalfSize(img.cols / 2, img.rows / 2);
+            cv::Mat halfImg(cvHalfSize, CV_8UC1);
+            cv::resize(img, halfImg, cvHalfSize);
+
+            //cv::Mat halfImg = cv::imread(imgName);
+
             std::vector<int> faces;
-            int detectNum = mpFaceDetection->DetectFace(img, faces);
+            int detectNum = mpFaceDetection->DetectFace(halfImg, faces);
             for (int detectId = 0; detectId < detectNum; detectId++)
             {
                 int detectBase = detectId * 4;
@@ -683,7 +690,7 @@ namespace MagicApp
                     {
                         for (int wid = 0; wid < detectLen; wid++)
                         {
-                            detectImg.ptr(hid, wid)[0] = img.ptr(detectRow + hid, detectCol + wid)[0];
+                            detectImg.ptr(hid, wid)[0] = halfImg.ptr(detectRow + hid, detectCol + wid)[0];
                         }
                     }
                     cv::Size cvOutputSize(outputSize, outputSize);
@@ -698,6 +705,50 @@ namespace MagicApp
                     cv::imwrite(outputImgName, outputImg);
                     outputImg.release();
                 }
+            }
+            halfImg.release();
+        }
+        fin.close();
+    }
+
+    void FaceFeatureRecognitionApp::GenerateFalsePositivesFromNonFace(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
+        std::string imgPath = fileName;
+        std::string::size_type pos = imgPath.rfind("/");
+        if (pos == std::string::npos)
+        {
+            pos = imgPath.rfind("\\");
+        }
+        imgPath.erase(pos);
+        imgPath += "/";
+        std::ifstream fin(fileName);
+        int dataSize;
+        fin >> dataSize;
+        const int maxSize = 512;
+        char pLine[maxSize];
+        fin.getline(pLine, maxSize);
+        std::string outputPath = "./NonFacefw1_1/nonFace1_fw_1_";
+        int outputId = 0;
+        for (int dataId = 0; dataId < dataSize; dataId++)
+        {
+            DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
+            fin.getline(pLine, maxSize);
+            std::string imgName(pLine);
+            imgName = imgPath + imgName;
+            cv::Mat img = cv::imread(imgName);
+            std::vector<int> faces;
+            int detectNum = mpFaceDetection->DetectFace(img, faces);
+            if (detectNum > 0)
+            {
+                std::stringstream ss;
+                ss << outputPath << outputId << ".jpg";
+                std::string outputName;
+                ss >> outputName;
+                cv::imwrite(outputName, img);
+                outputId++;
             }
             img.release();
         }

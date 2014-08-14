@@ -104,27 +104,36 @@ namespace MagicDIP
         const ImageLoader& nonFaceImgLoader, const std::vector<double>& nonFaceDataWeights, const std::vector<int>& nonFaceIndex,
         double* trainError)
     {
+        //double startTime = MagicCore::ToolKit::GetTime();
         int faceDataCount = faceDataWeights.size();
         std::vector<ValueIndex> faceFeatures(faceDataCount);
         double faceSum = 0;
+        //double featureTimeStart = MagicCore::ToolKit::GetTime();
         for (int faceId = 0; faceId < faceDataCount; faceId++)
         {
             faceFeatures.at(faceId).mValue = CalFeatureValue(faceImgLoader, faceId);
             faceFeatures.at(faceId).mIndex = faceId;
             faceSum += faceDataWeights.at(faceId);
         }
+        //double featureTime = MagicCore::ToolKit::GetTime() - featureTimeStart;
+        //double sortStartTime = MagicCore::ToolKit::GetTime();
         std::sort(faceFeatures.begin(), faceFeatures.end());
+        //double sortTime =  MagicCore::ToolKit::GetTime() - sortStartTime;
 
         int nonFaceDataCount = nonFaceDataWeights.size();
         std::vector<ValueIndex> nonFaceFeatures(nonFaceDataCount);
         double nonFaceSum = 0;
+        //featureTimeStart = MagicCore::ToolKit::GetTime();
         for (int nonFaceId = 0; nonFaceId < nonFaceDataCount; nonFaceId++)
         {
             nonFaceFeatures.at(nonFaceId).mValue = CalFeatureValue(nonFaceImgLoader, nonFaceIndex.at(nonFaceId));
             nonFaceFeatures.at(nonFaceId).mIndex = nonFaceId;
             nonFaceSum += nonFaceDataWeights.at(nonFaceId);
         }
+        //featureTime += MagicCore::ToolKit::GetTime() - featureTimeStart;
+        //sortStartTime = MagicCore::ToolKit::GetTime();
         std::sort(nonFaceFeatures.begin(), nonFaceFeatures.end());
+        //sortTime += MagicCore::ToolKit::GetTime() - sortStartTime;
 
         double minError = DBL_MAX; //1.7976931348623158e+308
         int faceId = 0;
@@ -206,6 +215,9 @@ namespace MagicDIP
             }
         } 
         *trainError = minError;
+        //double totalTime = MagicCore::ToolKit::GetTime() - startTime;
+        //DebugLog << "    weak learn total time: " << totalTime << " sortTime: " << sortTime / totalTime 
+        //    << " featureTime: " << featureTime / totalTime << std::endl;
         
         return MAGIC_NO_ERROR;
     }
@@ -574,8 +586,13 @@ namespace MagicDIP
         std::vector<int> nonFaceResFlag(nonFaceCount);
         double epsilon = 1.0e-10;
         //mThreshold = 0.0;
+        bool isValidCandidateExist = true;
         for (int levelId = 0; levelId < levelCount; levelId++)
         {
+            if (!isValidCandidateExist)
+            {
+                break;
+            }
             double levelTime = MagicCore::ToolKit::GetTime();
             DebugLog << " AdaBoost level: " << levelId << std::endl;
             int weakClassifierId = TrainWeakClassifier(faceImgLoader, faceWeights, nonFaceImgLoader, nonFaceWeights,
@@ -588,7 +605,12 @@ namespace MagicDIP
                 DebugLog << "  Haar feature: " << hf.sRow << " " << hf.sCol << " " << hf.lRow << " " << hf.lCol << " " << hf.type << std::endl;
                 mClassifiers.push_back(pWeakClassifier);
                 mClassifierCandidates.at(weakClassifierId) = NULL;
-                RemoveSimilarClassifierCandidates(hf);
+                int validCount = RemoveSimilarClassifierCandidates(hf);
+                if (validCount == 0)
+                {
+                    isValidCandidateExist = false;
+                    DebugLog << "There is no valid classifier candidate now" << std::endl;
+                }
             }
             else
             {
@@ -673,7 +695,7 @@ namespace MagicDIP
         for (int faceId = 0; faceId < faceCount; faceId++)
         {
             double res = 0.0;
-            for (int cid = 0; cid < levelCount; cid++)
+            for (int cid = 0; cid < mClassifiers.size(); cid++)
             {
                 res += mClassifiers.at(cid)->Predict(faceImgLoader, faceId) * mClassifierWeights.at(cid);
             }
@@ -681,10 +703,10 @@ namespace MagicDIP
         }
         std::nth_element(faceDetectValues.begin(), faceDetectValues.begin() + thresholdIndex, faceDetectValues.end());
         mThreshold = faceDetectValues.at(thresholdIndex);
-        DebugLog << "  mThreshold: " << mThreshold << " index: " << thresholdIndex << std::endl; 
-
+        mThreshold -= 1.0e-15;
         ClearClassifierCadidates();
-
+        DebugLog << "  mThreshold: " << mThreshold << " index: " << thresholdIndex << std::endl;
+        
         return MAGIC_NO_ERROR;
     }
     
@@ -772,61 +794,180 @@ namespace MagicDIP
         }
     }
 
+    std::vector<int> AdaBoostFaceDetection::SampleHaarFeatures(const std::vector<HaarFeature> features, 
+        double sampleRate) const
+    {
+        double timeStart = MagicCore::ToolKit::GetTime();
+
+        int featureCount = features.size();
+        int sampleCount = int(featureCount * sampleRate);
+        std::vector<bool> sampleFlag(featureCount, 0);
+        std::vector<int> sampleIndex(sampleCount);
+        sampleFlag.at(0) = true;
+        sampleIndex.at(0) = 0;
+        std::vector<int> minDist(featureCount, 1.0e10);
+        int curIndex = 0;
+
+        for (int sid = 1; sid < sampleCount; ++sid)
+        {
+           // MagicMath::Vector3 curPos = pPS->GetPoint(curIndex)->GetPosition();
+            HaarFeature curFeature = features.at(curIndex);
+            int maxDist = -1;
+            int pos = -1;
+            for (int vid = 0; vid < featureCount; ++vid)
+            {
+                if (sampleFlag.at(vid) == 1)
+                {
+                    continue;
+                }
+                //int dist = (pPS->GetPoint(vid)->GetPosition() - curPos).LengthSquared();
+                HaarFeature vFeature = features.at(vid);
+                int dist = (vFeature.sRow - curFeature.sRow) * (vFeature.sRow - curFeature.sRow) + 
+                    (vFeature.sCol - curFeature.sCol) * (vFeature.sCol - curFeature.sCol) + 
+                    (vFeature.lRow - curFeature.lRow) * (vFeature.lRow - curFeature.lRow) + 
+                    (vFeature.lCol - curFeature.lCol) * (vFeature.lCol - curFeature.lCol);
+                if (dist < minDist.at(vid))
+                {
+                    minDist.at(vid) = dist;
+                }
+                if (minDist.at(vid) > maxDist)
+                {
+                    maxDist = minDist.at(vid);
+                    pos = vid;
+                }
+            }
+            sampleIndex.at(sid) = pos;
+            curIndex = pos;
+            sampleFlag.at(pos) = 1;
+        }
+        DebugLog << "SampleHaarFeatures time: " << MagicCore::ToolKit::GetTime() - timeStart << std::endl;
+        return sampleIndex;
+    }
+
     void AdaBoostFaceDetection::GenerateClassifierCadidates(int baseImgSize)
     {
-        //Enhancement: use uniform sampling strategy.
-        for (int sRow = 0; sRow < baseImgSize; sRow += 2)
+        std::vector<std::vector<HaarFeature> > features(4);
+        for (int sRow = 0; sRow < baseImgSize; sRow += 1)
         {
-            for (int sCol = 0; sCol < baseImgSize; sCol += 2)
+            for (int sCol = 0; sCol < baseImgSize; sCol += 1)
             {
                 int colMaxLen = baseImgSize - sCol;
                 int rowMaxLen = baseImgSize - sRow;
 
-                for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
-                {
-                    for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
-                    {
-                        HaarFeature feature = {sRow, sCol, lRow, lCol, 0};
-                        HaarClassifier* pClassifier = new HaarClassifier(feature);
-                        mClassifierCandidates.push_back(pClassifier);
-                    }
-                }
-
-                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+                for (int lRow = 1; lRow <= rowMaxLen; lRow += 1)
                 {
                     for (int lCol = 2; lCol <= colMaxLen; lCol += 2)
                     {
-                        HaarFeature feature = {sRow, sCol, lRow, lCol, 1};
-                        HaarClassifier* pClassifier = new HaarClassifier(feature);
-                        mClassifierCandidates.push_back(pClassifier);
+                        HaarFeature feature = {sRow, sCol, lRow, lCol, 0};
+                        features.at(0).push_back(feature);
                     }
                 }
 
                 for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
                 {
-                    for (int lCol = 6; lCol <= colMaxLen; lCol += 6)
+                    for (int lCol = 1; lCol <= colMaxLen; lCol += 1)
                     {
-                        HaarFeature feature = {sRow, sCol, lRow, lCol, 2};
-                        HaarClassifier* pClassifier = new HaarClassifier(feature);
-                        mClassifierCandidates.push_back(pClassifier);
+                        HaarFeature feature = {sRow, sCol, lRow, lCol, 1};
+                        features.at(1).push_back(feature);
                     }
                 }
 
-                for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+                for (int lRow = 1; lRow <= rowMaxLen; lRow += 1)
                 {
-                    for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
+                    for (int lCol = 3; lCol <= colMaxLen; lCol += 3)
+                    {
+                        HaarFeature feature = {sRow, sCol, lRow, lCol, 2};
+                        features.at(2).push_back(feature);
+                    }
+                }
+
+                for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
+                {
+                    for (int lCol = 2; lCol <= colMaxLen; lCol += 2)
                     {
                         HaarFeature feature = {sRow, sCol, lRow, lCol, 3};
-                        HaarClassifier* pClassifier = new HaarClassifier(feature);
-                        mClassifierCandidates.push_back(pClassifier);
+                        features.at(3).push_back(feature);
                     }
                 }
             }
         }
+        double sampleRate = 0.015;
+        //int imgId = 0;
+        for (int typeId = 0; typeId < 4; typeId++)
+        {
+            std::vector<int> samples = SampleHaarFeatures(features.at(typeId), sampleRate);
+            for (std::vector<int>::iterator itr = samples.begin(); itr != samples.end(); itr++)
+            {
+                HaarClassifier* pClassifier = new HaarClassifier(features.at(typeId).at(*itr));
+                mClassifierCandidates.push_back(pClassifier);
+                /*std::stringstream ss;
+                ss << "./featureImg/feature_" << imgId << ".jpg";
+                std::string imgName;
+                ss >> imgName;
+                ss.clear();
+                pClassifier->SaveFeatureAsImage(imgName, baseImgSize);
+                imgId++;*/
+            }
+        }
+        
         DebugLog << "GenerateClassifierCadidates: " << mClassifierCandidates.size() << std::endl;
     }
 
-    void AdaBoostFaceDetection::RemoveSimilarClassifierCandidates(const HaarFeature& hf)
+    //void AdaBoostFaceDetection::GenerateClassifierCadidates(int baseImgSize)
+    //{
+    //    //Enhancement: use uniform sampling strategy.
+    //    for (int sRow = 0; sRow < baseImgSize; sRow += 2)
+    //    {
+    //        for (int sCol = 0; sCol < baseImgSize; sCol += 2)
+    //        {
+    //            int colMaxLen = baseImgSize - sCol;
+    //            int rowMaxLen = baseImgSize - sRow;
+
+    //            for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
+    //            {
+    //                for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
+    //                {
+    //                    HaarFeature feature = {sRow, sCol, lRow, lCol, 0};
+    //                    HaarClassifier* pClassifier = new HaarClassifier(feature);
+    //                    mClassifierCandidates.push_back(pClassifier);
+    //                }
+    //            }
+
+    //            for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+    //            {
+    //                for (int lCol = 2; lCol <= colMaxLen; lCol += 2)
+    //                {
+    //                    HaarFeature feature = {sRow, sCol, lRow, lCol, 1};
+    //                    HaarClassifier* pClassifier = new HaarClassifier(feature);
+    //                    mClassifierCandidates.push_back(pClassifier);
+    //                }
+    //            }
+
+    //            for (int lRow = 2; lRow <= rowMaxLen; lRow += 2)
+    //            {
+    //                for (int lCol = 6; lCol <= colMaxLen; lCol += 6)
+    //                {
+    //                    HaarFeature feature = {sRow, sCol, lRow, lCol, 2};
+    //                    HaarClassifier* pClassifier = new HaarClassifier(feature);
+    //                    mClassifierCandidates.push_back(pClassifier);
+    //                }
+    //            }
+
+    //            for (int lRow = 4; lRow <= rowMaxLen; lRow += 4)
+    //            {
+    //                for (int lCol = 4; lCol <= colMaxLen; lCol += 4)
+    //                {
+    //                    HaarFeature feature = {sRow, sCol, lRow, lCol, 3};
+    //                    HaarClassifier* pClassifier = new HaarClassifier(feature);
+    //                    mClassifierCandidates.push_back(pClassifier);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    DebugLog << "GenerateClassifierCadidates: " << mClassifierCandidates.size() << std::endl;
+    //}
+
+    int AdaBoostFaceDetection::RemoveSimilarClassifierCandidates(const HaarFeature& hf)
     {
         double similarThreshold = 0.24;
         int validCandCount = 0;
@@ -846,6 +987,7 @@ namespace MagicDIP
             }
         }
         DebugLog << "  valid candidate count: " << validCandCount << std::endl;
+        return validCandCount;
     }
 
     void AdaBoostFaceDetection::ClearClassifierCadidates(void)
@@ -965,29 +1107,63 @@ namespace MagicDIP
         {
             DebugLog << "Stage " << stageId << std::endl;
             //double stageTime = MagicCore::ToolKit::GetTime();
-            AdaBoostFaceDetection* pDetector = new AdaBoostFaceDetection;
-            int res = pDetector->Learn(faceImgLoader, nonFaceImgLoader, nonFaceValidFlag, layerCounts.at(stageId));
-            if (res != MAGIC_NO_ERROR)
+            int levelCount = layerCounts.at(stageId);
+            bool isEmptyInput = false;
+            while (true)
             {
-                if (res == MAGIC_EMPTY_INPUT)
+                AdaBoostFaceDetection* pDetector = new AdaBoostFaceDetection;
+                int res = pDetector->Learn(faceImgLoader, nonFaceImgLoader, nonFaceValidFlag, levelCount);
+                if (res != MAGIC_NO_ERROR)
                 {
-                    DebugLog << "Stage: " << stageId << " is empty input, break" << std::endl;
-                    delete pDetector;
+                    if (res == MAGIC_EMPTY_INPUT)
+                    {
+                        DebugLog << "Stage: " << stageId << " is empty input, break" << std::endl;
+                        delete pDetector;
+                        isEmptyInput = true;
+                        break;
+                    }
+                    /*else if (res == MAGIC_NOT_ENOUGH_INPUT)
+                    {
+                        DebugLog << "Stage: " << stageId << " level is not enough, continue" << std::endl;
+                        delete pDetector;
+                        pDetector = NULL;
+                        levelCount += layerCounts.at(stageId);
+                        continue;
+                    }*/
+                    Reset();
+                    DebugLog << "stage " << stageId << " learn failed" << std::endl;
+                    return MAGIC_INVALID_RESULT;
+                }
+            
+                //filter non faces
+                int nonFaceDetectCount = 0;
+                for (int nonFaceId = 0; nonFaceId < nonFaceValidFlag.size(); nonFaceId++)
+                {
+                    if (nonFaceValidFlag.at(nonFaceId))
+                    {
+                        if (pDetector->Predict(nonFaceImgLoader, nonFaceId) == 0)
+                        {
+                            nonFaceValidFlag.at(nonFaceId) = 0;
+                            nonFaceDetectCount++;
+                        }
+                    }
+                }
+                if (nonFaceDetectCount > 0)
+                {
+                    mCascadedDetectors.push_back(pDetector);
                     break;
                 }
-                Reset();
-                DebugLog << "stage " << stageId << " learn failed" << std::endl;
-                return MAGIC_INVALID_RESULT;
-            }
-            mCascadedDetectors.push_back(pDetector);
-            
-            //filter non faces
-            for (int nonFaceId = 0; nonFaceId < nonFaceValidFlag.size(); nonFaceId++)
-            {
-                if (pDetector->Predict(nonFaceImgLoader, nonFaceId) == 0)
+                else
                 {
-                    nonFaceValidFlag.at(nonFaceId) = 0;
+                    DebugLog << "Stage: " << stageId << " No detect non-face, continue" << std::endl;
+                    delete pDetector;
+                    pDetector = NULL;
+                    levelCount += layerCounts.at(stageId);
                 }
+            }
+            if (isEmptyInput)
+            {
+                break;
             }
             //DebugLog << "time: " << MagicCore::ToolKit::GetTime() - stageTime << std::endl;
         }
@@ -1048,7 +1224,9 @@ namespace MagicDIP
         int imgW = img.cols;
         std::vector<unsigned int> integralImg;
         ImageLoader::TransferToIntegralImg(img, integralImg);
-        while (curSubImgSize <= imgH && curSubImgSize <= imgW)
+        int maxSubH = imgH;
+        int maxSubW = imgW;
+        while (curSubImgSize <= maxSubH && curSubImgSize <= maxSubW)
         {
             int maxRow = imgH - curSubImgSize;
             int maxCol = imgW - curSubImgSize;
@@ -1239,7 +1417,7 @@ namespace MagicDIP
         float areaB = float(lRowB * lColB);
         float simA = overlapArea / areaA;
         float simB = overlapArea / areaB;
-        return (simA > 0.75f && simB > 0.75f);
+        return (simA > 0.5f && simB > 0.5f);
     }
 
     void RealTimeFaceDetection::Reset(void)
