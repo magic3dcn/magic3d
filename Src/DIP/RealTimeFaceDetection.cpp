@@ -3,6 +3,8 @@
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include <algorithm>
+#include <time.h>
+#include <stdio.h>
 
 namespace
 {
@@ -56,6 +58,244 @@ namespace
             return 0;
         }
     }
+
+    static int ImgBoxValue(const MagicDIP::ImageLoader& imgLoader, int dataId, int sRow, int sCol, int eRow, int eCol)
+    {
+        if (sRow > 0 && sCol > 0)
+        {
+            return imgLoader.GetIntegralValue(dataId, sRow - 1, sCol - 1) + imgLoader.GetIntegralValue(dataId, eRow, eCol) -
+                imgLoader.GetIntegralValue(dataId, sRow - 1, eCol) - imgLoader.GetIntegralValue(dataId, eRow, sCol - 1);
+        }
+        else if (sRow > 0 && sCol == 0)
+        {
+            return imgLoader.GetIntegralValue(dataId, eRow, eCol) - imgLoader.GetIntegralValue(dataId, sRow - 1, eCol);
+        }
+        else if (sRow == 0 && sCol > 0)
+        {
+            return imgLoader.GetIntegralValue(dataId, eRow, eCol) - imgLoader.GetIntegralValue(dataId, eRow, sCol - 1);
+        }
+        else if (sRow == 0 && sCol == 0)
+        {
+            return imgLoader.GetIntegralValue(dataId, eRow, eCol);
+        }
+        else
+        {
+            DebugLog << "Error: ImgBoxValue: " << sRow << " " << sCol << " " << eRow << " " << eCol << std::endl;
+            return 0;
+        }
+    }
+
+    static int CalFeatureValue(const MagicDIP::ImageLoader& imgLoader, int dataId, const MagicDIP::HaarFeature& feature)
+    {
+        if (feature.type == 0)
+        {
+            int posValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol, 
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol / 2 - 1);
+            int negValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol + feature.lCol / 2,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol - 1);
+            return (posValue - negValue) / (feature.lRow * feature.lCol / 2);
+        }
+        else if (feature.type == 1)
+        {
+            int negValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol, 
+                feature.sRow + feature.lRow / 2 - 1, feature.sCol + feature.lCol - 1);
+            int posValue = ImgBoxValue(imgLoader, dataId, feature.sRow + feature.lRow / 2, feature.sCol,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol - 1);
+            return (posValue - negValue) / (feature.lRow * feature.lCol / 2);
+        }
+        else if (feature.type == 2)
+        {
+            int posLeftValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol / 3 - 1);
+            int posRightValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol + feature.lCol * 2 / 3,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol - 1);
+            int negValue = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol + feature.lCol / 3,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol * 2 / 3 - 1);
+            return (posLeftValue + posRightValue - negValue) / (feature.lRow * feature.lCol / 3);
+        }
+        else if (feature.type == 3)
+        {
+            int posTopLeft = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol, 
+                feature.sRow + feature.lRow / 2 - 1, feature.sCol + feature.lCol / 2 - 1);
+            int posRightDown = ImgBoxValue(imgLoader, dataId, feature.sRow + feature.lRow / 2, feature.sCol + feature.lCol / 2,
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol - 1);
+            int negRightTop = ImgBoxValue(imgLoader, dataId, feature.sRow, feature.sCol + feature.lCol / 2,
+                feature.sRow + feature.lRow / 2 - 1, feature.sCol + feature.lCol - 1);
+            int negLeftDown = ImgBoxValue(imgLoader, dataId, feature.sRow + feature.lRow / 2, feature.sCol, 
+                feature.sRow + feature.lRow - 1, feature.sCol + feature.lCol / 2 - 1);
+            return (posTopLeft + posRightDown - negRightTop - negLeftDown) / (feature.lRow * feature.lCol / 4);
+        }
+        else
+        {
+            DebugLog << "Error: wrong type: " << feature.type << std::endl;
+            return 0;
+        }
+    }
+
+    static unsigned int GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid)
+    {
+        int imgH = integralImg.size() / imgW;
+        hid = hid >= imgH ? (imgH - 1) : hid;
+        wid = wid >= imgW ? (imgW - 1) : wid;
+
+        return integralImg.at(hid * imgW + wid);
+    }
+
+    static int ImgBoxValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, int eRow, int eCol)
+    {
+        if (sRow > 0 && sCol > 0)
+        {
+            return GetIntegralValue(integralImg, imgW, sRow - 1, sCol - 1) + GetIntegralValue(integralImg, imgW, eRow, eCol) -
+                GetIntegralValue(integralImg, imgW, sRow - 1, eCol) - GetIntegralValue(integralImg, imgW, eRow, sCol - 1);
+        }
+        else if (sRow > 0 && sCol == 0)
+        {
+            return GetIntegralValue(integralImg, imgW, eRow, eCol) - GetIntegralValue(integralImg, imgW, sRow - 1, eCol);
+        }
+        else if (sRow == 0 && sCol > 0)
+        {
+            return GetIntegralValue(integralImg, imgW, eRow, eCol) - GetIntegralValue(integralImg, imgW, eRow, sCol - 1);
+        }
+        else if (sRow == 0 && sCol == 0)
+        {
+            return GetIntegralValue(integralImg, imgW, eRow, eCol);
+        }
+        else
+        {
+            DebugLog << "Error: ImgBoxValue: " << sRow << " " << sCol << " " << eRow << " " << eCol << std::endl;
+            return 0;
+        }
+    }
+
+    static int CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale,
+        const MagicDIP::HaarFeature& feature)
+    {
+        int lRow = floor(feature.lRow * scale + 0.5);
+        int lCol = floor(feature.lCol * scale + 0.5);
+        int sRowAbs = floor(feature.sRow * scale + 0.5) + sRow;
+        int sColAbs = floor(feature.sCol * scale + 0.5) + sCol;
+        if (feature.type == 0)
+        {
+            int posValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs, 
+                sRowAbs + lRow - 1, sColAbs + lCol / 2 - 1);
+            int negValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs + lCol / 2,
+                sRowAbs + lRow - 1, sColAbs + lCol - 1);
+            return (posValue - negValue) / (lRow * lCol / 2);
+        }
+        else if (feature.type == 1)
+        {
+            int negValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs, 
+                sRowAbs + lRow / 2 - 1, sColAbs + lCol - 1);
+            int posValue = ImgBoxValue(integralImg, imgW, sRowAbs + lRow / 2, sColAbs,
+                sRowAbs + lRow - 1, sColAbs + lCol - 1);
+            return (posValue - negValue) / (lRow * lCol / 2);
+        }
+        else if (feature.type == 2)
+        {
+            int posLeftValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs,
+                sRowAbs + lRow - 1, sColAbs + lCol / 3 - 1);
+            int posRightValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs + lCol * 2 / 3,
+                sRowAbs + lRow - 1, sColAbs + lCol - 1);
+            int negValue = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs + lCol / 3,
+                sRowAbs + lRow - 1, sColAbs + lCol * 2 / 3 - 1);
+            return (posLeftValue + posRightValue - negValue) / (lRow * lCol / 3);
+        }
+        else if (feature.type == 3)
+        {
+            int posTopLeft = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs, 
+                sRowAbs + lRow / 2 - 1, sColAbs + lCol / 2 - 1);
+            int posRightDown = ImgBoxValue(integralImg, imgW, sRowAbs + lRow / 2, sColAbs + lCol / 2,
+                sRowAbs + lRow - 1, sColAbs + lCol - 1);
+            int negRightTop = ImgBoxValue(integralImg, imgW, sRowAbs, sColAbs + lCol / 2,
+                sRowAbs + lRow / 2 - 1, sColAbs + lCol - 1);
+            int negLeftDown = ImgBoxValue(integralImg, imgW, sRowAbs + lRow / 2, sColAbs, 
+                sRowAbs + lRow - 1, sColAbs + lCol / 2 - 1);
+            return (posTopLeft + posRightDown - negRightTop - negLeftDown) / (lRow * lCol / 4);
+        }
+        else
+        {
+            DebugLog << "Error: wrong type: " << feature.type << std::endl;
+            return 0;
+        }
+    }
+
+    class FaceFeatureCache
+    {
+    public:
+        FaceFeatureCache();
+        ~FaceFeatureCache();
+
+        bool CalFeatureValues(const MagicDIP::ImageLoader& imgLoader, 
+            const std::vector<MagicDIP::HaarClassifier*>& classifiers);
+        int GetFeatureValue(int classifierId, int imgId) const;
+
+    private:
+        void Reset(void);
+
+    private:
+        int* mpFeatureValues;
+        int mImageCount;
+    };
+
+    FaceFeatureCache::FaceFeatureCache() :
+        mpFeatureValues(NULL),
+        mImageCount(0)
+    {
+    }
+
+    FaceFeatureCache::~FaceFeatureCache()
+    {
+        Reset();
+    }
+
+    bool FaceFeatureCache::CalFeatureValues(const MagicDIP::ImageLoader& imgLoader, 
+            const std::vector<MagicDIP::HaarClassifier*>& classifiers)
+    {
+        Reset();
+        mImageCount = imgLoader.GetImageCount();
+        int classifierCount = classifiers.size();
+        try
+        {
+            mpFeatureValues = new int[mImageCount * classifierCount];
+        }
+        catch(const std::bad_alloc& e)
+        {
+            if (mpFeatureValues != NULL)
+            {
+                delete mpFeatureValues;
+                mpFeatureValues = NULL;
+            }
+            return false;
+        }
+        for (int classifierId = 0; classifierId < classifierCount; classifierId++)
+        {
+            MagicDIP::HaarFeature feature = classifiers.at(classifierId)->GetFeature();
+            int baseIndex = classifierId * mImageCount;
+            for (int imgId = 0; imgId < mImageCount; imgId++)
+            {
+                mpFeatureValues[baseIndex + imgId] = CalFeatureValue(imgLoader, imgId, feature);
+            }
+        }
+        return true;
+    }
+
+    int FaceFeatureCache::GetFeatureValue(int classifierId, int imgId) const
+    {
+        return mpFeatureValues[classifierId * mImageCount + imgId];
+    }
+
+    void FaceFeatureCache::Reset(void)
+    {
+        if (mpFeatureValues != NULL)
+        {
+            delete mpFeatureValues;
+            mpFeatureValues = NULL;
+        }
+        mImageCount = 0;
+    }
+
+    static FaceFeatureCache* gFaceFeatureCache = NULL;
+    static FaceFeatureCache* gNonFaceFeatureCache = NULL;
 }
 
 namespace MagicDIP
@@ -68,7 +308,8 @@ namespace MagicDIP
     {
     }
 
-    HaarClassifier::HaarClassifier(const HaarFeature& feature) :
+    HaarClassifier::HaarClassifier(int id, const HaarFeature& feature) :
+        mId(id),
         mFeature(feature),
         mThreshold(0),
         mIsLess(true)
@@ -111,7 +352,8 @@ namespace MagicDIP
         //double featureTimeStart = MagicCore::ToolKit::GetTime();
         for (int faceId = 0; faceId < faceDataCount; faceId++)
         {
-            faceFeatures.at(faceId).mValue = CalFeatureValue(faceImgLoader, faceId);
+            //faceFeatures.at(faceId).mValue = CalFeatureValue(faceImgLoader, faceId, mFeature);
+            faceFeatures.at(faceId).mValue = CalFeature(faceImgLoader, 1, faceId);
             faceFeatures.at(faceId).mIndex = faceId;
             faceSum += faceDataWeights.at(faceId);
         }
@@ -126,7 +368,8 @@ namespace MagicDIP
         //featureTimeStart = MagicCore::ToolKit::GetTime();
         for (int nonFaceId = 0; nonFaceId < nonFaceDataCount; nonFaceId++)
         {
-            nonFaceFeatures.at(nonFaceId).mValue = CalFeatureValue(nonFaceImgLoader, nonFaceIndex.at(nonFaceId));
+            //nonFaceFeatures.at(nonFaceId).mValue = CalFeatureValue(nonFaceImgLoader, nonFaceIndex.at(nonFaceId), mFeature);
+            nonFaceFeatures.at(nonFaceId).mValue = CalFeature(nonFaceImgLoader, 0, nonFaceIndex.at(nonFaceId));
             nonFaceFeatures.at(nonFaceId).mIndex = nonFaceId;
             nonFaceSum += nonFaceDataWeights.at(nonFaceId);
         }
@@ -224,7 +467,7 @@ namespace MagicDIP
      
     int HaarClassifier::Predict(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const
     {
-        int featureValue = CalFeatureValue(integralImg, imgW, sRow, sCol, scale);
+        int featureValue = CalFeatureValue(integralImg, imgW, sRow, sCol, scale, mFeature);
         if (mIsLess)
         {
             return featureValue < mThreshold;
@@ -237,7 +480,7 @@ namespace MagicDIP
 
     int HaarClassifier::Predict(const ImageLoader& imgLoader, int dataId) const
     {
-        int featureValue = CalFeatureValue(imgLoader, dataId);
+        int featureValue = CalFeatureValue(imgLoader, dataId, mFeature);
         if (mIsLess)
         {
             return featureValue < mThreshold;
@@ -248,7 +491,38 @@ namespace MagicDIP
         }
     }
 
-    int HaarClassifier::CalFeatureValue(const ImageLoader& imgLoader, int dataId) const
+    int HaarClassifier::CalFeature(const ImageLoader& imgLoader, int imgType, int dataId) const
+    {
+        if (imgType == 1) //face
+        {
+            if (gFaceFeatureCache != NULL)
+            {
+                return gFaceFeatureCache->GetFeatureValue(mId, dataId);
+            }
+            else
+            {
+                return CalFeatureValue(imgLoader, dataId, mFeature);
+            }
+        }
+        else if (imgType == 0) //non face
+        {
+            if (gNonFaceFeatureCache != NULL)
+            {
+                return gNonFaceFeatureCache->GetFeatureValue(mId, dataId);
+            }
+            else
+            {
+                return CalFeatureValue(imgLoader, dataId, mFeature);
+            }
+        }
+        else
+        {
+            DebugLog << "error: false imgType: " << imgType;
+            return 0;
+        }
+    }
+
+    /*int HaarClassifier::CalFeatureValue(const ImageLoader& imgLoader, int dataId) const
     {
         if (mFeature.type == 0)
         {
@@ -319,9 +593,9 @@ namespace MagicDIP
             DebugLog << "Error: ImgBoxValue: " << sRow << " " << sCol << " " << eRow << " " << eCol << std::endl;
             return 0;
         }
-    }
+    }*/
 
-    int HaarClassifier::CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const
+    /*int HaarClassifier::CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const
     {
         int lRow = floor(mFeature.lRow * scale + 0.5);
         int lCol = floor(mFeature.lCol * scale + 0.5);
@@ -396,20 +670,16 @@ namespace MagicDIP
             DebugLog << "Error: ImgBoxValue: " << sRow << " " << sCol << " " << eRow << " " << eCol << std::endl;
             return 0;
         }
-    }
+    }*/
 
-    unsigned int HaarClassifier::GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const
+    /*unsigned int HaarClassifier::GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const
     {
         int imgH = integralImg.size() / imgW;
-        /*if (hid >= imgH || wid >= imgW)
-        {
-            DebugLog << "error: hid: " << hid << " imgH: " << imgH << " wid: " << wid << " imgW: " << imgW << std::endl;
-        }*/
         hid = hid >= imgH ? (imgH - 1) : hid;
         wid = wid >= imgW ? (imgW - 1) : wid;
 
         return integralImg.at(hid * imgW + wid);
-    }
+    }*/
 
     void HaarClassifier::Save(std::ofstream& fout) const
     {
@@ -582,6 +852,11 @@ namespace MagicDIP
 
         GenerateClassifierCadidates(faceImgLoader.GetImageWidth(0));
 
+        //Generate Feature Value Cache
+        int nonFaceCacheSize = nonFaceCount * mClassifierCandidates.size() * 4;
+        DebugLog << "nonFaceCacheSize: " << nonFaceCacheSize << std::endl;
+        GenerateFeatureValueCache(&faceImgLoader, &nonFaceImgLoader);
+
         std::vector<int> faceResFlag(faceCount);
         std::vector<int> nonFaceResFlag(nonFaceCount);
         double epsilon = 1.0e-10;
@@ -707,6 +982,9 @@ namespace MagicDIP
         ClearClassifierCadidates();
         DebugLog << "  mThreshold: " << mThreshold << " index: " << thresholdIndex << std::endl;
         
+        //Free Feature Cache
+        ClearFeatureValueCache();     
+        
         return MAGIC_NO_ERROR;
     }
     
@@ -803,10 +1081,11 @@ namespace MagicDIP
         int sampleCount = int(featureCount * sampleRate);
         std::vector<bool> sampleFlag(featureCount, 0);
         std::vector<int> sampleIndex(sampleCount);
-        sampleFlag.at(0) = true;
-        sampleIndex.at(0) = 0;
+        int startIndex = rand() % featureCount;
+        sampleFlag.at(startIndex) = true;
+        sampleIndex.at(0) = startIndex;
         std::vector<int> minDist(featureCount, 1.0e10);
-        int curIndex = 0;
+        int curIndex = startIndex;
 
         for (int sid = 1; sid < sampleCount; ++sid)
         {
@@ -893,12 +1172,14 @@ namespace MagicDIP
         }
         double sampleRate = 0.015;
         //int imgId = 0;
+        int classifierId = 0;
         for (int typeId = 0; typeId < 4; typeId++)
         {
             std::vector<int> samples = SampleHaarFeatures(features.at(typeId), sampleRate);
             for (std::vector<int>::iterator itr = samples.begin(); itr != samples.end(); itr++)
             {
-                HaarClassifier* pClassifier = new HaarClassifier(features.at(typeId).at(*itr));
+                HaarClassifier* pClassifier = new HaarClassifier(classifierId, features.at(typeId).at(*itr));
+                classifierId++;
                 mClassifierCandidates.push_back(pClassifier);
                 /*std::stringstream ss;
                 ss << "./featureImg/feature_" << imgId << ".jpg";
@@ -911,6 +1192,65 @@ namespace MagicDIP
         }
         
         DebugLog << "GenerateClassifierCadidates: " << mClassifierCandidates.size() << std::endl;
+    }
+
+    void AdaBoostFaceDetection::GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader) const
+    {
+        if (pFaceImgLoader != NULL)
+        {
+            if (gFaceFeatureCache != NULL)
+            {
+                delete gFaceFeatureCache;
+                gFaceFeatureCache = NULL;
+            }
+            gFaceFeatureCache = new FaceFeatureCache;
+            bool res = gFaceFeatureCache->CalFeatureValues(*pFaceImgLoader, mClassifierCandidates);
+            if (res)
+            {
+                DebugLog << "face feature cache is success" << std::endl;
+            }
+            else
+            {
+                delete gFaceFeatureCache;
+                gFaceFeatureCache = NULL;
+                DebugLog << "face feature cache failed" << std::endl;
+            }
+        }
+        
+        if (pNonFaceImgLoader != NULL)
+        {
+            if (gNonFaceFeatureCache != NULL)
+            {
+                delete gNonFaceFeatureCache;
+                gNonFaceFeatureCache = NULL;
+            }
+            gNonFaceFeatureCache = new FaceFeatureCache;
+            bool res = gNonFaceFeatureCache->CalFeatureValues(*pNonFaceImgLoader, mClassifierCandidates);
+            if (res)
+            {
+                DebugLog << "nonface feature cache is success" << std::endl;
+            }
+            else
+            {
+                delete gNonFaceFeatureCache;
+                gNonFaceFeatureCache = NULL;
+                DebugLog << "nonface feature cache failed" << std::endl;
+            }
+        }
+    }
+        
+    void AdaBoostFaceDetection::ClearFeatureValueCache(void) const
+    {
+        if (gFaceFeatureCache != NULL)
+        {
+            delete gFaceFeatureCache;
+            gFaceFeatureCache = NULL;
+        }
+        if (gNonFaceFeatureCache != NULL)
+        {
+            delete gNonFaceFeatureCache;
+            gNonFaceFeatureCache = NULL;
+        }
     }
 
     //void AdaBoostFaceDetection::GenerateClassifierCadidates(int baseImgSize)
@@ -1103,6 +1443,7 @@ namespace MagicDIP
         DebugLog << "non face loaded" << std::endl;
         std::vector<bool> nonFaceValidFlag(nonFaceImages.size(), 1);
         DebugLog << "Learn Cascaded detectors..." << std::endl;
+        srand(time(NULL)); //sample feature
         for (int stageId = 0; stageId < stageCount; stageId++)
         {
             DebugLog << "Stage " << stageId << std::endl;

@@ -20,7 +20,7 @@ namespace MagicDIP
     {
     public:
         HaarClassifier();
-        HaarClassifier(const HaarFeature& feature);
+        HaarClassifier(int id, const HaarFeature& feature);
         ~HaarClassifier();
 
         void SetFeature(const HaarFeature& feature);
@@ -37,13 +37,16 @@ namespace MagicDIP
         void SaveFeatureAsImage(const std::string& imgName, int baseSize) const;
 
     private:
-        int CalFeatureValue(const ImageLoader& imgLoader, int dataId) const;
-        int ImgBoxValue(const ImageLoader& imgLoader, int dataId, int sRow, int sCol, int eRow, int eCol) const;
-        int CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const;
+        //int CalFeatureValue(const ImageLoader& imgLoader, int dataId) const;
+        //int ImgBoxValue(const ImageLoader& imgLoader, int dataId, int sRow, int sCol, int eRow, int eCol) const;
+        /*int CalFeatureValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, float scale) const;
         int ImgBoxValue(const std::vector<unsigned int>& integralImg, int imgW, int sRow, int sCol, int eRow, int eCol) const;
-        unsigned int GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const;
+        unsigned int GetIntegralValue(const std::vector<unsigned int>& integralImg, int imgW, int hid, int wid) const;*/
+        //imgType: 0-non face, 1-face
+        int CalFeature(const ImageLoader& imgLoader, int imgType, int dataId) const;
 
     private:
+        int mId;
         HaarFeature mFeature;
         double mThreshold;
         bool mIsLess;
@@ -66,6 +69,8 @@ namespace MagicDIP
     private:
         void GenerateClassifierCadidates(int baseImgSize);
         std::vector<int> SampleHaarFeatures(const std::vector<HaarFeature> features, double sampleRate) const;
+        void GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader) const;
+        void ClearFeatureValueCache(void) const;
         int RemoveSimilarClassifierCandidates(const HaarFeature& hf);
         void ClearClassifierCadidates(void);
         int TrainWeakClassifier(const ImageLoader& faceImgLoader, const std::vector<double>& faceDataWeights, 
