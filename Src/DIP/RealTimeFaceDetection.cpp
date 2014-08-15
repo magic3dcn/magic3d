@@ -2,6 +2,7 @@
 #include "../Tool/ErrorCodes.h"
 #include "../Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
+#include <map>
 #include <algorithm>
 #include <time.h>
 #include <stdio.h>
@@ -227,7 +228,9 @@ namespace
 
         bool CalFeatureValues(const MagicDIP::ImageLoader& imgLoader, 
             const std::vector<MagicDIP::HaarClassifier*>& classifiers);
-        int GetFeatureValue(int classifierId, int imgId) const;
+        bool CalFeatureValues(const MagicDIP::ImageLoader& imgLoader, const std::vector<int>& imgIndex, 
+            const std::vector<MagicDIP::HaarClassifier*>& classifiers);
+        int GetFeatureValue(int classifierId, int imgId);
 
     private:
         void Reset(void);
@@ -235,11 +238,13 @@ namespace
     private:
         int* mpFeatureValues;
         int mImageCount;
+        std::map<int, int> mIndexMap;
     };
 
     FaceFeatureCache::FaceFeatureCache() :
         mpFeatureValues(NULL),
-        mImageCount(0)
+        mImageCount(0),
+        mIndexMap()
     {
     }
 
@@ -279,9 +284,56 @@ namespace
         return true;
     }
 
-    int FaceFeatureCache::GetFeatureValue(int classifierId, int imgId) const
+    bool FaceFeatureCache::CalFeatureValues(const MagicDIP::ImageLoader& imgLoader, const std::vector<int>& imgIndex, 
+            const std::vector<MagicDIP::HaarClassifier*>& classifiers)
     {
-        return mpFeatureValues[classifierId * mImageCount + imgId];
+        Reset();
+        mImageCount = imgIndex.size();
+        if (mImageCount < 10)
+        {
+            return false;
+        }
+        int classifierCount = classifiers.size();
+        try
+        {
+            mpFeatureValues = new int[mImageCount * classifierCount];
+        }
+        catch(const std::bad_alloc& e)
+        {
+            if (mpFeatureValues != NULL)
+            {
+                delete mpFeatureValues;
+                mpFeatureValues = NULL;
+            }
+            return false;
+        }
+        //Construct index map
+        for (int imgId = 0; imgId < mImageCount; imgId++)
+        {
+            mIndexMap[imgIndex.at(imgId)] = imgId;
+        }
+        for (int classifierId = 0; classifierId < classifierCount; classifierId++)
+        {
+            MagicDIP::HaarFeature feature = classifiers.at(classifierId)->GetFeature();
+            int baseIndex = classifierId * mImageCount;
+            for (int imgId = 0; imgId < mImageCount; imgId++)
+            {
+                mpFeatureValues[baseIndex + imgId] = CalFeatureValue(imgLoader, imgIndex.at(imgId), feature);
+            }
+        }
+        return true;
+    }
+
+    int FaceFeatureCache::GetFeatureValue(int classifierId, int imgId)
+    {
+        if (mIndexMap.size() == 0)
+        {
+            return mpFeatureValues[classifierId * mImageCount + imgId];
+        }
+        else
+        {
+            return mpFeatureValues[ classifierId * mImageCount + mIndexMap[imgId] ];
+        }
     }
 
     void FaceFeatureCache::Reset(void)
@@ -292,6 +344,7 @@ namespace
             mpFeatureValues = NULL;
         }
         mImageCount = 0;
+        mIndexMap.clear();
     }
 
     static FaceFeatureCache* gFaceFeatureCache = NULL;
@@ -855,7 +908,7 @@ namespace MagicDIP
         //Generate Feature Value Cache
         int nonFaceCacheSize = nonFaceCount * mClassifierCandidates.size() * 4;
         DebugLog << "nonFaceCacheSize: " << nonFaceCacheSize << std::endl;
-        GenerateFeatureValueCache(&faceImgLoader, &nonFaceImgLoader);
+        GenerateFeatureValueCache(&faceImgLoader, &nonFaceImgLoader, nonFaceIndex);
 
         std::vector<int> faceResFlag(faceCount);
         std::vector<int> nonFaceResFlag(nonFaceCount);
@@ -1194,7 +1247,8 @@ namespace MagicDIP
         DebugLog << "GenerateClassifierCadidates: " << mClassifierCandidates.size() << std::endl;
     }
 
-    void AdaBoostFaceDetection::GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader) const
+    void AdaBoostFaceDetection::GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader,
+        const std::vector<int>& nonFaceIndex) const
     {
         if (pFaceImgLoader != NULL)
         {
@@ -1225,7 +1279,7 @@ namespace MagicDIP
                 gNonFaceFeatureCache = NULL;
             }
             gNonFaceFeatureCache = new FaceFeatureCache;
-            bool res = gNonFaceFeatureCache->CalFeatureValues(*pNonFaceImgLoader, mClassifierCandidates);
+            bool res = gNonFaceFeatureCache->CalFeatureValues(*pNonFaceImgLoader, nonFaceIndex, mClassifierCandidates);
             if (res)
             {
                 DebugLog << "nonface feature cache is success" << std::endl;

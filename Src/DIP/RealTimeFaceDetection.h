@@ -69,7 +69,8 @@ namespace MagicDIP
     private:
         void GenerateClassifierCadidates(int baseImgSize);
         std::vector<int> SampleHaarFeatures(const std::vector<HaarFeature> features, double sampleRate) const;
-        void GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader) const;
+        void GenerateFeatureValueCache(const ImageLoader* pFaceImgLoader, const ImageLoader* pNonFaceImgLoader, 
+            const std::vector<int>& nonFaceIndex) const;
         void ClearFeatureValueCache(void) const;
         int RemoveSimilarClassifierCandidates(const HaarFeature& hf);
         void ClearClassifierCadidates(void);
