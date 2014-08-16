@@ -1,7 +1,7 @@
 #include "ScanningAppUI.h"
 #include "ScanningApp.h"
 #include "../Common/ResourceManager.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/AppManager.h"
 
 namespace MagicApp

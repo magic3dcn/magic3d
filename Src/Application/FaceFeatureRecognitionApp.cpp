@@ -1,11 +1,11 @@
 #include "FaceFeatureRecognitionApp.h"
-#include "../AppModules/MagicObjectManager.h"
-#include "../AppModules/Face2DObj.h"
-#include "../AppModules/FaceFeatureDetection.h"
-#include "../AppModules/FaceDetection.h"
-#include "../Tool/LogSystem.h"
+#include "AppModules/MagicObjectManager.h"
+#include "AppModules/Face2DObj.h"
+#include "AppModules/FaceFeatureDetection.h"
+#include "AppModules/FaceDetection.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
-#include "../DIP/ImageLoader.h"
+#include "DIP/ImageLoader.h"
 #include <time.h>
 #include <stdio.h>
 

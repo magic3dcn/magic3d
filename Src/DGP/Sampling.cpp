@@ -1,5 +1,5 @@
 #include "Sampling.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "flann/flann.h"
 #include "Eigen/Eigenvalues"

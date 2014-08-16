@@ -1,6 +1,6 @@
 #include "VisionShopAppUI.h"
 #include "../Common/ResourceManager.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"
 #include "VisionShopApp.h"

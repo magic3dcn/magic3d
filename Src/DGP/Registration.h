@@ -1,7 +1,7 @@
 #pragma once
 #include "PointCloud3D.h"
 #include <vector>
-#include "../Math/HomoMatrix4.h"
+#include "Math/HomoMatrix4.h"
 #include "flann/flann.h"
 #include "OpenNI.h"
 

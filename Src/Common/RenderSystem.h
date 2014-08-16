@@ -1,7 +1,7 @@
 #pragma once
 #include "../DGP/PointCloud3D.h"
 #include "../DGP/Mesh3D.h"
-#include "../Math/HomoMatrix4.h"
+#include "Math/HomoMatrix4.h"
 #include <string>
 
 namespace Ogre

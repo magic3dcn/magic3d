@@ -2,7 +2,7 @@
 #include "VideoRecordingAppUI.h"
 #include "VideoRecordingApp.h"
 #include "../Common/ResourceManager.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/AppManager.h"
 
 namespace MagicApp

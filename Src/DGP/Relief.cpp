@@ -3,7 +3,7 @@
 #include "Eigen/Sparse"
 #include "Eigen/SparseLU"
 #include "../Common/ToolKit.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicDGP
 {

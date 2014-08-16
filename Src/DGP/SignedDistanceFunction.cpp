@@ -1,6 +1,6 @@
 //#include "StdAfx.h"
 #include "SignedDistanceFunction.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "Parser.h"
 
 namespace MagicDGP

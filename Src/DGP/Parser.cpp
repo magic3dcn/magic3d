@@ -7,7 +7,7 @@
 #include <set>
 #include <stdio.h>
 #include "../Common/ToolKit.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicDGP
 {

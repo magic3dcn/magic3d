@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LeapMotionApp.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"
 #include "../Common/RenderSystem.h"

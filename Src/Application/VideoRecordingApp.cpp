@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VideoRecordingApp.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../Common/AppManager.h"

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PrimitiveDetectionApp.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ResourceManager.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
@@ -9,7 +9,7 @@
 #include "../DGP/Consolidation.h"
 #include "../DGP/Sampling.h"
 #include "../DGP/PickPointTool.h"
-#include "../Math/HomoMatrix4.h"
+#include "Math/HomoMatrix4.h"
 #include "../Common/ThreadPool.h"
 
 namespace

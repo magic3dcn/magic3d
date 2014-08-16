@@ -8,15 +8,15 @@ xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI2.dll .\bin\release\
 xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI.ini .\bin\release\
 xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI2 .\bin\release\OpenNI2 /S /E
 xcopy /y .\Dependencies\MyGUI\bin\release\MyGUIEngine.dll .\bin\release\
-xcopy /y .\Dependencies\FLANN\bin\release\flann.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\FLANN\bin_win32\release\flann.dll .\bin\release\
 xcopy /y .\Dependencies\LeapMotion\lib\x86\Leap.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_core247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_highgui247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_imgproc247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_calib3d247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_flann247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_features2d247.dll .\bin\release\
-xcopy /y .\Dependencies\OpenCV\bin\release\opencv_video247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_core247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_highgui247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_imgproc247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_calib3d247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_flann247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_features2d247.dll .\bin\release\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\release\opencv_video247.dll .\bin\release\
 xcopy /y .\Dependencies\OGRE\bin\debug\OgreMain_d.dll .\bin\debug\
 xcopy /y .\Dependencies\OGRE\bin\debug\Plugin_CgProgramManager_d.dll .\bin\debug\
 xcopy /y .\Dependencies\OGRE\bin\debug\cg.dll .\bin\debug\
@@ -27,14 +27,14 @@ xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI2.dll .\bin\debug\
 xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI.ini .\bin\debug\
 xcopy /y .\Dependencies\OpenNI2\Redist\OpenNI2 .\bin\debug\OpenNI2 /S /E
 xcopy /y .\Dependencies\MyGUI\bin\debug\MyGUIEngine_d.dll .\bin\debug\
-xcopy /y .\Dependencies\FLANN\bin\debug\flann.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\FLANN\bin_win32\debug\flann.dll .\bin\debug\
 xcopy /y .\Dependencies\LeapMotion\lib\x86\Leapd.dll .\bin\debug\
 xcopy /y .\Dependencies\Common\msvcp100d.dll .\bin\debug\
 xcopy /y .\Dependencies\Common\msvcr100d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_core247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_highgui247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_imgproc247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_calib3d247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_flann247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_features2d247d.dll .\bin\debug\
-xcopy /y .\Dependencies\OpenCV\bin\debug\opencv_video247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_core247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_highgui247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_imgproc247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_calib3d247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_flann247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_features2d247d.dll .\bin\debug\
+xcopy /y ..\MagicLib\Dependencies\OpenCV\bin_win32\debug\opencv_video247d.dll .\bin\debug\

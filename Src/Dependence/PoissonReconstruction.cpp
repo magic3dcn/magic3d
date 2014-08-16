@@ -18,7 +18,7 @@
 #include "omp.h"
 #include <stdarg.h>
 #include "MultiGridOctreeData.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicDependence
 {

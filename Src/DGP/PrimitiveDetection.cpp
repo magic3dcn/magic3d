@@ -1,7 +1,7 @@
 #include "PrimitiveDetection.h"
 #include "Eigen/Dense"
 #include "../Common/ToolKit.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicDGP
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "PointCloud3D.h"
-#include "../Math/HomoMatrix4.h"
+#include "Math/HomoMatrix4.h"
 #include <vector>
 #include <set>
 

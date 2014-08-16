@@ -1,7 +1,7 @@
 #pragma once
 #include "PointCloud3D.h"
 #include "Mesh3D.h"
-#include "../Math/HomoMatrix4.h"
+#include "Math/HomoMatrix4.h"
 
 namespace MagicDGP
 {

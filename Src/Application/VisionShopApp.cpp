@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "VisionShopApp.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
-#include "../DIP/Retargetting.h"
-#include "../DIP/Saliency.h"
-#include "../DIP/Segmentation.h"
-#include "../MachineLearning/Clustering.h"
-#include "../MachineLearning/GaussianMixtureModel.h"
-#include "../DIP/Deformation.h"
-#include "../DIP/FeatureDetection.h"
+#include "DIP/Retargetting.h"
+#include "DIP/Saliency.h"
+#include "DIP/Segmentation.h"
+#include "MachineLearning/Clustering.h"
+#include "MachineLearning/GaussianMixtureModel.h"
+#include "DIP/Deformation.h"
+#include "DIP/FeatureDetection.h"
 
 namespace MagicApp
 {

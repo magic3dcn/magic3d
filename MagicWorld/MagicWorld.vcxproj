@@ -58,14 +58,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\Dependencies\GraphCut;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\MagicLib\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\OGRE\include\OIS;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OpenNI2\Include;..\..\MagicLib\Dependencies\FLANN\include;..\..\MagicLib\Dependencies\Eigen3.2.0;..\Dependencies\PoissonRecon;..\..\MagicLib\Dependencies\GraphCut;..\..\MagicLib\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm159 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;MyGUI.OgrePlatform_d.lib;MyGUIEngine_d.lib;OpenNI2.lib;flann.lib;Leapd.lib;opencv_core247d.lib;opencv_highgui247d.lib;opencv_imgproc247d.lib;opencv_calib3d247d.lib;opencv_video247d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\LeapMotion\lib\x86;..\Dependencies\MyGUI\lib\debug;..\Dependencies\OGRE\lib\debug;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\debug;..\Dependencies\OpenCV\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Dependencies\LeapMotion\lib\x86;..\Dependencies\MyGUI\lib\debug;..\Dependencies\OGRE\lib\debug;..\Dependencies\OpenNI2\Lib;..\..\MagicLib\Dependencies\FLANN\lib_win32\debug;..\..\MagicLib\Dependencies\OpenCV\lib_win32\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,7 +76,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\Dependencies\FLANN\include;..\Dependencies\Eigen3.2.0;..\Dependencies\GraphCut;..\Dependencies\PoissonRecon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\MagicLib\Dependencies\OpenCV\include;..\Dependencies\LeapMotion\include;..\Dependencies\OGRE\include\OGRE;..\Dependencies\MyGUI\include\MYGUI;..\Dependencies\OGRE\include\OIS;..\Dependencies\OpenNI2\Include;..\..\MagicLib\Dependencies\FLANN\include;..\..\MagicLib\Dependencies\Eigen3.2.0;..\..\MagicLib\Dependencies\GraphCut;..\Dependencies\PoissonRecon;..\..\MagicLib\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ShowIncludes>false</ShowIncludes>
       <EnablePREfast>false</EnablePREfast>
@@ -88,7 +88,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OgreMain.lib;OIS.lib;MyGUI.OgrePlatform.lib;MyGUIEngine.lib;OpenNI2.lib;flann.lib;Leap.lib;opencv_core247.lib;opencv_highgui247.lib;opencv_imgproc247.lib;opencv_calib3d247.lib;opencv_video247.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Dependencies\OpenCV\lib\release;..\Dependencies\OGRE\lib\release;..\Dependencies\MyGUI\lib\release;..\Dependencies\OpenNI2\Lib;..\Dependencies\FLANN\lib\release;..\Dependencies\LeapMotion\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\MagicLib\Dependencies\OpenCV\lib_win32\release;..\Dependencies\OGRE\lib\release;..\Dependencies\MyGUI\lib\release;..\Dependencies\OpenNI2\Lib;..\..\MagicLib\Dependencies\FLANN\lib_win32\release;..\Dependencies\LeapMotion\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -96,8 +96,57 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Dependencies\GraphCut\block.h" />
-    <ClInclude Include="..\Dependencies\GraphCut\graph.h" />
+    <ClInclude Include="..\..\MagicLib\Dependencies\GraphCut\block.h" />
+    <ClInclude Include="..\..\MagicLib\Dependencies\GraphCut\graph.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\BasicImageProcess.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\Face2D.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\Face2DObj.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceDetection.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceFeatureDetection.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceFeaturePoints.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\MagicObject.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\MagicObjectManager.h" />
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\CascadedPoseRegression.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Classification.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Deformation.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\FeatureDetection.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\ImageLoader.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Retargetting.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Saliency.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Segmentation.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\AdaBoost.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\Clustering.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\DecisionTree.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\DeepBeliefNets.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\GaussianMixtureModel.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\HiddenMarkovModels.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\KernelFunction.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\KMeansCoding.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LinearDiscriminantAnalysis.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LinearRegression.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LogisticRegression.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\NaiveBayes.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\NeuralNetworks.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\PrincipalComponentAnalysis.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\RandomMethod.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\RestrictedBoltzmannMachines.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SparseCoding.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SparseDeepAutoencoder.h" />
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SupportVectorMachine.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\BasicFunction.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\CorrelationAnalysis.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\DenseMatrix.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoMatrix3.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoMatrix4.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoVector4.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\Optimization.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\Vector2.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Math\Vector3.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Tool\ErrorCodes.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Tool\LogSystem.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Array.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\BinaryNode.h" />
@@ -148,15 +197,6 @@
     <ClInclude Include="..\Src\Application\VideoRecordingAppUI.h" />
     <ClInclude Include="..\Src\Application\VisionShopApp.h" />
     <ClInclude Include="..\Src\Application\VisionShopAppUI.h" />
-    <ClInclude Include="..\Src\AppModules\BasicImageProcess.h" />
-    <ClInclude Include="..\Src\AppModules\Face2D.h" />
-    <ClInclude Include="..\Src\AppModules\Face2DObj.h" />
-    <ClInclude Include="..\Src\AppModules\FaceDetection.h" />
-    <ClInclude Include="..\Src\AppModules\FaceFeatureDetection.h" />
-    <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h" />
-    <ClInclude Include="..\Src\AppModules\MagicObject.h" />
-    <ClInclude Include="..\Src\AppModules\MagicObjectManager.h" />
-    <ClInclude Include="..\Src\AppModules\SimpleMLObj.h" />
     <ClInclude Include="..\Src\Common\AppBase.h" />
     <ClInclude Include="..\Src\Common\AppManager.h" />
     <ClInclude Include="..\Src\Common\GUISystem.h" />
@@ -182,52 +222,60 @@
     <ClInclude Include="..\Src\DGP\Sampling.h" />
     <ClInclude Include="..\Src\DGP\SignedDistanceFunction.h" />
     <ClInclude Include="..\Src\DGP\ViewTool.h" />
-    <ClInclude Include="..\Src\DIP\CascadedPoseRegression.h" />
-    <ClInclude Include="..\Src\DIP\Classification.h" />
-    <ClInclude Include="..\Src\DIP\Deformation.h" />
-    <ClInclude Include="..\Src\DIP\ExplicitShapeRegression.h" />
-    <ClInclude Include="..\Src\DIP\FeatureDetection.h" />
-    <ClInclude Include="..\Src\DIP\ImageLoader.h" />
-    <ClInclude Include="..\Src\DIP\RealTimeFaceDetection.h" />
-    <ClInclude Include="..\Src\DIP\Retargetting.h" />
-    <ClInclude Include="..\Src\DIP\Saliency.h" />
-    <ClInclude Include="..\Src\DIP\Segmentation.h" />
-    <ClInclude Include="..\Src\MachineLearning\AdaBoost.h" />
-    <ClInclude Include="..\Src\MachineLearning\Clustering.h" />
-    <ClInclude Include="..\Src\MachineLearning\DecisionTree.h" />
-    <ClInclude Include="..\Src\MachineLearning\DeepBeliefNets.h" />
-    <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h" />
-    <ClInclude Include="..\Src\MachineLearning\HiddenMarkovModels.h" />
-    <ClInclude Include="..\Src\MachineLearning\KernelFunction.h" />
-    <ClInclude Include="..\Src\MachineLearning\KMeansCoding.h" />
-    <ClInclude Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.h" />
-    <ClInclude Include="..\Src\MachineLearning\LinearRegression.h" />
-    <ClInclude Include="..\Src\MachineLearning\LogisticRegression.h" />
-    <ClInclude Include="..\Src\MachineLearning\NaiveBayes.h" />
-    <ClInclude Include="..\Src\MachineLearning\NeuralNetworks.h" />
-    <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h" />
-    <ClInclude Include="..\Src\MachineLearning\RandomMethod.h" />
-    <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h" />
-    <ClInclude Include="..\Src\MachineLearning\SparseCoding.h" />
-    <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h" />
-    <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h" />
-    <ClInclude Include="..\Src\Math\BasicFunction.h" />
-    <ClInclude Include="..\Src\Math\CorrelationAnalysis.h" />
-    <ClInclude Include="..\Src\Math\DenseMatrix.h" />
-    <ClInclude Include="..\Src\Math\HomoMatrix3.h" />
-    <ClInclude Include="..\Src\Math\HomoMatrix4.h" />
-    <ClInclude Include="..\Src\Math\HomoVector4.h" />
-    <ClInclude Include="..\Src\Math\Optimization.h" />
-    <ClInclude Include="..\Src\Math\Vector2.h" />
-    <ClInclude Include="..\Src\Math\Vector3.h" />
-    <ClInclude Include="..\Src\Tool\ErrorCodes.h" />
-    <ClInclude Include="..\Src\Tool\LogSystem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Dependencies\GraphCut\graph.cpp" />
-    <ClCompile Include="..\Dependencies\GraphCut\maxflow.cpp" />
+    <ClCompile Include="..\..\MagicLib\Dependencies\GraphCut\graph.cpp" />
+    <ClCompile Include="..\..\MagicLib\Dependencies\GraphCut\maxflow.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\BasicImageProcess.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\Face2D.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\Face2DObj.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceDetection.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceFeatureDetection.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceFeaturePoints.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\MagicObject.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\MagicObjectManager.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\CascadedPoseRegression.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Classification.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Deformation.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\FeatureDetection.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\ImageLoader.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Retargetting.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Saliency.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Segmentation.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\AdaBoost.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\Clustering.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\DecisionTree.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\DeepBeliefNets.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\GaussianMixtureModel.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\HiddenMarkovModels.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\KernelFunction.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\KMeansCoding.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LinearDiscriminantAnalysis.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LinearRegression.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LogisticRegression.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\NaiveBayes.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\NeuralNetworks.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\RandomMethod.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\RestrictedBoltzmannMachines.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SparseCoding.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SparseDeepAutoencoder.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SupportVectorMachine.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\BasicFunction.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\CorrelationAnalysis.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\DenseMatrix.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoMatrix3.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoMatrix4.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoVector4.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\Optimization.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\Vector2.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Math\Vector3.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Tool\LogSystem.cpp" />
     <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -324,15 +372,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Src\Application\VisionShopAppUI.cpp" />
-    <ClCompile Include="..\Src\AppModules\BasicImageProcess.cpp" />
-    <ClCompile Include="..\Src\AppModules\Face2D.cpp" />
-    <ClCompile Include="..\Src\AppModules\Face2DObj.cpp" />
-    <ClCompile Include="..\Src\AppModules\FaceDetection.cpp" />
-    <ClCompile Include="..\Src\AppModules\FaceFeatureDetection.cpp" />
-    <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp" />
-    <ClCompile Include="..\Src\AppModules\MagicObject.cpp" />
-    <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp" />
-    <ClCompile Include="..\Src\AppModules\SimpleMLObj.cpp" />
     <ClCompile Include="..\Src\Common\AppBase.cpp" />
     <ClCompile Include="..\Src\Common\AppManager.cpp" />
     <ClCompile Include="..\Src\Common\GUISystem.cpp">
@@ -377,45 +416,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\CascadedPoseRegression.cpp" />
-    <ClCompile Include="..\Src\DIP\Classification.cpp" />
-    <ClCompile Include="..\Src\DIP\Deformation.cpp" />
-    <ClCompile Include="..\Src\DIP\ExplicitShapeRegression.cpp" />
-    <ClCompile Include="..\Src\DIP\FeatureDetection.cpp" />
-    <ClCompile Include="..\Src\DIP\ImageLoader.cpp" />
-    <ClCompile Include="..\Src\DIP\RealTimeFaceDetection.cpp" />
-    <ClCompile Include="..\Src\DIP\Retargetting.cpp" />
-    <ClCompile Include="..\Src\DIP\Saliency.cpp" />
-    <ClCompile Include="..\Src\DIP\Segmentation.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\AdaBoost.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\Clustering.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\DecisionTree.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\DeepBeliefNets.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\HiddenMarkovModels.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\KernelFunction.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\KMeansCoding.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\LogisticRegression.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\NaiveBayes.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\NeuralNetworks.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\RandomMethod.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp" />
-    <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp" />
-    <ClCompile Include="..\Src\Math\BasicFunction.cpp" />
-    <ClCompile Include="..\Src\Math\CorrelationAnalysis.cpp" />
-    <ClCompile Include="..\Src\Math\DenseMatrix.cpp" />
-    <ClCompile Include="..\Src\Math\HomoMatrix3.cpp" />
-    <ClCompile Include="..\Src\Math\HomoMatrix4.cpp" />
-    <ClCompile Include="..\Src\Math\HomoVector4.cpp" />
-    <ClCompile Include="..\Src\Math\Optimization.cpp" />
-    <ClCompile Include="..\Src\Math\Vector2.cpp" />
-    <ClCompile Include="..\Src\Math\Vector3.cpp" />
-    <ClCompile Include="..\Src\Tool\LogSystem.cpp" />
     <ClCompile Include="MagicWorld.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -423,7 +423,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Dependencies\GraphCut\instances.inc" />
+    <None Include="..\..\MagicLib\Dependencies\GraphCut\instances.inc" />
     <None Include="..\Dependencies\PoissonRecon\Array.inl" />
     <None Include="..\Dependencies\PoissonRecon\BSplineData.inl" />
     <None Include="..\Dependencies\PoissonRecon\CmdLineParser.inl" />

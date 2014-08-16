@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PointShopApp.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 #include "../Common/RenderSystem.h"
 #include "../Common/ToolKit.h"
 #include "../DGP/Parser.h"

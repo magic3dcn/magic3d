@@ -6,7 +6,7 @@
 #include "ResourceManager.h"
 #include "AppManager.h"
 #include "GUISystem.h"
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicCore
 {

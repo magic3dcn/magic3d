@@ -1,9 +1,9 @@
 #pragma once
 #include "../Common/AppBase.h"
-#include "../Math/HomoMatrix3.h"
+#include "Math/HomoMatrix3.h"
 #include "FaceBeautificationAppUI.h"
-#include "../MachineLearning/PrincipalComponentAnalysis.h"
-#include "../AppModules/Face2D.h"
+#include "MachineLearning/PrincipalComponentAnalysis.h"
+#include "AppModules/Face2D.h"
 #include <vector>
 
 namespace MagicApp

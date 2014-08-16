@@ -1,6 +1,6 @@
 #include "ThreadPool.h"
 #include <process.h>
-#include "../Tool/LogSystem.h"
+#include "Tool/LogSystem.h"
 
 namespace MagicCore
 {

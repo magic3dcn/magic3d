@@ -22,9 +22,6 @@
     <Filter Include="DGP">
       <UniqueIdentifier>{f25afe13-bfa0-4b11-95fe-6ea97621abf8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tool">
-      <UniqueIdentifier>{7a772d04-45fc-4789-9a29-610901c77a1a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Application\Homepage">
       <UniqueIdentifier>{b7f8674e-b833-4d1a-9fc4-fe675a0f6db2}</UniqueIdentifier>
     </Filter>
@@ -64,29 +61,35 @@
     <Filter Include="Application\VisionShopApp">
       <UniqueIdentifier>{93c995e7-a365-4b13-9b18-6d3a1d62d068}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DIP">
-      <UniqueIdentifier>{d21a4e2f-fba0-4822-a5a3-e6f548188f76}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dependence\GraphCut">
       <UniqueIdentifier>{62efc01b-5957-4e12-8876-f9319550c582}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MachineLearning">
-      <UniqueIdentifier>{dfd3f61c-8624-413e-8ff2-40ec2e29fa7c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Application\FaceBeautificationApp">
       <UniqueIdentifier>{780716de-33f7-484e-aa7e-58324976efdf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math">
-      <UniqueIdentifier>{3bb80eae-4d0e-4423-85a2-ebf5ab024ba3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppModules">
-      <UniqueIdentifier>{f06b2a08-b2ea-452a-be97-c31b496f4607}</UniqueIdentifier>
     </Filter>
     <Filter Include="Application\MachineLearningApp">
       <UniqueIdentifier>{1a1becb8-87a6-4814-ae3d-56cd868ab07c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Application\FaceFeatureRecognitionApp">
       <UniqueIdentifier>{775cb564-50e5-4a6f-901f-5c2a3395622f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib">
+      <UniqueIdentifier>{6843cbd2-979b-4dd0-9aed-dbf2fe8eadd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib\Math">
+      <UniqueIdentifier>{3bb80eae-4d0e-4423-85a2-ebf5ab024ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib\MachineLearning">
+      <UniqueIdentifier>{dfd3f61c-8624-413e-8ff2-40ec2e29fa7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib\DIP">
+      <UniqueIdentifier>{d21a4e2f-fba0-4822-a5a3-e6f548188f76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib\Tool">
+      <UniqueIdentifier>{7a772d04-45fc-4789-9a29-610901c77a1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MagicLib\AppModules">
+      <UniqueIdentifier>{f06b2a08-b2ea-452a-be97-c31b496f4607}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -300,53 +303,11 @@
     <ClInclude Include="..\Src\Application\VisionShopApp.h">
       <Filter>Application\VisionShopApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DIP\Retargetting.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DIP\Saliency.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\GraphCut\block.h">
-      <Filter>Dependence\GraphCut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Dependencies\GraphCut\graph.h">
-      <Filter>Dependence\GraphCut</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DIP\Segmentation.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\Clustering.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\GaussianMixtureModel.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DIP\Deformation.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Application\FaceBeautificationAppUI.h">
       <Filter>Application\FaceBeautificationApp</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\FaceBeautificationApp.h">
       <Filter>Application\FaceBeautificationApp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\HomoMatrix3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\PrincipalComponentAnalysis.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\Vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\Vector3.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\HomoMatrix4.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\HomoVector4.h">
-      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\DGP\PickPointTool.h">
       <Filter>DGP</Filter>
@@ -354,86 +315,8 @@
     <ClInclude Include="..\Src\DGP\ViewTool.h">
       <Filter>DGP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Tool\LogSystem.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\LinearRegression.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\Face2D.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Common\ThreadPool.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DIP\FeatureDetection.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\MagicObject.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\MagicObjectManager.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\FaceFeaturePoints.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\BasicImageProcess.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\Face2DObj.h">
-      <Filter>AppModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\KMeansCoding.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\SparseCoding.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\DIP\Classification.h">
-      <Filter>DIP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\SupportVectorMachine.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\LogisticRegression.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\BasicFunction.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\AdaBoost.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\NaiveBayes.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\NeuralNetworks.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\HiddenMarkovModels.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\KernelFunction.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\DeepBeliefNets.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\SparseDeepAutoencoder.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Tool\ErrorCodes.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\AppModules\SimpleMLObj.h">
-      <Filter>AppModules</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\MachineLearningTestAppUI.h">
       <Filter>Application\MachineLearningApp</Filter>
@@ -441,44 +324,164 @@
     <ClInclude Include="..\Src\Application\MachineLearningTestApp.h">
       <Filter>Application\MachineLearningApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Math\DenseMatrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Math\Optimization.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\DecisionTree.h">
-      <Filter>MachineLearning</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Application\FaceFeatureRecognitionAppUI.h">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Application\FaceFeatureRecognitionApp.h">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\MachineLearning\RandomMethod.h">
-      <Filter>MachineLearning</Filter>
+    <ClInclude Include="..\..\MagicLib\Dependencies\GraphCut\block.h">
+      <Filter>Dependence\GraphCut</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DIP\CascadedPoseRegression.h">
-      <Filter>DIP</Filter>
+    <ClInclude Include="..\..\MagicLib\Dependencies\GraphCut\graph.h">
+      <Filter>Dependence\GraphCut</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\AppModules\FaceFeatureDetection.h">
-      <Filter>AppModules</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\CascadedPoseRegression.h">
+      <Filter>MagicLib\DIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DIP\ExplicitShapeRegression.h">
-      <Filter>DIP</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Classification.h">
+      <Filter>MagicLib\DIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DIP\ImageLoader.h">
-      <Filter>DIP</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Deformation.h">
+      <Filter>MagicLib\DIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Math\CorrelationAnalysis.h">
-      <Filter>Math</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.h">
+      <Filter>MagicLib\DIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\DIP\RealTimeFaceDetection.h">
-      <Filter>DIP</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\FeatureDetection.h">
+      <Filter>MagicLib\DIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\AppModules\FaceDetection.h">
-      <Filter>AppModules</Filter>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\ImageLoader.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Retargetting.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Saliency.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\Segmentation.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\AdaBoost.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\Clustering.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\DecisionTree.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\DeepBeliefNets.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\GaussianMixtureModel.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\HiddenMarkovModels.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\KernelFunction.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\KMeansCoding.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LinearDiscriminantAnalysis.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LinearRegression.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\LogisticRegression.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\NaiveBayes.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\NeuralNetworks.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\PrincipalComponentAnalysis.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\RandomMethod.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\RestrictedBoltzmannMachines.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SparseCoding.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SparseDeepAutoencoder.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\MachineLearning\SupportVectorMachine.h">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\BasicFunction.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\CorrelationAnalysis.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\DenseMatrix.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoMatrix3.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoMatrix4.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\HomoVector4.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\Optimization.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\Vector2.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Math\Vector3.h">
+      <Filter>MagicLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Tool\ErrorCodes.h">
+      <Filter>MagicLib\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Tool\LogSystem.h">
+      <Filter>MagicLib\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\BasicImageProcess.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\Face2D.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\Face2DObj.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceDetection.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceFeatureDetection.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\FaceFeaturePoints.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\MagicObject.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\MagicObjectManager.h">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.h">
+      <Filter>MagicLib\AppModules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -635,53 +638,11 @@
     <ClCompile Include="..\Src\Application\VisionShopApp.cpp">
       <Filter>Application\VisionShopApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\Retargetting.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DIP\Saliency.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Dependencies\GraphCut\graph.cpp">
-      <Filter>Dependence\GraphCut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Dependencies\GraphCut\maxflow.cpp">
-      <Filter>Dependence\GraphCut</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DIP\Segmentation.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\Clustering.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\GaussianMixtureModel.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DIP\Deformation.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Application\FaceBeautificationAppUI.cpp">
       <Filter>Application\FaceBeautificationApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\FaceBeautificationApp.cpp">
       <Filter>Application\FaceBeautificationApp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\HomoMatrix3.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\PrincipalComponentAnalysis.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\Vector2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\Vector3.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\HomoMatrix4.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\HomoVector4.cpp">
-      <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\DGP\PickPointTool.cpp">
       <Filter>DGP</Filter>
@@ -689,83 +650,8 @@
     <ClCompile Include="..\Src\DGP\ViewTool.cpp">
       <Filter>DGP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Tool\LogSystem.cpp">
-      <Filter>Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\LinearRegression.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\Face2D.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Common\ThreadPool.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DIP\FeatureDetection.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\MagicObject.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\MagicObjectManager.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\FaceFeaturePoints.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\BasicImageProcess.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\Face2DObj.cpp">
-      <Filter>AppModules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\KMeansCoding.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\SparseCoding.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DIP\Classification.cpp">
-      <Filter>DIP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\SupportVectorMachine.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\LogisticRegression.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\BasicFunction.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\AdaBoost.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\NaiveBayes.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\NeuralNetworks.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\HiddenMarkovModels.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\KernelFunction.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\LinearDiscriminantAnalysis.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\RestrictedBoltzmannMachines.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\DeepBeliefNets.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\SparseDeepAutoencoder.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\AppModules\SimpleMLObj.cpp">
-      <Filter>AppModules</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\MachineLearningTestAppUI.cpp">
       <Filter>Application\MachineLearningApp</Filter>
@@ -773,44 +659,161 @@
     <ClCompile Include="..\Src\Application\MachineLearningTestApp.cpp">
       <Filter>Application\MachineLearningApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Math\DenseMatrix.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\Math\Optimization.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\DecisionTree.cpp">
-      <Filter>MachineLearning</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Application\FaceFeatureRecognitionAppUI.cpp">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Application\FaceFeatureRecognitionApp.cpp">
       <Filter>Application\FaceFeatureRecognitionApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\MachineLearning\RandomMethod.cpp">
-      <Filter>MachineLearning</Filter>
+    <ClCompile Include="..\..\MagicLib\Dependencies\GraphCut\graph.cpp">
+      <Filter>Dependence\GraphCut</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\CascadedPoseRegression.cpp">
-      <Filter>DIP</Filter>
+    <ClCompile Include="..\..\MagicLib\Dependencies\GraphCut\maxflow.cpp">
+      <Filter>Dependence\GraphCut</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\AppModules\FaceFeatureDetection.cpp">
-      <Filter>AppModules</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\CascadedPoseRegression.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\ExplicitShapeRegression.cpp">
-      <Filter>DIP</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Classification.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\ImageLoader.cpp">
-      <Filter>DIP</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Deformation.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Math\CorrelationAnalysis.cpp">
-      <Filter>Math</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DIP\RealTimeFaceDetection.cpp">
-      <Filter>DIP</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\FeatureDetection.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\AppModules\FaceDetection.cpp">
-      <Filter>AppModules</Filter>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\ImageLoader.cpp">
+      <Filter>MagicLib\DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.cpp">
+      <Filter>MagicLib\DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Retargetting.cpp">
+      <Filter>MagicLib\DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Saliency.cpp">
+      <Filter>MagicLib\DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\Segmentation.cpp">
+      <Filter>MagicLib\DIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\AdaBoost.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\Clustering.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\DecisionTree.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\DeepBeliefNets.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\GaussianMixtureModel.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\HiddenMarkovModels.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\KernelFunction.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\KMeansCoding.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LinearDiscriminantAnalysis.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LinearRegression.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\LogisticRegression.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\NaiveBayes.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\NeuralNetworks.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\PrincipalComponentAnalysis.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\RandomMethod.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\RestrictedBoltzmannMachines.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SparseCoding.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SparseDeepAutoencoder.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\MachineLearning\SupportVectorMachine.cpp">
+      <Filter>MagicLib\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\BasicFunction.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\CorrelationAnalysis.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\DenseMatrix.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoMatrix3.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoMatrix4.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\HomoVector4.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\Optimization.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\Vector2.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Math\Vector3.cpp">
+      <Filter>MagicLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Tool\LogSystem.cpp">
+      <Filter>MagicLib\Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\BasicImageProcess.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\Face2D.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\Face2DObj.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceDetection.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceFeatureDetection.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\FaceFeaturePoints.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\MagicObject.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\MagicObjectManager.cpp">
+      <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.cpp">
+      <Filter>MagicLib\AppModules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -853,7 +856,7 @@
     <None Include="..\Dependencies\PoissonRecon\Vector.inl">
       <Filter>Dependence\PoissonReconstruction</Filter>
     </None>
-    <None Include="..\Dependencies\GraphCut\instances.inc">
+    <None Include="..\..\MagicLib\Dependencies\GraphCut\instances.inc">
       <Filter>Dependence\GraphCut</Filter>
     </None>
   </ItemGroup>

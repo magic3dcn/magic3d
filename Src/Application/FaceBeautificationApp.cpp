@@ -1,12 +1,12 @@
 #include "FaceBeautificationApp.h"
 #include "flann/flann.h"
-#include "../DIP/Deformation.h"
-#include "../Tool/LogSystem.h"
+#include "DIP/Deformation.h"
+#include "Tool/LogSystem.h"
 #include "../Common/ToolKit.h"
-#include "../DIP/Saliency.h"
-#include "../AppModules/Face2D.h"
-#include "../AppModules/MagicObjectManager.h"
-#include "../AppModules/Face2DObj.h"
+#include "DIP/Saliency.h"
+#include "AppModules/Face2D.h"
+#include "AppModules/MagicObjectManager.h"
+#include "AppModules/Face2DObj.h"
 #include <stdio.h>
 
 namespace MagicApp

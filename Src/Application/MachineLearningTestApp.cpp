@@ -1,9 +1,9 @@
 #include "MachineLearningTestApp.h"
-#include "../Tool/LogSystem.h"
-#include "../AppModules/MagicObjectManager.h"
-#include "../AppModules/SimpleMLObj.h"
+#include "Tool/LogSystem.h"
+#include "AppModules/MagicObjectManager.h"
+#include "AppModules/SimpleMLObj.h"
 #include "../Common/ToolKit.h"
-#include "../MachineLearning/PrincipalComponentAnalysis.h"
+#include "MachineLearning/PrincipalComponentAnalysis.h"
 
 namespace MagicApp
 {
