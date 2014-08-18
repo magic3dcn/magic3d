@@ -163,12 +163,12 @@ namespace MagicApp
             //GenerateNonFaceFromFace();
             //GenerateStrongNonFace();
             //TestFaceDetection();
-            //TestFaceDetectionInFile();
+            TestFaceDetectionInFile();
             
             //TransferColorToGray();
             //GenerateTrainingFaces();
             //GenerataRandomNonFace();
-            GenerateFalsePositives();
+            //GenerateFalsePositives();
             //GenerateFalsePositivesFromNonFace();
         }
         else if (arg.key == OIS::KC_G)
@@ -647,7 +647,7 @@ namespace MagicApp
         char pLine[maxSize];
         fin.getline(pLine, maxSize);
         double maxOverlapRate = 0.5;
-        std::string outputPath = "./NonFacefw2/nonFace2_fw_";
+        std::string outputPath = "./NonFacelfw3/nonFace3_lfw_";
         int outputSize = 32;
         int outputId = 0;
         for (int dataId = 0; dataId < dataSize; dataId++)
@@ -668,12 +668,12 @@ namespace MagicApp
             posFin >> faceRow >> faceCol >> faceLen;
             posFin.close();
 
-            cv::Mat img = cv::imread(imgName);
+            /*cv::Mat img = cv::imread(imgName);
             cv::Size cvHalfSize(img.cols / 2, img.rows / 2);
             cv::Mat halfImg(cvHalfSize, CV_8UC1);
-            cv::resize(img, halfImg, cvHalfSize);
+            cv::resize(img, halfImg, cvHalfSize);*/
 
-            //cv::Mat halfImg = cv::imread(imgName);
+            cv::Mat halfImg = cv::imread(imgName);
 
             std::vector<int> faces;
             int detectNum = mpFaceDetection->DetectFace(halfImg, faces);

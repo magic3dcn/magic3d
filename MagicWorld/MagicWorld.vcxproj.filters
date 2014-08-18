@@ -483,6 +483,9 @@
     <ClInclude Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.h">
       <Filter>MagicLib\AppModules</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\Tool\Profiler.h">
+      <Filter>MagicLib\Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -814,6 +817,9 @@
     </ClCompile>
     <ClCompile Include="..\..\MagicLib\Src\AppModules\SimpleMLObj.cpp">
       <Filter>MagicLib\AppModules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\Tool\Profiler.cpp">
+      <Filter>MagicLib\Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

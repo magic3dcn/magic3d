@@ -147,6 +147,7 @@
     <ClInclude Include="..\..\MagicLib\Src\Math\Vector3.h" />
     <ClInclude Include="..\..\MagicLib\Src\Tool\ErrorCodes.h" />
     <ClInclude Include="..\..\MagicLib\Src\Tool\LogSystem.h" />
+    <ClInclude Include="..\..\MagicLib\Src\Tool\Profiler.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Allocator.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\Array.h" />
     <ClInclude Include="..\Dependencies\PoissonRecon\BinaryNode.h" />
@@ -276,6 +277,7 @@
     <ClCompile Include="..\..\MagicLib\Src\Math\Vector2.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\Math\Vector3.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\Tool\LogSystem.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\Tool\Profiler.cpp" />
     <ClCompile Include="..\Dependencies\PoissonRecon\CmdLineParser.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
