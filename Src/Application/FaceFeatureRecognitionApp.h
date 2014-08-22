@@ -59,6 +59,7 @@ namespace MagicApp
         void GenerataRandomNonFace(void);
         void GenerateFalsePositives(void);
         void GenerateFalsePositivesFromNonFace(void);
+        void TuneGrayValues(void);
 
     private:
         void SetupScene(void);

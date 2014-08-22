@@ -143,7 +143,7 @@ namespace MagicApp
         {
             //SaveCascadedRegression();
             //mpFaceDetection->Save("./FaceDetection.rfd", "FaceDetection.abfd");
-            mpFaceDetection->SaveFeatureAsImage("./");
+            mpFaceDetection->SaveFeatureAsImage("./featureImg/");
         }
         else if (arg.key == OIS::KC_L)
         {
@@ -170,6 +170,7 @@ namespace MagicApp
             //GenerataRandomNonFace();
             //GenerateFalsePositives();
             //GenerateFalsePositivesFromNonFace();
+            //TuneGrayValues();
         }
         else if (arg.key == OIS::KC_G)
         {
@@ -347,73 +348,10 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "Land Files(*.txt)\0*.txt\0";
-        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
-        std::string imgPath = fileName;
-        std::string::size_type pos = imgPath.rfind("/");
-        if (pos == std::string::npos)
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            pos = imgPath.rfind("\\");
+            mpFaceDetection->TestFaceDetectionInFile(fileName, "./DetectResult/detectRes_");
         }
-        imgPath.erase(pos);
-        imgPath += "/";
-        std::ifstream fin(fileName);
-        int imgCount;
-        fin >> imgCount;
-        const int maxSize = 512;
-        char pLine[maxSize];
-        fin.getline(pLine, maxSize);
-        for (int imgId = 0; imgId < imgCount; imgId++)
-        {
-            fin.getline(pLine, maxSize);
-            std::string imgName(pLine);
-            imgName = imgPath + imgName;
-            cv::Mat imgOrigin = cv::imread(imgName);
-            if (imgOrigin.data == NULL)
-            {
-                continue;
-            }
-            cv::Mat grayImg;
-            cv::cvtColor(imgOrigin, grayImg, CV_BGR2GRAY);
-            std::vector<int> faces;
-            int detectNum = mpFaceDetection->DetectFace(grayImg, faces);
-            grayImg.release();
-            if (detectNum > 0)
-            {
-                std::vector<double> marks;
-                for (int detectId = 0; detectId < detectNum; detectId++)
-                {
-                    int baseId = detectId * 4;
-
-                    int topRow = faces.at(baseId);
-                    int downRow = topRow + faces.at(baseId + 3);
-                    int leftCol = faces.at(baseId + 1);
-                    int rightCol = leftCol + faces.at(baseId + 2);
-                    for (int colId = leftCol; colId <= rightCol; colId++)
-                    {
-                        marks.push_back(topRow);
-                        marks.push_back(colId);
-                        marks.push_back(downRow);
-                        marks.push_back(colId);
-                    }
-                    for (int rowId = topRow; rowId <= downRow; rowId++)
-                    {
-                        marks.push_back(rowId);
-                        marks.push_back(leftCol);
-                        marks.push_back(rowId);
-                        marks.push_back(rightCol);
-                    }
-                }
-                MarkPointsToImage(imgOrigin, &marks, 0, 255, 255, 1);
-            }
-            std::stringstream ss;
-            ss << "./DetectResult/detectRes_" << imgId << ".jpg" << std::endl;
-            std::string resName;
-            ss >> resName;
-            ss.clear();
-            cv::imwrite(resName, imgOrigin);
-            imgOrigin.release();
-        }
-        fin.close();
     }
 
     void FaceFeatureRecognitionApp::OpenTestImage(void)
@@ -632,83 +570,10 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "Land Files(*.txt)\0*.txt\0";
-        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
-        std::string imgPath = fileName;
-        std::string::size_type pos = imgPath.rfind("/");
-        if (pos == std::string::npos)
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            pos = imgPath.rfind("\\");
+            mpFaceDetection->GenerateFalsePositivesFromLandFile(fileName, "./NonFacefw4/nonFace4_fw_");
         }
-        imgPath.erase(pos);
-        std::ifstream fin(fileName);
-        int dataSize;
-        fin >> dataSize;
-        const int maxSize = 512;
-        char pLine[maxSize];
-        fin.getline(pLine, maxSize);
-        double maxOverlapRate = 0.5;
-        std::string outputPath = "./NonFacelfw3/nonFace3_lfw_";
-        int outputSize = 32;
-        int outputId = 0;
-        for (int dataId = 0; dataId < dataSize; dataId++)
-        {
-            DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
-            fin.getline(pLine, maxSize);
-            std::string landName(pLine);
-            landName = imgPath + landName;
-            std::string imgName = landName;
-            std::string posName = landName;
-            std::string::size_type pos = imgName.rfind(".");
-            imgName.replace(pos, 5, ".jpg");
-            pos = posName.rfind(".");
-            posName.replace(pos, 5, ".pos");
-            
-            std::ifstream posFin(posName);
-            int faceRow, faceCol, faceLen;
-            posFin >> faceRow >> faceCol >> faceLen;
-            posFin.close();
-
-            /*cv::Mat img = cv::imread(imgName);
-            cv::Size cvHalfSize(img.cols / 2, img.rows / 2);
-            cv::Mat halfImg(cvHalfSize, CV_8UC1);
-            cv::resize(img, halfImg, cvHalfSize);*/
-
-            cv::Mat halfImg = cv::imread(imgName);
-
-            std::vector<int> faces;
-            int detectNum = mpFaceDetection->DetectFace(halfImg, faces);
-            for (int detectId = 0; detectId < detectNum; detectId++)
-            {
-                int detectBase = detectId * 4;
-                int detectRow = faces.at(detectBase);
-                int detectCol = faces.at(detectBase + 1);
-                int detectLen = faces.at(detectBase + 2);
-                if (CalculateOverlapRate(faceRow, faceCol, faceLen, detectRow, detectCol, detectLen) < maxOverlapRate)
-                {
-                    cv::Mat detectImg(detectLen, detectLen, CV_8UC1);
-                    for (int hid = 0; hid < detectLen; hid++)
-                    {
-                        for (int wid = 0; wid < detectLen; wid++)
-                        {
-                            detectImg.ptr(hid, wid)[0] = halfImg.ptr(detectRow + hid, detectCol + wid)[0];
-                        }
-                    }
-                    cv::Size cvOutputSize(outputSize, outputSize);
-                    cv::Mat outputImg(cvOutputSize, CV_8UC1);
-                    cv::resize(detectImg, outputImg, cvOutputSize);
-                    detectImg.release();
-                    std::stringstream ss;
-                    ss << outputPath << outputId << ".jpg";
-                    std::string outputImgName;
-                    ss >> outputImgName;
-                    outputId++;
-                    cv::imwrite(outputImgName, outputImg);
-                    outputImg.release();
-                }
-            }
-            halfImg.release();
-        }
-        fin.close();
     }
 
     void FaceFeatureRecognitionApp::GenerateFalsePositivesFromNonFace(void)
@@ -753,6 +618,16 @@ namespace MagicApp
             img.release();
         }
         fin.close();
+    }
+
+    void FaceFeatureRecognitionApp::TuneGrayValues(void)
+    {
+        std::string fileName;
+        char filterName[] = "Land Files(*.txt)\0*.txt\0";
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
+        {
+            FaceDetection::TuneGrayValues(fileName);
+        }
     }
 
     void FaceFeatureRecognitionApp::GenerataRandomNonFace(void)
@@ -846,104 +721,10 @@ namespace MagicApp
     {
         std::string fileName;
         char filterName[] = "Land Files(*.txt)\0*.txt\0";
-        MagicCore::ToolKit::FileOpenDlg(fileName, filterName);
-        std::string imgPath = fileName;
-        std::string::size_type pos = imgPath.rfind("/");
-        if (pos == std::string::npos)
+        if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            pos = imgPath.rfind("\\");
+            FaceDetection::GenerateTrainingFacesFromLandFile(fileName, "./TrainingFaces/fw_");
         }
-        imgPath.erase(pos);
-        std::ifstream fin(fileName);
-        int dataSize;
-        fin >> dataSize;
-        const int maxSize = 512;
-        char pLine[maxSize];
-        fin.getline(pLine, maxSize);
-        int marginSize = 5;
-        int outputSize = 32;
-        for (int dataId = 0; dataId < dataSize; dataId++)
-        {
-            fin.getline(pLine, maxSize);
-            std::string landName(pLine);
-            landName = imgPath + landName;
-            std::string imgName = landName;
-            std::string posName = landName;
-            std::string faceName = landName;
-            std::string::size_type pos = imgName.rfind(".");
-            imgName.replace(pos, 5, ".jpg");
-            pos = posName.rfind(".");
-            posName.replace(pos, 5, ".pos");
-            pos = faceName.rfind(".");
-            faceName.replace(pos, 5, "_training_face");
-            std::stringstream ss;
-            ss << faceName << "_" << dataId << ".jpg";
-            faceName.clear();
-            ss >> faceName;
-            ss.clear();
-
-            cv::Mat grayImg = cv::imread(imgName);
-            int imgH = grayImg.rows;
-            int imgW = grayImg.cols;
-
-            std::ifstream landFin(landName);
-            int markCount;
-            landFin >> markCount;
-            int left = 1.0e10;
-            int right = 0;
-            int top = 1.0e10;
-            int down = 0;
-            for (int markId = 0; markId < markCount; markId++)
-            {
-                double row, col;
-                landFin >> col >> row;
-                row = imgH - row;
-                if (row < top)
-                {
-                    top = row;
-                }
-                if (row > down)
-                {
-                    down = row;
-                }
-                if (col < left)
-                {
-                    left = col;
-                }
-                if (col > right)
-                {
-                    right = col;
-                }
-            }
-            landFin.close();
-            int sRow = top - marginSize;
-            int sCol = left - marginSize;
-            int w = right - left;
-            int h = down - top;
-            int len = w > h ? w : h;
-            len += marginSize * 2;
-
-            std::ofstream posFout(posName);
-            posFout << sRow << " " << sCol << " " << len << std::endl;
-            posFout.close();
-
-            cv::Mat cropImg(len, len, CV_8UC1);
-            for (int hid = 0; hid < len; hid++)
-            {
-                for (int wid = 0; wid < len; wid++)
-                {
-                    cropImg.ptr(hid, wid)[0] = grayImg.ptr(sRow + hid, sCol + wid)[0];
-                }
-            }
-            cv::Size cvOutputSize(outputSize, outputSize);
-            cv::Mat outputImg(cvOutputSize, CV_8UC1);
-            cv::resize(cropImg, outputImg, cvOutputSize);
-            cv::imwrite(faceName, outputImg);
-            cropImg.release();
-            grayImg.release();
-            outputImg.release();
-        }
-        fin.close();
     }
 
     void FaceFeatureRecognitionApp::GenerateStrongNonFace(void)
