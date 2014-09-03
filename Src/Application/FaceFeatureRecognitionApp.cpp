@@ -171,6 +171,7 @@ namespace MagicApp
             //GenerateFalsePositives();
             //GenerateFalsePositivesFromNonFace();
             //TuneGrayValues();
+            //RealTimeFaceSaveByEnhancement();
         }
         else if (arg.key == OIS::KC_G)
         {
@@ -306,6 +307,11 @@ namespace MagicApp
         {
             mpFaceDetection->Load(fileName);
         }
+    }
+
+    void FaceFeatureRecognitionApp::RealTimeFaceSaveByEnhancement(void)
+    {
+        mpFaceDetection->SaveByEnhanceThreshold("./FaceDetection-1-001.rfd", "FaceDetection-1-001.abfd", 1.001);
     }
 
     void FaceFeatureRecognitionApp::TestFaceDetection(void)
@@ -572,7 +578,7 @@ namespace MagicApp
         char filterName[] = "Land Files(*.txt)\0*.txt\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            mpFaceDetection->GenerateFalsePositivesFromLandFile(fileName, "./NonFacefw4/nonFace4_fw_");
+            mpFaceDetection->GenerateFalsePositivesFromLandFile(fileName, "./NonFaceza/nonFace_za_");
         }
     }
 
@@ -595,8 +601,9 @@ namespace MagicApp
         const int maxSize = 512;
         char pLine[maxSize];
         fin.getline(pLine, maxSize);
-        std::string outputPath = "./NonFacefw1_1/nonFace1_fw_1_";
+        std::string outputPath = "./NonFaceza/nonFace_za_";
         int outputId = 0;
+        int outputSize = 32;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
             DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
@@ -604,18 +611,39 @@ namespace MagicApp
             std::string imgName(pLine);
             imgName = imgPath + imgName;
             cv::Mat img = cv::imread(imgName);
+            cv::Mat grayImg;
+            cv::cvtColor(img, grayImg, CV_BGR2GRAY);
+            img.release();
             std::vector<int> faces;
-            int detectNum = mpFaceDetection->DetectFace(img, faces);
-            if (detectNum > 0)
+            int detectNum = mpFaceDetection->DetectFace(grayImg, faces);
+            for (int detectId = 0; detectId < detectNum; detectId++) //modify_flag
             {
+                int detectBase = detectId * 4;
+                int detectRow = faces.at(detectBase);
+                int detectCol = faces.at(detectBase + 1);
+                int detectLen = faces.at(detectBase + 2);
+
+                cv::Mat detectImg(detectLen, detectLen, CV_8UC1);
+                for (int hid = 0; hid < detectLen; hid++)
+                {
+                    for (int wid = 0; wid < detectLen; wid++)
+                    {
+                        detectImg.ptr(hid, wid)[0] = grayImg.ptr(detectRow + hid, detectCol + wid)[0];
+                    }
+                }
+                cv::Size cvOutputSize(outputSize, outputSize);
+                cv::Mat outputImg(cvOutputSize, CV_8UC1);
+                cv::resize(detectImg, outputImg, cvOutputSize);
+                detectImg.release();
                 std::stringstream ss;
                 ss << outputPath << outputId << ".jpg";
-                std::string outputName;
-                ss >> outputName;
-                cv::imwrite(outputName, img);
+                std::string outputImgName;
+                ss >> outputImgName;
                 outputId++;
+                cv::imwrite(outputImgName, outputImg);
+                outputImg.release();
             }
-            img.release();
+            grayImg.release();
         }
         fin.close();
     }
@@ -755,36 +783,40 @@ namespace MagicApp
             imgNameList.at(dataId) = imgName;
         }
         fin.close();
-        MagicDIP::ImageLoader imgLoader;
-        imgLoader.LoadImages(imgNameList, MagicDIP::ImageLoader::IT_Gray);
-        int maxCropSize = 100;
-        int minCropSize = 10;
-        int outputSize = 64;
+        //MagicDIP::ImageLoader imgLoader;
+        //imgLoader.LoadImages(imgNameList, MagicDIP::ImageLoader::IT_Gray);
+        //int maxCropSize = 70;
+        //int minCropSize = 10;
+        //int maxCropSize = 90;
+        //int minCropSize = 32;
+        int maxCropSize = 460;
+        int minCropSize = 200;
+        int outputSize = 32;
         cv::Size cvOutputSize(outputSize, outputSize);
         int rawNum = 0;
         int strongDataNum = 0;
-        int acceptedNum = 2000;
+        int acceptedNum = 10000;
         srand(time(NULL));
         while (strongDataNum < acceptedNum)
         {
             int imgId = rand() % dataSize;
-            //cv::Mat grayImg = cv::imread(imgNameList.at(imgId));
-            /*if (grayImg.data == NULL)
+            cv::Mat grayImg = cv::imread(imgNameList.at(imgId));
+            if (grayImg.data == NULL)
             {
                 DebugLog << "error: grayImg.data == NULL: " << imgNameList.at(imgId) << std::endl;
                 continue;
-            }*/
+            }
             int localSampleNum = 0;
-            while (localSampleNum < 5000)
+            while (localSampleNum < 100)
             {
                 localSampleNum++;
                 rawNum++;
                 int cropSize = minCropSize + rand() % (maxCropSize - minCropSize);
-                //int imgH = grayImg.rows;
-                int imgH = imgLoader.GetImageHeight(imgId);
+                int imgH = grayImg.rows;
+                //int imgH = imgLoader.GetImageHeight(imgId);
                 int hMax = imgH - cropSize;
-                //int imgW = grayImg.cols;
-                int imgW = imgLoader.GetImageWidth(imgId);
+                int imgW = grayImg.cols;
+                //int imgW = imgLoader.GetImageWidth(imgId);
                 int wMax = imgW - cropSize;
                 int sH = rand() % hMax;
                 int sW = rand() % wMax;
@@ -793,8 +825,8 @@ namespace MagicApp
                 {
                     for (int wid = 0; wid < cropSize; wid++)
                     {
-                        //cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
-                        cropImg.ptr(hid, wid)[0] = imgLoader.GetGrayImageValue(imgId, sH + hid, sW + wid);
+                        cropImg.ptr(hid, wid)[0] = grayImg.ptr(sH + hid, sW + wid)[0];
+                        //cropImg.ptr(hid, wid)[0] = imgLoader.GetGrayImageValue(imgId, sH + hid, sW + wid);
                     }
                 }
                 cv::Mat outputImg(cvOutputSize, CV_8UC1);
@@ -805,7 +837,7 @@ namespace MagicApp
                 if (mpFaceDetection->DetectFace(outputImg, faces) > 0)
                 {
                     std::stringstream ss;
-                    ss << "./StrongNonFace3/smallStrongNonFace3_" << strongDataNum << ".jpg";
+                    ss << "./StrongNonFace/bigStrongNonFace_" << strongDataNum << ".jpg";
                     std::string outputName;
                     ss >> outputName;
                     cv::imwrite(outputName, outputImg);
@@ -828,7 +860,7 @@ namespace MagicApp
             fout << "strongNonFace_" << imgId << ".jpg" << std::endl;
         }
         fout.close();*/
-        imgLoader.Reset();
+        //imgLoader.Reset();
         DebugLog << "GenerateStrongNonFace Done" << std::endl; 
     }
 

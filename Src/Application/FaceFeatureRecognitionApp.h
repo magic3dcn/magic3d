@@ -43,6 +43,7 @@ namespace MagicApp
 
         void RealTimeFaceDetection(void);
         void RealTimeFaceLoading(void);
+        void RealTimeFaceSaveByEnhancement(void);
         
         void OpenTestImage(void);
         void MarkKeyPoint(void);
