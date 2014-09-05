@@ -163,13 +163,13 @@ namespace MagicApp
             //GenerateNonFaceFromFace();
             //GenerateStrongNonFace();
             //TestFaceDetection();
-            TestFaceDetectionInFile();
+            //TestFaceDetectionInFile();
             
             //TransferColorToGray();
             //GenerateTrainingFaces();
             //GenerataRandomNonFace();
             //GenerateFalsePositives();
-            //GenerateFalsePositivesFromNonFace();
+            GenerateFalsePositivesFromNonFace();
             //TuneGrayValues();
             //RealTimeFaceSaveByEnhancement();
         }
@@ -601,9 +601,10 @@ namespace MagicApp
         const int maxSize = 512;
         char pLine[maxSize];
         fin.getline(pLine, maxSize);
-        std::string outputPath = "./NonFaceza/nonFace_za_";
+        //std::string outputPath = "./NonFaceza/nonFace_za_";
+        std::string outputPath = "./DetectFace/DetectFace_";
         int outputId = 0;
-        int outputSize = 32;
+        int outputSize = 128;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
             DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
@@ -751,7 +752,7 @@ namespace MagicApp
         char filterName[] = "Land Files(*.txt)\0*.txt\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
-            FaceDetection::GenerateTrainingFacesFromLandFile(fileName, "./TrainingFaces/fw_");
+            FaceDetection::GenerateTrainingFacesFromLandFile(fileName, "./TrainingFaces/lfw_");
         }
     }
 
