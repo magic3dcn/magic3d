@@ -169,8 +169,8 @@ namespace MagicApp
             //GenerateTrainingFaces();
             //GenerataRandomNonFace();
             //GenerateFalsePositives();
-            GenerateFalsePositivesFromNonFace();
-            //TuneGrayValues();
+            //GenerateFalsePositivesFromNonFace();
+            TuneGrayValues();
             //RealTimeFaceSaveByEnhancement();
         }
         else if (arg.key == OIS::KC_G)
@@ -603,8 +603,9 @@ namespace MagicApp
         fin.getline(pLine, maxSize);
         //std::string outputPath = "./NonFaceza/nonFace_za_";
         std::string outputPath = "./DetectFace/DetectFace_";
-        int outputId = 0;
+        int outputId = 11003;
         int outputSize = 128;
+        int falseId = 0;
         for (int dataId = 0; dataId < dataSize; dataId++)
         {
             DebugLog << "dataId: " << dataId << " dataSize: " << dataSize << std::endl;
@@ -643,6 +644,15 @@ namespace MagicApp
                 outputId++;
                 cv::imwrite(outputImgName, outputImg);
                 outputImg.release();
+            }
+            if (detectNum == 0)
+            {
+                std::stringstream ss;
+                ss << outputPath << "_false_" << outputId << "_" << falseId << ".jpg";
+                std::string outputImgName;
+                ss >> outputImgName;
+                cv::imwrite(outputImgName, grayImg);
+                falseId++;
             }
             grayImg.release();
         }
