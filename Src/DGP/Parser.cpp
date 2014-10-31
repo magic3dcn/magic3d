@@ -39,6 +39,10 @@ namespace MagicDGP
         {
             return ParsePointSetByOFF(fileName);
         }
+        else if (extName == std::string("cps"))
+        {
+            return ParsePointSetByCPS(fileName);
+        }
         else
         {
             return NULL;
@@ -278,9 +282,37 @@ namespace MagicDGP
             Point3D* point = new Point3D(pos);
             pPointSet->InsertPoint(point);
         }
+        fin.close();
         InfoLog << "Import Point Number: " << pPointSet->GetPointNumber() << std::endl;
 
         return pPointSet;
+    }
+
+    Point3DSet* Parser::ParsePointSetByCPS(std::string fileName)
+    {
+        DebugLog << "ParsePointSetByOFF file name: " << fileName.c_str() << std::endl;
+        std::ifstream fin(fileName);
+        int vertCount;
+        fin >> vertCount;
+        InfoLog << "Vertex number: " << vertCount << std::endl;
+        if (vertCount <= 0)
+        {
+            fin.close();
+            return NULL;
+        }
+        Point3DSet* pPSet = new Point3DSet;
+        double posX, posY, posZ;
+        double colorR, colorG, colorB;
+        for (int vid = 0; vid < vertCount; vid++)
+        {
+            fin >> posX >> posY >> posZ >> colorR >> colorG >> colorB;
+            Point3D* point = new Point3D(MagicMath::Vector3(posX, posY, posZ));
+            point->SetColor(MagicMath::Vector3(colorR, colorG, colorB));
+            pPSet->InsertPoint(point);
+        }
+        fin.close();
+
+        return pPSet;
     }
 
     Mesh3D* Parser::ParseMesh3D(std::string fileName)

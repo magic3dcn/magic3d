@@ -486,6 +486,9 @@
     <ClInclude Include="..\..\MagicLib\Src\Tool\Profiler.h">
       <Filter>MagicLib\Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\MagicLib\Src\DIP\FisherVectorFace.h">
+      <Filter>MagicLib\DIP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -820,6 +823,9 @@
     </ClCompile>
     <ClCompile Include="..\..\MagicLib\Src\Tool\Profiler.cpp">
       <Filter>MagicLib\Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MagicLib\Src\DIP\FisherVectorFace.cpp">
+      <Filter>MagicLib\DIP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

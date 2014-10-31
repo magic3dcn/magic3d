@@ -269,18 +269,18 @@ namespace MagicApp
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpShapeRegression->LearnRegression(fileName);
-            mpShapeRegression->Save("./Regression.shape");
+            mpShapeRegression->Save("./Regression.shape", "./MeanFace.txt");
         }
     }
 
     void FaceFeatureRecognitionApp::LoadShapeRegression(void)
     {
-        std::string fileName;
+        /*std::string fileName;
         char filterName[] = "Shape Files(*.shape)\0*.shape\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             mpShapeRegression->Load(fileName);
-        }
+        }*/
     }
 
     void FaceFeatureRecognitionApp::RealTimeFaceDetection(void)
@@ -452,7 +452,7 @@ namespace MagicApp
 
     void FaceFeatureRecognitionApp::TestShape(void)
     {
-        if (mMouseMode != MM_Test_Shape)
+        /*if (mMouseMode != MM_Test_Shape)
         {
             mMouseMode = MM_Test_Shape;
             if (!mpShapeRegression->IsMeanFaceExist())
@@ -468,7 +468,7 @@ namespace MagicApp
         else
         {
             mMouseMode = MM_View;
-        }
+        }*/
     }
 
     void FaceFeatureRecognitionApp::GenerateNonFaceFromFace(void)

@@ -112,6 +112,7 @@
     <ClInclude Include="..\..\MagicLib\Src\DIP\Deformation.h" />
     <ClInclude Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.h" />
     <ClInclude Include="..\..\MagicLib\Src\DIP\FeatureDetection.h" />
+    <ClInclude Include="..\..\MagicLib\Src\DIP\FisherVectorFace.h" />
     <ClInclude Include="..\..\MagicLib\Src\DIP\ImageLoader.h" />
     <ClInclude Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.h" />
     <ClInclude Include="..\..\MagicLib\Src\DIP\Retargetting.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="..\..\MagicLib\Src\DIP\Deformation.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\DIP\ExplicitShapeRegression.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\DIP\FeatureDetection.cpp" />
+    <ClCompile Include="..\..\MagicLib\Src\DIP\FisherVectorFace.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\DIP\ImageLoader.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\DIP\RealTimeFaceDetection.cpp" />
     <ClCompile Include="..\..\MagicLib\Src\DIP\Retargetting.cpp" />

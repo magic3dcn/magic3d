@@ -133,7 +133,7 @@ namespace MagicApp
     bool PointShopApp::OpenPointSet(bool& hasNormal, int& pointNum)
     {
         std::string fileName;
-        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0";
+        char filterName[] = "OBJ Files(*.obj)\0*.obj\0STL Files(*.stl)\0*.stl\0OFF Files(*.off)\0*.off\0Color Files(*.cps)\0*.cps\0";
         if (MagicCore::ToolKit::FileOpenDlg(fileName, filterName))
         {
             MagicDGP::Point3DSet* pPointSet = MagicDGP::Parser::ParsePointSet(fileName);
